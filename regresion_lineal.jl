@@ -491,7 +491,7 @@ md"""
 """
 
 # ╔═╡ 57a30f20-7dc2-4c02-8621-32f03c5d5f71
-maquina = machine(regresor, select(adultos, :weight), adultos.height)
+maquina = machine(regresor, adultos[:, [:weight]], adultos.height)
 
 # ╔═╡ 83788e2c-84f8-4d0c-bdb0-930680eafa4c
 md"""
@@ -551,12 +551,14 @@ de prueba*.
 # ╔═╡ 563f0e01-3117-40f0-9d4f-0f4926bdc336
 md"""
 ## Evaluación cruzada
+
+La evaluación cruzada consiste en dividir el conjunto de datos inicial en un conjunto de entranamiento y otro de pruebas de manera aleatoria, repetidas veces. En cada repetición se crear un modelo con los datos de entrenameinto y se prueba con los datos de prueba, el resultados final es el promedio de todas las repeticiones.
 """
 
 # ╔═╡ 2da21951-935d-4ba8-9a3b-c2628a71a31e
 begin
-	cv = CV(nfolds = 3)
-	evaluate(regresor, select(adultos, :weight), adultos.height, resampling=cv, measure=l2)
+	cv = CV(nfolds = 10)
+	validacion_cruzada = evaluate(regresor, select(adultos, :weight), adultos.height, resampling=cv, measure=rms)
 end
 
 # ╔═╡ 215eb03b-4c21-4321-bb3b-70bb68aace81
@@ -723,6 +725,33 @@ begin
 	θ_todas = (X_todas'X_todas)\(X_todas'y_todas)
 	println("θ = ", θ_todas)
 end
+
+# ╔═╡ 158f021b-5fa8-49be-a8df-6863a272e4e8
+md"""
+## Extensión de la regresión lineal
+
+Haciendo uso del paquete MLJ:
+"""
+
+# ╔═╡ 55211ee4-a8da-46b2-96f1-83fc170677ee
+begin
+	X_multiple = coerce(adultos[:, [:height, :age, :male]], MLJ.Count => MLJ.Continuous)
+	maquina_multiple = machine(regresor, X_multiple, adultos.weight)
+	fit!(maquina_multiple)
+end
+
+# ╔═╡ 1661096e-713c-435a-b47d-278f454ad76b
+evaluate!(maquina_multiple, resampling=MLJ.InSample(), measure=rms)
+
+# ╔═╡ 70802a0d-d500-457c-9823-0bf99f23509e
+evaluate!(maquina_multiple, resampling=MLJ.CV(nfolds=10, rng=69), measure=rms)
+
+# ╔═╡ 354706f0-c7a2-49b6-be7d-5fe9d333aa30
+md"""
+## Normalidad de los residuos
+
+
+"""
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -3094,5 +3123,10 @@ version = "1.4.1+1"
 # ╠═04aca69e-71a6-4b66-b4a0-fe8aaabd5fe9
 # ╠═6aa1e98d-13df-4732-bc3a-b907bcb8e4bd
 # ╠═dff726bd-66dc-49d0-8dfd-bd762cad734b
+# ╠═158f021b-5fa8-49be-a8df-6863a272e4e8
+# ╠═55211ee4-a8da-46b2-96f1-83fc170677ee
+# ╠═1661096e-713c-435a-b47d-278f454ad76b
+# ╠═70802a0d-d500-457c-9823-0bf99f23509e
+# ╠═354706f0-c7a2-49b6-be7d-5fe9d333aa30
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
