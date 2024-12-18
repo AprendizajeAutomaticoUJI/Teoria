@@ -18,6 +18,7 @@ begin
 	using GLM
 	using MLJ
 	import MLJLinearModels
+	using Polynomials
 	
 	plotly()
 end
@@ -347,7 +348,7 @@ Empecemos visualizando el histograma de los residuos y el ajuste a una normal.
 """
 
 # ╔═╡ 7a3f806a-5d26-40f1-b665-7bf686728fde
-ajuste_residuos = fit(Normal, residuos)
+ajuste_residuos = Distributions.fit(Normal, residuos)
 
 # ╔═╡ cf291a6a-18ba-476a-a9c9-ddcd1f75c514
 begin
@@ -401,7 +402,7 @@ Otra prueba gráfica que podemos utilizar son los qqplot o gráficos cuantil-cua
 """
 
 # ╔═╡ ad16e07e-f7c2-4bce-9f71-0d0334459ef6
-qqnorm(residuos)
+qqnorm(residuos, xlabel="Cuantiles teóricos", ylabel="Cuantiles de los datos", title="Gráfico cuantil-cualtil de los residuos")
 
 # ╔═╡ 08794500-ec04-4834-8852-c79680f0d136
 md"""
@@ -522,7 +523,7 @@ prediccion = MLJ.predict(maquina, extremo)
 # ╔═╡ b9bfee39-4092-4c69-816c-ca830b94c935
 begin
 	scatter(adultos.weight, adultos.height, xlabel="weight", ylabel="height", label="datos")
-	plot!(extremo.weight, prediccion, width=3, label="regresion")
+	plot!(extremo.weight, prediccion, width=3, label="regresión")
 end
 
 # ╔═╡ 4c52220e-3b6e-46fe-b7d7-87bfc5facf99
@@ -735,13 +736,18 @@ Haciendo uso del paquete MLJ:
 
 # ╔═╡ 55211ee4-a8da-46b2-96f1-83fc170677ee
 begin
-	X_multiple = coerce(adultos[:, [:height, :age, :male]], MLJ.Count => MLJ.Continuous)
-	maquina_multiple = machine(regresor, X_multiple, adultos.weight)
+	X_multiple = coerce(adultos[:, [:weight, :age, :male]], MLJ.Count => MLJ.Continuous)
+	maquina_multiple = machine(regresor, X_multiple, adultos.height)
 	fit!(maquina_multiple)
 end
 
 # ╔═╡ 1661096e-713c-435a-b47d-278f454ad76b
 evaluate!(maquina_multiple, resampling=MLJ.InSample(), measure=rms)
+
+# ╔═╡ c3976756-cf99-4092-86d2-994b34894bb7
+md"""
+Si empleamos validación cruzada:
+"""
 
 # ╔═╡ 70802a0d-d500-457c-9823-0bf99f23509e
 evaluate!(maquina_multiple, resampling=MLJ.CV(nfolds=10, rng=69), measure=rms)
@@ -752,6 +758,168 @@ md"""
 
 
 """
+
+# ╔═╡ b4ffd1ca-dc72-45fe-a6a4-b0f9569cec64
+residuos_multiple = y - MLJ.predict(maquina_multiple, X_multiple)
+
+# ╔═╡ 1e051daa-f2db-447b-93b3-19c594fc0d66
+ajuste_residuos_multiple = Distributions.fit(Normal, residuos_multiple)
+
+# ╔═╡ 4b2dfb5f-9319-4cd9-9e6c-69efab579681
+ShapiroWilkTest(residuos_multiple)
+
+# ╔═╡ 0f85c1b1-ce14-4870-8943-efb72e9ec7d9
+md"""
+La prueba de Shapiro-Wilk no pasa. Veamos qué ocurre con las otras dos pruebas:
+"""
+
+# ╔═╡ eefd48fc-ca9a-42fb-a321-53be6bf98381
+OneSampleADTest(residuos_multiple, ajuste_residuos_multiple)
+
+# ╔═╡ ef313c53-798c-4e84-b6da-4d90ed49db51
+ApproximateOneSampleKSTest(residuos_multiple, ajuste_residuos_multiple)
+
+# ╔═╡ 14a01c6a-9c06-434d-b1b9-87be793c071a
+md"""
+La normalidad de los residuos sí que pasa las dos últimas pruebas.
+"""
+
+# ╔═╡ 613788e4-0430-41da-ad36-55c24de472a2
+md"""
+## Normalidad de los residuos
+
+Utilicemos una representación cuantil-cuantil:
+"""
+
+# ╔═╡ 2ecb47e6-58e1-4065-afa4-1c0eea75a6ee
+qqnorm(residuos_multiple, xlabel="Cuantil teórico", ylabel="Cuantil de los datos", title="Gráfico cuantil-cuantil de los residuos")
+
+# ╔═╡ 7705d15c-ff72-488d-9733-d535f8c0d33d
+md"""
+Vemos que tenemos un dato anómalo, abajo a la izquierda en el gráfico. Si eliminamos el dato anómalo y volvemos a hacer la prueba:
+"""
+
+# ╔═╡ 9df11318-64a8-48cc-803a-2c19a0796fe8
+ShapiroWilkTest(filter(x -> x > -15, residuos_multiple))
+
+# ╔═╡ 90df1425-d688-4195-9aea-fc1494000448
+md"""
+La prueba de normalidad ahora pasa, y si representamos el gráfico cuantil-cuantil, vemos que ha mejorado
+"""
+
+# ╔═╡ 0ba2bf47-2dab-4ef3-af7e-bd97d1f0ebc4
+qqnorm(filter(x -> x > -15, residuos_multiple))
+
+# ╔═╡ d4bfb41a-7f9d-4ae6-aa1c-a3e1bac8025d
+md"""
+## Resumen
+
+Todo lo que hemos aprendido en el caso de un único predictor y una única variable predicha lo podemos extender al caso de varios predictores y una única variable predicha.
+"""
+
+# ╔═╡ 47e52680-e6ea-4de9-b621-9294c13c99ee
+md"""
+# Regresión polinomial
+"""
+
+# ╔═╡ 4ca27647-e6ed-42f5-aac4-bf9dd959d9c5
+md"""
+## Extensión de la regresión lineal
+
+Visualicemos todos los datos de nuestro conjunto, no sólo los datos de las personas adultas:
+"""
+
+# ╔═╡ e3c90bb0-22fb-4853-ba20-c77dd87d0096
+scatter(data.weight, data.height, xlabel="weight", ylabel="height", title="Altura frente a peso en el cojunto Howell", legend=false)
+
+# ╔═╡ f9f038a8-a3dd-4253-af34-0903d4b13216
+md"""
+A simple vista parece que su comportamiento no es lineal.
+
+¿Podemos utilizar un polinomio como modelo de los datos?
+"""
+
+# ╔═╡ 735b0a1f-8568-4ce2-8761-c321366f5a35
+md"""
+## Extensión de la regresión lineal
+En el caso de ajuste de un polinomio tenemos:
+
+$h_{\theta}(x) = y = \theta_0 + \theta_1 x + \theta_2 x^2 +...+ \theta_n x^n + \epsilon$
+
+Fíjate en que los parámetros que buscamos $\mathbf{\theta}$ siguen siendo 
+lineales, no hay ninguna potencia de los parámetros, la potencia está en los 
+datos.
+"""
+
+# ╔═╡ be0d88a4-5520-43bd-8914-9b566a343acc
+md"""
+## Extensión de la regresión lineal
+Que lo podemos expresar de modo matricial como:
+
+```math
+\begin{bmatrix}
+y_1 \\
+y_2\\
+y_3\\
+...\\
+y_N \\
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 & x_1 & (x_1)^2 & ... & (x_1)^m\\
+1 & x_2 & (x_2)^2 & ... & (x_2)^m\\
+1 & x_3 & (x_3)^2 & ... & (x_3)^m\\
+... & ... & ... & ... & ... \\
+1 & x_N & (x_N)^2 & ... & (x_N)^m\\
+\end{bmatrix}
+\begin{bmatrix}
+\theta_0 \\
+\theta_1 \\
+\theta_2 \\
+...\\
+\theta_m \\
+\end{bmatrix}
++
+\begin{bmatrix}
+\epsilon \\
+\epsilon \\
+\epsilon \\
+... \\
+\epsilon \\
+\end{bmatrix}
+```
+"""
+
+# ╔═╡ 690417e7-50a6-401c-9ad9-1d42abc384a3
+md"""
+## Extensión de la regresión lineal
+
+Probemos primero con un polinomio de grado 2:
+"""
+
+# ╔═╡ 74c37149-dc3d-4bfc-9c15-46403d97fd35
+begin
+	fit2 = Polynomials.fit(data[:,:weight], data[:,:height], 2)
+	fit3 = Polynomials.fit(data[:,:weight], data[:,:height], 3)
+	fit15 = Polynomials.fit(data[:,:weight], data[:,:height], 8)
+end
+
+# ╔═╡ 8b79c0b1-ebfb-4bad-831f-9c9add26c090
+begin
+	scatter(data[:, :weight], data[:, :height], xlabel="weight", ylabel="height", label="Datos", legend=true)
+	plot!(fit2, extrema(data[:, :weight])..., width=3, label="Grado 2")
+	plot!(fit3, extrema(data[:, :weight])..., width=3, label="Grado 3")
+	plot!(fit15, extrema(data[:, :weight])..., width=3, label="Grado 15")
+end
+
+# ╔═╡ 6bd8f588-cc5d-4c78-a891-efc47133a95f
+rms(fit2.(data[:, :weight]), data[:, :height])
+
+# ╔═╡ 2784ecd3-8303-46ee-84dc-463780a3a7c5
+rms(fit3.(data[:, :weight]), data[:, :height])
+
+# ╔═╡ eff7c325-285b-4b0a-9136-6a78f3b86376
+rms(fit15.(data[:, :weight]), data[:, :height])
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -768,6 +936,7 @@ PlotlyBase = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
 PlotlyKaleido = "f2990250-8cf9-495f-b13a-cce12b45703c"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
+Polynomials = "f27b6e38-b328-58d1-80ce-0feddd5e7a45"
 StatsPlots = "f3b207a7-027a-5e70-b257-86293d7955fd"
 
 [compat]
@@ -783,6 +952,7 @@ PlotlyBase = "~0.8.19"
 PlotlyKaleido = "~2.2.5"
 Plots = "~1.40.9"
 PlutoUI = "~0.7.60"
+Polynomials = "~4.0.12"
 StatsPlots = "~0.15.7"
 """
 
@@ -792,7 +962,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.2"
 manifest_format = "2.0"
-project_hash = "5a958f199745cc86eacefee93969ba2807104a2c"
+project_hash = "154956d92134fbeaad3b3a9012c644efadc63458"
 
 [[deps.ARFFFiles]]
 deps = ["CategoricalArrays", "Dates", "Parsers", "Tables"]
@@ -2202,6 +2372,24 @@ git-tree-sha1 = "eba4810d5e6a01f612b948c9fa94f905b49087b0"
 uuid = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 version = "0.7.60"
 
+[[deps.Polynomials]]
+deps = ["LinearAlgebra", "OrderedCollections", "RecipesBase", "Requires", "Setfield", "SparseArrays"]
+git-tree-sha1 = "adc25dbd4d13f148f3256b6d4743fe7e63a71c4a"
+uuid = "f27b6e38-b328-58d1-80ce-0feddd5e7a45"
+version = "4.0.12"
+
+    [deps.Polynomials.extensions]
+    PolynomialsChainRulesCoreExt = "ChainRulesCore"
+    PolynomialsFFTWExt = "FFTW"
+    PolynomialsMakieCoreExt = "MakieCore"
+    PolynomialsMutableArithmeticsExt = "MutableArithmetics"
+
+    [deps.Polynomials.weakdeps]
+    ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
+    FFTW = "7a1cc6ca-52ef-59f5-83cd-3a7055c09341"
+    MakieCore = "20f20a25-4f0e-4fdf-b5d1-57303727442b"
+    MutableArithmetics = "d8a4904e-b15c-11e9-3269-09a3773c0cb0"
+
 [[deps.PooledArrays]]
 deps = ["DataAPI", "Future"]
 git-tree-sha1 = "36d8b4b899628fb92c2749eb488d884a926614d3"
@@ -3084,7 +3272,7 @@ version = "1.4.1+1"
 # ╠═7eb49193-addb-4833-9261-0a0ceab55e7e
 # ╠═f4c5fdba-5493-4240-93dd-86345c9adad7
 # ╟─90a3a2c0-4d45-40d9-9bdc-a966c628ba90
-# ╟─ad16e07e-f7c2-4bce-9f71-0d0334459ef6
+# ╠═ad16e07e-f7c2-4bce-9f71-0d0334459ef6
 # ╠═08794500-ec04-4834-8852-c79680f0d136
 # ╠═3ffe9740-d133-410a-a3ff-77c2ba64217f
 # ╠═caba4624-8388-43b9-a9bf-b0bb5ed27213
@@ -3126,7 +3314,34 @@ version = "1.4.1+1"
 # ╠═158f021b-5fa8-49be-a8df-6863a272e4e8
 # ╠═55211ee4-a8da-46b2-96f1-83fc170677ee
 # ╠═1661096e-713c-435a-b47d-278f454ad76b
+# ╠═c3976756-cf99-4092-86d2-994b34894bb7
 # ╠═70802a0d-d500-457c-9823-0bf99f23509e
 # ╠═354706f0-c7a2-49b6-be7d-5fe9d333aa30
+# ╠═b4ffd1ca-dc72-45fe-a6a4-b0f9569cec64
+# ╠═1e051daa-f2db-447b-93b3-19c594fc0d66
+# ╠═4b2dfb5f-9319-4cd9-9e6c-69efab579681
+# ╠═0f85c1b1-ce14-4870-8943-efb72e9ec7d9
+# ╠═eefd48fc-ca9a-42fb-a321-53be6bf98381
+# ╠═ef313c53-798c-4e84-b6da-4d90ed49db51
+# ╠═14a01c6a-9c06-434d-b1b9-87be793c071a
+# ╠═613788e4-0430-41da-ad36-55c24de472a2
+# ╠═2ecb47e6-58e1-4065-afa4-1c0eea75a6ee
+# ╠═7705d15c-ff72-488d-9733-d535f8c0d33d
+# ╠═9df11318-64a8-48cc-803a-2c19a0796fe8
+# ╠═90df1425-d688-4195-9aea-fc1494000448
+# ╠═0ba2bf47-2dab-4ef3-af7e-bd97d1f0ebc4
+# ╠═d4bfb41a-7f9d-4ae6-aa1c-a3e1bac8025d
+# ╠═47e52680-e6ea-4de9-b621-9294c13c99ee
+# ╠═4ca27647-e6ed-42f5-aac4-bf9dd959d9c5
+# ╠═e3c90bb0-22fb-4853-ba20-c77dd87d0096
+# ╠═f9f038a8-a3dd-4253-af34-0903d4b13216
+# ╠═735b0a1f-8568-4ce2-8761-c321366f5a35
+# ╠═be0d88a4-5520-43bd-8914-9b566a343acc
+# ╠═690417e7-50a6-401c-9ad9-1d42abc384a3
+# ╠═74c37149-dc3d-4bfc-9c15-46403d97fd35
+# ╠═8b79c0b1-ebfb-4bad-831f-9c9add26c090
+# ╠═6bd8f588-cc5d-4c78-a891-efc47133a95f
+# ╠═2784ecd3-8303-46ee-84dc-463780a3a7c5
+# ╠═eff7c325-285b-4b0a-9136-6a78f3b86376
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
