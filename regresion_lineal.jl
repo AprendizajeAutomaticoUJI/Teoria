@@ -901,12 +901,18 @@ Probemos primero con un polinomio de grado 2:
 begin
 	fit2 = Polynomials.fit(data[:,:weight], data[:,:height], 2)
 	fit3 = Polynomials.fit(data[:,:weight], data[:,:height], 3)
-	fit15 = Polynomials.fit(data[:,:weight], data[:,:height], 8)
+	fit15 = Polynomials.fit(data[:,:weight], data[:,:height], 9)
 end
+
+# ╔═╡ dd6ae9ef-6668-47d0-8672-e9152e00a12a
+resultados = [rms((Polynomials.fit(data[:, :weight], data[:, :height], g)).(data[:, :weight]), data[:, :height]) for g in 2:10]
+
+# ╔═╡ 14da5cf8-4de4-4edd-bbf4-673446bfb872
+plot(collect((2:10)), resultados, width=3, xlabel="Grado del polinomio", ylabel="RMSE", legend=false)
 
 # ╔═╡ 8b79c0b1-ebfb-4bad-831f-9c9add26c090
 begin
-	scatter(data[:, :weight], data[:, :height], xlabel="weight", ylabel="height", label="Datos", legend=true)
+	scatter(data[:, :weight], data[:, :height], xlabel="weight", ylabel="height", label="Datos", legend=false)
 	plot!(fit2, extrema(data[:, :weight])..., width=3, label="Grado 2")
 	plot!(fit3, extrema(data[:, :weight])..., width=3, label="Grado 3")
 	plot!(fit15, extrema(data[:, :weight])..., width=3, label="Grado 15")
@@ -3339,6 +3345,8 @@ version = "1.4.1+1"
 # ╠═be0d88a4-5520-43bd-8914-9b566a343acc
 # ╠═690417e7-50a6-401c-9ad9-1d42abc384a3
 # ╠═74c37149-dc3d-4bfc-9c15-46403d97fd35
+# ╠═dd6ae9ef-6668-47d0-8672-e9152e00a12a
+# ╠═14da5cf8-4de4-4edd-bbf4-673446bfb872
 # ╠═8b79c0b1-ebfb-4bad-831f-9c9add26c090
 # ╠═6bd8f588-cc5d-4c78-a891-efc47133a95f
 # ╠═2784ecd3-8303-46ee-84dc-463780a3a7c5
