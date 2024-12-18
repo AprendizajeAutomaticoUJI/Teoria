@@ -945,19 +945,14 @@ rms(fit15.(data[:, :weight]), data[:, :height])
 # ╔═╡ 4f59d4d0-8c87-41d6-b313-1cdc368a5120
 function dibuja_ajuste(grado::Int)
 	fitx = Polynomials.fit(data[:,:weight], data[:,:height], grado)
-	scatter(data[:, :weight], data[:, :height], xlabel="weight", ylabel="height", label="Datos", legend=false, ylim=(50, 200))
+	error = rms(fitx.(data[:, :weight]), data[:, :height])
+	scatter(data[:, :weight], data[:, :height], xlabel="weight", ylabel="height", label="Datos", legend=false, ylim=(50, 200), 
+		title="Grado: " * string(grado) * ", RMSE: " * string(error))
 	plot!(fitx, extrema(data[:, :weight])..., width=3)
 end
 
 # ╔═╡ 0ad863f8-3479-4da5-92b2-7bdc2f4044d5
 dibuja_ajuste(grado)
-
-# ╔═╡ 0671d1d1-5ac9-41a6-9526-3bc8b91cf31a
-begin
-	fitx = Polynomials.fit(data[:,:weight], data[:,:height], grado)
-	scatter(data[:, :weight], data[:, :height], xlabel="weight", ylabel="height", label="Datos", legend=false, ylim=(50, 200))
-	plot!(fitx, extrema(data[:, :weight])..., width=3)
-end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -3386,6 +3381,5 @@ version = "1.4.1+1"
 # ╠═e982d0a1-3469-48d5-a286-28fc2f88f714
 # ╠═4f59d4d0-8c87-41d6-b313-1cdc368a5120
 # ╠═0ad863f8-3479-4da5-92b2-7bdc2f4044d5
-# ╠═0671d1d1-5ac9-41a6-9526-3bc8b91cf31a
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
