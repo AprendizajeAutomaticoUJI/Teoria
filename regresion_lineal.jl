@@ -909,50 +909,68 @@ md"""
 Probemos primero con un polinomio de grado 2:
 """
 
-# ╔═╡ 74c37149-dc3d-4bfc-9c15-46403d97fd35
-begin
-	fit2 = Polynomials.fit(data[:,:weight], data[:,:height], 2)
-	fit3 = Polynomials.fit(data[:,:weight], data[:,:height], 3)
-	fit15 = Polynomials.fit(data[:,:weight], data[:,:height], 9)
-end
-
-# ╔═╡ dd6ae9ef-6668-47d0-8672-e9152e00a12a
-resultados = [rms((Polynomials.fit(data[:, :weight], data[:, :height], g)).(data[:, :weight]), data[:, :height]) for g in 2:10]
-
-# ╔═╡ 14da5cf8-4de4-4edd-bbf4-673446bfb872
-plot(collect((2:10)), resultados, width=3, xlabel="Grado del polinomio", ylabel="RMSE", legend=false)
-
-# ╔═╡ 8b79c0b1-ebfb-4bad-831f-9c9add26c090
-begin
-	scatter(data[:, :weight], data[:, :height], xlabel="weight", ylabel="height", label="Datos", legend=false)
-	plot!(fit2, extrema(data[:, :weight])..., width=3, label="Grado 2")
-	plot!(fit3, extrema(data[:, :weight])..., width=3, label="Grado 3")
-	plot!(fit15, extrema(data[:, :weight])..., width=3, label="Grado 15")
-end
-
-# ╔═╡ 6bd8f588-cc5d-4c78-a891-efc47133a95f
-rms(fit2.(data[:, :weight]), data[:, :height])
-
-# ╔═╡ 2784ecd3-8303-46ee-84dc-463780a3a7c5
-rms(fit3.(data[:, :weight]), data[:, :height])
-
-# ╔═╡ eff7c325-285b-4b0a-9136-6a78f3b86376
-rms(fit15.(data[:, :weight]), data[:, :height])
-
 # ╔═╡ e982d0a1-3469-48d5-a286-28fc2f88f714
-@bind grado Slider(2:10, show_value=true)
+# @bind grado Slider(2:10, show_value=true)
+@bind grado NumberField(1:12, default=2)
+
+# ╔═╡ b117c48e-2e1b-4908-8747-58d080a829f0
+function ajuste_polinomial(grado::Int)
+	fit = Polynomials.fit(data[:,:weight], data[:,:height], grado)
+	rmse = rms(fit.(data[:, :weight]), data[:, :height])
+	# fit, rms(fit.(data[:, :weight]), data[:, :height])
+	fit, rmse
+end
 
 # ╔═╡ 4f59d4d0-8c87-41d6-b313-1cdc368a5120
 function dibuja_ajuste(grado::Int)
-	fitx = Polynomials.fit(data[:,:weight], data[:,:height], grado)
-	error = rms(fitx.(data[:, :weight]), data[:, :height])
+	fit, rmse = ajuste_polinomial(grado)
 	scatter(data[:, :weight], data[:, :height], xlabel="weight", ylabel="height", label="Datos", legend=false, ylim=(50, 200), 
-		title="Grado: " * string(grado) * ", RMSE: " * string(error))
-	plot!(fitx, extrema(data[:, :weight])..., width=3)
+		title="Grado: " * string(grado) * ", RMSE: " * string(rmse))
+	plot!(fit, extrema(data[:, :weight])..., width=3)
 end
 
 # ╔═╡ 0ad863f8-3479-4da5-92b2-7bdc2f4044d5
 dibuja_ajuste(grado)
+
+# ╔═╡ 53bdf7bb-95f7-4413-aec7-1c88375fcf22
+md"""
+## Encontrar el mejor grado del polinomio
+"""
+
+# ╔═╡ 1c7e1986-b12f-4d4a-9be9-12befefb98bd
+begin
+	datos = [ajuste_polinomial(x)[2] for x in 1:12]
+	plot(datos, xlim=(0,12))
+	scatter!(datos)
+end
+
+# ╔═╡ 405f208f-56bc-4f8b-ae7d-f2acb09ee29d
+collect((1:10))
+
+# ╔═╡ 8b6c1f57-a7a6-45e1-81f3-a3b06cbd25cc
+md"""
+# Descenso de gradiente
+"""
+
+# ╔═╡ aad3bc5b-c389-409d-acb5-895788e3ce42
+md"""
+# Regularización
+"""
+
+# ╔═╡ 5c0b5a16-fd1d-4b8c-aa70-d746332b4d28
+md"""
+# Resumen
+
+- Hemos analizado con detalle la regresión lineal.
+- Hemos ampliado la regresión lineal a múltiple.
+- Hemos extendido la regresión lineal a modelos polinómicos.
+- Hemos estudiado qué es la técnica de descenso del gradiente.
+- Hemos introducido la regularización para mejorar el rendimiento.
+- Es importante que compruebes que se cumplen las condiciones para aplicar regresión lineal: residuos distribuido según una gaussiana centrada en el 0.
+"""
+
+# ╔═╡ 5c62e903-23da-483a-8ba0-256ea2a0f239
+
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -3371,15 +3389,16 @@ version = "1.4.1+1"
 # ╠═735b0a1f-8568-4ce2-8761-c321366f5a35
 # ╠═be0d88a4-5520-43bd-8914-9b566a343acc
 # ╠═690417e7-50a6-401c-9ad9-1d42abc384a3
-# ╠═74c37149-dc3d-4bfc-9c15-46403d97fd35
-# ╠═dd6ae9ef-6668-47d0-8672-e9152e00a12a
-# ╠═14da5cf8-4de4-4edd-bbf4-673446bfb872
-# ╠═8b79c0b1-ebfb-4bad-831f-9c9add26c090
-# ╠═6bd8f588-cc5d-4c78-a891-efc47133a95f
-# ╠═2784ecd3-8303-46ee-84dc-463780a3a7c5
-# ╠═eff7c325-285b-4b0a-9136-6a78f3b86376
 # ╠═e982d0a1-3469-48d5-a286-28fc2f88f714
+# ╠═b117c48e-2e1b-4908-8747-58d080a829f0
 # ╠═4f59d4d0-8c87-41d6-b313-1cdc368a5120
 # ╠═0ad863f8-3479-4da5-92b2-7bdc2f4044d5
+# ╠═53bdf7bb-95f7-4413-aec7-1c88375fcf22
+# ╠═1c7e1986-b12f-4d4a-9be9-12befefb98bd
+# ╠═405f208f-56bc-4f8b-ae7d-f2acb09ee29d
+# ╠═8b6c1f57-a7a6-45e1-81f3-a3b06cbd25cc
+# ╠═aad3bc5b-c389-409d-acb5-895788e3ce42
+# ╟─5c0b5a16-fd1d-4b8c-aa70-d746332b4d28
+# ╠═5c62e903-23da-483a-8ba0-256ea2a0f239
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
