@@ -35,6 +35,40 @@ begin
 	plotly()
 end
 
+# ╔═╡ df4e377a-895e-483d-8894-75629bb2533f
+html"""
+# # Aumentar el zoom hasta 170
+<style>
+	p {
+		font-size: 25px
+	}
+
+	li {
+		font-size: 20px;
+	}
+	
+	body h1 {
+		font-size: 50px;
+		font-family: sans-serif;
+	}
+	
+	body h2 {
+		font-size: 40px;
+		font-family: sans-serif;
+		padding-top: 10px;
+	}
+	
+	main {
+		max-width: 950px !important;
+		# margin-right: 100px !important; # Debe quedar comentada para editar
+	}
+	
+	# .fuente {
+	# 	font-size: 20px;
+	# }
+</style>
+"""
+
 # ╔═╡ 266e632b-30a5-4ae4-981f-8e2ab61e3232
 TableOfContents(title="Contenidos", depth=1)
 
@@ -98,14 +132,14 @@ La hipótesis de partida es que existe una relación lineal entre una variable q
 
 $h_{\theta}(x) = y = \theta_0 + \theta_1 x + \epsilon$
 
-Donde $\epsilon \sim N(0, \sigma^2)$ sigue una distribución normal, con media 0 y varianza $\sigma^2$.
+Donde $\epsilon \sim N(0, \sigma^2)$ sigue una distribución normal, con media $0$ y varianza $\sigma^2$.
 """
 
 # ╔═╡ b3fe5074-6461-4d1e-bea3-f005533210a0
 md"""
 ## Objetivo de la regresión lineal
 
-Es decir, tenemos un conjunto de n datos para los cuales:
+Es decir, tenemos un conjunto de $N$ datos para los cuales:
 
 
 $h_{\theta}(x_1) = y_1 = \theta_0 + \theta_1 x_1 + \epsilon$
@@ -197,6 +231,11 @@ $height = h_{\theta}(weight) = \theta_0 + \theta_1 weight + \epsilon$
 A partir del predictor ($weight$) queremos obtener el valor de la altura ($height$) en cm.
 """
 
+# ╔═╡ a079b8eb-f179-41af-9712-de65be3d7a64
+md"""
+## Objetivo de la regresión lineal
+"""
+
 # ╔═╡ 48d3993b-fcae-4d91-a53a-a936dcaea321
 begin
 	path = "https://raw.githubusercontent.com/AprendizajeAutomaticoUJI/DataSets/refs/heads/master/Howell1.csv"
@@ -205,8 +244,13 @@ begin
 	adultos = data[data.age .>= 18, :]
 end
 
+# ╔═╡ 2e638e63-6f50-4dd0-921a-0e5d33e31fe1
+md"""
+## Objetivo de la regresión lineal
+"""
+
 # ╔═╡ bf9d5f2e-a1ae-4b9a-88ac-a7fcef6945bb
-scatter(adultos.weight, adultos.height, xlabel="weight", ylabel="height", label=false)
+scatter(adultos.weight, adultos.height, xlabel="weight", ylabel="height", label=false, size=(900,400))
 
 # ╔═╡ a7712a98-dbef-4f62-a83c-546ebfb3a40e
 md"""
@@ -265,7 +309,7 @@ Si dibujamos el conjunto de datos y la recta de regresión lineal.
 begin
 	scatter(adultos.weight, adultos.height, xlabel="weight", ylabel="height", label="datos")
 	extremos = [1 minimum(X[:,2]); 1 maximum(X[:,2])]
-	plot!(extremos[:,2], extremos*θ, linewidth=3, label="ajuste")
+	plot!(extremos[:,2], extremos*θ, linewidth=3, label="ajuste", size=(900,400))
 end
 
 # ╔═╡ bdc38a15-ff58-4431-8f3b-d1e310044af5
@@ -280,8 +324,13 @@ $r_i = y_i - h_{\theta}(x_i)$
 # ╔═╡ 8af8b802-49d8-474f-b3a3-1278a69093f9
 residuos = y - X*θ;
 
+# ╔═╡ 1c428df8-1517-42b3-aa47-215ea2d9bb6f
+md"""
+## Residuos
+"""
+
 # ╔═╡ 1f0385e8-a071-4473-8136-7cbcf6f924b8
-scatter(residuos, title="Residuos", legend=false, ylabel="residuos")
+scatter(residuos, title="Residuos", legend=false, ylabel="residuos", size=(900,400))
 
 # ╔═╡ 23f13774-25c3-42de-800f-2437856ad9fc
 md"""
@@ -291,7 +340,7 @@ Si representamos el histograma de los residuos:
 """
 
 # ╔═╡ 090c1c8b-35c8-43bc-80a3-b8b75304ed31
-h_residuos = histogram(residuos, title="Distribución de los residuos", xlabel="residuos", ylabel="Número de muestras", legend=false)
+h_residuos = histogram(residuos, title="Distribución de los residuos", xlabel="residuos", ylabel="Número de muestras", legend=false, size=(900,400))
 
 # ╔═╡ b19afa83-a5b2-4dc7-b266-76f60e27f2ff
 md"""
@@ -364,7 +413,7 @@ ajuste_residuos = Distributions.fit(Normal, residuos)
 
 # ╔═╡ cf291a6a-18ba-476a-a9c9-ddcd1f75c514
 begin
-	histogram(residuos, normed=true, label="histograma")
+	histogram(residuos, normed=true, label="histograma", size=(900,400))
 	plot!(ajuste_residuos, width=2, label="ajuste a normal")
 end
 
@@ -414,7 +463,7 @@ Otra prueba gráfica que podemos utilizar son los qqplot o gráficos cuantil-cua
 """
 
 # ╔═╡ ad16e07e-f7c2-4bce-9f71-0d0334459ef6
-qqnorm(residuos, xlabel="Cuantiles teóricos", ylabel="Cuantiles de los datos", title="Gráfico cuantil-cualtil de los residuos")
+qqnorm(residuos, xlabel="Cuantiles teóricos", ylabel="Cuantiles de los datos", title="Gráfico cuantil-cualtil de los residuos", size=(900,400))
 
 # ╔═╡ 08794500-ec04-4834-8852-c79680f0d136
 md"""
@@ -478,6 +527,9 @@ Todos estos cálculos los hemos hecho con un poco de álgebra. Existen paquetes 
 # ╔═╡ e3278b0e-ff00-4bc9-b06e-d2757a08f997
 lm(@formula(height ~ weight), adultos)
 
+# ╔═╡ 64c3cd0c-6297-42e5-9193-1a842a886136
+lm(@formula(height ~ weight + weight^2 + weight^3), data)
+
 # ╔═╡ f437681b-464d-449d-befc-75d60a5c4974
 md"""
 ## Paquetes en Julia
@@ -534,7 +586,7 @@ prediccion = MLJ.predict(maquina, extremo)
 
 # ╔═╡ b9bfee39-4092-4c69-816c-ca830b94c935
 begin
-	scatter(adultos.weight, adultos.height, xlabel="weight", ylabel="height", label="datos")
+	scatter(adultos.weight, adultos.height, xlabel="weight", ylabel="height", label="datos", size=(900,400))
 	plot!(extremo.weight, prediccion, width=3, label="regresión")
 end
 
@@ -804,7 +856,7 @@ Utilicemos una representación cuantil-cuantil:
 """
 
 # ╔═╡ 2ecb47e6-58e1-4065-afa4-1c0eea75a6ee
-qqnorm(residuos_multiple, xlabel="Cuantil teórico", ylabel="Cuantil de los datos", title="Gráfico cuantil-cuantil de los residuos")
+qqnorm(residuos_multiple, xlabel="Cuantil teórico", ylabel="Cuantil de los datos", title="Gráfico cuantil-cuantil de los residuos", size=(900,400))
 
 # ╔═╡ 7705d15c-ff72-488d-9733-d535f8c0d33d
 md"""
@@ -820,7 +872,7 @@ La prueba de normalidad ahora pasa, y si representamos el gráfico cuantil-cuant
 """
 
 # ╔═╡ 0ba2bf47-2dab-4ef3-af7e-bd97d1f0ebc4
-qqnorm(filter(x -> x > -15, residuos_multiple))
+qqnorm(filter(x -> x > -15, residuos_multiple), size=(900,400))
 
 # ╔═╡ d4bfb41a-7f9d-4ae6-aa1c-a3e1bac8025d
 md"""
@@ -842,7 +894,7 @@ Visualicemos todos los datos de nuestro conjunto, no sólo los datos de las pers
 """
 
 # ╔═╡ e3c90bb0-22fb-4853-ba20-c77dd87d0096
-scatter(data.weight, data.height, xlabel="weight", ylabel="height", title="Altura frente a peso en el cojunto Howell", legend=false)
+scatter(data.weight, data.height, xlabel="weight", ylabel="height", title="Altura frente a peso en el cojunto Howell", legend=false, size=(900,400))
 
 # ╔═╡ f9f038a8-a3dd-4253-af34-0903d4b13216
 md"""
@@ -916,15 +968,15 @@ Probemos primero con un polinomio de grado 2:
 # ╔═╡ b117c48e-2e1b-4908-8747-58d080a829f0
 function ajuste_polinomial(grado::Int)
 	fit = Polynomials.fit(data[:,:weight], data[:,:height], grado)
+	# print(fit)
 	rmse = rms(fit.(data[:, :weight]), data[:, :height])
-	# fit, rms(fit.(data[:, :weight]), data[:, :height])
 	fit, rmse
 end
 
 # ╔═╡ 4f59d4d0-8c87-41d6-b313-1cdc368a5120
 function dibuja_ajuste(grado::Int)
 	fit, rmse = ajuste_polinomial(grado)
-	scatter(data[:, :weight], data[:, :height], xlabel="weight", ylabel="height", label="Datos", legend=false, ylim=(50, 200), 
+	scatter(data[:, :weight], data[:, :height], xlabel="weight", ylabel="height", label="Datos", legend=false, ylim=(50, 200), size=(900,400),
 		title="Grado: " * string(grado) * ", RMSE: " * string(rmse))
 	plot!(fit, extrema(data[:, :weight])..., width=3)
 end
@@ -940,12 +992,9 @@ md"""
 # ╔═╡ 1c7e1986-b12f-4d4a-9be9-12befefb98bd
 begin
 	datos = [ajuste_polinomial(x)[2] for x in 1:12]
-	plot(datos, xlim=(0,12))
+	plot(datos, xlim=(0,12), size=(900,400))
 	scatter!(datos)
 end
-
-# ╔═╡ 405f208f-56bc-4f8b-ae7d-f2acb09ee29d
-collect((1:10))
 
 # ╔═╡ 8b6c1f57-a7a6-45e1-81f3-a3b06cbd25cc
 md"""
@@ -3282,6 +3331,7 @@ version = "1.4.1+1"
 """
 
 # ╔═╡ Cell order:
+# ╠═df4e377a-895e-483d-8894-75629bb2533f
 # ╠═6f6339a7-9b4d-4272-94f7-9234d3d3be41
 # ╠═266e632b-30a5-4ae4-981f-8e2ab61e3232
 # ╠═d0fe37ee-bbc1-11ef-2f0c-4b6bc41d2c3a
@@ -3292,19 +3342,22 @@ version = "1.4.1+1"
 # ╠═eb52ead3-2e23-4884-96c6-4ccdbf529be2
 # ╠═9cebf899-82f9-4a69-9ef1-5c98bb8b20fc
 # ╠═b3fe5074-6461-4d1e-bea3-f005533210a0
-# ╟─4309c399-3035-4a0a-8f88-2184efd415b9
+# ╠═4309c399-3035-4a0a-8f88-2184efd415b9
 # ╠═8783e92c-3ff2-49e0-a85f-264a0ae77afc
 # ╠═410f5c00-91f0-4f00-924f-6691227bf1cd
+# ╠═a079b8eb-f179-41af-9712-de65be3d7a64
 # ╠═48d3993b-fcae-4d91-a53a-a936dcaea321
+# ╠═2e638e63-6f50-4dd0-921a-0e5d33e31fe1
 # ╠═bf9d5f2e-a1ae-4b9a-88ac-a7fcef6945bb
 # ╠═a7712a98-dbef-4f62-a83c-546ebfb3a40e
 # ╠═6ebfa722-b8f5-4837-871b-addba1c23586
-# ╟─cefd6efd-8687-4ab4-93e6-6ae33432d774
+# ╠═cefd6efd-8687-4ab4-93e6-6ae33432d774
 # ╠═1b7baa00-78ea-48f6-af34-ccc0795d66b8
 # ╠═433bea47-fd81-4e3f-8fd0-d0fe76d6f6ec
 # ╠═86ad6318-1a86-469f-870c-591e9e306d74
 # ╠═bdc38a15-ff58-4431-8f3b-d1e310044af5
 # ╠═8af8b802-49d8-474f-b3a3-1278a69093f9
+# ╠═1c428df8-1517-42b3-aa47-215ea2d9bb6f
 # ╠═1f0385e8-a071-4473-8136-7cbcf6f924b8
 # ╠═23f13774-25c3-42de-800f-2437856ad9fc
 # ╠═090c1c8b-35c8-43bc-80a3-b8b75304ed31
@@ -3322,7 +3375,7 @@ version = "1.4.1+1"
 # ╠═ac831749-b0aa-49f5-ad1b-92e45599551d
 # ╠═7eb49193-addb-4833-9261-0a0ceab55e7e
 # ╠═f4c5fdba-5493-4240-93dd-86345c9adad7
-# ╟─90a3a2c0-4d45-40d9-9bdc-a966c628ba90
+# ╠═90a3a2c0-4d45-40d9-9bdc-a966c628ba90
 # ╠═ad16e07e-f7c2-4bce-9f71-0d0334459ef6
 # ╠═08794500-ec04-4834-8852-c79680f0d136
 # ╠═3ffe9740-d133-410a-a3ff-77c2ba64217f
@@ -3330,6 +3383,7 @@ version = "1.4.1+1"
 # ╠═900f41a8-59a2-4301-88a5-9f0b4c25d4ac
 # ╠═6518ba79-f3cc-4ccb-9935-fe037f256d4e
 # ╠═e3278b0e-ff00-4bc9-b06e-d2757a08f997
+# ╠═64c3cd0c-6297-42e5-9193-1a842a886136
 # ╠═f437681b-464d-449d-befc-75d60a5c4974
 # ╠═660be5ac-4791-48c3-b1f4-824f53c80215
 # ╠═9087d54f-5682-4778-812a-15bd28431fb7
@@ -3395,10 +3449,9 @@ version = "1.4.1+1"
 # ╠═0ad863f8-3479-4da5-92b2-7bdc2f4044d5
 # ╠═53bdf7bb-95f7-4413-aec7-1c88375fcf22
 # ╠═1c7e1986-b12f-4d4a-9be9-12befefb98bd
-# ╠═405f208f-56bc-4f8b-ae7d-f2acb09ee29d
 # ╠═8b6c1f57-a7a6-45e1-81f3-a3b06cbd25cc
 # ╠═aad3bc5b-c389-409d-acb5-895788e3ce42
-# ╟─5c0b5a16-fd1d-4b8c-aa70-d746332b4d28
+# ╠═5c0b5a16-fd1d-4b8c-aa70-d746332b4d28
 # ╠═5c62e903-23da-483a-8ba0-256ea2a0f239
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
