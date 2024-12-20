@@ -962,8 +962,9 @@ Probemos primero con un polinomio de grado 2:
 """
 
 # ╔═╡ e982d0a1-3469-48d5-a286-28fc2f88f714
-# @bind grado Slider(2:10, show_value=true)
-@bind grado NumberField(1:12, default=2)
+md"""
+Grado del polinomio: $(@bind grado NumberField(1:12, default=2))
+"""
 
 # ╔═╡ b117c48e-2e1b-4908-8747-58d080a829f0
 function ajuste_polinomial(grado::Int)
@@ -1018,8 +1019,11 @@ md"""
 - Es importante que compruebes que se cumplen las condiciones para aplicar regresión lineal: residuos distribuido según una gaussiana centrada en el 0.
 """
 
-# ╔═╡ 5c62e903-23da-483a-8ba0-256ea2a0f239
-
+# ╔═╡ 31f685d8-b2b3-49d3-88a0-e45f24e69bd8
+# ╠═╡ disabled = true
+#=╠═╡
+v = [1,2,3]
+  ╠═╡ =#
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -3452,6 +3456,6 @@ version = "1.4.1+1"
 # ╠═8b6c1f57-a7a6-45e1-81f3-a3b06cbd25cc
 # ╠═aad3bc5b-c389-409d-acb5-895788e3ce42
 # ╠═5c0b5a16-fd1d-4b8c-aa70-d746332b4d28
-# ╠═5c62e903-23da-483a-8ba0-256ea2a0f239
+# ╠═31f685d8-b2b3-49d3-88a0-e45f24e69bd8
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
