@@ -17,103 +17,9 @@ begin
 	using Plots
 end
 
-# ╔═╡ f3390b86-59f0-4718-92c4-46b46f2a31ca
-# html"""
-# <style>
-# 	.fila {
-# 		display: flex;
-# 	}
-	
-# 	.columna {
-# 		flex: 50%;
-# 	}
-
-# 	.columna40 {
-# 		width: 40%;
-# 	}
-
-# 	.columna60 {
-# 		width: 60%;
-# 	}
-	
-# 	p {
-# 		font-size: 40px;
-# 	}
-	
-# 	body h1 {
-# 		font-size: 70px;
-# 		font-family: sans-serif;
-# 	}
-	
-# 	body h2 {
-# 		font-size: 60px;
-# 		font-family: sans-serif;
-# 	}
-	
-# 	main {
-# 		max-width: 1100px;
-# 	    align-self: flex-start;
-# 	    margin-left: 00px;
-# 		margin-right: 00px;
-# 	}
-	
-# 	.fuente {
-# 		font-size: 20px;
-# 	}
-# </style>
-# """
-
-# ╔═╡ f858cf44-62cd-4426-a797-01d45aae3984
+# ╔═╡ 07b1def1-1b33-460a-9683-358dc757f6d0
 html"""
-# # Aumentar el zoom hasta 170
-<style>
-	p {
-		font-size: 27px
-	}
-
-	li {
-		font-size: 20px;
-	}
-	
-	body h1 {
-		font-size: 50px;
-		font-family: sans-serif;
-	}
-	
-	body h2 {
-		font-size: 40px;
-		font-family: sans-serif;
-		padding-top: 10px;
-	}
-	
-	main {
-		# max-width: 850px !important;
-		max-width: 90% !important;
-		margin-right: 80px !important; # Debe quedar comentada para editar
-		# margin-left: 10% !important; # Debe quedar comentada para editar
-		# margin-left: 100px !important; # Debe quedar comentada para editar
-	}
-
-	.fila {
-		display: flex;
-	}
-	
-	.columna {
-		flex: 50%;
-	}
-
-	.columna40 {
-		width: 40%;
-	}
-
-	.columna60 {
-		width: 60%;
-	}
-
-	.fuente {
-		font-size: 20px;
-	}
-</style>
+<link rel="stylesheet" type="text/css" href="https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/mi_estilo.css" media="screen" />
 """
 
 # ╔═╡ 13faae83-cbcf-4184-a921-9d14482a9636
@@ -189,9 +95,12 @@ md"""
 ## Definición de Aprendizaje Automático
 
 Decimos que un algoritmo aprende a partir de la experiencia E con respecto a un tipo de tarea T y una medida de rendimiento P, si su rendimiento al realizar la tarea T, medido usando P, mejora con la experiencia E.
+"""
 
-![](https://upload.wikimedia.org/wikipedia/commons/f/f7/MnistExamplesModified.png)
-Fuente: Mitchel, 1997.
+# ╔═╡ 8382ccf5-075f-4a90-9bf3-a8b895ddd47d
+html"""
+<img src="https://upload.wikimedia.org/wikipedia/commons/f/f7/MnistExamplesModified.png" class="center">
+<p class="fuente">Fuente: Mitchel, 1997.</p>
 """
 
 # ╔═╡ 01a7673e-3ffb-4a11-b0fd-7f5511c8dd87
@@ -310,17 +219,146 @@ md"""
 md"""
 ## Generalización
 
-La utilidad de los modelos de AA es que nos permitan trabajar con nuevos datos.
+La utilidad de los modelos de AA es que nos permitan hacer predicciones sobre nuevos datos.
 
-Un modelo de regresión es útil porque nos da valores buenos para nuevos datos con los que no ha sido entrenado.
+Un modelo de regresión es útil porque predice valores para nuevos datos que no ha sido utilizados durante el entrenamiento.
 
 Un modelo de clasificación es útil porque nos permite clasificar nuevos datos con los que no ha sido entrenado.
 
-A este poder de los modelos de AA lo llamamos generalización.
+A este poder de los modelos de aprendizaje automático lo llamamos generalización.
+"""
+
+# ╔═╡ b89e7a17-2963-4b39-b060-efcf0666fc26
+md"""
+## Parámetros e hiperparmámetros
+
+Los parámetros del modelo se ajustan durante el proceso de entrenamiento.
+
+Los hiperparámetros del modelo no se ajustan durante el proceso de aprendizaje.
+
+Por ejemplo, en un ajuste polinómico, los parámetros del modelo son los coeficientes del polinomio que se ajustan durante el proceso de aprendizaje. 
+Un hiperparámetro del modelo es el grado del polinomio que queremos ajustar.
+"""
+
+# ╔═╡ c39ff5b3-ce9f-446f-9728-c723ae4f74c3
+md"""
+## Conjuntos de entrenamiento, validación y prueba
 """
 
 # ╔═╡ 0d1ce458-fab3-48f5-ac12-271ec14bd2f6
+md"""
+## Subajuste
 
+Un problema que puede aparecer cuando entrenamos un modelo de AA es que no generalice cuando se aplica a nuevos datos porque es demasiado limitado o pobre.
+
+Entonces decimos que el modelo subajusta los datos.
+"""
+
+# ╔═╡ 11ba746d-a43d-4e82-8e26-1e0d2a2feea1
+html"""
+<img src="https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/Introduccion/subajuste.png" style="width:700px" class="center">
+"""
+
+# ╔═╡ 175bd281-7b28-4f7b-ab72-a2b4136fc5b5
+md"""
+## Sobreajuste (Overfitting)
+
+Por el contrario, a veces forzamos el modelo en la fase de entrenamiento para que ajuste muy bien los datos de entrenamiento, lo que a veces implica que el modelo entrenado no funcione tan bien con nuevos datos.
+
+Entonces el modelo sobreajusta los datos.
+"""
+
+# ╔═╡ abb5d5c1-8aa0-4220-bb13-82b11b9604a4
+html"""
+<img src="https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/Introduccion/sobreajuste.png" style="width:700px" class="center">
+"""
+
+# ╔═╡ d18ea8da-3fe4-49b0-bbad-d2b3ccb1ab0a
+md"""
+## Métricas
+
+Una vez construido un modelo de aprendizaje automático, debemos medir su desempeño sobre un conjunto de datos de prueba. Este conjunto de datos no ha formado parte del entrenamiento.
+"""
+
+# ╔═╡ 1d659e8e-33f5-451f-9aff-e07ec9ee33c8
+md"""
+## Métricas
+
+Si el problema es de regresión, las métricas más utilizadas son:
+
+- Mean Sqaured Error (MSE) o su raíz cuadrada:
+
+$MSE = \frac{1}{N}\sum_{n=1}^N (y_n - \hat{y}_n)^2$
+
+- Mean Absolute Error (MAE):
+
+$MAE = \frac{1}{N} \sum_{n=1}^N |y_n - \hat{y}_n|$
+"""
+
+# ╔═╡ 14c83470-1c2f-4d07-aed4-122568d4edbb
+md"""
+## Métricas
+
+Si el problema es de clasificación, usualmente se presentan los resultados con forma de matriz de confusión:
+"""
+
+# ╔═╡ e48333f5-7d7b-41cd-ad23-c211edc40ff9
+html"""
+<img src="https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/Introduccion/matriz_confusion.png" class="center">
+"""
+
+# ╔═╡ 891c83de-9dd6-4c35-a427-8734fd57a2eb
+md"""
+## Métricas
+
+$Precisión = \frac{TP + TN}{P + N}$
+$Sensitividad = \frac{TP}{P}$
+$Especifidad = \frac{TN}{N}$
+$F1 = 2\frac{sentividad \cdot especifidad}{sensitividad + especifidad}$
+"""
+
+# ╔═╡ dcd17617-6aa4-4ed0-aff7-5a9184990aee
+md"""
+## Métricas
+
+Otra métrica menos utilizada pero bastante informativa en clasificación binaria es el Área Bajo la Curva (AUC - Area Under the Curve).
+"""
+
+# ╔═╡ f0731f08-333f-4cb6-9f7e-194627dfba7d
+html"""
+<img src="https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/Introduccion/auc.png" class="center">
+"""
+
+# ╔═╡ 6c0600e0-ebc5-4c10-920e-2a4c68c48721
+md"""
+## Métricas
+
+La idea básica de la clasificación binaria es establecer de algún modo una ordenación de los datos según algún criterio. El segundo paso es establecer un umbral dentro de la ordenación, de tal modo que las muestras que superen ese umbral se clasifican como positivas, y las que no, se clasifican como negativas.
+
+"""
+
+# ╔═╡ 7fcae622-7d09-4cae-bb54-197e4ecb5d6d
+md"""
+# Resumen
+"""
+
+# ╔═╡ a48c3da3-8a99-406a-a2e2-8246da87618e
+md"""
+## Resumen
+
+- El Aprendizaje Automático es un subcampo de la Inteligencia Artificial.
+- El objetivo de AA es crear modelos que pueden aprender de la experiencia entendida como datos.
+- Los principales tipos de problemas dentro del AA son regresión y la clasificación.
+- Los principales tipos de aproximaciones son el aprendizaje supervisado, el no-supervisado, semi-supervisado y por refuerzo.
+"""
+
+# ╔═╡ 59c273bb-8cb0-43ed-90d1-7bc9086a1233
+md"""
+## Resumen
+
+- Es conveniente establecer alguna(s) métrica que dé cuenta de la calidad del modelo.
+- Es importante que el modelo tenga un buen desempeño no sólo sobre los datos sobres los que se ha entrenada si no también sobre nuevos datos.
+"""
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1522,31 +1560,47 @@ version = "1.4.1+1"
 """
 
 # ╔═╡ Cell order:
-# ╠═f3390b86-59f0-4718-92c4-46b46f2a31ca
-# ╠═f858cf44-62cd-4426-a797-01d45aae3984
-# ╠═3c877af8-1d0e-41d4-bfc4-43e7fe3263aa
-# ╠═13faae83-cbcf-4184-a921-9d14482a9636
+# ╠═07b1def1-1b33-460a-9683-358dc757f6d0
+# ╟─3c877af8-1d0e-41d4-bfc4-43e7fe3263aa
+# ╟─13faae83-cbcf-4184-a921-9d14482a9636
 # ╠═89503130-b960-11ef-3401-b3f35716b97c
 # ╠═d4f797f3-f2df-4068-8af0-36c2d6735f56
-# ╠═362123c4-eca1-4a98-a881-c1f327d934af
-# ╠═7c09922c-63a1-4fcf-9108-d3da329421bd
-# ╠═50f4b33b-16fa-4970-96ce-652a0c565131
+# ╟─362123c4-eca1-4a98-a881-c1f327d934af
+# ╟─7c09922c-63a1-4fcf-9108-d3da329421bd
+# ╟─50f4b33b-16fa-4970-96ce-652a0c565131
 # ╠═ab5b242a-cbd6-40b5-a84e-cd5f65797a52
-# ╠═56b4728d-988a-4e37-b784-40f5c017bc53
-# ╠═63b90197-c31f-416b-9d2b-c559dd07eca1
-# ╠═01a7673e-3ffb-4a11-b0fd-7f5511c8dd87
-# ╠═e72f0505-cee3-4b01-add7-9731d9b3bc2d
-# ╠═90445984-5589-4d4b-94ee-7544223b9016
-# ╠═0496fc5a-c213-4cb4-8181-a8d4b92979e8
-# ╠═2da414e5-fa75-4aab-b950-56338a5cec87
-# ╠═1eb5706b-5c1b-44c9-b5cc-d21dc1a1c13f
-# ╠═6c3367b8-c0f3-406d-af06-44faed0b7bde
-# ╠═ccd2163b-ca15-4a0e-bb25-7835c14e33a2
-# ╠═112c940c-fe03-4a8d-bebe-024ceb30170c
-# ╠═33265b15-5a1f-445c-8184-519e88028f8e
-# ╠═7d4cbf3d-119c-41ce-99ee-014760a09a5d
-# ╠═6121337e-ebb8-4e82-82cd-361b6e6d28d2
+# ╟─56b4728d-988a-4e37-b784-40f5c017bc53
+# ╟─63b90197-c31f-416b-9d2b-c559dd07eca1
+# ╠═8382ccf5-075f-4a90-9bf3-a8b895ddd47d
+# ╟─01a7673e-3ffb-4a11-b0fd-7f5511c8dd87
+# ╟─e72f0505-cee3-4b01-add7-9731d9b3bc2d
+# ╟─90445984-5589-4d4b-94ee-7544223b9016
+# ╟─0496fc5a-c213-4cb4-8181-a8d4b92979e8
+# ╟─2da414e5-fa75-4aab-b950-56338a5cec87
+# ╟─1eb5706b-5c1b-44c9-b5cc-d21dc1a1c13f
+# ╟─6c3367b8-c0f3-406d-af06-44faed0b7bde
+# ╟─ccd2163b-ca15-4a0e-bb25-7835c14e33a2
+# ╟─112c940c-fe03-4a8d-bebe-024ceb30170c
+# ╟─33265b15-5a1f-445c-8184-519e88028f8e
+# ╟─7d4cbf3d-119c-41ce-99ee-014760a09a5d
+# ╟─6121337e-ebb8-4e82-82cd-361b6e6d28d2
 # ╠═162c6f5b-5fa0-4975-b507-8f62c49f2afb
-# ╠═0d1ce458-fab3-48f5-ac12-271ec14bd2f6
+# ╠═b89e7a17-2963-4b39-b060-efcf0666fc26
+# ╠═c39ff5b3-ce9f-446f-9728-c723ae4f74c3
+# ╟─0d1ce458-fab3-48f5-ac12-271ec14bd2f6
+# ╠═11ba746d-a43d-4e82-8e26-1e0d2a2feea1
+# ╟─175bd281-7b28-4f7b-ab72-a2b4136fc5b5
+# ╟─abb5d5c1-8aa0-4220-bb13-82b11b9604a4
+# ╟─d18ea8da-3fe4-49b0-bbad-d2b3ccb1ab0a
+# ╟─1d659e8e-33f5-451f-9aff-e07ec9ee33c8
+# ╟─14c83470-1c2f-4d07-aed4-122568d4edbb
+# ╟─e48333f5-7d7b-41cd-ad23-c211edc40ff9
+# ╟─891c83de-9dd6-4c35-a427-8734fd57a2eb
+# ╟─dcd17617-6aa4-4ed0-aff7-5a9184990aee
+# ╟─f0731f08-333f-4cb6-9f7e-194627dfba7d
+# ╟─6c0600e0-ebc5-4c10-920e-2a4c68c48721
+# ╠═7fcae622-7d09-4cae-bb54-197e4ecb5d6d
+# ╟─a48c3da3-8a99-406a-a2e2-8246da87618e
+# ╟─59c273bb-8cb0-43ed-90d1-7bc9086a1233
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
