@@ -18,11 +18,82 @@ begin
 end
 
 # ╔═╡ f3390b86-59f0-4718-92c4-46b46f2a31ca
-# ╠═╡ disabled = true
-# ╠═╡ skip_as_script = true
-#=╠═╡
+# html"""
+# <style>
+# 	.fila {
+# 		display: flex;
+# 	}
+	
+# 	.columna {
+# 		flex: 50%;
+# 	}
+
+# 	.columna40 {
+# 		width: 40%;
+# 	}
+
+# 	.columna60 {
+# 		width: 60%;
+# 	}
+	
+# 	p {
+# 		font-size: 40px;
+# 	}
+	
+# 	body h1 {
+# 		font-size: 70px;
+# 		font-family: sans-serif;
+# 	}
+	
+# 	body h2 {
+# 		font-size: 60px;
+# 		font-family: sans-serif;
+# 	}
+	
+# 	main {
+# 		max-width: 1100px;
+# 	    align-self: flex-start;
+# 	    margin-left: 00px;
+# 		margin-right: 00px;
+# 	}
+	
+# 	.fuente {
+# 		font-size: 20px;
+# 	}
+# </style>
+# """
+
+# ╔═╡ f858cf44-62cd-4426-a797-01d45aae3984
 html"""
+# # Aumentar el zoom hasta 170
 <style>
+	p {
+		font-size: 27px
+	}
+
+	li {
+		font-size: 20px;
+	}
+	
+	body h1 {
+		font-size: 50px;
+		font-family: sans-serif;
+	}
+	
+	body h2 {
+		font-size: 40px;
+		font-family: sans-serif;
+		padding-top: 10px;
+	}
+	
+	main {
+		# max-width: 850px !important;
+		max-width: 90% !important;
+		margin-right: 80px !important; # Debe quedar comentada para editar
+		# margin-left: 10% !important; # Debe quedar comentada para editar
+		# margin-left: 100px !important; # Debe quedar comentada para editar
+	}
+
 	.fila {
 		display: flex;
 	}
@@ -38,34 +109,12 @@ html"""
 	.columna60 {
 		width: 60%;
 	}
-	
-	p {
-		font-size: 40px;
-	}
-	
-	body h1 {
-		font-size: 70px;
-		font-family: sans-serif;
-	}
-	
-	body h2 {
-		font-size: 60px;
-		font-family: sans-serif;
-	}
-	
-	main {
-		max-width: 1100px;
-	    align-self: flex-start;
-	    margin-left: 00px;
-		margin-right: 00px;
-	}
-	
+
 	.fuente {
 		font-size: 20px;
 	}
 </style>
 """
-  ╠═╡ =#
 
 # ╔═╡ 13faae83-cbcf-4184-a921-9d14482a9636
 TableOfContents(title = "Contenidos", depth=1)
@@ -142,8 +191,7 @@ md"""
 Decimos que un algoritmo aprende a partir de la experiencia E con respecto a un tipo de tarea T y una medida de rendimiento P, si su rendimiento al realizar la tarea T, medido usando P, mejora con la experiencia E.
 
 ![](https://upload.wikimedia.org/wikipedia/commons/f/f7/MnistExamplesModified.png)
-
-Fuente: Mitche, 1997.
+Fuente: Mitchel, 1997.
 """
 
 # ╔═╡ 01a7673e-3ffb-4a11-b0fd-7f5511c8dd87
@@ -198,6 +246,80 @@ html"""
 """
 
 # ╔═╡ 1eb5706b-5c1b-44c9-b5cc-d21dc1a1c13f
+md"""
+## Aprendizaje supervisado
+
+Las tareas más comunes dentro de este tipo aprendizaje son:
+
+- Regresión: A partir de las características de la muestra quiero obtener un valor numérico (o varios).
+- Clasificación: A partir de las características de la muestra quiero obtener un tipo/clase/conjunto al que asigno lo muestra.
+"""
+
+# ╔═╡ 6c3367b8-c0f3-406d-af06-44faed0b7bde
+md"""
+## Aprendizaje no supervisado
+
+El conjunto de datos de entrenamiento que se proporciona al algoritmo NO contiene el resultado esperado para cada una de las muestras.
+
+Por ejemplo, tenemos una base de datos de clientes y queremos agruparlos basándonos en el gasto medio que hacen por compra y el número de compras que hacen al año. Agrupar usando únicamente estas características nos puede mostrar que entre nuestros clientes hay un grupo de personas que realiza compras compulsiva (muchas compras anuales de pequeño coste), y personas «metódicas» que hacen pocas compras anuales pero de gran coste.
+"""
+
+# ╔═╡ ccd2163b-ca15-4a0e-bb25-7835c14e33a2
+md"""
+## Aprendizaje no supervisado
+
+Las tareas más comunes dentro de este tipo de aprendizaje son:
+
+- Agrupamiento: Crear grupos de muestras por «similitud» entre sus características.
+- Reducción de dimensionalidad: Cada muestra de mi conjunto tienen muchas características (dimensiones), algunas de ellas pueden ser superfluas, ¿cómo reduzco en número de características sin que las muestras pierdan su identidad?
+"""
+
+# ╔═╡ 112c940c-fe03-4a8d-bebe-024ceb30170c
+md"""
+## Aprendizaje semi-supervisado
+
+En nuestro conjunto de datos de entrenamiento tenemos algunas muestras etiquetadas, pero otra muchas no tiene etiqueta.
+
+Por ejemplo, detectar transacciones bancarias fraudulentas. Usualmente, en número de transacciones etiquetadas suele ser pequeño. Un procedimiento para asignar etiquetas a las transacciones no etiquetadas puede realizar un agrupamiento de todo el conjunto de datos, y después asignar etiquetas a las transacciones que no tienen etiqueta según la etiqueta mayoritaria del conjunto en el que han sido clasificadas.
+"""
+
+# ╔═╡ 33265b15-5a1f-445c-8184-519e88028f8e
+md"""
+## Aprendizaje por refuerzo
+"""
+
+# ╔═╡ 7d4cbf3d-119c-41ce-99ee-014760a09a5d
+html"""
+<div class="fila">
+	<div class="columna60">
+		<p>La resolución de un problema se realiza mediante ensayo y error.</p>
+		<p>Cada ensayo tiene una recompensa, que puede ser positiva o negativa. La combinación de ensayo y recompensa condiciona el siguiente ensayo a tomar.</p>
+	</div>
+	<div class="columna40">
+		<img src="https://www3.uji.es/~belfern/Docencia/IR2130/Teoria/Introduccion/Imagenes/laberinto.jpg" width="100%">
+	</div>
+</div>
+"""
+
+# ╔═╡ 6121337e-ebb8-4e82-82cd-361b6e6d28d2
+md"""
+# Revisión de conceptos
+"""
+
+# ╔═╡ 162c6f5b-5fa0-4975-b507-8f62c49f2afb
+md"""
+## Generalización
+
+La utilidad de los modelos de AA es que nos permitan trabajar con nuevos datos.
+
+Un modelo de regresión es útil porque nos da valores buenos para nuevos datos con los que no ha sido entrenado.
+
+Un modelo de clasificación es útil porque nos permite clasificar nuevos datos con los que no ha sido entrenado.
+
+A este poder de los modelos de AA lo llamamos generalización.
+"""
+
+# ╔═╡ 0d1ce458-fab3-48f5-ac12-271ec14bd2f6
 
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -1401,21 +1523,30 @@ version = "1.4.1+1"
 
 # ╔═╡ Cell order:
 # ╠═f3390b86-59f0-4718-92c4-46b46f2a31ca
+# ╠═f858cf44-62cd-4426-a797-01d45aae3984
 # ╠═3c877af8-1d0e-41d4-bfc4-43e7fe3263aa
 # ╠═13faae83-cbcf-4184-a921-9d14482a9636
 # ╠═89503130-b960-11ef-3401-b3f35716b97c
 # ╠═d4f797f3-f2df-4068-8af0-36c2d6735f56
 # ╠═362123c4-eca1-4a98-a881-c1f327d934af
-# ╟─7c09922c-63a1-4fcf-9108-d3da329421bd
+# ╠═7c09922c-63a1-4fcf-9108-d3da329421bd
 # ╠═50f4b33b-16fa-4970-96ce-652a0c565131
 # ╠═ab5b242a-cbd6-40b5-a84e-cd5f65797a52
-# ╟─56b4728d-988a-4e37-b784-40f5c017bc53
+# ╠═56b4728d-988a-4e37-b784-40f5c017bc53
 # ╠═63b90197-c31f-416b-9d2b-c559dd07eca1
 # ╠═01a7673e-3ffb-4a11-b0fd-7f5511c8dd87
-# ╟─e72f0505-cee3-4b01-add7-9731d9b3bc2d
+# ╠═e72f0505-cee3-4b01-add7-9731d9b3bc2d
 # ╠═90445984-5589-4d4b-94ee-7544223b9016
 # ╠═0496fc5a-c213-4cb4-8181-a8d4b92979e8
 # ╠═2da414e5-fa75-4aab-b950-56338a5cec87
 # ╠═1eb5706b-5c1b-44c9-b5cc-d21dc1a1c13f
+# ╠═6c3367b8-c0f3-406d-af06-44faed0b7bde
+# ╠═ccd2163b-ca15-4a0e-bb25-7835c14e33a2
+# ╠═112c940c-fe03-4a8d-bebe-024ceb30170c
+# ╠═33265b15-5a1f-445c-8184-519e88028f8e
+# ╠═7d4cbf3d-119c-41ce-99ee-014760a09a5d
+# ╠═6121337e-ebb8-4e82-82cd-361b6e6d28d2
+# ╠═162c6f5b-5fa0-4975-b507-8f62c49f2afb
+# ╠═0d1ce458-fab3-48f5-ac12-271ec14bd2f6
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
