@@ -1,0 +1,54 @@
+p {
+	font-size: 27px
+}
+
+li {
+	font-size: 20px;
+}
+
+body h1 {
+	font-size: 50px;
+	font-family: sans-serif;
+}
+
+body h2 {
+	font-size: 40px;
+	font-family: sans-serif;
+	padding-top: 10px;
+}
+
+main {
+	# max-width: 850px !important;
+	max-width: 90% !important;
+	margin-right: 80px !important; # Debe quedar comentada para editar
+	# margin-left: 10% !important; # Debe quedar comentada para editar
+		# margin-left: 100px !important; # Debe quedar comentada para editar
+}
+
+.fila {
+	display: flex;
+}
+
+.columna {
+	flex: 50%;
+}
+
+.columna40 {
+	width: 40%;
+}
+
+.columna60 {
+	width: 60%;
+}
+
+.fuente {
+	font-size: 20px;
+	color: #aaaaaa;
+}
+
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}
