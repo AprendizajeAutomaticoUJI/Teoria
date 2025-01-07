@@ -87,14 +87,14 @@ html"""
 md"""
 ## Definición de Aprendizaje Automático
 
-Decimos que un algoritmo aprende a partir de la experiencia E con respecto a un tipo de tarea T y una medida de rendimiento P, si su rendimiento al realizar la tarea T, medido usando P, mejora con la experiencia E.
+Decimos que un algoritmo aprende a partir de la experiencia E (Experience) con respecto a un tipo de tarea T (Task) y una medida de rendimiento P (Performance), si su rendimiento al realizar la tarea T, medido usando P, mejora con la experiencia E.
 """
 
 # ╔═╡ 63b90197-c31f-416b-9d2b-c559dd07eca1
 md"""
 ## Definición de Aprendizaje Automático
 
-Decimos que un algoritmo aprende a partir de la experiencia E con respecto a un tipo de tarea T y una medida de rendimiento P, si su rendimiento al realizar la tarea T, medido usando P, mejora con la experiencia E.
+Un ejemplo para aclarar los tres conceptos: reconocer dígitos escritos a mano: La tarea (T) es etiquetar cada uno de los dígitos que aparecen en un número escrito a mano; la experiencia (E) es el conjunto de datos de entrenamiento, cada elemento del conjunto es una imagen con su correspondiente etiqueta; el rendimiento (P) es la medida de lo bien que funciona el algoritmo, por ejemplo en número de dígitos de prueba correctamente clasificado frente al número total de dígitos de prueba. 
 """
 
 # ╔═╡ 8382ccf5-075f-4a90-9bf3-a8b895ddd47d
@@ -103,25 +103,16 @@ html"""
 <p class="fuente">Fuente: Mitchel, 1997.</p>
 """
 
-# ╔═╡ 01a7673e-3ffb-4a11-b0fd-7f5511c8dd87
-md"""
-## Definición de Aprendizaje Automático
-
-En la definición anterior podemos identificar la experiencia como el conjunto de datos a partir del cuál se quiere el rendimiento al realizar la tarea.
-
-A este conjunto de datos los llamaremos **conjunto de datos de entrenamiento**.
-"""
-
 # ╔═╡ e72f0505-cee3-4b01-add7-9731d9b3bc2d
 md"""
 ## Qué tipos de problemas podemos abordar con Aprendizaje Automático
 
 - Problemas de los que conocemos una solución, pero la solución es difícil de resolver.
-    - Ejemplo: Clasificar un correo como spam o ham.
-    - Ejemplo: Encontrar el camino más corto entre dos ciudades en un mapa de carreteras.
+    - Clasificar un correo como spam o ham.
+    - Encontrar el camino más corto entre dos ciudades en un mapa de carreteras.
 - Problemas de los que no conocemos una solución.
-    - Ejemplo: Detectar anomalías en una serie de datos.
-
+    - Detectar anomalías en una serie de datos.
+    - Reconocer objetos en una imagen.
 """
 
 # ╔═╡ 90445984-5589-4d4b-94ee-7544223b9016
@@ -131,6 +122,7 @@ md"""
 - Aprendizaje supervisado.
 - Aprendizaje no supervisado.
 - Aprendizaje semi-supervisado.
+- Aprendizaje auto-supervisado.
 - Aprendizaje por refuerzo.
 
 """
@@ -190,6 +182,18 @@ md"""
 En nuestro conjunto de datos de entrenamiento tenemos algunas muestras etiquetadas, pero otra muchas no tiene etiqueta.
 
 Por ejemplo, detectar transacciones bancarias fraudulentas. Usualmente, en número de transacciones etiquetadas suele ser pequeño. Un procedimiento para asignar etiquetas a las transacciones no etiquetadas puede realizar un agrupamiento de todo el conjunto de datos, y después asignar etiquetas a las transacciones que no tienen etiqueta según la etiqueta mayoritaria del conjunto en el que han sido clasificadas.
+"""
+
+# ╔═╡ 0ea9bd55-9cb1-4e04-89a8-f8102ad6e20b
+md"""
+## Aprendizaje auto-supervisado
+
+En este tipo de aprendizaje, el conjunto de entrenamiento no está etiquetado y el objetivo es encontrar las estiquetas para cada elemento del conjunto; para ello se procede en dos pasos:
+
+1. Se elimina información de cada elemento del conjunto y la tarea del algoritmo es reconstruir la parte que falta.
+1. Una vez que el algoritmo aprende a reconstruir, se le indica la etiqueta de lo que ha reconstruido.
+
+Se utiliza principalmente en tareas de clasificación y regresión.
 """
 
 # ╔═╡ 33265b15-5a1f-445c-8184-519e88028f8e
@@ -1561,46 +1565,46 @@ version = "1.4.1+1"
 
 # ╔═╡ Cell order:
 # ╠═07b1def1-1b33-460a-9683-358dc757f6d0
-# ╟─3c877af8-1d0e-41d4-bfc4-43e7fe3263aa
-# ╟─13faae83-cbcf-4184-a921-9d14482a9636
+# ╠═3c877af8-1d0e-41d4-bfc4-43e7fe3263aa
+# ╠═13faae83-cbcf-4184-a921-9d14482a9636
 # ╠═89503130-b960-11ef-3401-b3f35716b97c
 # ╠═d4f797f3-f2df-4068-8af0-36c2d6735f56
-# ╟─362123c4-eca1-4a98-a881-c1f327d934af
-# ╟─7c09922c-63a1-4fcf-9108-d3da329421bd
-# ╟─50f4b33b-16fa-4970-96ce-652a0c565131
+# ╠═362123c4-eca1-4a98-a881-c1f327d934af
+# ╠═7c09922c-63a1-4fcf-9108-d3da329421bd
+# ╠═50f4b33b-16fa-4970-96ce-652a0c565131
 # ╠═ab5b242a-cbd6-40b5-a84e-cd5f65797a52
-# ╟─56b4728d-988a-4e37-b784-40f5c017bc53
-# ╟─63b90197-c31f-416b-9d2b-c559dd07eca1
+# ╠═56b4728d-988a-4e37-b784-40f5c017bc53
+# ╠═63b90197-c31f-416b-9d2b-c559dd07eca1
 # ╠═8382ccf5-075f-4a90-9bf3-a8b895ddd47d
-# ╟─01a7673e-3ffb-4a11-b0fd-7f5511c8dd87
-# ╟─e72f0505-cee3-4b01-add7-9731d9b3bc2d
-# ╟─90445984-5589-4d4b-94ee-7544223b9016
-# ╟─0496fc5a-c213-4cb4-8181-a8d4b92979e8
-# ╟─2da414e5-fa75-4aab-b950-56338a5cec87
-# ╟─1eb5706b-5c1b-44c9-b5cc-d21dc1a1c13f
-# ╟─6c3367b8-c0f3-406d-af06-44faed0b7bde
-# ╟─ccd2163b-ca15-4a0e-bb25-7835c14e33a2
-# ╟─112c940c-fe03-4a8d-bebe-024ceb30170c
-# ╟─33265b15-5a1f-445c-8184-519e88028f8e
-# ╟─7d4cbf3d-119c-41ce-99ee-014760a09a5d
-# ╟─6121337e-ebb8-4e82-82cd-361b6e6d28d2
+# ╠═e72f0505-cee3-4b01-add7-9731d9b3bc2d
+# ╠═90445984-5589-4d4b-94ee-7544223b9016
+# ╠═0496fc5a-c213-4cb4-8181-a8d4b92979e8
+# ╠═2da414e5-fa75-4aab-b950-56338a5cec87
+# ╠═1eb5706b-5c1b-44c9-b5cc-d21dc1a1c13f
+# ╠═6c3367b8-c0f3-406d-af06-44faed0b7bde
+# ╠═ccd2163b-ca15-4a0e-bb25-7835c14e33a2
+# ╠═112c940c-fe03-4a8d-bebe-024ceb30170c
+# ╠═0ea9bd55-9cb1-4e04-89a8-f8102ad6e20b
+# ╠═33265b15-5a1f-445c-8184-519e88028f8e
+# ╠═7d4cbf3d-119c-41ce-99ee-014760a09a5d
+# ╠═6121337e-ebb8-4e82-82cd-361b6e6d28d2
 # ╠═162c6f5b-5fa0-4975-b507-8f62c49f2afb
 # ╠═b89e7a17-2963-4b39-b060-efcf0666fc26
 # ╠═c39ff5b3-ce9f-446f-9728-c723ae4f74c3
-# ╟─0d1ce458-fab3-48f5-ac12-271ec14bd2f6
+# ╠═0d1ce458-fab3-48f5-ac12-271ec14bd2f6
 # ╠═11ba746d-a43d-4e82-8e26-1e0d2a2feea1
-# ╟─175bd281-7b28-4f7b-ab72-a2b4136fc5b5
-# ╟─abb5d5c1-8aa0-4220-bb13-82b11b9604a4
-# ╟─d18ea8da-3fe4-49b0-bbad-d2b3ccb1ab0a
-# ╟─1d659e8e-33f5-451f-9aff-e07ec9ee33c8
-# ╟─14c83470-1c2f-4d07-aed4-122568d4edbb
-# ╟─e48333f5-7d7b-41cd-ad23-c211edc40ff9
-# ╟─891c83de-9dd6-4c35-a427-8734fd57a2eb
-# ╟─dcd17617-6aa4-4ed0-aff7-5a9184990aee
-# ╟─f0731f08-333f-4cb6-9f7e-194627dfba7d
-# ╟─6c0600e0-ebc5-4c10-920e-2a4c68c48721
+# ╠═175bd281-7b28-4f7b-ab72-a2b4136fc5b5
+# ╠═abb5d5c1-8aa0-4220-bb13-82b11b9604a4
+# ╠═d18ea8da-3fe4-49b0-bbad-d2b3ccb1ab0a
+# ╠═1d659e8e-33f5-451f-9aff-e07ec9ee33c8
+# ╠═14c83470-1c2f-4d07-aed4-122568d4edbb
+# ╠═e48333f5-7d7b-41cd-ad23-c211edc40ff9
+# ╠═891c83de-9dd6-4c35-a427-8734fd57a2eb
+# ╠═dcd17617-6aa4-4ed0-aff7-5a9184990aee
+# ╠═f0731f08-333f-4cb6-9f7e-194627dfba7d
+# ╠═6c0600e0-ebc5-4c10-920e-2a4c68c48721
 # ╠═7fcae622-7d09-4cae-bb54-197e4ecb5d6d
-# ╟─a48c3da3-8a99-406a-a2e2-8246da87618e
-# ╟─59c273bb-8cb0-43ed-90d1-7bc9086a1233
+# ╠═a48c3da3-8a99-406a-a2e2-8246da87618e
+# ╠═59c273bb-8cb0-43ed-90d1-7bc9086a1233
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
