@@ -247,6 +247,12 @@ Un hiperparámetro del modelo es el grado del polinomio que queremos ajustar.
 # ╔═╡ c39ff5b3-ce9f-446f-9728-c723ae4f74c3
 md"""
 ## Conjuntos de entrenamiento, validación y prueba
+
+El conjunto disponible de datos inicial lo debemos dividir en tres conjuntos: entrenamiento, validación y pruebas:
+
+1. **Conjunto de entrenamiento:** Lo utilizamos para crear el modelo.
+1. **Conjunto de validación:** Lo utilizmos para ajustar los hiperparámetros del modelo.
+1. **Conjunto de prueba:** Lo utilizamos para comprobar la generalización del modelo.
 """
 
 # ╔═╡ 0d1ce458-fab3-48f5-ac12-271ec14bd2f6
