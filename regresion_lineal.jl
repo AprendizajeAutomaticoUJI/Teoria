@@ -302,13 +302,6 @@ md"""
 Si dibujamos el conjunto de datos y la recta de regresión lineal.
 """
 
-# ╔═╡ 86ad6318-1a86-469f-870c-591e9e306d74
-begin
-	scatter(adultos.weight, adultos.height, xlabel="weight", ylabel="height", label="datos")
-	extremos = [1 minimum(X[:,2]); 1 maximum(X[:,2])]
-	plot!(extremos[:,2], extremos*θ, linewidth=3, label="ajuste", size=(900,400))
-end
-
 # ╔═╡ bdc38a15-ff58-4431-8f3b-d1e310044af5
 md"""
 ## Residuos
@@ -324,16 +317,18 @@ residuos = y - X*θ;
 # ╔═╡ 1c428df8-1517-42b3-aa47-215ea2d9bb6f
 md"""
 ## Residuos
+
+La distribución de los residuos en nuestro caso es:
 """
 
 # ╔═╡ 1f0385e8-a071-4473-8136-7cbcf6f924b8
-scatter(residuos, title="Residuos", legend=false, ylabel="residuos", size=(900,400))
+scatter(residuos, title="Residuos", legend=false, xlabel="muestra", ylabel="residuos", size=(900,400))
 
 # ╔═╡ 23f13774-25c3-42de-800f-2437856ad9fc
 md"""
 ## Residuos
 
-Si representamos el histograma de los residuos:
+Si representamos el histograma de los residuos podemos observar que se asemeja a una distribución normal:
 """
 
 # ╔═╡ 090c1c8b-35c8-43bc-80a3-b8b75304ed31
@@ -522,10 +517,45 @@ Todos estos cálculos los hemos hecho con un poco de álgebra. Existen paquetes 
 """
 
 # ╔═╡ e3278b0e-ff00-4bc9-b06e-d2757a08f997
-lm(@formula(height ~ weight), adultos)
+regresion_glm = lm(@formula(height ~ weight), adultos)
 
-# ╔═╡ 64c3cd0c-6297-42e5-9193-1a842a886136
-lm(@formula(height ~ weight + weight^2 + weight^3), data)
+# ╔═╡ 23b1b815-1048-4ebb-9d12-eba8dfa8e60c
+md"""
+## Paquetes en Julia
+Vamos a ver el resultado de la regresión en una gráfica.
+
+Primera calculamos los extremos de la variable **weight**:
+"""
+
+# ╔═╡ 7da174c6-91a4-4508-818f-6d35720df915
+md"""
+Construímos un DataFrame (**atención a la etiqueta de la columna**)
+"""
+
+# ╔═╡ 1da2e2e0-b1bd-4e86-b397-54f293a90c06
+extremos_df = DataFrame(weight = extremos);
+
+# ╔═╡ 7c3f884f-7159-4594-aef9-a975767e750d
+md"""
+Calculamos el valor del regresor en los extremos:
+"""
+
+# ╔═╡ 6f07b059-a4b3-4a32-b62e-fbadb15d71a3
+prediccion_glm = GLM.predict(regresion_glm, extremos_df)
+
+# ╔═╡ e4a779a7-4d32-4c04-8dc2-61360afe94d0
+
+
+# ╔═╡ 203a5b66-2c6d-4707-ae13-ed2563a2f305
+begin
+	scatter(adultos.weight, adultos.height, xlabel="weight", ylabel="height", label="datos", size=(900,400))
+	plot!(extremos_df.weight, prediccion_glm, width=3, label="regresión")
+end
+
+# ╔═╡ 23dfc277-7289-4a69-8ec5-75fbd05b43e2
+md"""
+Nota: sobre los modelos de GLM se pueden aplicar funciones como r2(modelo), que calcula r2, y aic(modelo) que calcula AIC. Este último es interesante si incluyo AIC como una medida para seleccionar el grado de un polinomio.
+"""
 
 # ╔═╡ f437681b-464d-449d-befc-75d60a5c4974
 md"""
@@ -549,11 +579,11 @@ regresor = LinearRegressor()
 
 # ╔═╡ 19905308-9b52-4f49-a4e8-7212bc08fb0a
 md"""
-**MLJ** tiene una interfaz uniforme, trabajamos con todos los modelos de igual modo, creando una máquina que contine, el modelo, y los datos.
+**MLJ** tiene una interfaz uniforme, trabajamos con todos los modelos de aprendizaje automático con los mismos pasos, creando una máquina que contine, el modelo, y los datos.
 """
 
 # ╔═╡ 57a30f20-7dc2-4c02-8621-32f03c5d5f71
-maquina = machine(regresor, adultos[:, [:weight]], adultos.height)
+modelo = machine(regresor, adultos[:, [:weight]], adultos.height)
 
 # ╔═╡ 83788e2c-84f8-4d0c-bdb0-930680eafa4c
 md"""
@@ -563,10 +593,22 @@ Y ahora lo entrenamos:
 """
 
 # ╔═╡ c76bc69f-eeaf-4861-b735-f2d4a99cd4d3
-fit!(maquina)
+fit!(modelo)
+
+# ╔═╡ 8cab10cf-e7d4-42a9-b9b9-c6243ea80ec4
+md"""
+Depués de entrenar el modelo, podemos ver el valor de los parámetros:
+"""
 
 # ╔═╡ cb016b85-517d-4e28-ab73-60adab8007b5
-fitted_params(maquina)
+fitted_params(modelo)
+
+# ╔═╡ 3566a81e-5a17-4c34-87b4-3b7dfbe2fc1d
+md"""
+Puedes comprobar que estos parámetros coinciden con los proporcionados al utilizar el paquete GLM, de hecho el paquete JML **recubre** algoritmos proporcionados por otros paquetes.
+
+Recuerda que el objetivo de MLJ es ofrecer una interfaz uniforme al programador.
+"""
 
 # ╔═╡ e38b43eb-832d-4ac2-894f-d5d287b6709b
 md"""
@@ -575,16 +617,13 @@ md"""
 El resultado, evidentemente, es el mismo:
 """
 
-# ╔═╡ b92df962-9868-457a-8f45-f38bb6784821
-extremo = (weight = collect(extrema(adultos.weight)),)
-
 # ╔═╡ db09d078-cbf5-442a-b819-a049f93cee06
-prediccion = MLJ.predict(maquina, extremo)
+prediccion_mlj = MLJ.predict(modelo, extremos_df)
 
 # ╔═╡ b9bfee39-4092-4c69-816c-ca830b94c935
 begin
 	scatter(adultos.weight, adultos.height, xlabel="weight", ylabel="height", label="datos", size=(900,400))
-	plot!(extremo.weight, prediccion, width=3, label="regresión")
+	plot!(extremos_df.weight, prediccion_mlj, width=3, label="regresión")
 end
 
 # ╔═╡ 4c52220e-3b6e-46fe-b7d7-87bfc5facf99
@@ -723,7 +762,7 @@ Recordemos la estructura de nuestro conjunto de datos:
 """
 
 # ╔═╡ e9069ed2-3a71-4206-b569-4f73bb97eb19
-data[:, Not(:bias)]
+first(data[:, Not(:bias)], 4)
 
 # ╔═╡ 05ad2c30-e21b-40e2-85a9-f85176a5c075
 md"""
@@ -1020,6 +1059,19 @@ md"""
 v = [1,2,3]
   ╠═╡ =#
 
+# ╔═╡ 58e0b3a9-9f2c-438f-ac4a-db490a3f6685
+extremos = collect(extrema(adultos.weight)) # Usamos collect para convertir la tupla en un vector.
+
+# ╔═╡ 86ad6318-1a86-469f-870c-591e9e306d74
+# ╠═╡ disabled = true
+#=╠═╡
+begin
+	scatter(adultos.weight, adultos.height, xlabel="weight", ylabel="height", label="datos")
+	extremos = [1 minimum(X[:,2]); 1 maximum(X[:,2])]
+	plot!(extremos[:,2], extremos*θ, linewidth=3, label="ajuste", size=(900,400))
+end
+  ╠═╡ =#
+
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
@@ -1059,7 +1111,7 @@ StatsPlots = "~0.15.7"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.11.2"
+julia_version = "1.11.3"
 manifest_format = "2.0"
 project_hash = "154956d92134fbeaad3b3a9012c644efadc63458"
 
@@ -3375,7 +3427,15 @@ version = "1.4.1+2"
 # ╠═900f41a8-59a2-4301-88a5-9f0b4c25d4ac
 # ╠═6518ba79-f3cc-4ccb-9935-fe037f256d4e
 # ╠═e3278b0e-ff00-4bc9-b06e-d2757a08f997
-# ╠═64c3cd0c-6297-42e5-9193-1a842a886136
+# ╠═23b1b815-1048-4ebb-9d12-eba8dfa8e60c
+# ╠═58e0b3a9-9f2c-438f-ac4a-db490a3f6685
+# ╠═7da174c6-91a4-4508-818f-6d35720df915
+# ╠═1da2e2e0-b1bd-4e86-b397-54f293a90c06
+# ╠═7c3f884f-7159-4594-aef9-a975767e750d
+# ╠═6f07b059-a4b3-4a32-b62e-fbadb15d71a3
+# ╠═e4a779a7-4d32-4c04-8dc2-61360afe94d0
+# ╠═203a5b66-2c6d-4707-ae13-ed2563a2f305
+# ╠═23dfc277-7289-4a69-8ec5-75fbd05b43e2
 # ╠═f437681b-464d-449d-befc-75d60a5c4974
 # ╠═660be5ac-4791-48c3-b1f4-824f53c80215
 # ╠═9087d54f-5682-4778-812a-15bd28431fb7
@@ -3384,9 +3444,10 @@ version = "1.4.1+2"
 # ╠═57a30f20-7dc2-4c02-8621-32f03c5d5f71
 # ╠═83788e2c-84f8-4d0c-bdb0-930680eafa4c
 # ╠═c76bc69f-eeaf-4861-b735-f2d4a99cd4d3
+# ╠═8cab10cf-e7d4-42a9-b9b9-c6243ea80ec4
 # ╠═cb016b85-517d-4e28-ab73-60adab8007b5
+# ╠═3566a81e-5a17-4c34-87b4-3b7dfbe2fc1d
 # ╠═e38b43eb-832d-4ac2-894f-d5d287b6709b
-# ╠═b92df962-9868-457a-8f45-f38bb6784821
 # ╠═db09d078-cbf5-442a-b819-a049f93cee06
 # ╠═b9bfee39-4092-4c69-816c-ca830b94c935
 # ╠═4c52220e-3b6e-46fe-b7d7-87bfc5facf99
