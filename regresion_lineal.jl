@@ -302,6 +302,13 @@ md"""
 Si dibujamos el conjunto de datos y la recta de regresión lineal.
 """
 
+# ╔═╡ 86ad6318-1a86-469f-870c-591e9e306d74
+begin
+	scatter(adultos.weight, adultos.height, xlabel="weight", ylabel="height", label="datos")
+	extremos_matriz = [1 minimum(X[:,2]); 1 maximum(X[:,2])]
+	plot!(extremos_matriz[:,2], extremos_matriz*θ, linewidth=3, label="ajuste", size=(900,400))
+end
+
 # ╔═╡ bdc38a15-ff58-4431-8f3b-d1e310044af5
 md"""
 ## Residuos
@@ -519,6 +526,21 @@ Todos estos cálculos los hemos hecho con un poco de álgebra. Existen paquetes 
 # ╔═╡ e3278b0e-ff00-4bc9-b06e-d2757a08f997
 regresion_glm = lm(@formula(height ~ weight), adultos)
 
+# ╔═╡ 3a665608-f044-41a9-a619-7ed799457277
+histogram(residuals(regresion_glm))
+
+# ╔═╡ ea80c78a-6ec8-44f9-9876-6449c2399ee3
+stderror(regresion_glm)
+
+# ╔═╡ c105b7ce-98bd-4c34-86b4-818309495dc5
+coef(regresion_glm)
+
+# ╔═╡ 747f66f6-1c86-450f-824f-7a94bdd7ec6a
+r2(regresion_glm)
+
+# ╔═╡ ed4f53d4-4d73-4f02-abf8-2cb68447525f
+tmp = Distributions.fit(Normal, residuals(regresion_glm))
+
 # ╔═╡ 23b1b815-1048-4ebb-9d12-eba8dfa8e60c
 md"""
 ## Paquetes en Julia
@@ -526,6 +548,9 @@ Vamos a ver el resultado de la regresión en una gráfica.
 
 Primera calculamos los extremos de la variable **weight**:
 """
+
+# ╔═╡ 58e0b3a9-9f2c-438f-ac4a-db490a3f6685
+extremos = collect(extrema(adultos.weight)) # Usamos collect para convertir la tupla en un vector.
 
 # ╔═╡ 7da174c6-91a4-4508-818f-6d35720df915
 md"""
@@ -543,9 +568,6 @@ Calculamos el valor del regresor en los extremos:
 # ╔═╡ 6f07b059-a4b3-4a32-b62e-fbadb15d71a3
 prediccion_glm = GLM.predict(regresion_glm, extremos_df)
 
-# ╔═╡ e4a779a7-4d32-4c04-8dc2-61360afe94d0
-
-
 # ╔═╡ 203a5b66-2c6d-4707-ae13-ed2563a2f305
 begin
 	scatter(adultos.weight, adultos.height, xlabel="weight", ylabel="height", label="datos", size=(900,400))
@@ -554,7 +576,7 @@ end
 
 # ╔═╡ 23dfc277-7289-4a69-8ec5-75fbd05b43e2
 md"""
-Nota: sobre los modelos de GLM se pueden aplicar funciones como r2(modelo), que calcula r2, y aic(modelo) que calcula AIC. Este último es interesante si incluyo AIC como una medida para seleccionar el grado de un polinomio.
+Nota: sobre los modelos de GLM se pueden aplicar funciones como r2(modelo), que calcula r2, y aic(modelo) que calcula AIC. También bic(modelo) para calcular BIC. Este último es interesante si incluyo AIC como una medida para seleccionar el grado de un polinomio.
 """
 
 # ╔═╡ f437681b-464d-449d-befc-75d60a5c4974
@@ -827,11 +849,25 @@ begin
 	println("θ = ", θ_todas)
 end
 
+# ╔═╡ ab5b96a3-97d9-45fe-a8fe-88b5094bca8e
+md"""
+## Extensión de la regresión lineal
+El paquete **GLM** también nos permite hacer regresión multivariada:
+"""
+
+# ╔═╡ e4e29ff3-fc14-4966-8cfb-e8296a4a4bd1
+regresion_multivariada_glm = lm(@formula(height ~ weight + age + male), adultos)
+
+# ╔═╡ 14e10278-99fc-4932-aa52-6d02cf6ac7db
+md"""
+Los valores estimados de los parámetros son los mismos, pero obtenemos mucha más información.
+"""
+
 # ╔═╡ 158f021b-5fa8-49be-a8df-6863a272e4e8
 md"""
 ## Extensión de la regresión lineal
 
-Haciendo uso del paquete MLJ:
+Si usamos el paquete **MLJ**:
 """
 
 # ╔═╡ 55211ee4-a8da-46b2-96f1-83fc170677ee
@@ -1011,7 +1047,10 @@ end;
 # ╔═╡ 4f59d4d0-8c87-41d6-b313-1cdc368a5120
 function dibuja_ajuste(grado::Int)
 	fit, rmse = ajuste_polinomial(grado)
-	scatter(data[:, :weight], data[:, :height], xlabel="weight", ylabel="height", label="Datos", legend=false, ylim=(50, 200), 
+	scatter(data[:, :weight], data[:, :height], 
+		ylim=(50, 200), 
+		xlabel="weight", ylabel="height", 
+		label="Datos", legend=false, 
 		title="Grado: " * string(grado) * ", RMSE: " * string(rmse))
 	plot!(fit, extrema(data[:, :weight])..., width=3)
 end;
@@ -1057,19 +1096,6 @@ md"""
 # ╠═╡ disabled = true
 #=╠═╡
 v = [1,2,3]
-  ╠═╡ =#
-
-# ╔═╡ 58e0b3a9-9f2c-438f-ac4a-db490a3f6685
-extremos = collect(extrema(adultos.weight)) # Usamos collect para convertir la tupla en un vector.
-
-# ╔═╡ 86ad6318-1a86-469f-870c-591e9e306d74
-# ╠═╡ disabled = true
-#=╠═╡
-begin
-	scatter(adultos.weight, adultos.height, xlabel="weight", ylabel="height", label="datos")
-	extremos = [1 minimum(X[:,2]); 1 maximum(X[:,2])]
-	plot!(extremos[:,2], extremos*θ, linewidth=3, label="ajuste", size=(900,400))
-end
   ╠═╡ =#
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -3427,13 +3453,17 @@ version = "1.4.1+2"
 # ╠═900f41a8-59a2-4301-88a5-9f0b4c25d4ac
 # ╠═6518ba79-f3cc-4ccb-9935-fe037f256d4e
 # ╠═e3278b0e-ff00-4bc9-b06e-d2757a08f997
+# ╠═3a665608-f044-41a9-a619-7ed799457277
+# ╠═ea80c78a-6ec8-44f9-9876-6449c2399ee3
+# ╠═c105b7ce-98bd-4c34-86b4-818309495dc5
+# ╠═747f66f6-1c86-450f-824f-7a94bdd7ec6a
+# ╠═ed4f53d4-4d73-4f02-abf8-2cb68447525f
 # ╠═23b1b815-1048-4ebb-9d12-eba8dfa8e60c
 # ╠═58e0b3a9-9f2c-438f-ac4a-db490a3f6685
 # ╠═7da174c6-91a4-4508-818f-6d35720df915
 # ╠═1da2e2e0-b1bd-4e86-b397-54f293a90c06
 # ╠═7c3f884f-7159-4594-aef9-a975767e750d
 # ╠═6f07b059-a4b3-4a32-b62e-fbadb15d71a3
-# ╠═e4a779a7-4d32-4c04-8dc2-61360afe94d0
 # ╠═203a5b66-2c6d-4707-ae13-ed2563a2f305
 # ╠═23dfc277-7289-4a69-8ec5-75fbd05b43e2
 # ╠═f437681b-464d-449d-befc-75d60a5c4974
@@ -3469,6 +3499,9 @@ version = "1.4.1+2"
 # ╠═04aca69e-71a6-4b66-b4a0-fe8aaabd5fe9
 # ╠═6aa1e98d-13df-4732-bc3a-b907bcb8e4bd
 # ╠═dff726bd-66dc-49d0-8dfd-bd762cad734b
+# ╠═ab5b96a3-97d9-45fe-a8fe-88b5094bca8e
+# ╠═e4e29ff3-fc14-4966-8cfb-e8296a4a4bd1
+# ╠═14e10278-99fc-4932-aa52-6d02cf6ac7db
 # ╠═158f021b-5fa8-49be-a8df-6863a272e4e8
 # ╠═55211ee4-a8da-46b2-96f1-83fc170677ee
 # ╠═1661096e-713c-435a-b47d-278f454ad76b
