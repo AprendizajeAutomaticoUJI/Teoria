@@ -1061,14 +1061,78 @@ dibuja_ajuste(grado)
 # ╔═╡ 53bdf7bb-95f7-4413-aec7-1c88375fcf22
 md"""
 ## Encontrar el mejor grado del polinomio
+
+La siguiente gráfica muestra el MSE frente al grado del polinomio:
 """
 
 # ╔═╡ 1c7e1986-b12f-4d4a-9be9-12befefb98bd
 begin
 	datos = [ajuste_polinomial(x)[2] for x in 1:12]
-	plot(datos, xlim=(0,12), size=(900,400))
+	plot(datos, xlim=(0,12), size=(900,400), xticks=(1:12))
 	scatter!(datos)
 end
+
+# ╔═╡ f8967d16-3b32-47af-93eb-13eee06fc199
+md"""
+Parece que desde grado 3 hasta 8 son buenas elecciones.
+"""
+
+# ╔═╡ 5390815a-39a1-4aee-bb0c-d93edb60c9ec
+md"""
+## Encontrar el mejor grado de un polinomio
+
+Comprobemos la hipótesis de normalidad de los residuos para un polinomio de grado 3:
+"""
+
+# ╔═╡ 1d3429b4-30d3-407c-aa96-40b91823870e
+regresion_grado3_glm = lm(@formula(height ~ weight + weight^2 + weight^3), adultos)
+
+# ╔═╡ d9e5abac-a4a9-41f9-96c7-cd53727c4186
+ajuste_residuos_grado3_glm = Distributions.fit(Normal, residuals(regresion_grado3_glm))
+
+# ╔═╡ e9ae8022-0ec7-4206-b006-d070322f10c5
+begin
+	histogram(residuals(regresion_grado3_glm), normed=true, label="Histograma")
+	plot!(ajuste_residuos_grado3_glm, width=2, label="Ajuste polinomio cúbico")
+end
+
+# ╔═╡ 7f60da0c-5876-47c0-9cf6-1bce1891d4f6
+md"""
+Las distintas medidas de bondad del ajuste no nos premiten rechazar la hipótesis nula: los residuos siguen una distribución normal.
+"""
+
+# ╔═╡ e0d5372d-d876-4e56-a090-bbe7158ae845
+ShapiroWilkTest(residuals(regresion_grado3_glm))
+
+# ╔═╡ 0db3efc7-01e6-4d0b-bb52-4626faac179c
+OneSampleADTest(residuals(regresion_grado3_glm), Distributions.fit(Normal, residuals(regresion_grado3_glm)))
+
+# ╔═╡ 1d383b64-a596-42ca-9eed-6ec35c7d61ea
+ApproximateOneSampleKSTest(residuals(regresion_grado3_glm), Distributions.fit(Normal, residuals(regresion_grado3_glm)))
+
+# ╔═╡ dbbca94b-d3eb-40f2-b303-f40f537dbbd9
+md"""
+El gráfico quantil-quantil corrobora la bondad del ajuste.
+"""
+
+# ╔═╡ 5cd0a735-6ab1-4467-aed0-591f876658a7
+qqnorm(residuals(regresion_grado3_glm))
+
+# ╔═╡ 78f74061-afc3-44af-9753-3feeab77b889
+md"""
+Otras métricas que podemos utilizar para seleccionar entre varios modelos son:
+
+* [AIC (Akaike Information Criterion)](https://en.wikipedia.org/wiki/Akaike_information_criterion) y 
+* [BIC (Bayessian Information Criterion](https://en.wikipedia.org/wiki/Bayesian_information_criterion).
+
+Estas métricas tienen en cuenta tanto el grado de ajuste del modelo a los datos como la complejidad del modelo.
+"""
+
+# ╔═╡ fa1025bf-df2c-4bcc-83d5-8f0d88a56e57
+print("AIC: " * string(GLM.aic(regresion_grado3_glm)))
+
+# ╔═╡ 0984464e-7c1d-418b-b956-436744c84704
+print("BIC: " * string(GLM.bic(regresion_grado3_glm)))
 
 # ╔═╡ 8b6c1f57-a7a6-45e1-81f3-a3b06cbd25cc
 md"""
@@ -3535,6 +3599,20 @@ version = "1.4.1+2"
 # ╠═0ad863f8-3479-4da5-92b2-7bdc2f4044d5
 # ╠═53bdf7bb-95f7-4413-aec7-1c88375fcf22
 # ╠═1c7e1986-b12f-4d4a-9be9-12befefb98bd
+# ╠═f8967d16-3b32-47af-93eb-13eee06fc199
+# ╠═5390815a-39a1-4aee-bb0c-d93edb60c9ec
+# ╠═1d3429b4-30d3-407c-aa96-40b91823870e
+# ╠═d9e5abac-a4a9-41f9-96c7-cd53727c4186
+# ╠═e9ae8022-0ec7-4206-b006-d070322f10c5
+# ╠═7f60da0c-5876-47c0-9cf6-1bce1891d4f6
+# ╠═e0d5372d-d876-4e56-a090-bbe7158ae845
+# ╠═0db3efc7-01e6-4d0b-bb52-4626faac179c
+# ╠═1d383b64-a596-42ca-9eed-6ec35c7d61ea
+# ╠═dbbca94b-d3eb-40f2-b303-f40f537dbbd9
+# ╠═5cd0a735-6ab1-4467-aed0-591f876658a7
+# ╠═78f74061-afc3-44af-9753-3feeab77b889
+# ╠═fa1025bf-df2c-4bcc-83d5-8f0d88a56e57
+# ╠═0984464e-7c1d-418b-b956-436744c84704
 # ╠═8b6c1f57-a7a6-45e1-81f3-a3b06cbd25cc
 # ╠═aad3bc5b-c389-409d-acb5-895788e3ce42
 # ╠═5c0b5a16-fd1d-4b8c-aa70-d746332b4d28
