@@ -1047,11 +1047,17 @@ end;
 # ╔═╡ 4f59d4d0-8c87-41d6-b313-1cdc368a5120
 function dibuja_ajuste(grado::Int)
 	fit, rmse = ajuste_polinomial(grado)
+	titulo = "Grado: " * string(grado) * ", RMSE: " * string(rmse)
+	if grado <= 2
+		titulo = titulo * " (Subajuste)"
+	elseif grado > 8 
+		titulo = titulo * " (Sobreajuste)"
+	end
 	scatter(data[:, :weight], data[:, :height], 
 		ylim=(50, 200), 
 		xlabel="weight", ylabel="height", 
 		label="Datos", legend=false, 
-		title="Grado: " * string(grado) * ", RMSE: " * string(rmse))
+		title=titulo)
 	plot!(fit, extrema(data[:, :weight])..., width=3)
 end;
 
@@ -1133,6 +1139,9 @@ print("AIC: " * string(GLM.aic(regresion_grado3_glm)))
 
 # ╔═╡ 0984464e-7c1d-418b-b956-436744c84704
 print("BIC: " * string(GLM.bic(regresion_grado3_glm)))
+
+# ╔═╡ a2239793-3d61-4ec5-a9b8-5b7689a2bc2b
+
 
 # ╔═╡ 8b6c1f57-a7a6-45e1-81f3-a3b06cbd25cc
 md"""
@@ -3613,6 +3622,7 @@ version = "1.4.1+2"
 # ╠═78f74061-afc3-44af-9753-3feeab77b889
 # ╠═fa1025bf-df2c-4bcc-83d5-8f0d88a56e57
 # ╠═0984464e-7c1d-418b-b956-436744c84704
+# ╠═a2239793-3d61-4ec5-a9b8-5b7689a2bc2b
 # ╠═8b6c1f57-a7a6-45e1-81f3-a3b06cbd25cc
 # ╠═aad3bc5b-c389-409d-acb5-895788e3ce42
 # ╠═5c0b5a16-fd1d-4b8c-aa70-d746332b4d28
