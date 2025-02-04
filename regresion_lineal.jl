@@ -1148,6 +1148,112 @@ md"""
 # Descenso de gradiente
 """
 
+# ╔═╡ 7237b145-9c6d-40e0-bc56-601d552fcd33
+md"""
+## Idea base del descenso de gradiente
+
+En la primera parte, hemos obtenido un método directo para minimizar la función de pérdidas.
+
+Existe otra posibilidad para «encontrar» el mínimo de la función de pérdidas. Es un proceso iterativo y se conoce como descenso del gradiente.
+
+Vamos a verlo con detalle.
+"""
+
+# ╔═╡ d86aafd0-4e64-4c95-8279-a0a0a7f6ff1e
+md"""
+## Idea base del descenso de gradiente
+
+Volvamos a la función de pérdidas.
+
+$\mathcal{L}(\mathbf{\theta}) = \frac{1}{N} \sum_{i=1}^N \lvert y_i - h(\theta) \rvert ^2$
+
+Lo que nos interesa es la dependencia de la función de pérdidas respecto a los parámetros $\theta$.
+
+Lo que queremos es, partiendo de unos valores iniciales para los parámetros $\theta$, ir aproximándonos poco a poco a los valores de $\theta$ que minimizan la función de pérdidas.
+"""
+
+# ╔═╡ 9ab6ffff-263d-47b6-972e-270f4cc614ea
+md"""
+```math
+\begin{eqnarray*}
+& ... \\
+& \mathcal{L}(\theta^i + \Delta \theta^i) < \mathcal{L}(\theta^i) \\
+& \theta^{i+1} = \theta^i + \Delta \theta^i \\
+& \mathcal{L}(\theta^{i+1} + \Delta \theta^{i+1}) < \mathcal{L}(\theta^{i+1}) \\
+& \theta^{i+2} = \theta^{i+1} + \Delta \theta^{i+1} \\
+& ...
+\end{eqnarray*}
+```
+
+y continúa hasta que se alcance un número máximo de iteraciones, o la disminución que se obtenga entre iteraciones no sea significativa.
+"""
+
+# ╔═╡ 97eeb5d7-f5d9-40e1-aa42-d1b17d231885
+md"""
+## Idea base del descenso de gradiente
+
+Veamos cómo expresar estas ideas de modo formal. Vamos a hacer un desarrollo de Taylor de $\mathcal{L(\theta + \Delta \theta)}$ donde $\Delta \theta = \theta^{i+1} - \theta^i$
+
+```math
+\mathcal{L(\theta + \Delta \theta)} = \mathcal{L(\theta)} + \frac{\partial \mathcal{L(\theta)}}{\partial \theta} \Delta \theta +
+\frac{1}{2!} \frac{\partial^2 \mathcal{L(\theta)}}{\partial \theta^2} (\Delta \theta)^2 + ...
+```
+
+y nos quedamos hasta el termino cuadrático en $\Delta \theta$. Derivamos con respecto a $\Delta \theta$ e igualamos a cero:
+
+```math
+\frac{\partial \mathcal{L(\theta + \Delta \theta)}}{\partial \Delta \theta} =
+\frac{\partial \mathcal{L(\theta)}}{\partial \theta} +
+\frac{\partial^2 \mathcal{L(\theta)}}{\partial \theta^2}  \Delta \theta = 0
+```
+"""
+
+# ╔═╡ 7023a276-4858-404c-a01a-0c0f6f718c7a
+md"""
+## Idea base del descenso de gradiente
+
+```math
+\begin{eqnarray*}
+& \Delta \theta = \theta^{i+1} - \theta^i \\
+& \theta^{i+1} = \theta^i - \left( \frac{\partial^2 \mathcal{L(\theta)}}{\partial \theta^2}\right)^{-1}
+\frac{\partial \mathcal{L(\theta)}}{\partial \theta}
+\end{eqnarray*}
+```
+
+El término:
+
+```math
+\left( \frac{\partial^2 \mathcal{L(\theta)}}{\partial \theta^2}\right)^{-1}
+```
+
+es costoso de calcular, y se suele sustituir por un valor fijo $\eta$ llamado **tasa de aprendizaje**.
+"""
+
+# ╔═╡ 725a38d4-5b91-4a3c-948f-1bd01c130106
+md"""
+## Idea base del descenso de gradiente
+Finalmente obtenemos:
+
+```math
+\begin{eqnarray*}
+\theta^{i+1} = \theta^i - \eta \frac{\partial \mathcal{L(\theta)}}{\partial \theta} \\
+\mathcal{L(\theta^{i+1}}) < \mathcal{L(\theta^i)}
+\end{eqnarray*}
+```
+
+es decir, calculamos el gradiente en el punto actual $\theta^i$, lo multiplicamos por la tasa de aprendizaje $\eta$ se lo restamos a $\theta^i$ y obtenemos un nuevo valor $\theta^{i+1}$ para el cuál la función de pérdidas es menor que en el paso anterior.
+
+"""
+
+# ╔═╡ 13d9bc4b-ccd2-49d2-9f73-c9b890da6c6b
+md"""
+## Idea base del descenso del gradiente
+
+La elección de $\eta$ se debe realizar con cuidado. Un valor grande de $\eta$ puede dar lugar a un comportamiento errático cuando el descenso del gradiente se acerca al mínimo de la función de pérdidas.
+
+Un valor demasiado pequeño de $\eta$ puede dar lugar a una aproximación muy lenta al valor mínimo de la función de pérdidas.
+"""
+
 # ╔═╡ aad3bc5b-c389-409d-acb5-895788e3ce42
 md"""
 # Regularización
@@ -3624,6 +3730,13 @@ version = "1.4.1+2"
 # ╠═0984464e-7c1d-418b-b956-436744c84704
 # ╠═a2239793-3d61-4ec5-a9b8-5b7689a2bc2b
 # ╠═8b6c1f57-a7a6-45e1-81f3-a3b06cbd25cc
+# ╠═7237b145-9c6d-40e0-bc56-601d552fcd33
+# ╠═d86aafd0-4e64-4c95-8279-a0a0a7f6ff1e
+# ╠═9ab6ffff-263d-47b6-972e-270f4cc614ea
+# ╠═97eeb5d7-f5d9-40e1-aa42-d1b17d231885
+# ╠═7023a276-4858-404c-a01a-0c0f6f718c7a
+# ╠═725a38d4-5b91-4a3c-948f-1bd01c130106
+# ╠═13d9bc4b-ccd2-49d2-9f73-c9b890da6c6b
 # ╠═aad3bc5b-c389-409d-acb5-895788e3ce42
 # ╠═5c0b5a16-fd1d-4b8c-aa70-d746332b4d28
 # ╠═31f685d8-b2b3-49d3-88a0-e45f24e69bd8
