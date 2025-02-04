@@ -31,6 +31,9 @@ begin
 	using MLJ
 	import MLJLinearModels
 	using Polynomials
+	using Random
+	using MultivariateStats
+	using MLJMultivariateStatsInterface
 	
 	plotly()
 end
@@ -1304,6 +1307,97 @@ md"""
 # Regularización
 """
 
+# ╔═╡ 04301b0a-02f0-48b0-9a3b-60779ad99964
+md"""
+## Qué es la regularización
+
+Recordemos que en el caso de la regresión hemos encontrado el _mejor_ grado 
+del polinomio calculando error cuadrático medio.
+
+Ahora que conocemos la técnica de descenso del gradiente, podemos ampliar la 
+definición de la función de pérdidas para incluir un término que **controle** 
+el grado del polinomio que estamos ajustando.
+"""
+
+# ╔═╡ 9539b216-c13f-4aed-ae82-d569f9a1ac7e
+md"""
+## Modelos lineales regularizados: Ridge
+
+En este tipo de regularización, a la función de pérdidas se le añade un término 
+con el módulo 
+
+```math
+\mathcal{L}(\mathbf{\theta}) = \frac{1}{N} \sum_{i=1}^N \lvert y_i - h(\theta) \rvert ^2
++ \lambda \theta^T\theta
+```
+
+Este caso tiene una solución exacta para $\theta$:
+
+```math
+\theta = (X^TX + \lambda I)^{-1} X^T y
+```
+"""
+
+# ╔═╡ 95da45a3-5cab-4323-b427-c6291b5b0191
+md"""
+## Modelos lineales regularizados: Ridge
+
+Veamos un ejemplo sobre un subconjunto de nuestros datos cuando ajustamos a un polinomio de grado 9:
+"""
+
+# ╔═╡ 43f68ca8-dd38-4cee-a74f-fa6dfff9a872
+names(adultos)
+
+# ╔═╡ e6e771a2-d662-4fea-9b48-63421fd8b851
+@df adultos scatter(:weight, :height)
+
+# ╔═╡ ee8c9183-ead1-4a95-8d2c-818979ae6a05
+begin
+	Random.seed!(69)
+	adultos_muestra = view(adultos, sample(axes(adultos, 1), 20; replace = false, ordered = true), [:weight, :height])
+end
+
+# ╔═╡ cadc217f-0f24-4ab9-a5ab-fcc81b90f338
+@df adultos_muestra scatter(:weight, :height, legend=false)
+
+# ╔═╡ 06acadfc-64c4-4457-9c7d-611ed16fa5ac
+md"""
+Vamos a cambiar a los tipos que espera MLJ.
+"""
+
+# ╔═╡ 3bd497e3-537a-42dc-81e0-a771a6bd1474
+adultos_coerce = coerce(adultos_muestra, :weight => MLJ.Continuous, :height => MLJ.Continuous)
+
+# ╔═╡ 781962b3-b083-495a-ae52-0c280dd0c498
+regresion_ridge = @load RidgeRegressor pkg = "MultivariateStats"
+
+# ╔═╡ e01ee989-9aaa-4da9-81a4-979ecdd470f8
+regresor_ridge = regresion_ridge()
+
+# ╔═╡ a9845895-2091-42b9-8d32-7a1555ddf9cf
+adultos_coerce.weight
+
+# ╔═╡ 46551ff5-3ff9-4fa6-8b57-8b3ecb853050
+typeof(adultos_coerce[:, [:weight]])
+
+# ╔═╡ 70dcb974-8000-43f2-a2e3-3617390a7952
+modelo_ridge = machine(regresor_ridge, adultos_coerce[:, [:weight]], adultos_coerce.height)
+
+# ╔═╡ 8e591009-f1f2-4dad-9afd-01e38cccdb80
+fit!(modelo_ridge)
+
+# ╔═╡ c806378b-2e00-4d0c-a423-1ec03880adf5
+adultos_coerce.height
+
+# ╔═╡ 84d6f84f-c5c7-4c73-8409-29f62dd38040
+yhat = MLJ.predict(modelo_ridge, adultos_coerce[:, [:weight]])
+
+# ╔═╡ d5dc95c9-b2b1-4fe4-842b-973cb33e7916
+begin
+	scatter(adultos_muestra.weight, adultos_muestra.height)
+	plot!(adultos_muestra.weight, yhat)
+end
+
 # ╔═╡ 5c0b5a16-fd1d-4b8c-aa70-d746332b4d28
 md"""
 # Resumen
@@ -1333,11 +1427,14 @@ HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 HypothesisTests = "09f84164-cd44-5f33-b23f-e6b0d136a0d5"
 MLJ = "add582a8-e3ab-11e8-2d5e-e98b27df1bc7"
 MLJLinearModels = "6ee0df7b-362f-4a72-a706-9e79364fb692"
+MLJMultivariateStatsInterface = "1b6a4a23-ba22-4f51-9698-8599985d3728"
+MultivariateStats = "6f286f6a-111f-5878-ab1e-185364afe411"
 PlotlyBase = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
 PlotlyKaleido = "f2990250-8cf9-495f-b13a-cce12b45703c"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 Polynomials = "f27b6e38-b328-58d1-80ce-0feddd5e7a45"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 StatsPlots = "f3b207a7-027a-5e70-b257-86293d7955fd"
 
 [compat]
@@ -1349,6 +1446,8 @@ HTTP = "~1.10.14"
 HypothesisTests = "~0.11.3"
 MLJ = "~0.20.2"
 MLJLinearModels = "~0.10.0"
+MLJMultivariateStatsInterface = "~0.5.3"
+MultivariateStats = "~0.10.3"
 PlotlyBase = "~0.8.19"
 PlotlyKaleido = "~2.2.5"
 Plots = "~1.40.9"
@@ -1363,7 +1462,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.3"
 manifest_format = "2.0"
-project_hash = "154956d92134fbeaad3b3a9012c644efadc63458"
+project_hash = "652d0a70623fbedc1c3031d7d98199076f896e8b"
 
 [[deps.ARFFFiles]]
 deps = ["CategoricalArrays", "Dates", "Parsers", "Tables"]
@@ -2469,6 +2568,12 @@ deps = ["CategoricalArrays", "CategoricalDistributions", "Combinatorics", "Dates
 git-tree-sha1 = "9dbbe1e9a8ba1fd60fefb5e39dd9a070bbda9c79"
 uuid = "d491faf4-2d78-11e9-2867-c94bc002c0b7"
 version = "0.17.6"
+
+[[deps.MLJMultivariateStatsInterface]]
+deps = ["CategoricalDistributions", "Distances", "LinearAlgebra", "MLJModelInterface", "MultivariateStats", "StatsBase"]
+git-tree-sha1 = "0d76e36bf83926235dcd3eaeafa7f47d3e7f32ea"
+uuid = "1b6a4a23-ba22-4f51-9698-8599985d3728"
+version = "0.5.3"
 
 [[deps.MLJTuning]]
 deps = ["ComputationalResources", "Distributed", "Distributions", "LatinHypercubeSampling", "MLJBase", "ProgressMeter", "Random", "RecipesBase", "StatisticalMeasuresBase"]
@@ -3787,6 +3892,24 @@ version = "1.4.1+2"
 # ╠═0dfae67d-60ff-4ba9-898f-96d461c150e9
 # ╠═95cd1e05-82fa-40df-b38b-1642d61e7c84
 # ╠═aad3bc5b-c389-409d-acb5-895788e3ce42
+# ╠═04301b0a-02f0-48b0-9a3b-60779ad99964
+# ╠═9539b216-c13f-4aed-ae82-d569f9a1ac7e
+# ╠═95da45a3-5cab-4323-b427-c6291b5b0191
+# ╠═43f68ca8-dd38-4cee-a74f-fa6dfff9a872
+# ╠═e6e771a2-d662-4fea-9b48-63421fd8b851
+# ╠═ee8c9183-ead1-4a95-8d2c-818979ae6a05
+# ╠═cadc217f-0f24-4ab9-a5ab-fcc81b90f338
+# ╠═06acadfc-64c4-4457-9c7d-611ed16fa5ac
+# ╠═3bd497e3-537a-42dc-81e0-a771a6bd1474
+# ╠═781962b3-b083-495a-ae52-0c280dd0c498
+# ╠═e01ee989-9aaa-4da9-81a4-979ecdd470f8
+# ╠═a9845895-2091-42b9-8d32-7a1555ddf9cf
+# ╠═46551ff5-3ff9-4fa6-8b57-8b3ecb853050
+# ╠═70dcb974-8000-43f2-a2e3-3617390a7952
+# ╠═8e591009-f1f2-4dad-9afd-01e38cccdb80
+# ╠═c806378b-2e00-4d0c-a423-1ec03880adf5
+# ╠═84d6f84f-c5c7-4c73-8409-29f62dd38040
+# ╠═d5dc95c9-b2b1-4fe4-842b-973cb33e7916
 # ╠═5c0b5a16-fd1d-4b8c-aa70-d746332b4d28
 # ╠═31f685d8-b2b3-49d3-88a0-e45f24e69bd8
 # ╟─00000000-0000-0000-0000-000000000001
