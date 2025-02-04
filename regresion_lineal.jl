@@ -1254,6 +1254,51 @@ La elección de $\eta$ se debe realizar con cuidado. Un valor grande de $\eta$ p
 Un valor demasiado pequeño de $\eta$ puede dar lugar a una aproximación muy lenta al valor mínimo de la función de pérdidas.
 """
 
+# ╔═╡ ac02eb56-d90c-4922-809a-6eff0e5abe0d
+md"""
+## Descenso de gradiente por lotes
+
+Recordemos que la función de pérdidas:
+
+```math
+\mathcal{L}(\mathbf{\theta}) = \frac{1}{N} \sum_{i=1}^N \lvert y_i - h(\theta) \rvert ^2
+```
+
+utiliza todos los datos del conjunto para actualizar el valor de $\theta^i$
+
+```math
+\theta^{i+1} = \theta^i - \eta \frac{\partial \mathcal{L(\theta)}}{\partial \theta} \\
+\mathcal{L(\theta^{i+1}}) < \mathcal{L(\theta^i)}
+```
+"""
+
+# ╔═╡ df3021a4-500a-43c9-9b7b-ebaf00e964d1
+md"""
+## Descenso de gradiente por lotes
+
+Si el conjunto de datos es muy numeroso y utilizamos muchos pasos en el 
+descenso de gradiente, puede que el algoritmo tarde mucho en alcanzar el 
+mínimo.
+"""
+
+# ╔═╡ 0dfae67d-60ff-4ba9-898f-96d461c150e9
+md"""
+## Descenso de gradiente estocástico
+
+Un técnica que se suele utilizar para acelerar el proceso de convergencia del 
+descenso de gradiente es elegir aleatoriamente una única muestra del conjunto
+total en cada paso del descenso.
+
+"""
+
+# ╔═╡ 95cd1e05-82fa-40df-b38b-1642d61e7c84
+md"""
+## Descenso de gradiente por mini lotes
+
+Una técnica mixta es, para cada paso de optimización, tomar un subconjunto 
+aleatorio de las muestras de entrenamiento.
+"""
+
 # ╔═╡ aad3bc5b-c389-409d-acb5-895788e3ce42
 md"""
 # Regularización
@@ -3737,6 +3782,10 @@ version = "1.4.1+2"
 # ╠═7023a276-4858-404c-a01a-0c0f6f718c7a
 # ╠═725a38d4-5b91-4a3c-948f-1bd01c130106
 # ╠═13d9bc4b-ccd2-49d2-9f73-c9b890da6c6b
+# ╠═ac02eb56-d90c-4922-809a-6eff0e5abe0d
+# ╠═df3021a4-500a-43c9-9b7b-ebaf00e964d1
+# ╠═0dfae67d-60ff-4ba9-898f-96d461c150e9
+# ╠═95cd1e05-82fa-40df-b38b-1642d61e7c84
 # ╠═aad3bc5b-c389-409d-acb5-895788e3ce42
 # ╠═5c0b5a16-fd1d-4b8c-aa70-d746332b4d28
 # ╠═31f685d8-b2b3-49d3-88a0-e45f24e69bd8
