@@ -4,19 +4,7 @@
 using Markdown
 using InteractiveUtils
 
-# This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
-macro bind(def, element)
-    #! format: off
-    quote
-        local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
-        local el = $(esc(element))
-        global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
-        el
-    end
-    #! format: on
-end
-
-# ╔═╡ 6f6339a7-9b4d-4272-94f7-9234d3d3be41
+# ╔═╡ 246afbf4-e2fa-11ef-0aaf-3fdea42303e1
 begin
 	using CSV
 	using DataFrames
@@ -38,205 +26,12 @@ begin
 	plotly()
 end
 
-# ╔═╡ df4e377a-895e-483d-8894-75629bb2533f
-html"""
-# # Aumentar el zoom hasta 170
-<style>
-	p {
-		font-size: 27px
-	}
-
-	li {
-		font-size: 20px;
-	}
-	
-	body h1 {
-		font-size: 50px;
-		font-family: sans-serif;
-	}
-	
-	body h2 {
-		font-size: 40px;
-		font-family: sans-serif;
-		padding-top: 10px;
-	}
-	
-	main {
-		# max-width: 950px !important;
-		max-width: 90% !important;
-		margin-right: 80px !important; # Debe quedar comentada para editar
-	}
-</style>
-"""
-
-# ╔═╡ 266e632b-30a5-4ae4-981f-8e2ab61e3232
-TableOfContents(title="Contenidos", depth=1)
-
-# ╔═╡ d0fe37ee-bbc1-11ef-2f0c-4b6bc41d2c3a
+# ╔═╡ 01bbe0be-b21d-4d9b-92bc-09440a2c3e7d
 md"""
-# Regresión lineal
-
-Óscar Belmonte Fernández - IR2130 Aprendizaje Automático
-
-Grado en Inteligencia Robótica - Universitat Jaume I (UJI)
-
-![](https://ujiapps.uji.es/ade/rest/storage/63c07717-5208-4240-b688-aa6ff558b466?guest=true)
+Voy a utilizar este notebook para trabajar con regresión Ridge.
 """
 
-# ╔═╡ cc81afb1-c73d-4e75-b572-21a70608dd9d
-md"""
-## Introducción
-
-La regresión lineal es uno de los algoritmos para problemas de regresión más antiguos y utilizados.
-
-No obstante hay que conocer en qué problemas se puede utilizar y en qué otros no se puede utilizar.
-
-La regresión lineal simple se puede extender, de manera muy sencilla, a problemas de regresión con múltiples variables y regresión con polinomios.
-"""
-
-# ╔═╡ e709b44b-57b0-482d-bc11-93b91451d790
-md"""
-## Introducción
-
-Aunque existe una formula exacta para resolver problemas de regresión, estudiaremos la técnica del descenso de gradiente para encontrar la solución de la regresión lineal.
-
-Finalmente veremos qué es la regularización y qué problema nos ayuda a resolver.
-"""
-
-# ╔═╡ 515ef8bd-82e3-4f94-8fbc-0626ed34e5b7
-md"""
-## Objetivos de Aprendizaje
-
-- Decidir cuando en un problema se puede emplear la regresión lineal.
-- Estimar la bondad de un ajuste con regresión lineal.
-- Demostrar el fundamente del descenso de gradiente.
-- Razonar si la regularización es apropiada para un determinado problema.
-- Construir una solución de regresión (múltiple, polinómica).
-"""
-
-# ╔═╡ cda801a3-6b0c-49f0-afbd-798850b354ca
-md"""
-## Referencias
-"""
-
-# ╔═╡ eb52ead3-2e23-4884-96c6-4ccdbf529be2
-md"""
-# Fórmula exacta de la regresión lineal
-"""
-
-# ╔═╡ 9cebf899-82f9-4a69-9ef1-5c98bb8b20fc
-md"""
-## Objetivos de la regresión lineal
-
-La hipótesis de partida es que existe una relación lineal entre una variable que se utiliza como predictor $x$, y la salida $y$:
-
-$h_{\theta}(x) = y = \theta_0 + \theta_1 x + \epsilon$
-
-Donde $\epsilon \sim N(0, \sigma^2)$ sigue una distribución normal, con media $0$ y varianza $\sigma^2$.
-"""
-
-# ╔═╡ b3fe5074-6461-4d1e-bea3-f005533210a0
-md"""
-## Objetivo de la regresión lineal
-
-Es decir, tenemos un conjunto de $N$ datos para los cuales:
-
-
-$h_{\theta}(x_1) = y_1 = \theta_0 + \theta_1 x_1 + \epsilon$
-$h_{\theta}(x_2) = y_2 = \theta_0 + \theta_1 x_2 + \epsilon$
-$...$
-$h_{\theta}(x_N) = y_N = \theta_0 + \theta_1 x_N + \epsilon$
-
-Que podemos expresar de manera matricial como:
-
-$h_{\theta}(\mathbf{X}) = \mathbf{y} = \mathbf{X \theta} + \mathbf{\epsilon}$
-"""
-
-# ╔═╡ 4309c399-3035-4a0a-8f88-2184efd415b9
-md"""
-## Objetivo de la regresión lineal
-
-$h_{\theta}(\mathbf{X}) = \mathbf{y} = \mathbf{X \theta} + \mathbf{\epsilon}$
-
-Donde:
-
-```math
-\begin{bmatrix}
-y_1 \\
-y_2\\
-...\\
-y_N \\
-\end{bmatrix}
-=
-\begin{bmatrix}
-1 & x_1 \\
-1 & x_2 \\
-...\\
-1 & x_N \\
-\end{bmatrix}
-\begin{bmatrix}
-\theta_0 \\
-\theta_1 \\
-\end{bmatrix}
-+
-\begin{bmatrix}
-\epsilon \\
-\epsilon \\
-... \\
-\epsilon \\
-\end{bmatrix}
-
-```
-
-En aprendizaje automático se utilizan vectores columna.
-"""
-
-# ╔═╡ 8783e92c-3ff2-49e0-a85f-264a0ae77afc
-md"""
-## Objetivo de la regresión lineal
-
-El objetivo de la regresión lineal es, encontrar unos estimadores de $\theta$ que vamos a escribir como $\hat \theta$, de tal modo que los $\hat y$ que obtengo al utilizar esos estimadores:
-
-```math
-\begin{bmatrix}
-\hat y_1 \\
-\hat y_2\\
-...\\
-\hat y_N \\
-\end{bmatrix}
-=
-\begin{bmatrix}
-1 & x_1 \\
-1 & x_2 \\
-...\\
-1 & x_N \\
-\end{bmatrix}
-\begin{bmatrix}
-\hat \theta_0 \\
-\hat \theta_1 \\
-\end{bmatrix}
-```
-
-estén a la *menor distancia posible* de los datos $y$.
-"""
-
-# ╔═╡ 410f5c00-91f0-4f00-924f-6691227bf1cd
-md"""
-## Objetivo de la regresión lineal
-
-Veamos un caso real, la relación entre el peso y la altura de los nativos adultos de la etnia !Kung San.
-
-$height = h_{\theta}(weight) = \theta_0 + \theta_1 weight + \epsilon$
-
-A partir del predictor ($weight$) queremos obtener el valor de la altura ($height$) en cm.
-"""
-
-# ╔═╡ a079b8eb-f179-41af-9712-de65be3d7a64
-md"""
-## Objetivo de la regresión lineal
-"""
-
-# ╔═╡ 48d3993b-fcae-4d91-a53a-a936dcaea321
+# ╔═╡ c7682162-76c9-4bc3-9a1b-85a4197a7c20
 begin
 	path = "https://raw.githubusercontent.com/AprendizajeAutomaticoUJI/DataSets/refs/heads/master/Howell1.csv"
 	data = CSV.File(HTTP.get(path).body) |> DataFrame
@@ -244,1177 +39,39 @@ begin
 	adultos = data[data.age .>= 18, :]
 end
 
-# ╔═╡ 2e638e63-6f50-4dd0-921a-0e5d33e31fe1
+# ╔═╡ 316a47ac-a70c-4f89-8288-e71e17ee59aa
 md"""
-## Objetivo de la regresión lineal
+Me quedo sólo con el peso y la altura.
 """
 
-# ╔═╡ bf9d5f2e-a1ae-4b9a-88ac-a7fcef6945bb
-scatter(adultos.weight, adultos.height, xlabel="weight", ylabel="height", label=false, size=(900,400))
+# ╔═╡ b51bbda9-ea1c-490b-aa74-8cbbcf494985
+peso_altura = adultos[:, [:weight, :height]]
 
-# ╔═╡ a7712a98-dbef-4f62-a83c-546ebfb3a40e
+# ╔═╡ 7e16dae9-5177-498d-928c-d6c55628c0c9
 md"""
-## Función de pérdidas $\mathcal{L}(h_\mathbf{\theta})$
-
-El objetivo es encontrar los parámetros $\theta$ que minimizan la distancia entre los datos reales $y_i$ y los valores calculados $\hat y_i = h_\theta(x_i)$.
-
-$\mathcal{L}(h_\mathbf{\theta}) = \frac{1}{N} \sum_{i=1}^N \lvert y_i - \hat y_i \rvert ^2$
-
-Que se puede expresar en forma matricial como:
-
-$\mathcal{L_{\theta}} = \frac{1}{N} \lVert \mathbf{y} - \mathbf{X \theta} \rVert^2$
+Creo las características como potencias de cada columna:
 """
 
-# ╔═╡ 6ebfa722-b8f5-4837-871b-addba1c23586
-md"""
-## Minimizar la función de pérdidas
+# ╔═╡ 69845f5f-aa5c-4f2c-a889-6c1ece385285
+potencias = repeat(peso_altura.weight, 1, 2) .^ (2:3)'
 
-Tenemos que encontrar el mínimo de la función de pérdidas.
-
-Tomamos las derivadas parciales respecto a los parámetros $\theta$:
-
-$\vec\nabla_{\mathbf{\theta}}\mathcal{L} = 
-\vec\nabla_{\mathbf{\theta}} \lVert \mathbf{y} - \mathbf{X \theta} \rVert^2 = 
-0$
-
-y llegamos a la expresón matricial:
-
-$\mathbf{\theta} = (\mathbf{X^T X})^{-1}\mathbf{X^T y}$
-
-*Pregunta: ¿La matriz $\mathbf{X^T X}$ es siempre invertible?
-
-"""
-
-# ╔═╡ cefd6efd-8687-4ab4-93e6-6ae33432d774
-md"""
-## Minimizar la función de pérdidas
-
-Aplicando el cálculo a nuestros datos, obtenemos la recta de regresión:
-"""
-
-# ╔═╡ 1b7baa00-78ea-48f6-af34-ccc0795d66b8
+# ╔═╡ 557b3498-6ef1-42a1-b9be-a228bcaffa5a
 begin
-	X = Matrix(adultos[:, [:bias, :weight]])
-	y = adultos[:, :height]
-	θ = (X'X)\(X'y)
-	println("θ = ", θ )
+	peso_altura[!, :cuadrado] = potencias[:,1]
+	peso_altura[!, :cubo] = potencias[:,2]
 end
 
-# ╔═╡ 433bea47-fd81-4e3f-8fd0-d0fe76d6f6ec
-md"""
-Si dibujamos el conjunto de datos y la recta de regresión lineal.
-"""
+# ╔═╡ 6694581b-7997-4c1c-bb88-75bbf1906366
+df = coerce(peso_altura, :weight => MLJ.Continuous, :height => MLJ.Continuous, :cuadrado => MLJ.Continuous, :cubo => MLJ.Continuous)
 
-# ╔═╡ 86ad6318-1a86-469f-870c-591e9e306d74
-begin
-	scatter(adultos.weight, adultos.height, xlabel="weight", ylabel="height", label="datos")
-	extremos_matriz = [1 minimum(X[:,2]); 1 maximum(X[:,2])]
-	plot!(extremos_matriz[:,2], extremos_matriz*θ, linewidth=3, label="ajuste", size=(900,400))
-end
+# ╔═╡ d42f7142-94b2-4d5c-a007-6dcbdd310db7
+regresor_ridge = @load RidgeRegressor pkg = "MultivariateStats"
 
-# ╔═╡ bdc38a15-ff58-4431-8f3b-d1e310044af5
-md"""
-## Residuos
+# ╔═╡ 516df4d8-7ff2-465f-afcd-db4a506cd32a
+modelo_ridge = machine(regresor_ridge(), df[:, [:weight, :cuadrado, :cubo]], df.height)
 
-Los residuos son la parte no lineal de los datos, hemos supuesto que siguen una distribución normal:
-
-$r_i = y_i - h_{\theta}(x_i)$
-"""
-
-# ╔═╡ 8af8b802-49d8-474f-b3a3-1278a69093f9
-residuos = y - X*θ;
-
-# ╔═╡ 1c428df8-1517-42b3-aa47-215ea2d9bb6f
-md"""
-## Residuos
-
-La distribución de los residuos en nuestro caso es:
-"""
-
-# ╔═╡ 1f0385e8-a071-4473-8136-7cbcf6f924b8
-scatter(residuos, title="Residuos", legend=false, xlabel="muestra", ylabel="residuos", size=(900,400))
-
-# ╔═╡ 23f13774-25c3-42de-800f-2437856ad9fc
-md"""
-## Residuos
-
-Si representamos el histograma de los residuos podemos observar que se asemeja a una distribución normal:
-"""
-
-# ╔═╡ 090c1c8b-35c8-43bc-80a3-b8b75304ed31
-h_residuos = histogram(residuos, title="Distribución de los residuos", xlabel="residuos", ylabel="Número de muestras", legend=false, size=(900,400))
-
-# ╔═╡ b19afa83-a5b2-4dc7-b266-76f60e27f2ff
-md"""
-## Varianza de los residuos
-Resulta interesante calcular el error del estimador.
-
-La varianza de los residuos es la contribución de la parte no linela del modelo $\epsilon \sim N(0,\sigma^2)$.
-
-Un estimador para la varianza de los residuos es:
-
-${\hat \sigma}^2 = \frac{1}{N} \sum_{i=1}^N (y_i - h_{\theta}(x_i))^2$
-
-que es un estimador con sesgo.
-"""
-
-# ╔═╡ 4c05c9d4-e724-4956-9866-7037025150ee
-md"""
-## Error estándar de $\hat \theta$
-
-Un estimador sin sesgo (*unbiased*) para $\sigma^2$ lo 
-podemos calcular como:
-
-$MSE = \frac{1}{N-2} \sum_{i=1}^N (y_i - h_{\theta}(x_i))^2$
-
-ya que tenemos sólo $N-2$ grados de libertad.
-"""
-
-# ╔═╡ 499b6c91-9032-43fa-a54c-94027676125a
-md"""
-## Error estándar de $\mathbf{\hat \theta}$
-
-El error estándar del parámetro estimado $\hat \theta_0$ se calcula como:
-
-$SE(\hat \theta_0) = \sqrt{MSE \left(\frac{1}{n} + \frac{\bar x^2}{S_{xx}}\right)}$
-
-
-donde $S_{xx} = \sum_{i=1}^N (x_i - \bar x)^2$ es la varianza de los datos.
-
-El error estándar del parámetro estimado $\hat \theta_1$ se calcula como:
-
-$SE(\hat \theta_1) = \sqrt{\frac{MSE}{S_{xx}}}$
-"""
-
-# ╔═╡ 48398a06-6e89-43ac-876f-eeb513e69b92
-md"""
-## Error estándar de $\mathbf{\hat \theta}$
-
-En el ejemplo que estamos tratando, al aplicar las fórmulas, obtenemos 
-$SE(\hat \theta_0) = 1.9111$ y $SE(\hat \theta_1) = 0.0420$.
-
-Finalmente:
-
-$\hat \theta_0 = 113.9 \pm 1.9$
-
-$\hat \theta_1 = 0.90 \pm 0.04$
-"""
-
-# ╔═╡ 2f86b3e0-66e9-4cca-86fd-a83f6d1dbf5b
-md"""
-## Normalidad de los residuos
-
-Ahora debemos comprobar la hipótesis de normalidad de los residuos, sin ella 
-la regresión lineal que acabamos de hacer no tiene sentido.
-
-Empecemos visualizando el histograma de los residuos y el ajuste a una normal.
-"""
-
-# ╔═╡ 7a3f806a-5d26-40f1-b665-7bf686728fde
-ajuste_residuos = Distributions.fit(Normal, residuos)
-
-# ╔═╡ cf291a6a-18ba-476a-a9c9-ddcd1f75c514
-begin
-	histogram(residuos, normed=true, label="histograma", size=(900,400))
-	plot!(ajuste_residuos, width=2, label="ajuste a normal")
-end
-
-# ╔═╡ 287328fd-2389-4e7e-84f9-4cd932db899a
-md"""
-## Normalidad de los residuos
-Para calcular la bondad del ajuste a una normal podemos utilizar el test de Shapiro-Wilk, que nos da un p-valor de $p = 0.2499$.
-
-En ambos caso del p-valor es mayor que $0.05$, luego no podemos descartar 
-que los residuos sigan una distribución normal.
-
-"""
-
-# ╔═╡ 5443ad0a-deb3-463f-8975-12fb969df1cc
-ShapiroWilkTest(residuos)
-
-# ╔═╡ 965d8844-8fdd-4e88-a6bd-01281a5fb642
-md"""
-## Normalidad de los residuos
-
-Podemos usar pruebas más generales, como la de Anderson-Darling.
-"""
-
-# ╔═╡ f5a3b766-4781-47de-8097-af3bd8bc4ecd
-OneSampleADTest(residuos, ajuste_residuos)
-
-# ╔═╡ ac831749-b0aa-49f5-ad1b-92e45599551d
-md"""
-## Normalidad de los residuos
-
-O la de Kolmogorov-Smirnov:
-"""
-
-# ╔═╡ 7eb49193-addb-4833-9261-0a0ceab55e7e
-ApproximateOneSampleKSTest(residuos, ajuste_residuos)
-
-# ╔═╡ f4c5fdba-5493-4240-93dd-86345c9adad7
-md"""
-En todos los casos el $p-valor > 0.05$ y por lo tanto no podemos rechazar que la distribución de los residuos no sea Normal.
-"""
-
-# ╔═╡ 90a3a2c0-4d45-40d9-9bdc-a966c628ba90
-md"""
-## Normalidad de los residuos
-
-Otra prueba gráfica que podemos utilizar son los qqplot o gráficos cuantil-cuantil.
-"""
-
-# ╔═╡ ad16e07e-f7c2-4bce-9f71-0d0334459ef6
-qqnorm(residuos, xlabel="Cuantiles teóricos", ylabel="Cuantiles de los datos", title="Gráfico cuantil-cualtil de los residuos", size=(900,400))
-
-# ╔═╡ 08794500-ec04-4834-8852-c79680f0d136
-md"""
-Si podemos apreciar que el gráfico qqplot es una recta, no podemos rechazar que nuestros datos sigan una distribución normal.
-"""
-
-# ╔═╡ 3ffe9740-d133-410a-a3ff-77c2ba64217f
-md"""
-## ¿Cuál es la linealidad de nuestros datos?
-
-El coeficiente de determinación ($R^2$) nos da una idea de la varianza de los 
-datos que puede explicar el modelo.
-
-Suma de los cuadrados de los residuos: $SS_{res} = \sum_{i=1}^N(y_i - h_\theta(i))^2$
-
-Suma total de los cuadrados: $SS_{tot} = \sum_{i=1}^N(y_i - \bar{y})^2$
-
-$$R^2 = 1 - \frac{SS_{res}}{SS_{tot}}$$
-
-La fracción $\frac{SS_{res}}{SS_{tot}}$ es la fracción de la varianza no 
-explicada por los datos.
-
-En nuestros caso $R^2 = 0.5696$ y la varianza no explicada es $0.4303$.
-"""
-
-# ╔═╡ caba4624-8388-43b9-a9bf-b0bb5ed27213
-md"""
-## ¿Cuál es la linealidad de nuestros datos?
-
-Otra medida de la linealidad de los datos, es el coeficiente de correlación de 
-Pearson, que no es más que la raíz cuadrada de $R^2$:
-
-$$\rho = \sqrt{R^2}$$
-
-En nuestro caso obtenemos $\rho = 0.7547$. 
-
-Como criterio general, se considera 
-que el ajuste es bueno cuando este valor está por encima de 0.7.
-"""
-
-# ╔═╡ 900f41a8-59a2-4301-88a5-9f0b4c25d4ac
-md"""
-## En resumen
-1. Hemos supuesto que existe una relación lineal entre el predictor (peso) 
-   y la variable predicha (altura).
-1. Hemos supuesto que los residuos de nuestros datos siguen una distribución 
-   normal con media $\mu = 0$ y varianza $\sigma^2$
-1. Hemos calculado los valores estimados para $\theta_0,\theta_1,\sigma$.
-1. Hemos calculado sus errores estándar.
-1. Hemos ajustado los residuos a una normal.
-1. Hemos hecho pruebas para comprobar la bondad del ajuste.
-1. Hemos utilizado un gráfico cuantil-cuantil.
-"""
-
-# ╔═╡ 6518ba79-f3cc-4ccb-9935-fe037f256d4e
-md"""
-## Paquetes en Julia
-Todos estos cálculos los hemos hecho con un poco de álgebra. Existen paquetes en Julia que nos facililtan estos cálculos, como por ejemplo, el paquete **GLM** (Generalised Linear Models)
-"""
-
-# ╔═╡ e3278b0e-ff00-4bc9-b06e-d2757a08f997
-regresion_glm = lm(@formula(height ~ weight), adultos)
-
-# ╔═╡ 3a665608-f044-41a9-a619-7ed799457277
-histogram(residuals(regresion_glm))
-
-# ╔═╡ ea80c78a-6ec8-44f9-9876-6449c2399ee3
-stderror(regresion_glm)
-
-# ╔═╡ c105b7ce-98bd-4c34-86b4-818309495dc5
-coef(regresion_glm)
-
-# ╔═╡ 747f66f6-1c86-450f-824f-7a94bdd7ec6a
-r2(regresion_glm)
-
-# ╔═╡ ed4f53d4-4d73-4f02-abf8-2cb68447525f
-tmp = Distributions.fit(Normal, residuals(regresion_glm))
-
-# ╔═╡ 23b1b815-1048-4ebb-9d12-eba8dfa8e60c
-md"""
-## Paquetes en Julia
-Vamos a ver el resultado de la regresión en una gráfica.
-
-Primera calculamos los extremos de la variable **weight**:
-"""
-
-# ╔═╡ 58e0b3a9-9f2c-438f-ac4a-db490a3f6685
-extremos = collect(extrema(adultos.weight)) # Usamos collect para convertir la tupla en un vector.
-
-# ╔═╡ 7da174c6-91a4-4508-818f-6d35720df915
-md"""
-Construímos un DataFrame (**atención a la etiqueta de la columna**)
-"""
-
-# ╔═╡ 1da2e2e0-b1bd-4e86-b397-54f293a90c06
-extremos_df = DataFrame(weight = extremos);
-
-# ╔═╡ 7c3f884f-7159-4594-aef9-a975767e750d
-md"""
-Calculamos el valor del regresor en los extremos:
-"""
-
-# ╔═╡ 6f07b059-a4b3-4a32-b62e-fbadb15d71a3
-prediccion_glm = GLM.predict(regresion_glm, extremos_df)
-
-# ╔═╡ 203a5b66-2c6d-4707-ae13-ed2563a2f305
-begin
-	scatter(adultos.weight, adultos.height, xlabel="weight", ylabel="height", label="datos", size=(900,400))
-	plot!(extremos_df.weight, prediccion_glm, width=3, label="regresión")
-end
-
-# ╔═╡ 23dfc277-7289-4a69-8ec5-75fbd05b43e2
-md"""
-Nota: sobre los modelos de GLM se pueden aplicar funciones como r2(modelo), que calcula r2, y aic(modelo) que calcula AIC. También bic(modelo) para calcular BIC. Este último es interesante si incluyo AIC como una medida para seleccionar el grado de un polinomio.
-"""
-
-# ╔═╡ f437681b-464d-449d-befc-75d60a5c4974
-md"""
-## Paquetes en Julia
-
-También podemos utilizar el paquete **MLJ** (Machine Learning for Julia)
-
-Primero cargamos el modelo que nos interesa
-"""
-
-# ╔═╡ 660be5ac-4791-48c3-b1f4-824f53c80215
-LinearRegressor = @load LinearRegressor pkg=MLJLinearModels verbosity=0
-
-# ╔═╡ 9087d54f-5682-4778-812a-15bd28431fb7
-md"""
-Lo instanciamos
-"""
-
-# ╔═╡ 95e17cad-7135-4b7f-93f2-5b7c72023e27
-regresor = LinearRegressor()
-
-# ╔═╡ 19905308-9b52-4f49-a4e8-7212bc08fb0a
-md"""
-**MLJ** tiene una interfaz uniforme, trabajamos con todos los modelos de aprendizaje automático con los mismos pasos, creando una máquina que contine, el modelo, y los datos.
-"""
-
-# ╔═╡ 57a30f20-7dc2-4c02-8621-32f03c5d5f71
-modelo = machine(regresor, adultos[:, [:weight]], adultos.height)
-
-# ╔═╡ 83788e2c-84f8-4d0c-bdb0-930680eafa4c
-md"""
-## Paquetes en Julia
-
-Y ahora lo entrenamos:
-"""
-
-# ╔═╡ c76bc69f-eeaf-4861-b735-f2d4a99cd4d3
-fit!(modelo)
-
-# ╔═╡ 8cab10cf-e7d4-42a9-b9b9-c6243ea80ec4
-md"""
-Depués de entrenar el modelo, podemos ver el valor de los parámetros:
-"""
-
-# ╔═╡ cb016b85-517d-4e28-ab73-60adab8007b5
-fitted_params(modelo)
-
-# ╔═╡ 3566a81e-5a17-4c34-87b4-3b7dfbe2fc1d
-md"""
-Puedes comprobar que estos parámetros coinciden con los proporcionados al utilizar el paquete GLM, de hecho el paquete JML **recubre** algoritmos proporcionados por otros paquetes.
-
-Recuerda que el objetivo de MLJ es ofrecer una interfaz uniforme al programador.
-"""
-
-# ╔═╡ e38b43eb-832d-4ac2-894f-d5d287b6709b
-md"""
-## Paquetes en Julia
-
-El resultado, evidentemente, es el mismo:
-"""
-
-# ╔═╡ db09d078-cbf5-442a-b819-a049f93cee06
-prediccion_mlj = MLJ.predict(modelo, extremos_df)
-
-# ╔═╡ b9bfee39-4092-4c69-816c-ca830b94c935
-begin
-	scatter(adultos.weight, adultos.height, xlabel="weight", ylabel="height", label="datos", size=(900,400))
-	plot!(extremos_df.weight, prediccion_mlj, width=3, label="regresión")
-end
-
-# ╔═╡ 4c52220e-3b6e-46fe-b7d7-87bfc5facf99
-md"""
-## Paquetes de Julia
-
-En el caso anterior, estamos utilizando el mismo conjunto de datos para 
-entrenar el modelo, que para calcular el error del modelo sobre los datos.
-
-Usualmente se utilizan dos conjuntos de datos, con uno de ellos entrenamos el 
-modelo y el otro conjunto de datos lo utilizamos para evaluar el modelo.
-"""
-
-# ╔═╡ bfdf0bd6-42ab-4d7b-b45a-21035fefcb34
-md"""
-## Conjunto de entrenamiento y conjunto de pruebas
-
-Al conjunto que utilizamos para entrenar el modelo lo llamas *conjunto de 
-entrenamiento*, y al conjunto que utilizamos para evaluar el modelo *conjunto 
-de prueba*.
-"""
-
-# ╔═╡ b972c073-20c7-41e0-bc72-61838652ea79
-(Xtrain, Xtest), (ytrain, ytest) = partition((adultos.weight, adultos.height), 0.8, multi=true, rng=69)
-
-# ╔═╡ 563f0e01-3117-40f0-9d4f-0f4926bdc336
-md"""
-## Evaluación cruzada
-
-La evaluación cruzada consiste en dividir el conjunto de datos inicial en un conjunto de entranamiento y otro de pruebas de manera aleatoria, repetidas veces. En cada repetición se crear un modelo con los datos de entrenameinto y se prueba con los datos de prueba, el resultados final es el promedio de todas las repeticiones.
-"""
-
-# ╔═╡ 2da21951-935d-4ba8-9a3b-c2628a71a31e
-begin
-	cv = CV(nfolds = 10)
-	validacion_cruzada = evaluate(regresor, select(adultos, :weight), adultos.height, resampling=cv, measure=rms)
-end
-
-# ╔═╡ 215eb03b-4c21-4321-bb3b-70bb68aace81
-md"""
-## Estimación de parámetros por máxima verosimilitud
-
-Para terminar con esta sección vamos a ver cómo la expresión de la función 
-de pérdidas: 
-$\mathcal{L}(h_\mathbf{\theta}) = \frac{1}{N} \sum_{i=1}^N \lvert y_i - x_i\theta \rvert ^2$
-
-aparece de modo natural al asumir que los residuos están normalmente 
-distribuídos.
-"""
-
-# ╔═╡ 878d4d09-9d5d-4d2b-9670-c7ae116ee5e9
-md"""
-## Estimación de parámetros por máxima verosimilitud
-Hemos supuesto que los residuos siguen un distribución normal
-independientemente del punto donde calculamos la regresión, lo que significa
-suponer que:
-
-$p(y_i|\theta,\sigma^2) = \frac{1}{\sqrt{2\pi\sigma^2}}
-e^{-\frac{(y_i-x_i\theta)^2}{2\sigma^2}}$
-"""
-
-# ╔═╡ 317be3e6-1e2c-4565-866e-be8d03330c56
-md"""
-## Estimación de parámetros por máxima verosimilitud
-Un estimador máximo verosímil es aquel que maximiza la función de verosimilitud, 
-que no es más que el producto de las probabilidades de cada una de las 
-muestras. Si suponemos que las 
-variables de la muestra son independientes y siguen la misma distribución de 
-probabilidad (iid: independientes e idénticamente distribuidas):
-
-$p(\mathbf{y}|\theta,\sigma^2) = \prod_{i=1}^N \frac{1}{\sqrt{2\pi\sigma^2}}
-e^{-\frac{(y_i-x_i\theta)^2}{2\sigma^2}}$
-
-donde hemos extendido el productorio a todas las muestas.
-"""
-
-# ╔═╡ 4b0609e8-cc0b-44e9-94e9-01c34301dfe7
-md"""
-## Estimación de parámetros por máxima verosimilitud
-Si tomamos logaritmos de la función de verosimilitud:
-
-$ln(p(\mathbf{y}|\theta,\sigma^2)) = {-\frac{1}{2}}\sum_{i=1}^N ln(2\pi\sigma^2) - 
-\sum_{i=1}^N \frac{(y_i-x_i\theta)^2}{2\sigma^2}$
-
-Como la función logaritmo es monótonamente creciente maximizar la función de 
-verosimilitud es lo mismo que minimizar la misma función cambiada de signo.
-"""
-
-# ╔═╡ 4a71d082-f1ca-4582-8722-0d6ec6b67de4
-md"""
-## Estimación de parámetros por máxima verosimilitud
-
-$-ln(p(\mathbf{y}|\theta,\sigma^2)) = {\frac{1}{2}}\sum_{n=1}^N ln(2\pi\sigma^2) + 
-\boxed{\sum_{i=1}^N \frac{(y_i-x_i\theta)^2}{2\sigma^2}}$
-
-Si fijamos $\sigma^2$ minizar la expresión anterior significa minimizar el 
-sumatorio que depende de $\theta$, que es proporcional a la función de pérdidas.
-
-"""
-
-# ╔═╡ 94a22149-789c-4a25-b91f-23fc24e702fc
-md"""
-## Estimación de parámetros por máxima verosimilitud
-Por otro lado, podemos calcular el estimador máximo verosímil derivando la 
-expresión anterior con respecto a $\sigma^2$ e igualando a cero, con lo que 
-obtenemos:
-
-$\hat \sigma^2 = \frac{1}{N} \sum_{i=1}^N (y_i - x_i\theta)^2$
-
-Que es exactamente el estimador con sesgo que ya habíamos calculado 
-(*Demostración*).
-"""
-
-# ╔═╡ 6e8cdc3d-aa37-4b66-84b2-6b1db9947d62
-md"""
-# Regresión lineal múltiple
-"""
-
-# ╔═╡ 07c535e5-c9bb-4ecb-bcb4-391f257a91c3
-md"""
-## Extensión de la regresión lineal
-
-Hasta ahora, sólo hemos utilizado una característica como predictor en 
-nuestro modelo.
-
-Pero, podemos añadir más características como predictores de nuestro modelo.
-
-$h_{\theta}(x) = y = \theta_0 + \theta_1 x_1 + \theta_2 x_2 +...+ \epsilon$
-"""
-
-# ╔═╡ b97dac76-fdb8-4da0-8295-0f8a9dc20cf3
-md"""
-## Extensión de la regresión lineal
-
-Recordemos la estructura de nuestro conjunto de datos:
-"""
-
-# ╔═╡ e9069ed2-3a71-4206-b569-4f73bb97eb19
-first(data[:, Not(:bias)], 4)
-
-# ╔═╡ 05ad2c30-e21b-40e2-85a9-f85176a5c075
-md"""
-Ahora, vamos a incluir en la regresión todas las características:
-
-$height = \theta_0 + \theta_1 weight + \theta_2 age + \theta_3 male + \epsilon$
-
-"""
-
-# ╔═╡ 04aca69e-71a6-4b66-b4a0-fe8aaabd5fe9
-md"""
-## Extensión de la regresión lineal 
-Fíjate en que lo que estamos haciendo es añadir más columnas a la matriz de 
-los predictores:
-
-```math
-\begin{bmatrix}
-y_1 \\
-y_2\\
-y_3\\
-...\\
-y_N \\
-\end{bmatrix}
-=
-\begin{bmatrix}
-1 & x_1^1 & x_1^2 & ... & x_1^m\\
-1 & x_2^1 & x_2^2 & ... & x_2^m\\
-1 & x_3^1 & x_3^2 & ... & x_3^m\\
-... & ... & ... & ... & ... \\
-1 & x_n^1 & x_n^2 & ... & x_N^m\\
-\end{bmatrix}
-\begin{bmatrix}
-\theta_0 \\
-\theta_1 \\
-\theta_2 \\
-...\\
-\theta_m \\
-\end{bmatrix}
-+
-\begin{bmatrix}
-\epsilon \\
-\epsilon \\
-\epsilon \\
-... \\
-\epsilon \\
-\end{bmatrix}
-```
-
-"""
-
-# ╔═╡ 6aa1e98d-13df-4732-bc3a-b907bcb8e4bd
-md"""
-## Extensión de la regresión lineal 
-Que podemos resolver de este modo si incluimos todas las características:
-"""
-
-# ╔═╡ dff726bd-66dc-49d0-8dfd-bd762cad734b
-begin
-	X_todas = Matrix(adultos[:, [:bias, :weight, :age, :male]])
-	y_todas = adultos[:, :height]
-	θ_todas = (X_todas'X_todas)\(X_todas'y_todas)
-	println("θ = ", θ_todas)
-end
-
-# ╔═╡ ab5b96a3-97d9-45fe-a8fe-88b5094bca8e
-md"""
-## Extensión de la regresión lineal
-El paquete **GLM** también nos permite hacer regresión multivariada:
-"""
-
-# ╔═╡ e4e29ff3-fc14-4966-8cfb-e8296a4a4bd1
-regresion_multivariada_glm = lm(@formula(height ~ weight + age + male), adultos)
-
-# ╔═╡ 14e10278-99fc-4932-aa52-6d02cf6ac7db
-md"""
-Los valores estimados de los parámetros son los mismos, pero obtenemos mucha más información.
-"""
-
-# ╔═╡ 158f021b-5fa8-49be-a8df-6863a272e4e8
-md"""
-## Extensión de la regresión lineal
-
-Si usamos el paquete **MLJ**:
-"""
-
-# ╔═╡ 55211ee4-a8da-46b2-96f1-83fc170677ee
-begin
-	X_multiple = coerce(adultos[:, [:weight, :age, :male]], MLJ.Count => MLJ.Continuous)
-	maquina_multiple = machine(regresor, X_multiple, adultos.height)
-	fit!(maquina_multiple)
-end
-
-# ╔═╡ 1661096e-713c-435a-b47d-278f454ad76b
-evaluate!(maquina_multiple, resampling=MLJ.InSample(), measure=rms)
-
-# ╔═╡ c3976756-cf99-4092-86d2-994b34894bb7
-md"""
-Si empleamos validación cruzada:
-"""
-
-# ╔═╡ 70802a0d-d500-457c-9823-0bf99f23509e
-evaluate!(maquina_multiple, resampling=MLJ.CV(nfolds=10, rng=69), measure=rms)
-
-# ╔═╡ 354706f0-c7a2-49b6-be7d-5fe9d333aa30
-md"""
-## Normalidad de los residuos
-"""
-
-# ╔═╡ b4ffd1ca-dc72-45fe-a6a4-b0f9569cec64
-residuos_multiple = y - MLJ.predict(maquina_multiple, X_multiple)
-
-# ╔═╡ 1e051daa-f2db-447b-93b3-19c594fc0d66
-ajuste_residuos_multiple = Distributions.fit(Normal, residuos_multiple)
-
-# ╔═╡ 4b2dfb5f-9319-4cd9-9e6c-69efab579681
-ShapiroWilkTest(residuos_multiple)
-
-# ╔═╡ 0f85c1b1-ce14-4870-8943-efb72e9ec7d9
-md"""
-La prueba de Shapiro-Wilk no pasa. Veamos qué ocurre con las otras dos pruebas:
-"""
-
-# ╔═╡ eefd48fc-ca9a-42fb-a321-53be6bf98381
-OneSampleADTest(residuos_multiple, ajuste_residuos_multiple)
-
-# ╔═╡ ef313c53-798c-4e84-b6da-4d90ed49db51
-ApproximateOneSampleKSTest(residuos_multiple, ajuste_residuos_multiple)
-
-# ╔═╡ 14a01c6a-9c06-434d-b1b9-87be793c071a
-md"""
-La normalidad de los residuos sí que pasa las dos últimas pruebas.
-"""
-
-# ╔═╡ 613788e4-0430-41da-ad36-55c24de472a2
-md"""
-## Normalidad de los residuos
-
-Utilicemos una representación cuantil-cuantil:
-"""
-
-# ╔═╡ 2ecb47e6-58e1-4065-afa4-1c0eea75a6ee
-qqnorm(residuos_multiple, xlabel="Cuantil teórico", ylabel="Cuantil de los datos", title="Gráfico cuantil-cuantil de los residuos", size=(900,400))
-
-# ╔═╡ 7705d15c-ff72-488d-9733-d535f8c0d33d
-md"""
-Vemos que tenemos un dato anómalo, abajo a la izquierda en el gráfico. Si eliminamos el dato anómalo y volvemos a hacer la prueba:
-"""
-
-# ╔═╡ 9df11318-64a8-48cc-803a-2c19a0796fe8
-ShapiroWilkTest(filter(x -> x > -15, residuos_multiple))
-
-# ╔═╡ 90df1425-d688-4195-9aea-fc1494000448
-md"""
-La prueba de normalidad ahora pasa, y si representamos el gráfico cuantil-cuantil, vemos que ha mejorado
-"""
-
-# ╔═╡ 0ba2bf47-2dab-4ef3-af7e-bd97d1f0ebc4
-qqnorm(filter(x -> x > -15, residuos_multiple), size=(900,400))
-
-# ╔═╡ d4bfb41a-7f9d-4ae6-aa1c-a3e1bac8025d
-md"""
-## Resumen
-
-Todo lo que hemos aprendido en el caso de un único predictor y una única variable predicha lo podemos extender al caso de varios predictores y una única variable predicha.
-"""
-
-# ╔═╡ 47e52680-e6ea-4de9-b621-9294c13c99ee
-md"""
-# Regresión polinomial
-"""
-
-# ╔═╡ 4ca27647-e6ed-42f5-aac4-bf9dd959d9c5
-md"""
-## Extensión de la regresión lineal
-
-Visualicemos todos los datos de nuestro conjunto, no sólo los datos de las personas adultas:
-"""
-
-# ╔═╡ e3c90bb0-22fb-4853-ba20-c77dd87d0096
-scatter(data.weight, data.height, xlabel="weight", ylabel="height", title="Altura frente a peso en el cojunto Howell", legend=false, size=(900,400))
-
-# ╔═╡ f9f038a8-a3dd-4253-af34-0903d4b13216
-md"""
-A simple vista parece que su comportamiento no es lineal.
-
-¿Podemos utilizar un polinomio como modelo de los datos?
-"""
-
-# ╔═╡ 735b0a1f-8568-4ce2-8761-c321366f5a35
-md"""
-## Extensión de la regresión lineal
-En el caso de ajuste de un polinomio tenemos:
-
-$h_{\theta}(x) = y = \theta_0 + \theta_1 x + \theta_2 x^2 +...+ \theta_n x^n + \epsilon$
-
-Fíjate en que los parámetros que buscamos $\mathbf{\theta}$ siguen siendo 
-lineales, no hay ninguna potencia de los parámetros, la potencia está en los 
-datos.
-"""
-
-# ╔═╡ be0d88a4-5520-43bd-8914-9b566a343acc
-md"""
-## Extensión de la regresión lineal
-Que lo podemos expresar de modo matricial como:
-
-```math
-\begin{bmatrix}
-y_1 \\
-y_2\\
-y_3\\
-...\\
-y_N \\
-\end{bmatrix}
-=
-\begin{bmatrix}
-1 & x_1 & (x_1)^2 & ... & (x_1)^m\\
-1 & x_2 & (x_2)^2 & ... & (x_2)^m\\
-1 & x_3 & (x_3)^2 & ... & (x_3)^m\\
-... & ... & ... & ... & ... \\
-1 & x_N & (x_N)^2 & ... & (x_N)^m\\
-\end{bmatrix}
-\begin{bmatrix}
-\theta_0 \\
-\theta_1 \\
-\theta_2 \\
-...\\
-\theta_m \\
-\end{bmatrix}
-+
-\begin{bmatrix}
-\epsilon \\
-\epsilon \\
-\epsilon \\
-... \\
-\epsilon \\
-\end{bmatrix}
-```
-"""
-
-# ╔═╡ 690417e7-50a6-401c-9ad9-1d42abc384a3
-md"""
-## Extensión de la regresión lineal
-
-Probemos primero con un polinomio de grado 2:
-"""
-
-# ╔═╡ e982d0a1-3469-48d5-a286-28fc2f88f714
-md"""
-Grado del polinomio: $(@bind grado NumberField(1:12, default=2))
-"""
-
-# ╔═╡ b117c48e-2e1b-4908-8747-58d080a829f0
-function ajuste_polinomial(grado::Int)
-	fit = Polynomials.fit(data[:,:weight], data[:,:height], grado)
-	# print(fit)
-	rmse = rms(fit.(data[:, :weight]), data[:, :height])
-	fit, rmse
-end;
-
-# ╔═╡ 4f59d4d0-8c87-41d6-b313-1cdc368a5120
-function dibuja_ajuste(grado::Int)
-	fit, rmse = ajuste_polinomial(grado)
-	titulo = "Grado: " * string(grado) * ", RMSE: " * string(rmse)
-	if grado <= 2
-		titulo = titulo * " (Subajuste)"
-	elseif grado > 8 
-		titulo = titulo * " (Sobreajuste)"
-	end
-	scatter(data[:, :weight], data[:, :height], 
-		ylim=(50, 200), 
-		xlabel="weight", ylabel="height", 
-		label="Datos", legend=false, 
-		title=titulo)
-	plot!(fit, extrema(data[:, :weight])..., width=3)
-end;
-
-# ╔═╡ 0ad863f8-3479-4da5-92b2-7bdc2f4044d5
-dibuja_ajuste(grado)
-
-# ╔═╡ 53bdf7bb-95f7-4413-aec7-1c88375fcf22
-md"""
-## Encontrar el mejor grado del polinomio
-
-La siguiente gráfica muestra el MSE frente al grado del polinomio:
-"""
-
-# ╔═╡ 1c7e1986-b12f-4d4a-9be9-12befefb98bd
-begin
-	datos = [ajuste_polinomial(x)[2] for x in 1:12]
-	plot(datos, xlim=(0,12), size=(900,400), xticks=(1:12))
-	scatter!(datos)
-end
-
-# ╔═╡ f8967d16-3b32-47af-93eb-13eee06fc199
-md"""
-Parece que desde grado 3 hasta 8 son buenas elecciones.
-"""
-
-# ╔═╡ 5390815a-39a1-4aee-bb0c-d93edb60c9ec
-md"""
-## Encontrar el mejor grado de un polinomio
-
-Comprobemos la hipótesis de normalidad de los residuos para un polinomio de grado 3:
-"""
-
-# ╔═╡ 1d3429b4-30d3-407c-aa96-40b91823870e
-regresion_grado3_glm = lm(@formula(height ~ weight + weight^2 + weight^3), adultos)
-
-# ╔═╡ d9e5abac-a4a9-41f9-96c7-cd53727c4186
-ajuste_residuos_grado3_glm = Distributions.fit(Normal, residuals(regresion_grado3_glm))
-
-# ╔═╡ e9ae8022-0ec7-4206-b006-d070322f10c5
-begin
-	histogram(residuals(regresion_grado3_glm), normed=true, label="Histograma")
-	plot!(ajuste_residuos_grado3_glm, width=2, label="Ajuste polinomio cúbico")
-end
-
-# ╔═╡ 7f60da0c-5876-47c0-9cf6-1bce1891d4f6
-md"""
-Las distintas medidas de bondad del ajuste no nos premiten rechazar la hipótesis nula: los residuos siguen una distribución normal.
-"""
-
-# ╔═╡ e0d5372d-d876-4e56-a090-bbe7158ae845
-ShapiroWilkTest(residuals(regresion_grado3_glm))
-
-# ╔═╡ 0db3efc7-01e6-4d0b-bb52-4626faac179c
-OneSampleADTest(residuals(regresion_grado3_glm), Distributions.fit(Normal, residuals(regresion_grado3_glm)))
-
-# ╔═╡ 1d383b64-a596-42ca-9eed-6ec35c7d61ea
-ApproximateOneSampleKSTest(residuals(regresion_grado3_glm), Distributions.fit(Normal, residuals(regresion_grado3_glm)))
-
-# ╔═╡ dbbca94b-d3eb-40f2-b303-f40f537dbbd9
-md"""
-El gráfico quantil-quantil corrobora la bondad del ajuste.
-"""
-
-# ╔═╡ 5cd0a735-6ab1-4467-aed0-591f876658a7
-qqnorm(residuals(regresion_grado3_glm))
-
-# ╔═╡ 78f74061-afc3-44af-9753-3feeab77b889
-md"""
-Otras métricas que podemos utilizar para seleccionar entre varios modelos son:
-
-* [AIC (Akaike Information Criterion)](https://en.wikipedia.org/wiki/Akaike_information_criterion) y 
-* [BIC (Bayessian Information Criterion](https://en.wikipedia.org/wiki/Bayesian_information_criterion).
-
-Estas métricas tienen en cuenta tanto el grado de ajuste del modelo a los datos como la complejidad del modelo.
-"""
-
-# ╔═╡ fa1025bf-df2c-4bcc-83d5-8f0d88a56e57
-print("AIC: " * string(GLM.aic(regresion_grado3_glm)))
-
-# ╔═╡ 0984464e-7c1d-418b-b956-436744c84704
-print("BIC: " * string(GLM.bic(regresion_grado3_glm)))
-
-# ╔═╡ a2239793-3d61-4ec5-a9b8-5b7689a2bc2b
-
-
-# ╔═╡ 8b6c1f57-a7a6-45e1-81f3-a3b06cbd25cc
-md"""
-# Descenso de gradiente
-"""
-
-# ╔═╡ 7237b145-9c6d-40e0-bc56-601d552fcd33
-md"""
-## Idea base del descenso de gradiente
-
-En la primera parte, hemos obtenido un método directo para minimizar la función de pérdidas.
-
-Existe otra posibilidad para «encontrar» el mínimo de la función de pérdidas. Es un proceso iterativo y se conoce como descenso del gradiente.
-
-Vamos a verlo con detalle.
-"""
-
-# ╔═╡ d86aafd0-4e64-4c95-8279-a0a0a7f6ff1e
-md"""
-## Idea base del descenso de gradiente
-
-Volvamos a la función de pérdidas.
-
-$\mathcal{L}(\mathbf{\theta}) = \frac{1}{N} \sum_{i=1}^N \lvert y_i - h(\theta) \rvert ^2$
-
-Lo que nos interesa es la dependencia de la función de pérdidas respecto a los parámetros $\theta$.
-
-Lo que queremos es, partiendo de unos valores iniciales para los parámetros $\theta$, ir aproximándonos poco a poco a los valores de $\theta$ que minimizan la función de pérdidas.
-"""
-
-# ╔═╡ 9ab6ffff-263d-47b6-972e-270f4cc614ea
-md"""
-```math
-\begin{eqnarray*}
-& ... \\
-& \mathcal{L}(\theta^i + \Delta \theta^i) < \mathcal{L}(\theta^i) \\
-& \theta^{i+1} = \theta^i + \Delta \theta^i \\
-& \mathcal{L}(\theta^{i+1} + \Delta \theta^{i+1}) < \mathcal{L}(\theta^{i+1}) \\
-& \theta^{i+2} = \theta^{i+1} + \Delta \theta^{i+1} \\
-& ...
-\end{eqnarray*}
-```
-
-y continúa hasta que se alcance un número máximo de iteraciones, o la disminución que se obtenga entre iteraciones no sea significativa.
-"""
-
-# ╔═╡ 97eeb5d7-f5d9-40e1-aa42-d1b17d231885
-md"""
-## Idea base del descenso de gradiente
-
-Veamos cómo expresar estas ideas de modo formal. Vamos a hacer un desarrollo de Taylor de $\mathcal{L(\theta + \Delta \theta)}$ donde $\Delta \theta = \theta^{i+1} - \theta^i$
-
-```math
-\mathcal{L(\theta + \Delta \theta)} = \mathcal{L(\theta)} + \frac{\partial \mathcal{L(\theta)}}{\partial \theta} \Delta \theta +
-\frac{1}{2!} \frac{\partial^2 \mathcal{L(\theta)}}{\partial \theta^2} (\Delta \theta)^2 + ...
-```
-
-y nos quedamos hasta el termino cuadrático en $\Delta \theta$. Derivamos con respecto a $\Delta \theta$ e igualamos a cero:
-
-```math
-\frac{\partial \mathcal{L(\theta + \Delta \theta)}}{\partial \Delta \theta} =
-\frac{\partial \mathcal{L(\theta)}}{\partial \theta} +
-\frac{\partial^2 \mathcal{L(\theta)}}{\partial \theta^2}  \Delta \theta = 0
-```
-"""
-
-# ╔═╡ 7023a276-4858-404c-a01a-0c0f6f718c7a
-md"""
-## Idea base del descenso de gradiente
-
-```math
-\begin{eqnarray*}
-& \Delta \theta = \theta^{i+1} - \theta^i \\
-& \theta^{i+1} = \theta^i - \left( \frac{\partial^2 \mathcal{L(\theta)}}{\partial \theta^2}\right)^{-1}
-\frac{\partial \mathcal{L(\theta)}}{\partial \theta}
-\end{eqnarray*}
-```
-
-El término:
-
-```math
-\left( \frac{\partial^2 \mathcal{L(\theta)}}{\partial \theta^2}\right)^{-1}
-```
-
-es costoso de calcular, y se suele sustituir por un valor fijo $\eta$ llamado **tasa de aprendizaje**.
-"""
-
-# ╔═╡ 725a38d4-5b91-4a3c-948f-1bd01c130106
-md"""
-## Idea base del descenso de gradiente
-Finalmente obtenemos:
-
-```math
-\begin{eqnarray*}
-\theta^{i+1} = \theta^i - \eta \frac{\partial \mathcal{L(\theta)}}{\partial \theta} \\
-\mathcal{L(\theta^{i+1}}) < \mathcal{L(\theta^i)}
-\end{eqnarray*}
-```
-
-es decir, calculamos el gradiente en el punto actual $\theta^i$, lo multiplicamos por la tasa de aprendizaje $\eta$ se lo restamos a $\theta^i$ y obtenemos un nuevo valor $\theta^{i+1}$ para el cuál la función de pérdidas es menor que en el paso anterior.
-
-"""
-
-# ╔═╡ 13d9bc4b-ccd2-49d2-9f73-c9b890da6c6b
-md"""
-## Idea base del descenso del gradiente
-
-La elección de $\eta$ se debe realizar con cuidado. Un valor grande de $\eta$ puede dar lugar a un comportamiento errático cuando el descenso del gradiente se acerca al mínimo de la función de pérdidas.
-
-Un valor demasiado pequeño de $\eta$ puede dar lugar a una aproximación muy lenta al valor mínimo de la función de pérdidas.
-"""
-
-# ╔═╡ ac02eb56-d90c-4922-809a-6eff0e5abe0d
-md"""
-## Descenso de gradiente por lotes
-
-Recordemos que la función de pérdidas:
-
-```math
-\mathcal{L}(\mathbf{\theta}) = \frac{1}{N} \sum_{i=1}^N \lvert y_i - h(\theta) \rvert ^2
-```
-
-utiliza todos los datos del conjunto para actualizar el valor de $\theta^i$
-
-```math
-\theta^{i+1} = \theta^i - \eta \frac{\partial \mathcal{L(\theta)}}{\partial \theta} \\
-\mathcal{L(\theta^{i+1}}) < \mathcal{L(\theta^i)}
-```
-"""
-
-# ╔═╡ df3021a4-500a-43c9-9b7b-ebaf00e964d1
-md"""
-## Descenso de gradiente por lotes
-
-Si el conjunto de datos es muy numeroso y utilizamos muchos pasos en el 
-descenso de gradiente, puede que el algoritmo tarde mucho en alcanzar el 
-mínimo.
-"""
-
-# ╔═╡ 0dfae67d-60ff-4ba9-898f-96d461c150e9
-md"""
-## Descenso de gradiente estocástico
-
-Un técnica que se suele utilizar para acelerar el proceso de convergencia del 
-descenso de gradiente es elegir aleatoriamente una única muestra del conjunto
-total en cada paso del descenso.
-
-"""
-
-# ╔═╡ 95cd1e05-82fa-40df-b38b-1642d61e7c84
-md"""
-## Descenso de gradiente por mini lotes
-
-Una técnica mixta es, para cada paso de optimización, tomar un subconjunto 
-aleatorio de las muestras de entrenamiento.
-"""
-
-# ╔═╡ aad3bc5b-c389-409d-acb5-895788e3ce42
-md"""
-# Regularización
-"""
-
-# ╔═╡ 04301b0a-02f0-48b0-9a3b-60779ad99964
-md"""
-## Qué es la regularización
-
-Recordemos que en el caso de la regresión hemos encontrado el _mejor_ grado 
-del polinomio calculando error cuadrático medio.
-
-Ahora que conocemos la técnica de descenso del gradiente, podemos ampliar la 
-definición de la función de pérdidas para incluir un término que **controle** 
-el grado del polinomio que estamos ajustando.
-"""
-
-# ╔═╡ 9539b216-c13f-4aed-ae82-d569f9a1ac7e
-md"""
-## Modelos lineales regularizados: Ridge
-
-En este tipo de regularización, a la función de pérdidas se le añade un término 
-con el módulo 
-
-```math
-\mathcal{L}(\mathbf{\theta}) = \frac{1}{N} \sum_{i=1}^N \lvert y_i - h(\theta) \rvert ^2
-+ \lambda \theta^T\theta
-```
-
-Este caso tiene una solución exacta para $\theta$:
-
-```math
-\theta = (X^TX + \lambda I)^{-1} X^T y
-```
-"""
-
-# ╔═╡ 95da45a3-5cab-4323-b427-c6291b5b0191
-md"""
-## Modelos lineales regularizados: Ridge
-
-Veamos un ejemplo sobre un subconjunto de nuestros datos cuando ajustamos a un polinomio de grado 9:
-"""
-
-# ╔═╡ 43f68ca8-dd38-4cee-a74f-fa6dfff9a872
-names(adultos)
-
-# ╔═╡ e6e771a2-d662-4fea-9b48-63421fd8b851
-@df adultos scatter(:weight, :height)
-
-# ╔═╡ ee8c9183-ead1-4a95-8d2c-818979ae6a05
-begin
-	Random.seed!(69)
-	adultos_muestra = view(adultos, sample(axes(adultos, 1), 20; replace = false, ordered = true), [:weight, :height])
-end
-
-# ╔═╡ cadc217f-0f24-4ab9-a5ab-fcc81b90f338
-@df adultos_muestra scatter(:weight, :height, legend=false)
-
-# ╔═╡ 06acadfc-64c4-4457-9c7d-611ed16fa5ac
-md"""
-Vamos a cambiar a los tipos que espera MLJ.
-"""
-
-# ╔═╡ 3bd497e3-537a-42dc-81e0-a771a6bd1474
-adultos_coerce = coerce(adultos_muestra, :weight => MLJ.Continuous, :height => MLJ.Continuous)
-
-# ╔═╡ 781962b3-b083-495a-ae52-0c280dd0c498
-regresion_ridge = @load RidgeRegressor pkg = "MultivariateStats"
-
-# ╔═╡ e01ee989-9aaa-4da9-81a4-979ecdd470f8
-regresor_ridge = regresion_ridge()
-
-# ╔═╡ a9845895-2091-42b9-8d32-7a1555ddf9cf
-adultos_coerce.weight
-
-# ╔═╡ 46551ff5-3ff9-4fa6-8b57-8b3ecb853050
-typeof(adultos_coerce[:, [:weight]])
-
-# ╔═╡ 70dcb974-8000-43f2-a2e3-3617390a7952
-modelo_ridge = machine(regresor_ridge, adultos_coerce[:, [:weight]], adultos_coerce.height)
-
-# ╔═╡ 8e591009-f1f2-4dad-9afd-01e38cccdb80
-fit!(modelo_ridge)
-
-# ╔═╡ c806378b-2e00-4d0c-a423-1ec03880adf5
-adultos_coerce.height
-
-# ╔═╡ 84d6f84f-c5c7-4c73-8409-29f62dd38040
-yhat = MLJ.predict(modelo_ridge, adultos_coerce[:, [:weight]])
-
-# ╔═╡ d5dc95c9-b2b1-4fe4-842b-973cb33e7916
-begin
-	scatter(adultos_muestra.weight, adultos_muestra.height)
-	plot!(adultos_muestra.weight, yhat)
-end
-
-# ╔═╡ 5c0b5a16-fd1d-4b8c-aa70-d746332b4d28
-md"""
-# Resumen
-
-- Hemos analizado con detalle la regresión lineal.
-- Hemos ampliado la regresión lineal a múltiple.
-- Hemos extendido la regresión lineal a modelos polinómicos.
-- Hemos estudiado qué es la técnica de descenso del gradiente.
-- Hemos introducido la regularización para mejorar el rendimiento.
-- Es importante que compruebes que se cumplen las condiciones para aplicar regresión lineal: residuos distribuido según una gaussiana centrada en el 0.
-"""
-
-# ╔═╡ 31f685d8-b2b3-49d3-88a0-e45f24e69bd8
-# ╠═╡ disabled = true
-#=╠═╡
-v = [1,2,3]
-  ╠═╡ =#
+# ╔═╡ 754e7898-de6a-4752-84c1-8a47b5ca6446
+yhat = MLJ.predict(modelo_ridge, )
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1440,16 +97,16 @@ StatsPlots = "f3b207a7-027a-5e70-b257-86293d7955fd"
 [compat]
 CSV = "~0.10.15"
 DataFrames = "~1.7.0"
-Distributions = "~0.25.113"
+Distributions = "~0.25.115"
 GLM = "~1.8.3"
-HTTP = "~1.10.14"
+HTTP = "~1.10.15"
 HypothesisTests = "~0.11.3"
-MLJ = "~0.20.2"
+MLJ = "~0.20.7"
 MLJLinearModels = "~0.10.0"
 MLJMultivariateStatsInterface = "~0.5.3"
 MultivariateStats = "~0.10.3"
 PlotlyBase = "~0.8.19"
-PlotlyKaleido = "~2.2.5"
+PlotlyKaleido = "~2.2.6"
 Plots = "~1.40.9"
 PlutoUI = "~0.7.60"
 Polynomials = "~4.0.12"
@@ -1462,7 +119,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.3"
 manifest_format = "2.0"
-project_hash = "652d0a70623fbedc1c3031d7d98199076f896e8b"
+project_hash = "03a310eec1bdb87c87e0d63e8c0de43b964a54f7"
 
 [[deps.ARFFFiles]]
 deps = ["CategoricalArrays", "Dates", "Parsers", "Tables"]
@@ -1488,24 +145,24 @@ uuid = "6e696c72-6542-2067-7265-42206c756150"
 version = "1.3.2"
 
 [[deps.Accessors]]
-deps = ["CompositionsBase", "ConstructionBase", "InverseFunctions", "LinearAlgebra", "MacroTools", "Markdown"]
-git-tree-sha1 = "96bed9b1b57cf750cca50c311a197e306816a1cc"
+deps = ["CompositionsBase", "ConstructionBase", "Dates", "InverseFunctions", "MacroTools"]
+git-tree-sha1 = "0ba8f4c1f06707985ffb4804fdad1bf97b233897"
 uuid = "7d9f7c33-5ae7-4f3b-8dc6-eff91059b697"
-version = "0.1.39"
+version = "0.1.41"
 
     [deps.Accessors.extensions]
-    AccessorsAxisKeysExt = "AxisKeys"
-    AccessorsDatesExt = "Dates"
-    AccessorsIntervalSetsExt = "IntervalSets"
-    AccessorsStaticArraysExt = "StaticArrays"
-    AccessorsStructArraysExt = "StructArrays"
-    AccessorsTestExt = "Test"
-    AccessorsUnitfulExt = "Unitful"
+    AxisKeysExt = "AxisKeys"
+    IntervalSetsExt = "IntervalSets"
+    LinearAlgebraExt = "LinearAlgebra"
+    StaticArraysExt = "StaticArrays"
+    StructArraysExt = "StructArrays"
+    TestExt = "Test"
+    UnitfulExt = "Unitful"
 
     [deps.Accessors.weakdeps]
     AxisKeys = "94b1ba4f-4ee9-5380-92f1-94cde586c3c5"
-    Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
     IntervalSets = "8197267c-284f-5f27-9208-e0e47529a953"
+    LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
     Requires = "ae029012-a4dd-5104-9daa-d747884805df"
     StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
     StructArrays = "09ab397b-f2b6-538f-b94a-2f83cf4a842a"
@@ -1645,9 +302,9 @@ version = "0.1.9"
 
 [[deps.Bzip2_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
-git-tree-sha1 = "35abeca13bc0425cff9e59e229d971f5231323bf"
+git-tree-sha1 = "8873e196c2eb87962a2048b3b8e08946535864a1"
 uuid = "6e34b625-4abd-537c-b88f-471c36dfa7a0"
-version = "1.0.8+3"
+version = "1.0.8+4"
 
 [[deps.CSV]]
 deps = ["CodecZlib", "Dates", "FilePathsBase", "InlineStrings", "Mmap", "Parsers", "PooledArrays", "PrecompileTools", "SentinelArrays", "Tables", "Unicode", "WeakRefStrings", "WorkerUtilities"]
@@ -1693,9 +350,9 @@ version = "0.1.15"
 
 [[deps.ChainRulesCore]]
 deps = ["Compat", "LinearAlgebra"]
-git-tree-sha1 = "3e4b134270b372f2ed4d4d0e936aabaefc1802bc"
+git-tree-sha1 = "1713c74e00545bfe14605d2a2be1712de8fbcb58"
 uuid = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
-version = "1.25.0"
+version = "1.25.1"
 weakdeps = ["SparseArrays"]
 
     [deps.ChainRulesCore.extensions]
@@ -1942,9 +599,9 @@ version = "0.1.11"
 
 [[deps.Expat_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "f42a5b1e20e009a43c3646635ed81a9fcaccb287"
+git-tree-sha1 = "e51db81749b0777b2147fbe7b783ee79045b8e99"
 uuid = "2e619515-83b5-522b-bb60-26c02a35a201"
-version = "2.6.4+2"
+version = "2.6.4+3"
 
 [[deps.FFMPEG]]
 deps = ["FFMPEG_jll"]
@@ -2268,9 +925,9 @@ version = "0.21.4"
 
 [[deps.JpegTurbo_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "3447a92280ecaad1bd93d3fce3d408b6cfff8913"
+git-tree-sha1 = "eac1206917768cb54957c65a615460d87b455fc1"
 uuid = "aacddb02-875f-59d6-b918-886e6ef4fbf8"
-version = "3.1.0+1"
+version = "3.1.1+0"
 
 [[deps.JuliaVariables]]
 deps = ["MLStyle", "NameResolution"]
@@ -2314,9 +971,9 @@ version = "3.100.2+0"
 
 [[deps.LERC_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "78e0f4b5270c4ae09c7c5f78e77b904199038945"
+git-tree-sha1 = "aaafe88dccbd957a8d82f7d05be9b69172e0cee3"
 uuid = "88015f11-f218-50d7-93a8-a6af411a945d"
-version = "4.0.0+2"
+version = "4.0.1+0"
 
 [[deps.LLVMOpenMP_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -2326,9 +983,9 @@ version = "18.1.7+0"
 
 [[deps.LZO_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "16e6ec700154e8004dba90b4aec376f68905d104"
+git-tree-sha1 = "1c602b1127f4751facb671441ca72715cc95938a"
 uuid = "dd4b983a-f0e5-5f8d-a1b7-129d4a5fb1ac"
-version = "2.10.2+2"
+version = "2.10.3+0"
 
 [[deps.LaTeXStrings]]
 git-tree-sha1 = "dda21b8cbd6a6c40d9d02a73230f9d70fed6918c"
@@ -2417,33 +1074,33 @@ version = "1.7.0+0"
 
 [[deps.Libgpg_error_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "a7f43994b47130e4f491c3b2dbe78fe9e2aed2b3"
+git-tree-sha1 = "df37206100d39f79b3376afb6b9cee4970041c61"
 uuid = "7add5ba3-2f88-524e-9cd5-f83b8a55f7b8"
-version = "1.51.0+0"
+version = "1.51.1+0"
 
 [[deps.Libiconv_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "61dfdba58e585066d8bce214c5a51eaa0539f269"
+git-tree-sha1 = "be484f5c92fad0bd8acfef35fe017900b0b73809"
 uuid = "94ce4f54-9a6c-5748-9c1c-f9c7231a4531"
-version = "1.17.0+1"
+version = "1.18.0+0"
 
 [[deps.Libmount_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "d841749621f4dcf0ddc26a27d1f6484dfc37659a"
+git-tree-sha1 = "89211ea35d9df5831fca5d33552c02bd33878419"
 uuid = "4b2f31a3-9ecc-558c-b454-b3730dcb73e9"
-version = "2.40.2+1"
+version = "2.40.3+0"
 
 [[deps.Libtiff_jll]]
 deps = ["Artifacts", "JLLWrappers", "JpegTurbo_jll", "LERC_jll", "Libdl", "XZ_jll", "Zlib_jll", "Zstd_jll"]
-git-tree-sha1 = "b404131d06f7886402758c9ce2214b636eb4d54a"
+git-tree-sha1 = "4ab7581296671007fc33f07a721631b8855f4b1d"
 uuid = "89763e89-9b03-5906-acba-b20f662cd828"
-version = "4.7.0+0"
+version = "4.7.1+0"
 
 [[deps.Libuuid_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "9d630b7fb0be32eeb5e8da515f5e8a26deb457fe"
+git-tree-sha1 = "e888ad02ce716b319e6bdb985d2ef300e7089889"
 uuid = "38a345b3-de98-5d2b-a5d3-14cd9215e700"
-version = "2.40.2+1"
+version = "2.40.3+0"
 
 [[deps.LineSearches]]
 deps = ["LinearAlgebra", "NLSolversBase", "NaNMath", "Parameters", "Printf"]
@@ -2588,15 +1245,14 @@ version = "0.4.17"
 
 [[deps.MLUtils]]
 deps = ["ChainRulesCore", "Compat", "DataAPI", "DelimitedFiles", "FLoops", "NNlib", "Random", "ShowCases", "SimpleTraits", "Statistics", "StatsBase", "Tables", "Transducers"]
-git-tree-sha1 = "b45738c2e3d0d402dffa32b2c1654759a2ac35a4"
+git-tree-sha1 = "7940c0af802586b97009f254aa6065000a16fa1d"
 uuid = "f1d291b0-491e-4a28-83b9-f70985020b54"
-version = "0.4.4"
+version = "0.4.5"
 
 [[deps.MacroTools]]
-deps = ["Markdown", "Random"]
-git-tree-sha1 = "2fa9ee3e63fd3a4f7a9a4f4744a52f4856de82df"
+git-tree-sha1 = "72aebe0b5051e5143a079a4685a46da330a40472"
 uuid = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
-version = "0.5.13"
+version = "0.5.15"
 
 [[deps.Markdown]]
 deps = ["Base64"]
@@ -2653,9 +1309,9 @@ version = "7.8.3"
 
 [[deps.NNlib]]
 deps = ["Adapt", "Atomix", "ChainRulesCore", "GPUArraysCore", "KernelAbstractions", "LinearAlgebra", "Random", "Statistics"]
-git-tree-sha1 = "1177f161cda2083543b9967d7ca2a3e24e721e13"
+git-tree-sha1 = "bdc9d30f151590aca0af22690f5ab7dc18a551cb"
 uuid = "872c559c-99b0-510c-b3b7-b6c96a88d5cd"
-version = "0.9.26"
+version = "0.9.27"
 
     [deps.NNlib.extensions]
     NNlibAMDGPUExt = "AMDGPU"
@@ -2675,9 +1331,9 @@ version = "0.9.26"
 
 [[deps.NaNMath]]
 deps = ["OpenLibm_jll"]
-git-tree-sha1 = "0877504529a3e5c3343c6f8b4c0381e57e4387e4"
+git-tree-sha1 = "030ea22804ef91648f29b7ad3fc15fa49d0e6e71"
 uuid = "77ba4419-2d1f-58cd-9bb1-8ffee604a2e3"
-version = "1.0.2"
+version = "1.0.3"
 
 [[deps.NameResolution]]
 deps = ["PrettyPrint"]
@@ -2739,15 +1395,15 @@ version = "1.4.3"
 
 [[deps.OpenSSL_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "f58782a883ecbf9fb48dcd363f9ccd65f36c23a8"
+git-tree-sha1 = "7493f61f55a6cce7325f197443aa80d32554ba10"
 uuid = "458c3c95-2e84-50aa-8efc-19380b2a3a95"
-version = "3.0.15+2"
+version = "3.0.15+3"
 
 [[deps.OpenSpecFun_jll]]
-deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl", "Pkg"]
-git-tree-sha1 = "418e63d434f5ca12b188bbb287dfbe10a5af1da4"
+deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "1346c9208249809840c91b26703912dff463d335"
 uuid = "efe28fd5-8261-553b-a9e1-b2916fc3738e"
-version = "0.5.5+1"
+version = "0.5.6+0"
 
 [[deps.Optim]]
 deps = ["Compat", "FillArrays", "ForwardDiff", "LineSearches", "LinearAlgebra", "NLSolversBase", "NaNMath", "Parameters", "PositiveFactorizations", "Printf", "SparseArrays", "StatsBase"]
@@ -2840,10 +1496,10 @@ uuid = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
 version = "0.8.19"
 
 [[deps.PlotlyKaleido]]
-deps = ["Base64", "JSON", "Kaleido_jll"]
-git-tree-sha1 = "3210de4d88af7ca5de9e26305758a59aabc48aac"
+deps = ["Artifacts", "Base64", "JSON", "Kaleido_jll"]
+git-tree-sha1 = "ba551e47d7eac212864fdfea3bd07f30202b4a5b"
 uuid = "f2990250-8cf9-495f-b13a-cce12b45703c"
-version = "2.2.5"
+version = "2.2.6"
 
 [[deps.Plots]]
 deps = ["Base64", "Contour", "Dates", "Downloads", "FFMPEG", "FixedPointNumbers", "GR", "JLFzf", "JSON", "LaTeXStrings", "Latexify", "LinearAlgebra", "Measures", "NaNMath", "Pkg", "PlotThemes", "PlotUtils", "PrecompileTools", "Printf", "REPL", "Random", "RecipesBase", "RecipesPipeline", "Reexport", "RelocatableFolders", "Requires", "Scratch", "Showoff", "SparseArrays", "Statistics", "StatsBase", "TOML", "UUIDs", "UnicodeFun", "UnitfulLatexify", "Unzip"]
@@ -2941,9 +1597,9 @@ uuid = "92933f4c-e287-5a05-a399-4b506db050ca"
 version = "1.10.2"
 
 [[deps.PtrArrays]]
-git-tree-sha1 = "77a42d78b6a92df47ab37e177b2deac405e1c88f"
+git-tree-sha1 = "1d36ef11a9aaf1e8b74dacc6a731dd1de8fd493d"
 uuid = "43287f4e-b6f4-7ad1-bb20-aadabca52c3d"
-version = "1.2.1"
+version = "1.3.0"
 
 [[deps.Qt6Base_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Fontconfig_jll", "Glib_jll", "JLLWrappers", "Libdl", "Libglvnd_jll", "OpenSSL_jll", "Vulkan_Loader_jll", "Xorg_libSM_jll", "Xorg_libXext_jll", "Xorg_libXrender_jll", "Xorg_libxcb_jll", "Xorg_xcb_util_cursor_jll", "Xorg_xcb_util_image_jll", "Xorg_xcb_util_keysyms_jll", "Xorg_xcb_util_renderutil_jll", "Xorg_xcb_util_wm_jll", "Zlib_jll", "libinput_jll", "xkbcommon_jll"]
@@ -3372,9 +2028,9 @@ version = "0.4.1"
 
 [[deps.Unitful]]
 deps = ["Dates", "LinearAlgebra", "Random"]
-git-tree-sha1 = "01915bfcd62be15329c9a07235447a89d588327c"
+git-tree-sha1 = "c0667a8e676c53d390a09dc6870b3d8d6650e2bf"
 uuid = "1986cc42-f94f-5a68-af5c-568840ba703d"
-version = "1.21.1"
+version = "1.22.0"
 weakdeps = ["ConstructionBase", "InverseFunctions"]
 
     [deps.Unitful.extensions]
@@ -3458,9 +2114,9 @@ version = "1.1.42+0"
 
 [[deps.XZ_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "ecda72ccaf6a67c190c9adf27034ee569bccbc3a"
+git-tree-sha1 = "beef98d5aad604d9e7d60b2ece5181f7888e2fd6"
 uuid = "ffd25f8a-64ca-5728-b0f7-c24cf3aae800"
-version = "5.6.3+1"
+version = "5.6.4+0"
 
 [[deps.Xorg_libICE_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -3478,13 +2134,13 @@ version = "1.2.4+0"
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libxcb_jll", "Xorg_xtrans_jll"]
 git-tree-sha1 = "9dafcee1d24c4f024e7edc92603cedba72118283"
 uuid = "4f6342f7-b3d2-589e-9d20-edeb45f2b2bc"
-version = "1.8.6+1"
+version = "1.8.6+3"
 
 [[deps.Xorg_libXau_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "2b0e27d52ec9d8d483e2ca0b72b3cb1a8df5c27a"
+git-tree-sha1 = "e9216fdcd8514b7072b43653874fd688e4c6c003"
 uuid = "0c0b7dd1-d40b-584c-a123-a41640f87eec"
-version = "1.0.11+1"
+version = "1.0.12+0"
 
 [[deps.Xorg_libXcursor_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libXfixes_jll", "Xorg_libXrender_jll"]
@@ -3494,15 +2150,15 @@ version = "1.2.3+0"
 
 [[deps.Xorg_libXdmcp_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "02054ee01980c90297412e4c809c8694d7323af3"
+git-tree-sha1 = "89799ae67c17caa5b3b5a19b8469eeee474377db"
 uuid = "a3789734-cfe1-5b06-b2d0-1dd0d9d62d05"
-version = "1.1.4+1"
+version = "1.1.5+0"
 
 [[deps.Xorg_libXext_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libX11_jll"]
 git-tree-sha1 = "d7155fea91a4123ef59f42c4afb5ab3b4ca95058"
 uuid = "1082639a-0dae-5f34-9b06-72781eeb8cb3"
-version = "1.3.6+1"
+version = "1.3.6+3"
 
 [[deps.Xorg_libXfixes_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libX11_jll"]
@@ -3536,15 +2192,15 @@ version = "0.9.11+1"
 
 [[deps.Xorg_libpthread_stubs_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "fee57a273563e273f0f53275101cd41a8153517a"
+git-tree-sha1 = "c57201109a9e4c0585b208bb408bc41d205ac4e9"
 uuid = "14d82f49-176c-5ed1-bb49-ad3f5cbd8c74"
-version = "0.1.1+1"
+version = "0.1.2+0"
 
 [[deps.Xorg_libxcb_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "XSLT_jll", "Xorg_libXau_jll", "Xorg_libXdmcp_jll", "Xorg_libpthread_stubs_jll"]
 git-tree-sha1 = "1a74296303b6524a0472a8cb12d3d87a78eb3612"
 uuid = "c7cfdc94-dc32-55de-ac96-5a1b8d977c5b"
-version = "1.17.0+1"
+version = "1.17.0+3"
 
 [[deps.Xorg_libxkbfile_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libX11_jll"]
@@ -3602,9 +2258,9 @@ version = "2.39.0+0"
 
 [[deps.Xorg_xtrans_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "b9ead2d2bdb27330545eb14234a2e300da61232e"
+git-tree-sha1 = "6dba04dbfb72ae3ebe5418ba33d087ba8aa8cb00"
 uuid = "c5fb5394-a638-5e4d-96e5-b29de1b5cf10"
-version = "1.5.0+1"
+version = "1.5.1+0"
 
 [[deps.Zlib_jll]]
 deps = ["Libdl"]
@@ -3613,9 +2269,9 @@ version = "1.2.13+1"
 
 [[deps.Zstd_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "7dc5adc3f9bfb9b091b7952f4f6048b7e37acafc"
+git-tree-sha1 = "622cf78670d067c738667aaa96c553430b65e269"
 uuid = "3161d3a3-bdf6-5164-811a-617609db77b4"
-version = "1.5.6+2"
+version = "1.5.7+0"
 
 [[deps.eudev_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg", "gperf_jll"]
@@ -3637,9 +2293,9 @@ version = "3.1.1+1"
 
 [[deps.libaom_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "1827acba325fdcdf1d2647fc8d5301dd9ba43a9d"
+git-tree-sha1 = "522c1df09d05a71785765d19c9524661234738e9"
 uuid = "a4ae2306-e953-59d6-aa16-d00cac43593b"
-version = "3.9.0+0"
+version = "3.11.0+0"
 
 [[deps.libass_jll]]
 deps = ["Artifacts", "Bzip2_jll", "FreeType2_jll", "FriBidi_jll", "HarfBuzz_jll", "JLLWrappers", "Libdl", "Zlib_jll"]
@@ -3678,9 +2334,9 @@ version = "1.18.0+0"
 
 [[deps.libpng_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Zlib_jll"]
-git-tree-sha1 = "9c42636e3205e555e5785e902387be0061e7efc1"
+git-tree-sha1 = "d7b5bbf1efbafb5eca466700949625e07533aff2"
 uuid = "b53b4c65-9356-5827-b1ea-8c7a1a84506f"
-version = "1.6.44+1"
+version = "1.6.45+1"
 
 [[deps.libvorbis_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Ogg_jll", "Pkg"]
@@ -3730,187 +2386,17 @@ version = "1.4.1+2"
 """
 
 # ╔═╡ Cell order:
-# ╟─df4e377a-895e-483d-8894-75629bb2533f
-# ╠═6f6339a7-9b4d-4272-94f7-9234d3d3be41
-# ╠═266e632b-30a5-4ae4-981f-8e2ab61e3232
-# ╠═d0fe37ee-bbc1-11ef-2f0c-4b6bc41d2c3a
-# ╠═cc81afb1-c73d-4e75-b572-21a70608dd9d
-# ╠═e709b44b-57b0-482d-bc11-93b91451d790
-# ╠═515ef8bd-82e3-4f94-8fbc-0626ed34e5b7
-# ╠═cda801a3-6b0c-49f0-afbd-798850b354ca
-# ╠═eb52ead3-2e23-4884-96c6-4ccdbf529be2
-# ╠═9cebf899-82f9-4a69-9ef1-5c98bb8b20fc
-# ╠═b3fe5074-6461-4d1e-bea3-f005533210a0
-# ╠═4309c399-3035-4a0a-8f88-2184efd415b9
-# ╠═8783e92c-3ff2-49e0-a85f-264a0ae77afc
-# ╠═410f5c00-91f0-4f00-924f-6691227bf1cd
-# ╠═a079b8eb-f179-41af-9712-de65be3d7a64
-# ╠═48d3993b-fcae-4d91-a53a-a936dcaea321
-# ╠═2e638e63-6f50-4dd0-921a-0e5d33e31fe1
-# ╠═bf9d5f2e-a1ae-4b9a-88ac-a7fcef6945bb
-# ╠═a7712a98-dbef-4f62-a83c-546ebfb3a40e
-# ╠═6ebfa722-b8f5-4837-871b-addba1c23586
-# ╠═cefd6efd-8687-4ab4-93e6-6ae33432d774
-# ╠═1b7baa00-78ea-48f6-af34-ccc0795d66b8
-# ╠═433bea47-fd81-4e3f-8fd0-d0fe76d6f6ec
-# ╠═86ad6318-1a86-469f-870c-591e9e306d74
-# ╠═bdc38a15-ff58-4431-8f3b-d1e310044af5
-# ╠═8af8b802-49d8-474f-b3a3-1278a69093f9
-# ╠═1c428df8-1517-42b3-aa47-215ea2d9bb6f
-# ╠═1f0385e8-a071-4473-8136-7cbcf6f924b8
-# ╠═23f13774-25c3-42de-800f-2437856ad9fc
-# ╠═090c1c8b-35c8-43bc-80a3-b8b75304ed31
-# ╠═b19afa83-a5b2-4dc7-b266-76f60e27f2ff
-# ╠═4c05c9d4-e724-4956-9866-7037025150ee
-# ╠═499b6c91-9032-43fa-a54c-94027676125a
-# ╠═48398a06-6e89-43ac-876f-eeb513e69b92
-# ╠═2f86b3e0-66e9-4cca-86fd-a83f6d1dbf5b
-# ╠═7a3f806a-5d26-40f1-b665-7bf686728fde
-# ╠═cf291a6a-18ba-476a-a9c9-ddcd1f75c514
-# ╠═287328fd-2389-4e7e-84f9-4cd932db899a
-# ╠═5443ad0a-deb3-463f-8975-12fb969df1cc
-# ╠═965d8844-8fdd-4e88-a6bd-01281a5fb642
-# ╠═f5a3b766-4781-47de-8097-af3bd8bc4ecd
-# ╠═ac831749-b0aa-49f5-ad1b-92e45599551d
-# ╠═7eb49193-addb-4833-9261-0a0ceab55e7e
-# ╠═f4c5fdba-5493-4240-93dd-86345c9adad7
-# ╠═90a3a2c0-4d45-40d9-9bdc-a966c628ba90
-# ╠═ad16e07e-f7c2-4bce-9f71-0d0334459ef6
-# ╠═08794500-ec04-4834-8852-c79680f0d136
-# ╠═3ffe9740-d133-410a-a3ff-77c2ba64217f
-# ╠═caba4624-8388-43b9-a9bf-b0bb5ed27213
-# ╠═900f41a8-59a2-4301-88a5-9f0b4c25d4ac
-# ╠═6518ba79-f3cc-4ccb-9935-fe037f256d4e
-# ╠═e3278b0e-ff00-4bc9-b06e-d2757a08f997
-# ╠═3a665608-f044-41a9-a619-7ed799457277
-# ╠═ea80c78a-6ec8-44f9-9876-6449c2399ee3
-# ╠═c105b7ce-98bd-4c34-86b4-818309495dc5
-# ╠═747f66f6-1c86-450f-824f-7a94bdd7ec6a
-# ╠═ed4f53d4-4d73-4f02-abf8-2cb68447525f
-# ╠═23b1b815-1048-4ebb-9d12-eba8dfa8e60c
-# ╠═58e0b3a9-9f2c-438f-ac4a-db490a3f6685
-# ╠═7da174c6-91a4-4508-818f-6d35720df915
-# ╠═1da2e2e0-b1bd-4e86-b397-54f293a90c06
-# ╠═7c3f884f-7159-4594-aef9-a975767e750d
-# ╠═6f07b059-a4b3-4a32-b62e-fbadb15d71a3
-# ╠═203a5b66-2c6d-4707-ae13-ed2563a2f305
-# ╠═23dfc277-7289-4a69-8ec5-75fbd05b43e2
-# ╠═f437681b-464d-449d-befc-75d60a5c4974
-# ╠═660be5ac-4791-48c3-b1f4-824f53c80215
-# ╠═9087d54f-5682-4778-812a-15bd28431fb7
-# ╠═95e17cad-7135-4b7f-93f2-5b7c72023e27
-# ╠═19905308-9b52-4f49-a4e8-7212bc08fb0a
-# ╠═57a30f20-7dc2-4c02-8621-32f03c5d5f71
-# ╠═83788e2c-84f8-4d0c-bdb0-930680eafa4c
-# ╠═c76bc69f-eeaf-4861-b735-f2d4a99cd4d3
-# ╠═8cab10cf-e7d4-42a9-b9b9-c6243ea80ec4
-# ╠═cb016b85-517d-4e28-ab73-60adab8007b5
-# ╠═3566a81e-5a17-4c34-87b4-3b7dfbe2fc1d
-# ╠═e38b43eb-832d-4ac2-894f-d5d287b6709b
-# ╠═db09d078-cbf5-442a-b819-a049f93cee06
-# ╠═b9bfee39-4092-4c69-816c-ca830b94c935
-# ╠═4c52220e-3b6e-46fe-b7d7-87bfc5facf99
-# ╠═bfdf0bd6-42ab-4d7b-b45a-21035fefcb34
-# ╠═b972c073-20c7-41e0-bc72-61838652ea79
-# ╠═563f0e01-3117-40f0-9d4f-0f4926bdc336
-# ╠═2da21951-935d-4ba8-9a3b-c2628a71a31e
-# ╠═215eb03b-4c21-4321-bb3b-70bb68aace81
-# ╠═878d4d09-9d5d-4d2b-9670-c7ae116ee5e9
-# ╠═317be3e6-1e2c-4565-866e-be8d03330c56
-# ╠═4b0609e8-cc0b-44e9-94e9-01c34301dfe7
-# ╠═4a71d082-f1ca-4582-8722-0d6ec6b67de4
-# ╠═94a22149-789c-4a25-b91f-23fc24e702fc
-# ╠═6e8cdc3d-aa37-4b66-84b2-6b1db9947d62
-# ╠═07c535e5-c9bb-4ecb-bcb4-391f257a91c3
-# ╠═b97dac76-fdb8-4da0-8295-0f8a9dc20cf3
-# ╠═e9069ed2-3a71-4206-b569-4f73bb97eb19
-# ╠═05ad2c30-e21b-40e2-85a9-f85176a5c075
-# ╠═04aca69e-71a6-4b66-b4a0-fe8aaabd5fe9
-# ╠═6aa1e98d-13df-4732-bc3a-b907bcb8e4bd
-# ╠═dff726bd-66dc-49d0-8dfd-bd762cad734b
-# ╠═ab5b96a3-97d9-45fe-a8fe-88b5094bca8e
-# ╠═e4e29ff3-fc14-4966-8cfb-e8296a4a4bd1
-# ╠═14e10278-99fc-4932-aa52-6d02cf6ac7db
-# ╠═158f021b-5fa8-49be-a8df-6863a272e4e8
-# ╠═55211ee4-a8da-46b2-96f1-83fc170677ee
-# ╠═1661096e-713c-435a-b47d-278f454ad76b
-# ╠═c3976756-cf99-4092-86d2-994b34894bb7
-# ╠═70802a0d-d500-457c-9823-0bf99f23509e
-# ╠═354706f0-c7a2-49b6-be7d-5fe9d333aa30
-# ╠═b4ffd1ca-dc72-45fe-a6a4-b0f9569cec64
-# ╠═1e051daa-f2db-447b-93b3-19c594fc0d66
-# ╠═4b2dfb5f-9319-4cd9-9e6c-69efab579681
-# ╠═0f85c1b1-ce14-4870-8943-efb72e9ec7d9
-# ╠═eefd48fc-ca9a-42fb-a321-53be6bf98381
-# ╠═ef313c53-798c-4e84-b6da-4d90ed49db51
-# ╠═14a01c6a-9c06-434d-b1b9-87be793c071a
-# ╠═613788e4-0430-41da-ad36-55c24de472a2
-# ╠═2ecb47e6-58e1-4065-afa4-1c0eea75a6ee
-# ╠═7705d15c-ff72-488d-9733-d535f8c0d33d
-# ╠═9df11318-64a8-48cc-803a-2c19a0796fe8
-# ╠═90df1425-d688-4195-9aea-fc1494000448
-# ╠═0ba2bf47-2dab-4ef3-af7e-bd97d1f0ebc4
-# ╠═d4bfb41a-7f9d-4ae6-aa1c-a3e1bac8025d
-# ╠═47e52680-e6ea-4de9-b621-9294c13c99ee
-# ╠═4ca27647-e6ed-42f5-aac4-bf9dd959d9c5
-# ╠═e3c90bb0-22fb-4853-ba20-c77dd87d0096
-# ╠═f9f038a8-a3dd-4253-af34-0903d4b13216
-# ╠═735b0a1f-8568-4ce2-8761-c321366f5a35
-# ╠═be0d88a4-5520-43bd-8914-9b566a343acc
-# ╠═690417e7-50a6-401c-9ad9-1d42abc384a3
-# ╠═e982d0a1-3469-48d5-a286-28fc2f88f714
-# ╠═b117c48e-2e1b-4908-8747-58d080a829f0
-# ╠═4f59d4d0-8c87-41d6-b313-1cdc368a5120
-# ╠═0ad863f8-3479-4da5-92b2-7bdc2f4044d5
-# ╠═53bdf7bb-95f7-4413-aec7-1c88375fcf22
-# ╠═1c7e1986-b12f-4d4a-9be9-12befefb98bd
-# ╠═f8967d16-3b32-47af-93eb-13eee06fc199
-# ╠═5390815a-39a1-4aee-bb0c-d93edb60c9ec
-# ╠═1d3429b4-30d3-407c-aa96-40b91823870e
-# ╠═d9e5abac-a4a9-41f9-96c7-cd53727c4186
-# ╠═e9ae8022-0ec7-4206-b006-d070322f10c5
-# ╠═7f60da0c-5876-47c0-9cf6-1bce1891d4f6
-# ╠═e0d5372d-d876-4e56-a090-bbe7158ae845
-# ╠═0db3efc7-01e6-4d0b-bb52-4626faac179c
-# ╠═1d383b64-a596-42ca-9eed-6ec35c7d61ea
-# ╠═dbbca94b-d3eb-40f2-b303-f40f537dbbd9
-# ╠═5cd0a735-6ab1-4467-aed0-591f876658a7
-# ╠═78f74061-afc3-44af-9753-3feeab77b889
-# ╠═fa1025bf-df2c-4bcc-83d5-8f0d88a56e57
-# ╠═0984464e-7c1d-418b-b956-436744c84704
-# ╠═a2239793-3d61-4ec5-a9b8-5b7689a2bc2b
-# ╠═8b6c1f57-a7a6-45e1-81f3-a3b06cbd25cc
-# ╠═7237b145-9c6d-40e0-bc56-601d552fcd33
-# ╠═d86aafd0-4e64-4c95-8279-a0a0a7f6ff1e
-# ╠═9ab6ffff-263d-47b6-972e-270f4cc614ea
-# ╠═97eeb5d7-f5d9-40e1-aa42-d1b17d231885
-# ╠═7023a276-4858-404c-a01a-0c0f6f718c7a
-# ╠═725a38d4-5b91-4a3c-948f-1bd01c130106
-# ╠═13d9bc4b-ccd2-49d2-9f73-c9b890da6c6b
-# ╠═ac02eb56-d90c-4922-809a-6eff0e5abe0d
-# ╠═df3021a4-500a-43c9-9b7b-ebaf00e964d1
-# ╠═0dfae67d-60ff-4ba9-898f-96d461c150e9
-# ╠═95cd1e05-82fa-40df-b38b-1642d61e7c84
-# ╠═aad3bc5b-c389-409d-acb5-895788e3ce42
-# ╠═04301b0a-02f0-48b0-9a3b-60779ad99964
-# ╠═9539b216-c13f-4aed-ae82-d569f9a1ac7e
-# ╠═95da45a3-5cab-4323-b427-c6291b5b0191
-# ╠═43f68ca8-dd38-4cee-a74f-fa6dfff9a872
-# ╠═e6e771a2-d662-4fea-9b48-63421fd8b851
-# ╠═ee8c9183-ead1-4a95-8d2c-818979ae6a05
-# ╠═cadc217f-0f24-4ab9-a5ab-fcc81b90f338
-# ╠═06acadfc-64c4-4457-9c7d-611ed16fa5ac
-# ╠═3bd497e3-537a-42dc-81e0-a771a6bd1474
-# ╠═781962b3-b083-495a-ae52-0c280dd0c498
-# ╠═e01ee989-9aaa-4da9-81a4-979ecdd470f8
-# ╠═a9845895-2091-42b9-8d32-7a1555ddf9cf
-# ╠═46551ff5-3ff9-4fa6-8b57-8b3ecb853050
-# ╠═70dcb974-8000-43f2-a2e3-3617390a7952
-# ╠═8e591009-f1f2-4dad-9afd-01e38cccdb80
-# ╠═c806378b-2e00-4d0c-a423-1ec03880adf5
-# ╠═84d6f84f-c5c7-4c73-8409-29f62dd38040
-# ╠═d5dc95c9-b2b1-4fe4-842b-973cb33e7916
-# ╠═5c0b5a16-fd1d-4b8c-aa70-d746332b4d28
-# ╠═31f685d8-b2b3-49d3-88a0-e45f24e69bd8
+# ╠═246afbf4-e2fa-11ef-0aaf-3fdea42303e1
+# ╠═01bbe0be-b21d-4d9b-92bc-09440a2c3e7d
+# ╠═c7682162-76c9-4bc3-9a1b-85a4197a7c20
+# ╠═316a47ac-a70c-4f89-8288-e71e17ee59aa
+# ╠═b51bbda9-ea1c-490b-aa74-8cbbcf494985
+# ╠═7e16dae9-5177-498d-928c-d6c55628c0c9
+# ╠═69845f5f-aa5c-4f2c-a889-6c1ece385285
+# ╠═557b3498-6ef1-42a1-b9be-a228bcaffa5a
+# ╠═6694581b-7997-4c1c-bb88-75bbf1906366
+# ╠═d42f7142-94b2-4d5c-a007-6dcbdd310db7
+# ╠═516df4d8-7ff2-465f-afcd-db4a506cd32a
+# ╠═754e7898-de6a-4752-84c1-8a47b5ca6446
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
