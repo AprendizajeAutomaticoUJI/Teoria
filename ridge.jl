@@ -36,7 +36,8 @@ begin
 	path = "https://raw.githubusercontent.com/AprendizajeAutomaticoUJI/DataSets/refs/heads/master/Howell1.csv"
 	data = CSV.File(HTTP.get(path).body) |> DataFrame
 	data[!, "bias"] = ones(length(data.weight))
-	adultos = data[data.age .>= 18, :]
+	# adultos = data[data.age .>= 18, :]
+	adultos = data
 end
 
 # ╔═╡ 316a47ac-a70c-4f89-8288-e71e17ee59aa
@@ -55,6 +56,13 @@ Creo las características como potencias de cada columna:
 # ╔═╡ 69845f5f-aa5c-4f2c-a889-6c1ece385285
 potencias = repeat(peso_altura.weight, 1, 2) .^ (2:3)'
 
+# ╔═╡ 4b366df3-c544-439c-8325-5e9dcb9454ce
+md"""
+Añado cada potencia al DataFrame original.
+
+*Tengo que mejorar esta parte para añadri todas las columnas al mismo tiempo.*
+"""
+
 # ╔═╡ 557b3498-6ef1-42a1-b9be-a228bcaffa5a
 begin
 	peso_altura[!, :cuadrado] = potencias[:,1]
@@ -64,14 +72,48 @@ end
 # ╔═╡ 6694581b-7997-4c1c-bb88-75bbf1906366
 df = coerce(peso_altura, :weight => MLJ.Continuous, :height => MLJ.Continuous, :cuadrado => MLJ.Continuous, :cubo => MLJ.Continuous)
 
+# ╔═╡ d920aa60-1fe2-48de-82a4-67ae77aff846
+md"""
+Cargo el paquete con el código que hace la regresión Ridge.
+"""
+
 # ╔═╡ d42f7142-94b2-4d5c-a007-6dcbdd310db7
 regresor_ridge = @load RidgeRegressor pkg = "MultivariateStats"
+
+# ╔═╡ 0690756c-76dc-4567-99f5-927cff72c959
+md"""
+Creo el modelo (*máquina*) que usa MLJ.
+"""
 
 # ╔═╡ 516df4d8-7ff2-465f-afcd-db4a506cd32a
 modelo_ridge = machine(regresor_ridge(), df[:, [:weight, :cuadrado, :cubo]], df.height)
 
+# ╔═╡ 867eed18-75e3-4749-9ca3-87981949aaea
+md"""
+Entreno el modelo.
+"""
+
+# ╔═╡ 569bcf5a-d104-4390-80dc-3674bdbbbe05
+fit!(modelo_ridge)
+
+# ╔═╡ 6d7872a3-592b-49ef-b38b-4599c8a29750
+md"""
+Estimo **height** a partir del modelo.
+"""
+
 # ╔═╡ 754e7898-de6a-4752-84c1-8a47b5ca6446
-yhat = MLJ.predict(modelo_ridge, )
+yhat = MLJ.predict(modelo_ridge, df[:, [:weight, :cuadrado, :cubo]])
+
+# ╔═╡ b32fec5e-3157-4991-9b66-bce12d618aa6
+md"""
+Muesto los datos originales y la estimación.
+"""
+
+# ╔═╡ 4b4e01a9-4c14-46d8-9c64-5512b620557a
+begin
+	@df df scatter(:weight, :height, legend=false)
+	scatter!(df.weight, yhat)
+end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -2393,10 +2435,18 @@ version = "1.4.1+2"
 # ╠═b51bbda9-ea1c-490b-aa74-8cbbcf494985
 # ╠═7e16dae9-5177-498d-928c-d6c55628c0c9
 # ╠═69845f5f-aa5c-4f2c-a889-6c1ece385285
+# ╠═4b366df3-c544-439c-8325-5e9dcb9454ce
 # ╠═557b3498-6ef1-42a1-b9be-a228bcaffa5a
 # ╠═6694581b-7997-4c1c-bb88-75bbf1906366
+# ╠═d920aa60-1fe2-48de-82a4-67ae77aff846
 # ╠═d42f7142-94b2-4d5c-a007-6dcbdd310db7
+# ╠═0690756c-76dc-4567-99f5-927cff72c959
 # ╠═516df4d8-7ff2-465f-afcd-db4a506cd32a
+# ╠═867eed18-75e3-4749-9ca3-87981949aaea
+# ╠═569bcf5a-d104-4390-80dc-3674bdbbbe05
+# ╠═6d7872a3-592b-49ef-b38b-4599c8a29750
 # ╠═754e7898-de6a-4752-84c1-8a47b5ca6446
+# ╠═b32fec5e-3157-4991-9b66-bce12d618aa6
+# ╠═4b4e01a9-4c14-46d8-9c64-5512b620557a
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
