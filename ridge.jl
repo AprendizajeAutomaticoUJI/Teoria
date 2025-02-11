@@ -16,6 +16,7 @@ begin
 	using MLJ
 	using MultivariateStats
 	using MLJMultivariateStatsInterface
+	using Random
 	
 	plotly()
 end
@@ -31,7 +32,11 @@ Cargo los datos de Howell.
 begin
 	path = "https://raw.githubusercontent.com/AprendizajeAutomaticoUJI/DataSets/refs/heads/master/Howell1.csv"
 	data = CSV.File(HTTP.get(path).body) |> DataFrame
-	data[!, "bias"] = ones(length(data.weight))
+	# data[!, "bias"] = ones(length(data.weight))
+	data = data[data.age .> 17, :]
+	# Random.seed!(69)
+	indices = Random.rand((1:nrow(data)), 20)
+	data = data[indices, :]
 end
 
 # ╔═╡ 316a47ac-a70c-4f89-8288-e71e17ee59aa
@@ -136,6 +141,11 @@ begin
 	@df tmp plot!(:weight, :prediccion, width=3)
 end
 
+# ╔═╡ 6ee2eb94-cbc1-41dd-9cb2-21af59b9eeb6
+begin
+	@df data scatter(:weight, :height, legend=false)
+end
+
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
@@ -149,6 +159,7 @@ MultivariateStats = "6f286f6a-111f-5878-ab1e-185364afe411"
 PlotlyBase = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
 PlotlyKaleido = "f2990250-8cf9-495f-b13a-cce12b45703c"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 StatsPlots = "f3b207a7-027a-5e70-b257-86293d7955fd"
 
 [compat]
@@ -171,7 +182,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.3"
 manifest_format = "2.0"
-project_hash = "b9889d320269cb03cd7ddf3a9a4dfee652d74345"
+project_hash = "469ed700960e855cf72b7031c61849df806e7e74"
 
 [[deps.ARFFFiles]]
 deps = ["CategoricalArrays", "Dates", "Parsers", "Tables"]
@@ -2226,5 +2237,6 @@ version = "1.4.1+2"
 # ╠═19344171-abac-4541-96a2-d55cd4e9b800
 # ╠═be64fffd-2361-4dac-9688-7315d382601b
 # ╠═731caedb-2ffb-4c0b-a2a9-310665073e03
+# ╠═6ee2eb94-cbc1-41dd-9cb2-21af59b9eeb6
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
