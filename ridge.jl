@@ -11,15 +11,9 @@ begin
 	using HTTP
 	using Plots
 	import PlotlyBase, PlotlyKaleido
-	# using PlutoUI
 	using Distributions
 	using StatsPlots
-	# using HypothesisTests
-	# using GLM
 	using MLJ
-	# import MLJLinearModels
-	# using Polynomials
-	# using Random
 	using MultivariateStats
 	using MLJMultivariateStatsInterface
 	
@@ -46,47 +40,44 @@ Me quedo sólo con el peso y la altura.
 """
 
 # ╔═╡ b51bbda9-ea1c-490b-aa74-8cbbcf494985
-peso_altura = data[:, [:weight, :height]]
+peso_altura = data[:, [:weight, :height]];
 
 # ╔═╡ 7e16dae9-5177-498d-928c-d6c55628c0c9
 md"""
 Creo las características como potencias de cada columna:
+
+1. Defino el máximo grado del polinomio.
 """
 
 # ╔═╡ 58ba95e1-a71b-48f1-b1c3-13f2ddbc0392
-maximo_grado = 11
+maximo_grado = 8
 
-# ╔═╡ 69845f5f-aa5c-4f2c-a889-6c1ece385285
-potencias = repeat(peso_altura.weight, 1, maximo_grado) .^ (1:maximo_grado)'
-
-# ╔═╡ 976fddf3-faa9-4306-bd5b-55dead5d7346
-df_potencias = DataFrame(potencias, :auto)
-
-# ╔═╡ 4b366df3-c544-439c-8325-5e9dcb9454ce
+# ╔═╡ b12699da-72d9-4b75-a777-f8c0dff1a539
 md"""
-Añado cada potencia al DataFrame original.
-
-*Tengo que mejorar esta parte para añadri todas las columnas al mismo tiempo.*
+2. Creo la matriz de potencias.
 """
 
-# ╔═╡ 557b3498-6ef1-42a1-b9be-a228bcaffa5a
-begin
-	peso_altura[!, :cuadrado] = potencias[:,1]
-	peso_altura[!, :cubo] = potencias[:,2]
-end
+# ╔═╡ 69845f5f-aa5c-4f2c-a889-6c1ece385285
+potencias = repeat(peso_altura.weight, 1, maximo_grado) .^ (1:maximo_grado)';
 
-# ╔═╡ 6694581b-7997-4c1c-bb88-75bbf1906366
-df = coerce(peso_altura, :weight => MLJ.Continuous, :height => MLJ.Continuous, :cuadrado => MLJ.Continuous, :cubo => MLJ.Continuous)
+# ╔═╡ 6f65b6c8-c5b0-4573-8994-c4248a829df7
+md"""
+3. Lo convierto en un DataFrame.
+"""
+
+# ╔═╡ 976fddf3-faa9-4306-bd5b-55dead5d7346
+df_potencias = DataFrame(potencias, :auto);
+
+# ╔═╡ 2fbb8e6e-1e7d-4617-9cab-422f92fb5086
+md"""
+Las coerciones que tengo que aplicar sobre las columnas:
+"""
 
 # ╔═╡ f4baae14-b7ae-4334-a9e4-9e9fe60dac76
-# coerce(peso_altura, MLJ.Continuous)
-coso = Symbol.(names(df_potencias)) .=> MLJ.Continuous
-# coerce(peso_altura, Symbol.(names(peso_altura)) .=> MLJ.Continuous)
+coerciones = Symbol.(names(df_potencias)) .=> MLJ.Continuous;
 
 # ╔═╡ d25752cc-be74-43ad-870b-d97c45826151
-# [coerce(peso_altura, x) for x in coso]
-# coso2 = coerce(df_potencias, coso[1], coso[2], coso[3], coso[4])
-coso2 = coerce(df_potencias, coso...)
+df_coerciones = coerce(df_potencias, coerciones...);
 
 # ╔═╡ d920aa60-1fe2-48de-82a4-67ae77aff846
 md"""
@@ -94,7 +85,7 @@ Cargo el paquete con el código que hace la regresión Ridge.
 """
 
 # ╔═╡ d42f7142-94b2-4d5c-a007-6dcbdd310db7
-regresor_ridge = @load RidgeRegressor pkg = "MultivariateStats"
+regresor_ridge = @load RidgeRegressor pkg = "MultivariateStats" verbosity=0
 
 # ╔═╡ 0690756c-76dc-4567-99f5-927cff72c959
 md"""
@@ -102,8 +93,7 @@ Creo el modelo (*máquina*) que usa MLJ.
 """
 
 # ╔═╡ 516df4d8-7ff2-465f-afcd-db4a506cd32a
-# modelo_ridge = machine(regresor_ridge(lambda=0.0), df[:, [:weight, :cuadrado, :cubo]], df.height)
-modelo_ridge = machine(regresor_ridge(lambda=0.0), coso2, df.height)
+modelo_ridge = machine(regresor_ridge(lambda=0.0), df_coerciones, peso_altura.height)
 
 # ╔═╡ 867eed18-75e3-4749-9ca3-87981949aaea
 md"""
@@ -119,35 +109,31 @@ Estimo **height** a partir del modelo.
 """
 
 # ╔═╡ 754e7898-de6a-4752-84c1-8a47b5ca6446
-# yhat = MLJ.predict(modelo_ridge, df[:, [:weight, :cuadrado, :cubo]])
-yhat = MLJ.predict(modelo_ridge, coso2)
+yhat = MLJ.predict(modelo_ridge, df_coerciones)
 
 # ╔═╡ b32fec5e-3157-4991-9b66-bce12d618aa6
 md"""
 Muesto los datos originales y la estimación.
 """
 
-# ╔═╡ 4b4e01a9-4c14-46d8-9c64-5512b620557a
-begin
-	@df df scatter(:weight, :height, legend=false)
-	scatter!(df.weight, yhat)
-end
+# ╔═╡ 19344171-abac-4541-96a2-d55cd4e9b800
+md"""
+Para poder dibujar una línea, creo un DataFrame con las columnas que me interesan y lo ordeno.
+"""
 
 # ╔═╡ be64fffd-2361-4dac-9688-7315d382601b
 begin
 	tmp = DataFrame()
-	tmp[!, :weight] = df.weight
-	tmp[!, :height] = df.height
+	tmp[!, :weight] = peso_altura.weight
+	tmp[!, :height] = peso_altura.height
 	tmp[!, :prediccion] = yhat
+	sort!(tmp, [:weight])
 end
-
-# ╔═╡ cc12b02d-016f-47b6-bc0a-1ecba46abd2e
-tmp_sorted = sort(tmp, [:weight])
 
 # ╔═╡ 731caedb-2ffb-4c0b-a2a9-310665073e03
 begin
-	@df tmp_sorted scatter(:weight, :height, legend=false)
-	@df tmp_sorted plot!(:weight, :prediccion, width=3)
+	@df tmp scatter(:weight, :height, legend=false)
+	@df tmp plot!(:weight, :prediccion, width=3)
 end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -2221,11 +2207,11 @@ version = "1.4.1+2"
 # ╠═b51bbda9-ea1c-490b-aa74-8cbbcf494985
 # ╠═7e16dae9-5177-498d-928c-d6c55628c0c9
 # ╠═58ba95e1-a71b-48f1-b1c3-13f2ddbc0392
+# ╠═b12699da-72d9-4b75-a777-f8c0dff1a539
 # ╠═69845f5f-aa5c-4f2c-a889-6c1ece385285
+# ╠═6f65b6c8-c5b0-4573-8994-c4248a829df7
 # ╠═976fddf3-faa9-4306-bd5b-55dead5d7346
-# ╠═4b366df3-c544-439c-8325-5e9dcb9454ce
-# ╠═557b3498-6ef1-42a1-b9be-a228bcaffa5a
-# ╠═6694581b-7997-4c1c-bb88-75bbf1906366
+# ╠═2fbb8e6e-1e7d-4617-9cab-422f92fb5086
 # ╠═f4baae14-b7ae-4334-a9e4-9e9fe60dac76
 # ╠═d25752cc-be74-43ad-870b-d97c45826151
 # ╠═d920aa60-1fe2-48de-82a4-67ae77aff846
@@ -2237,9 +2223,8 @@ version = "1.4.1+2"
 # ╠═6d7872a3-592b-49ef-b38b-4599c8a29750
 # ╠═754e7898-de6a-4752-84c1-8a47b5ca6446
 # ╠═b32fec5e-3157-4991-9b66-bce12d618aa6
-# ╠═4b4e01a9-4c14-46d8-9c64-5512b620557a
+# ╠═19344171-abac-4541-96a2-d55cd4e9b800
 # ╠═be64fffd-2361-4dac-9688-7315d382601b
-# ╠═cc12b02d-016f-47b6-bc0a-1ecba46abd2e
 # ╠═731caedb-2ffb-4c0b-a2a9-310665073e03
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
