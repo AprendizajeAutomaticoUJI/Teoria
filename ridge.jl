@@ -53,11 +53,14 @@ md"""
 Creo las características como potencias de cada columna:
 """
 
+# ╔═╡ 58ba95e1-a71b-48f1-b1c3-13f2ddbc0392
+maximo_grado = 11
+
 # ╔═╡ 69845f5f-aa5c-4f2c-a889-6c1ece385285
-potencias = repeat(peso_altura.weight, 1, 2) .^ (2:3)'
+potencias = repeat(peso_altura.weight, 1, maximo_grado) .^ (1:maximo_grado)'
 
 # ╔═╡ 976fddf3-faa9-4306-bd5b-55dead5d7346
-DataFrame(potencias, :auto)
+df_potencias = DataFrame(potencias, :auto)
 
 # ╔═╡ 4b366df3-c544-439c-8325-5e9dcb9454ce
 md"""
@@ -75,6 +78,16 @@ end
 # ╔═╡ 6694581b-7997-4c1c-bb88-75bbf1906366
 df = coerce(peso_altura, :weight => MLJ.Continuous, :height => MLJ.Continuous, :cuadrado => MLJ.Continuous, :cubo => MLJ.Continuous)
 
+# ╔═╡ f4baae14-b7ae-4334-a9e4-9e9fe60dac76
+# coerce(peso_altura, MLJ.Continuous)
+coso = Symbol.(names(df_potencias)) .=> MLJ.Continuous
+# coerce(peso_altura, Symbol.(names(peso_altura)) .=> MLJ.Continuous)
+
+# ╔═╡ d25752cc-be74-43ad-870b-d97c45826151
+# [coerce(peso_altura, x) for x in coso]
+# coso2 = coerce(df_potencias, coso[1], coso[2], coso[3], coso[4])
+coso2 = coerce(df_potencias, coso...)
+
 # ╔═╡ d920aa60-1fe2-48de-82a4-67ae77aff846
 md"""
 Cargo el paquete con el código que hace la regresión Ridge.
@@ -89,10 +102,8 @@ Creo el modelo (*máquina*) que usa MLJ.
 """
 
 # ╔═╡ 516df4d8-7ff2-465f-afcd-db4a506cd32a
-modelo_ridge = machine(regresor_ridge(lambda=0.0), df[:, [:weight, :cuadrado, :cubo]], df.height)
-
-# ╔═╡ 7d95c34a-1557-47f3-8c67-43b6263e0749
-df[:, Not(:height)]
+# modelo_ridge = machine(regresor_ridge(lambda=0.0), df[:, [:weight, :cuadrado, :cubo]], df.height)
+modelo_ridge = machine(regresor_ridge(lambda=0.0), coso2, df.height)
 
 # ╔═╡ 867eed18-75e3-4749-9ca3-87981949aaea
 md"""
@@ -108,7 +119,8 @@ Estimo **height** a partir del modelo.
 """
 
 # ╔═╡ 754e7898-de6a-4752-84c1-8a47b5ca6446
-yhat = MLJ.predict(modelo_ridge, df[:, [:weight, :cuadrado, :cubo]])
+# yhat = MLJ.predict(modelo_ridge, df[:, [:weight, :cuadrado, :cubo]])
+yhat = MLJ.predict(modelo_ridge, coso2)
 
 # ╔═╡ b32fec5e-3157-4991-9b66-bce12d618aa6
 md"""
@@ -133,10 +145,10 @@ end
 tmp_sorted = sort(tmp, [:weight])
 
 # ╔═╡ 731caedb-2ffb-4c0b-a2a9-310665073e03
-@df tmp_sorted scatter(:weight, :height)
-
-# ╔═╡ bd910b82-ec2b-4c04-a14c-2939810b7639
-@df tmp_sorted plot!(:weight, :prediccion, width=3)
+begin
+	@df tmp_sorted scatter(:weight, :height, legend=false)
+	@df tmp_sorted plot!(:weight, :prediccion, width=3)
+end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -2208,16 +2220,18 @@ version = "1.4.1+2"
 # ╠═316a47ac-a70c-4f89-8288-e71e17ee59aa
 # ╠═b51bbda9-ea1c-490b-aa74-8cbbcf494985
 # ╠═7e16dae9-5177-498d-928c-d6c55628c0c9
+# ╠═58ba95e1-a71b-48f1-b1c3-13f2ddbc0392
 # ╠═69845f5f-aa5c-4f2c-a889-6c1ece385285
 # ╠═976fddf3-faa9-4306-bd5b-55dead5d7346
 # ╠═4b366df3-c544-439c-8325-5e9dcb9454ce
 # ╠═557b3498-6ef1-42a1-b9be-a228bcaffa5a
 # ╠═6694581b-7997-4c1c-bb88-75bbf1906366
+# ╠═f4baae14-b7ae-4334-a9e4-9e9fe60dac76
+# ╠═d25752cc-be74-43ad-870b-d97c45826151
 # ╠═d920aa60-1fe2-48de-82a4-67ae77aff846
 # ╠═d42f7142-94b2-4d5c-a007-6dcbdd310db7
 # ╠═0690756c-76dc-4567-99f5-927cff72c959
 # ╠═516df4d8-7ff2-465f-afcd-db4a506cd32a
-# ╠═7d95c34a-1557-47f3-8c67-43b6263e0749
 # ╠═867eed18-75e3-4749-9ca3-87981949aaea
 # ╠═569bcf5a-d104-4390-80dc-3674bdbbbe05
 # ╠═6d7872a3-592b-49ef-b38b-4599c8a29750
@@ -2227,6 +2241,5 @@ version = "1.4.1+2"
 # ╠═be64fffd-2361-4dac-9688-7315d382601b
 # ╠═cc12b02d-016f-47b6-bc0a-1ecba46abd2e
 # ╠═731caedb-2ffb-4c0b-a2a9-310665073e03
-# ╠═bd910b82-ec2b-4c04-a14c-2939810b7639
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
