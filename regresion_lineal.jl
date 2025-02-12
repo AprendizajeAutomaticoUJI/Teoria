@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.3
+# v0.20.4
 
 using Markdown
 using InteractiveUtils
@@ -684,7 +684,7 @@ La evaluación cruzada consiste en dividir el conjunto de datos inicial en un co
 # ╔═╡ 2da21951-935d-4ba8-9a3b-c2628a71a31e
 begin
 	cv = CV(nfolds = 10)
-	validacion_cruzada = evaluate(regresor, select(adultos, :weight), adultos.height, resampling=cv, measure=rms)
+	validacion_cruzada = MLJ.evaluate(regresor, select(adultos, :weight), adultos.height, resampling=cv, measure=rms)
 end
 
 # ╔═╡ 215eb03b-4c21-4321-bb3b-70bb68aace81
@@ -1351,51 +1351,76 @@ names(adultos)
 # ╔═╡ e6e771a2-d662-4fea-9b48-63421fd8b851
 @df adultos scatter(:weight, :height)
 
+# ╔═╡ 5975aea8-aac1-45b4-bdba-fbe818dff076
+md"""
+Vamos a tomar una muetra de los datos correspondientes a las personas adultas.
+"""
+
 # ╔═╡ ee8c9183-ead1-4a95-8d2c-818979ae6a05
 begin
 	Random.seed!(69)
-	adultos_muestra = view(adultos, sample(axes(adultos, 1), 20; replace = false, ordered = true), [:weight, :height])
+	indices = Random.rand((1:nrow(adultos)), 10)
+	muestra_X, muestra_y = adultos[indices, :weight], adultos[indices, :height]
 end
 
-# ╔═╡ cadc217f-0f24-4ab9-a5ab-fcc81b90f338
-@df adultos_muestra scatter(:weight, :height, legend=false)
-
-# ╔═╡ 06acadfc-64c4-4457-9c7d-611ed16fa5ac
+# ╔═╡ de4335b6-1f06-4cf0-9d5c-af470eb73930
 md"""
-Vamos a cambiar a los tipos que espera MLJ.
+Definimos el grado del polinomio:
 """
 
-# ╔═╡ 3bd497e3-537a-42dc-81e0-a771a6bd1474
-adultos_coerce = coerce(adultos_muestra, :weight => MLJ.Continuous, :height => MLJ.Continuous)
+# ╔═╡ bb58c04a-e884-43e7-8fcc-7c2fb29fa859
+maximo_grado = 6
 
-# ╔═╡ 781962b3-b083-495a-ae52-0c280dd0c498
-regresion_ridge = @load RidgeRegressor pkg = "MultivariateStats"
+# ╔═╡ 054687a8-d948-447d-8e4a-3b5f94a05ee5
+md"""
+Creamos la matriz de potencias:
+"""
 
-# ╔═╡ e01ee989-9aaa-4da9-81a4-979ecdd470f8
-regresor_ridge = regresion_ridge()
+# ╔═╡ 909d3eaf-f6b8-4bfd-8bb3-2178c2acecc4
+potencias = repeat(muestra_X, 1, maximo_grado) .^ (1:maximo_grado)';
 
-# ╔═╡ a9845895-2091-42b9-8d32-7a1555ddf9cf
-adultos_coerce.weight
+# ╔═╡ e767de20-5188-46f5-add8-97f0fafc1407
+md"""
+Hacemos la regresión con $\lambda = 0$:
+"""
 
-# ╔═╡ 46551ff5-3ff9-4fa6-8b57-8b3ecb853050
-typeof(adultos_coerce[:, [:weight]])
+# ╔═╡ 363847f2-3cc6-4849-8c99-1a358a3227f6
+regresion_ridge = ridge(potencias, muestra_y, 1)
 
-# ╔═╡ 70dcb974-8000-43f2-a2e3-3617390a7952
-modelo_ridge = machine(regresor_ridge, adultos_coerce[:, [:weight]], adultos_coerce.height)
+# ╔═╡ 178e6c6e-e469-4a83-80e9-919cf58a2699
+md"""
+Extraigo los coeficientes del polinomio y el término independiente.
+"""
 
-# ╔═╡ 8e591009-f1f2-4dad-9afd-01e38cccdb80
-fit!(modelo_ridge)
+# ╔═╡ 99acc500-db17-47cb-b1fe-46221270662d
+A, b = regresion_ridge[1:end-1, :], regresion_ridge[end, :]
 
-# ╔═╡ c806378b-2e00-4d0c-a423-1ec03880adf5
-adultos_coerce.height
+# ╔═╡ 4cfb2906-1717-4783-b653-4a3c5400842c
+md"""
+Preparo los datos para hacer la predicción.
+"""
 
-# ╔═╡ 84d6f84f-c5c7-4c73-8409-29f62dd38040
-yhat = MLJ.predict(modelo_ridge, adultos_coerce[:, [:weight]])
+# ╔═╡ 32d2acdc-e835-47d1-8979-3336d5312b78
+intervalo = range(minimum(muestra_X), maximum(muestra_X), 100)
 
-# ╔═╡ d5dc95c9-b2b1-4fe4-842b-973cb33e7916
+# ╔═╡ b495bcdb-9204-4c07-a736-19c18622f244
+potencias_prediccion = repeat(intervalo, 1, maximo_grado) .^ (1:maximo_grado)'
+
+# ╔═╡ 521f2427-7018-4672-808e-270aa99799b7
+md"""
+Hacemos las predicciones:
+"""
+
+# ╔═╡ e55a90ef-6ca5-43b3-b5ce-5e43d2e9cccc
+prediccion = potencias_prediccion * A .+ b
+
+# ╔═╡ cd0cb7ce-9f2d-4c2c-987e-3d5a04c20907
+
+
+# ╔═╡ 78bba65a-9ce0-4045-abc3-ab515017dc27
 begin
-	scatter(adultos_muestra.weight, adultos_muestra.height)
-	plot!(adultos_muestra.weight, yhat)
+	scatter(muestra_X, muestra_y, legend=false)
+	plot!(intervalo, prediccion, width=3)
 end
 
 # ╔═╡ 5c0b5a16-fd1d-4b8c-aa70-d746332b4d28
@@ -3897,19 +3922,23 @@ version = "1.4.1+2"
 # ╠═95da45a3-5cab-4323-b427-c6291b5b0191
 # ╠═43f68ca8-dd38-4cee-a74f-fa6dfff9a872
 # ╠═e6e771a2-d662-4fea-9b48-63421fd8b851
+# ╠═5975aea8-aac1-45b4-bdba-fbe818dff076
 # ╠═ee8c9183-ead1-4a95-8d2c-818979ae6a05
-# ╠═cadc217f-0f24-4ab9-a5ab-fcc81b90f338
-# ╠═06acadfc-64c4-4457-9c7d-611ed16fa5ac
-# ╠═3bd497e3-537a-42dc-81e0-a771a6bd1474
-# ╠═781962b3-b083-495a-ae52-0c280dd0c498
-# ╠═e01ee989-9aaa-4da9-81a4-979ecdd470f8
-# ╠═a9845895-2091-42b9-8d32-7a1555ddf9cf
-# ╠═46551ff5-3ff9-4fa6-8b57-8b3ecb853050
-# ╠═70dcb974-8000-43f2-a2e3-3617390a7952
-# ╠═8e591009-f1f2-4dad-9afd-01e38cccdb80
-# ╠═c806378b-2e00-4d0c-a423-1ec03880adf5
-# ╠═84d6f84f-c5c7-4c73-8409-29f62dd38040
-# ╠═d5dc95c9-b2b1-4fe4-842b-973cb33e7916
+# ╠═de4335b6-1f06-4cf0-9d5c-af470eb73930
+# ╠═bb58c04a-e884-43e7-8fcc-7c2fb29fa859
+# ╠═054687a8-d948-447d-8e4a-3b5f94a05ee5
+# ╠═909d3eaf-f6b8-4bfd-8bb3-2178c2acecc4
+# ╠═e767de20-5188-46f5-add8-97f0fafc1407
+# ╠═363847f2-3cc6-4849-8c99-1a358a3227f6
+# ╠═178e6c6e-e469-4a83-80e9-919cf58a2699
+# ╠═99acc500-db17-47cb-b1fe-46221270662d
+# ╠═4cfb2906-1717-4783-b653-4a3c5400842c
+# ╠═32d2acdc-e835-47d1-8979-3336d5312b78
+# ╠═b495bcdb-9204-4c07-a736-19c18622f244
+# ╠═521f2427-7018-4672-808e-270aa99799b7
+# ╠═e55a90ef-6ca5-43b3-b5ce-5e43d2e9cccc
+# ╠═cd0cb7ce-9f2d-4c2c-987e-3d5a04c20907
+# ╠═78bba65a-9ce0-4045-abc3-ab515017dc27
 # ╠═5c0b5a16-fd1d-4b8c-aa70-d746332b4d28
 # ╠═31f685d8-b2b3-49d3-88a0-e45f24e69bd8
 # ╟─00000000-0000-0000-0000-000000000001
