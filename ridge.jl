@@ -137,7 +137,7 @@ intervalo_normalizado = range(minimum(data_normalizado.X), maximum(data_normaliz
 potencias_prediccion_normalizado = repeat(intervalo_normalizado, 1, maximo_grado) .^ (1:maximo_grado)'
 
 # ╔═╡ 93b294b3-3297-4aff-bf5f-5a9a054977d5
-prediccion_normalizado = potencias_prediccion_normalizado * A_normalizado .+ b_normalizado;
+prediccion_normalizado = potencias_prediccion_normalizado * A_normalizado .+ b_normalizado
 
 # ╔═╡ 4e7b606b-f3f1-474b-8d35-d70c389ccc2e
 begin
