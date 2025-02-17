@@ -34,7 +34,7 @@ function get_data()
 	data = CSV.File(HTTP.get(path).body) |> DataFrame
 	data = data[data.age .> 17, :]
 	Random.seed!(69)
-	indices = Random.rand((1:nrow(data)), 20)
+	indices = Random.rand((1:nrow(data)), 10)
 	data[indices, :weight], data[indices, :height]
 end
 
@@ -125,7 +125,7 @@ data_normalizado = mapcols(zscore, data)
 potencias_normalizado = repeat(data_normalizado.X, 1, maximo_grado) .^ (1:maximo_grado)'
 
 # ╔═╡ 43101695-7adb-4849-934d-4105a76313b8
-resultado = MLJLinearModels.fit(LassoRegression(0.2), potencias_normalizado, data_normalizado.Y)
+resultado = MLJLinearModels.fit(LassoRegression(0.1), potencias_normalizado, data_normalizado.Y)
 
 # ╔═╡ 7d87eb5c-d83a-4efe-b6bf-bf11b190e9b1
 A_normalizado, b_normalizado = resultado[1:end-1, :], resultado[end, :]
