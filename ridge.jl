@@ -103,6 +103,10 @@ end
 # ╔═╡ d7235bff-816e-42a7-88f1-9c8e5fa3103d
 md"""
 Voy a intentar regularización con Lasso.
+
+Lo primero que hay que tener en cuenta es que Lasso funciona con descenso de gradiente, y el descenso de gradiente funciona mejor si los datos están normalizados.
+
+Construyo el DataFrame:
 """
 
 # ╔═╡ 03f26162-8b6d-425e-b9ef-aa4539758496
@@ -112,8 +116,10 @@ begin
 	data[!, :Y] = y
 end
 
-# ╔═╡ 282a8f5f-49fc-436c-a74b-29c323136e71
-data
+# ╔═╡ fccae46c-c9a8-4d21-9724-8fc500303d43
+md"""
+Normalizamos los datos de ambas columnas.
+"""
 
 # ╔═╡ 2c732d8c-9aaf-436f-afb5-5c658da1dce8
 data_normalizado = mapcols(zscore, data)
@@ -1935,7 +1941,7 @@ version = "1.4.1+2"
 # ╠═2892a59c-d224-42a1-8455-a7d3aabe8745
 # ╠═d7235bff-816e-42a7-88f1-9c8e5fa3103d
 # ╠═03f26162-8b6d-425e-b9ef-aa4539758496
-# ╠═282a8f5f-49fc-436c-a74b-29c323136e71
+# ╠═fccae46c-c9a8-4d21-9724-8fc500303d43
 # ╠═2c732d8c-9aaf-436f-afb5-5c658da1dce8
 # ╠═d771ff32-4338-41e8-80cf-146aaa22f811
 # ╠═bcdb82e2-0650-4456-a525-d64413abeaa9
