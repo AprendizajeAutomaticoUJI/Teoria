@@ -21,6 +21,9 @@ begin
 	plotly()
 end
 
+# ╔═╡ b7643944-1200-48fd-927e-d1c92b6ae925
+using Normalization
+
 # ╔═╡ 01bbe0be-b21d-4d9b-92bc-09440a2c3e7d
 md"""
 Voy a utilizar este notebook para trabajar con regresión Ridge.
@@ -119,19 +122,37 @@ end
 # ╔═╡ fccae46c-c9a8-4d21-9724-8fc500303d43
 md"""
 Normalizamos los datos de ambas columnas.
+
+Primero creamos un normalizador para las X
 """
 
 # ╔═╡ 2c732d8c-9aaf-436f-afb5-5c658da1dce8
-data_normalizado = mapcols(zscore, data)
+X_normalizada = Normalization.fit(ZScore, X)
 
-# ╔═╡ d771ff32-4338-41e8-80cf-146aaa22f811
-@df data_normalizado scatter(:X, :Y)
+# ╔═╡ 90887e11-c0df-4cce-ae23-edfae97f8be6
+md"""
+Ahora creamos un normalizador para las y
+"""
+
+# ╔═╡ 63a7a488-6869-4c34-aa38-365c73237887
+y_normalizada = Normalization.fit(ZScore, y)
+
+# ╔═╡ 493115b5-6e10-4ce2-b0b3-89de3068f9d4
+md"""
+Finalmente creamos el DataFrame con los datos normalizados:
+"""
+
+# ╔═╡ 3b696f94-3b73-4dcb-8d27-717e278d372d
+data_normalizado = DataFrame(X = X_normalizada(X), y = y_normalizada(y))
+
+# ╔═╡ 78b51d3f-4144-4092-ac8d-ff60e211cee5
+
 
 # ╔═╡ bcdb82e2-0650-4456-a525-d64413abeaa9
 potencias_normalizado = repeat(data_normalizado.X, 1, maximo_grado) .^ (1:maximo_grado)'
 
 # ╔═╡ 43101695-7adb-4849-934d-4105a76313b8
-resultado = MLJLinearModels.fit(LassoRegression(0.1), potencias_normalizado, data_normalizado.Y)
+resultado = MLJLinearModels.fit(LassoRegression(0.1), potencias_normalizado, data_normalizado.y)
 
 # ╔═╡ 7d87eb5c-d83a-4efe-b6bf-bf11b190e9b1
 A_normalizado, b_normalizado = resultado[1:end-1, :], resultado[end, :]
@@ -147,7 +168,7 @@ prediccion_normalizado = potencias_prediccion_normalizado * A_normalizado .+ b_n
 
 # ╔═╡ 4e7b606b-f3f1-474b-8d35-d70c389ccc2e
 begin
-	scatter(data_normalizado.X, data_normalizado.Y, legend=false)
+	scatter(data_normalizado.X, data_normalizado.y, legend=false)
 	plot!(intervalo_normalizado, prediccion_normalizado, width=3)
 end
 
@@ -159,6 +180,7 @@ DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 MLJLinearModels = "6ee0df7b-362f-4a72-a706-9e79364fb692"
 MultivariateStats = "6f286f6a-111f-5878-ab1e-185364afe411"
+Normalization = "be38d6a3-8366-4a42-ad57-222272b5bbe7"
 PlotlyBase = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
 PlotlyKaleido = "f2990250-8cf9-495f-b13a-cce12b45703c"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
@@ -172,6 +194,7 @@ DataFrames = "~1.7.0"
 HTTP = "~1.10.15"
 MLJLinearModels = "~0.10.0"
 MultivariateStats = "~0.10.3"
+Normalization = "~0.7.3"
 PlotlyBase = "~0.8.19"
 PlotlyKaleido = "~2.2.6"
 Plots = "~1.40.9"
@@ -185,7 +208,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.3"
 manifest_format = "2.0"
-project_hash = "36846754f60153852abf468a0e2483ebe06f4a3d"
+project_hash = "ef3d46008573692d8f211df1c08d417782b68632"
 
 [[deps.AbstractFFTs]]
 deps = ["LinearAlgebra"]
@@ -197,6 +220,31 @@ weakdeps = ["ChainRulesCore", "Test"]
     [deps.AbstractFFTs.extensions]
     AbstractFFTsChainRulesCoreExt = "ChainRulesCore"
     AbstractFFTsTestExt = "Test"
+
+[[deps.Accessors]]
+deps = ["CompositionsBase", "ConstructionBase", "Dates", "InverseFunctions", "MacroTools"]
+git-tree-sha1 = "0ba8f4c1f06707985ffb4804fdad1bf97b233897"
+uuid = "7d9f7c33-5ae7-4f3b-8dc6-eff91059b697"
+version = "0.1.41"
+
+    [deps.Accessors.extensions]
+    AxisKeysExt = "AxisKeys"
+    IntervalSetsExt = "IntervalSets"
+    LinearAlgebraExt = "LinearAlgebra"
+    StaticArraysExt = "StaticArrays"
+    StructArraysExt = "StructArrays"
+    TestExt = "Test"
+    UnitfulExt = "Unitful"
+
+    [deps.Accessors.weakdeps]
+    AxisKeys = "94b1ba4f-4ee9-5380-92f1-94cde586c3c5"
+    IntervalSets = "8197267c-284f-5f27-9208-e0e47529a953"
+    LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+    Requires = "ae029012-a4dd-5104-9daa-d747884805df"
+    StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
+    StructArrays = "09ab397b-f2b6-538f-b94a-2f83cf4a842a"
+    Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+    Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [[deps.Adapt]]
 deps = ["LinearAlgebra", "Requires"]
@@ -369,6 +417,15 @@ weakdeps = ["Dates", "LinearAlgebra"]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
 version = "1.1.1+0"
+
+[[deps.CompositionsBase]]
+git-tree-sha1 = "802bb88cd69dfd1509f6670416bd4434015693ad"
+uuid = "a33af91c-f02d-484b-be07-31d278c5ca2b"
+version = "0.1.2"
+weakdeps = ["InverseFunctions"]
+
+    [deps.CompositionsBase.extensions]
+    CompositionsBaseInverseFunctionsExt = "InverseFunctions"
 
 [[deps.ConcurrentUtilities]]
 deps = ["Serialization", "Sockets"]
@@ -719,6 +776,16 @@ weakdeps = ["Unitful"]
     [deps.Interpolations.extensions]
     InterpolationsUnitfulExt = "Unitful"
 
+[[deps.InverseFunctions]]
+git-tree-sha1 = "a779299d77cd080bf77b97535acecd73e1c5e5cb"
+uuid = "3587e190-3f89-42d0-90ee-14403ec27112"
+version = "0.1.17"
+weakdeps = ["Dates", "Test"]
+
+    [deps.InverseFunctions.extensions]
+    InverseFunctionsDatesExt = "Dates"
+    InverseFunctionsTestExt = "Test"
+
 [[deps.InvertedIndices]]
 git-tree-sha1 = "6da3c4316095de0f5ee2ebd875df8721e7e0bdbe"
 uuid = "41ab1584-1d38-5bbf-9106-f11c6c58b48f"
@@ -1037,6 +1104,22 @@ version = "0.4.21"
 [[deps.NetworkOptions]]
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
 version = "1.2.0"
+
+[[deps.Normalization]]
+deps = ["Accessors", "LinearAlgebra", "Statistics", "StatsAPI"]
+git-tree-sha1 = "686a1bd494042b29142d920667564c8055bc5738"
+uuid = "be38d6a3-8366-4a42-ad57-222272b5bbe7"
+version = "0.7.3"
+
+    [deps.Normalization.extensions]
+    DataFramesExt = "DataFrames"
+    DimensionalDataExt = "DimensionalData"
+    UnitfulExt = "Unitful"
+
+    [deps.Normalization.weakdeps]
+    DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+    DimensionalData = "0703355e-b756-11e9-17c0-8b28908087d0"
+    Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [[deps.Observables]]
 git-tree-sha1 = "7438a59546cf62428fc9d1bc94729146d37a7225"
@@ -1466,14 +1549,11 @@ deps = ["HypergeometricFunctions", "IrrationalConstants", "LogExpFunctions", "Re
 git-tree-sha1 = "b423576adc27097764a90e163157bcfc9acf0f46"
 uuid = "4c63d2b9-4356-54db-8cca-17b64c39e42c"
 version = "1.3.2"
+weakdeps = ["ChainRulesCore", "InverseFunctions"]
 
     [deps.StatsFuns.extensions]
     StatsFunsChainRulesCoreExt = "ChainRulesCore"
     StatsFunsInverseFunctionsExt = "InverseFunctions"
-
-    [deps.StatsFuns.weakdeps]
-    ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
-    InverseFunctions = "3587e190-3f89-42d0-90ee-14403ec27112"
 
 [[deps.StatsPlots]]
 deps = ["AbstractFFTs", "Clustering", "DataStructures", "Distributions", "Interpolations", "KernelDensity", "LinearAlgebra", "MultivariateStats", "NaNMath", "Observables", "Plots", "RecipesBase", "RecipesPipeline", "Reexport", "StatsBase", "TableOperations", "Tables", "Widgets"]
@@ -1574,14 +1654,11 @@ deps = ["Dates", "LinearAlgebra", "Random"]
 git-tree-sha1 = "c0667a8e676c53d390a09dc6870b3d8d6650e2bf"
 uuid = "1986cc42-f94f-5a68-af5c-568840ba703d"
 version = "1.22.0"
+weakdeps = ["ConstructionBase", "InverseFunctions"]
 
     [deps.Unitful.extensions]
     ConstructionBaseUnitfulExt = "ConstructionBase"
     InverseFunctionsUnitfulExt = "InverseFunctions"
-
-    [deps.Unitful.weakdeps]
-    ConstructionBase = "187b0558-2788-49d3-abe0-74a17ed4e7c9"
-    InverseFunctions = "3587e190-3f89-42d0-90ee-14403ec27112"
 
 [[deps.UnitfulLatexify]]
 deps = ["LaTeXStrings", "Latexify", "Unitful"]
@@ -1922,6 +1999,7 @@ version = "1.4.1+2"
 
 # ╔═╡ Cell order:
 # ╠═246afbf4-e2fa-11ef-0aaf-3fdea42303e1
+# ╠═b7643944-1200-48fd-927e-d1c92b6ae925
 # ╠═01bbe0be-b21d-4d9b-92bc-09440a2c3e7d
 # ╠═c7682162-76c9-4bc3-9a1b-85a4197a7c20
 # ╠═132d11b6-1f4b-4624-a2bb-df8c6e68a8ef
@@ -1943,7 +2021,11 @@ version = "1.4.1+2"
 # ╠═03f26162-8b6d-425e-b9ef-aa4539758496
 # ╠═fccae46c-c9a8-4d21-9724-8fc500303d43
 # ╠═2c732d8c-9aaf-436f-afb5-5c658da1dce8
-# ╠═d771ff32-4338-41e8-80cf-146aaa22f811
+# ╠═90887e11-c0df-4cce-ae23-edfae97f8be6
+# ╠═63a7a488-6869-4c34-aa38-365c73237887
+# ╠═493115b5-6e10-4ce2-b0b3-89de3068f9d4
+# ╠═3b696f94-3b73-4dcb-8d27-717e278d372d
+# ╠═78b51d3f-4144-4092-ac8d-ff60e211cee5
 # ╠═bcdb82e2-0650-4456-a525-d64413abeaa9
 # ╠═43101695-7adb-4849-934d-4105a76313b8
 # ╠═7d87eb5c-d83a-4efe-b6bf-bf11b190e9b1
