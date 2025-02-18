@@ -146,25 +146,57 @@ Finalmente creamos el DataFrame con los datos normalizados:
 data_normalizado = DataFrame(X = X_normalizada(X), y = y_normalizada(y))
 
 # ╔═╡ 78b51d3f-4144-4092-ac8d-ff60e211cee5
-
+md"""
+Creamos una matriz de potencias a partir de las X:
+"""
 
 # ╔═╡ bcdb82e2-0650-4456-a525-d64413abeaa9
 potencias_normalizado = repeat(data_normalizado.X, 1, maximo_grado) .^ (1:maximo_grado)'
 
+# ╔═╡ eca15c2e-a3d7-4b3b-b80e-1dce2de1b4eb
+md"""
+Finalmente, hacemos la regresión Lasso. El parámetro $\lambda$ se pasa en el constructor.
+"""
+
 # ╔═╡ 43101695-7adb-4849-934d-4105a76313b8
 resultado = MLJLinearModels.fit(LassoRegression(0.1), potencias_normalizado, data_normalizado.y)
+
+# ╔═╡ fe82c38e-b764-4fad-9be0-25f7022e8659
+md"""
+Nos guardamos los valores del ajuste:
+"""
 
 # ╔═╡ 7d87eb5c-d83a-4efe-b6bf-bf11b190e9b1
 A_normalizado, b_normalizado = resultado[1:end-1, :], resultado[end, :]
 
+# ╔═╡ bf19b480-e4e4-4f6f-aa4b-5e1498ebac7e
+md"""
+Creamos un intervalo como ayuda para dibujar el «curva» de regresión:
+"""
+
 # ╔═╡ 57f1e277-dda9-422e-a927-03321e6b92f2
 intervalo_normalizado = range(minimum(data_normalizado.X), maximum(data_normalizado.X), 100)
+
+# ╔═╡ 48ac7f34-80e6-4299-9be6-0d25a4e6531d
+md"""
+Calculamos las potencias de los puntos del intervalo:
+"""
 
 # ╔═╡ 6de8ec80-068b-4ea0-b5eb-72fbdd56c6fb
 potencias_prediccion_normalizado = repeat(intervalo_normalizado, 1, maximo_grado) .^ (1:maximo_grado)'
 
+# ╔═╡ 770bff18-2b90-43e2-86e8-5eb40bbfe297
+md"""
+Realizamos la predicción de cada punto dentro del intervalo:
+"""
+
 # ╔═╡ 93b294b3-3297-4aff-bf5f-5a9a054977d5
 prediccion_normalizado = potencias_prediccion_normalizado * A_normalizado .+ b_normalizado
+
+# ╔═╡ 930ab5e9-7416-40ed-aeff-369e5a471cfd
+md"""
+Representamos los puntos de conjunto que queremos ajustar, y el polinomio ajustado mediante la regresión Lasso:
+"""
 
 # ╔═╡ 4e7b606b-f3f1-474b-8d35-d70c389ccc2e
 begin
@@ -2027,11 +2059,17 @@ version = "1.4.1+2"
 # ╠═3b696f94-3b73-4dcb-8d27-717e278d372d
 # ╠═78b51d3f-4144-4092-ac8d-ff60e211cee5
 # ╠═bcdb82e2-0650-4456-a525-d64413abeaa9
+# ╠═eca15c2e-a3d7-4b3b-b80e-1dce2de1b4eb
 # ╠═43101695-7adb-4849-934d-4105a76313b8
+# ╠═fe82c38e-b764-4fad-9be0-25f7022e8659
 # ╠═7d87eb5c-d83a-4efe-b6bf-bf11b190e9b1
+# ╠═bf19b480-e4e4-4f6f-aa4b-5e1498ebac7e
 # ╠═57f1e277-dda9-422e-a927-03321e6b92f2
+# ╠═48ac7f34-80e6-4299-9be6-0d25a4e6531d
 # ╠═6de8ec80-068b-4ea0-b5eb-72fbdd56c6fb
+# ╠═770bff18-2b90-43e2-86e8-5eb40bbfe297
 # ╠═93b294b3-3297-4aff-bf5f-5a9a054977d5
+# ╠═930ab5e9-7416-40ed-aeff-369e5a471cfd
 # ╠═4e7b606b-f3f1-474b-8d35-d70c389ccc2e
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
