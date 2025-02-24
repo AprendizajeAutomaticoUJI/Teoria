@@ -621,7 +621,7 @@ Y ahora lo entrenamos:
 """
 
 # ╔═╡ c76bc69f-eeaf-4861-b735-f2d4a99cd4d3
-fit!(modelo)
+MLJ.fit!(modelo)
 
 # ╔═╡ 8cab10cf-e7d4-42a9-b9b9-c6243ea80ec4
 md"""
@@ -629,7 +629,7 @@ Depués de entrenar el modelo, podemos ver el valor de los parámetros:
 """
 
 # ╔═╡ cb016b85-517d-4e28-ab73-60adab8007b5
-fitted_params(modelo)
+MLJ.fitted_params(modelo)
 
 # ╔═╡ 3566a81e-5a17-4c34-87b4-3b7dfbe2fc1d
 md"""
@@ -880,7 +880,7 @@ Si usamos el paquete **MLJ**:
 begin
 	X_multiple = coerce(adultos[:, [:weight, :age, :male]], MLJ.Count => MLJ.Continuous)
 	maquina_multiple = machine(regresor, X_multiple, adultos.height)
-	fit!(maquina_multiple)
+	MLJ.fit!(maquina_multiple)
 end
 
 # ╔═╡ 1661096e-713c-435a-b47d-278f454ad76b
@@ -1493,6 +1493,8 @@ maximo_grado_lasso = 6
 
 # ╔═╡ e899e86b-0605-4672-b717-7dc54b157bdc
 md"""
+## Modelos lineales regularizados: Lasso
+
 Creamos la matriz de potencias:
 """
 
@@ -1507,7 +1509,7 @@ Definimos el valor de $\lambda$
 """
 
 # ╔═╡ 905d9950-c14e-44ce-8b06-40fb6ff6f287
-λ = 0
+λ = 0.1
 
 # ╔═╡ c159d40a-d474-4199-824d-68975c673b5a
 md"""
@@ -1516,7 +1518,7 @@ Hacemos la regresión Lasso:
 
 # ╔═╡ 02f9248e-b467-41a1-964a-97713f882736
 #=╠═╡
-regression_lasso = MLJLinearModels.fit(MLJLinearModels.LassoRegression(0.1), potencias_lasso, y_normalizada)
+regression_lasso = MLJLinearModels.fit(MLJLinearModels.LassoRegression(λ), potencias_lasso, y_normalizada)
   ╠═╡ =#
 
 # ╔═╡ 074845dc-c55d-464a-a0be-24986f7e470b
@@ -1531,6 +1533,8 @@ A_normalizado, b_normalizado = regression_lasso[1:end-1, :], regression_lasso[en
 
 # ╔═╡ 5607f8ed-33f1-4c9d-b98a-66e32ecbdf71
 md"""
+## Modelos lineales regularizados: Lasso
+
 Creamos un intervalo como ayuda para dibujar la «curva» de regresión:
 """
 
@@ -1559,6 +1563,8 @@ prediccion_normalizado = potencias_prediccion_normalizado * A_normalizado .+ b_n
 
 # ╔═╡ f8a956a7-6520-45e4-85e3-487cd433a315
 md"""
+## Modelos lineales regularizados: Lasso
+
 Representamos los puntos de conjunto que queremos ajustar, y el polinomio ajustado mediante la regresión Lasso:
 """
 
@@ -1569,6 +1575,21 @@ begin
 	plot!(intervalo_normalizado, prediccion_normalizado, width=3)
 end
   ╠═╡ =#
+
+# ╔═╡ 61e188a0-8080-4e76-8531-cca90d56cc14
+md"""
+## Modelos lineales regularizados: ElasticNet
+
+La regularización Elastic Net es una combinación de las dos anteriores:
+
+$\mathcal{L}(\mathbf{\theta}) = \frac{1}{N} \sum_{i=1}^N \lvert y_i - h(\theta) \rvert ^2
+ + r \lambda \theta^T\theta
+ + (1-r) \lambda \sum_{j=1}^k \theta_j$
+
+donde el parámetro $r$ da cuenta de la contribución de cada una de las
+regularizaciones. Si $r=1$ sólo tenemos contribución de la regularización
+Ridge, y si $r=0$ sólo tenemos contribución de la regularización Lasso.
+"""
 
 # ╔═╡ 5c0b5a16-fd1d-4b8c-aa70-d746332b4d28
 md"""
@@ -2191,9 +2212,9 @@ weakdeps = ["PDMats", "SparseArrays", "Statistics"]
 
 [[deps.FiniteDiff]]
 deps = ["ArrayInterface", "LinearAlgebra", "Setfield"]
-git-tree-sha1 = "84e3a47db33be7248daa6274b287507dd6ff84e8"
+git-tree-sha1 = "f089ab1f834470c525562030c8cfde4025d5e915"
 uuid = "6a86dc24-6348-571c-b903-95158fe2bd41"
-version = "2.26.2"
+version = "2.27.0"
 
     [deps.FiniteDiff.extensions]
     FiniteDiffBandedMatricesExt = "BandedMatrices"
@@ -2941,9 +2962,9 @@ version = "0.5.5+1"
 
 [[deps.Optim]]
 deps = ["Compat", "FillArrays", "ForwardDiff", "LineSearches", "LinearAlgebra", "NLSolversBase", "NaNMath", "Parameters", "PositiveFactorizations", "Printf", "SparseArrays", "StatsBase"]
-git-tree-sha1 = "ab7edad78cdef22099f43c54ef77ac63c2c9cc64"
+git-tree-sha1 = "c1f51f704f689f87f28b33836fd460ecf9b34583"
 uuid = "429524aa-4258-5aef-a3af-852621145aeb"
-version = "1.10.0"
+version = "1.11.0"
 
     [deps.Optim.extensions]
     OptimMOIExt = "MathOptInterface"
@@ -4113,22 +4134,23 @@ version = "1.4.1+2"
 # ╠═64a2dba2-0470-4db6-a720-717591ec6a62
 # ╠═464df82b-298b-4424-9165-6b2e25ad0144
 # ╠═8908b623-0ee8-408e-a93a-c981ac9ebe07
-# ╠═e899e86b-0605-4672-b717-7dc54b157bdc
+# ╟─e899e86b-0605-4672-b717-7dc54b157bdc
 # ╠═f78941ec-eeb9-416f-8d19-7c05b7f7d10d
-# ╠═ee6aeafb-84b2-460f-8c78-df4e2652098c
+# ╟─ee6aeafb-84b2-460f-8c78-df4e2652098c
 # ╠═905d9950-c14e-44ce-8b06-40fb6ff6f287
-# ╠═c159d40a-d474-4199-824d-68975c673b5a
+# ╟─c159d40a-d474-4199-824d-68975c673b5a
 # ╠═02f9248e-b467-41a1-964a-97713f882736
-# ╠═074845dc-c55d-464a-a0be-24986f7e470b
+# ╟─074845dc-c55d-464a-a0be-24986f7e470b
 # ╠═c38dd6e8-0b2a-4926-a21f-b2fb8369d682
-# ╠═5607f8ed-33f1-4c9d-b98a-66e32ecbdf71
+# ╟─5607f8ed-33f1-4c9d-b98a-66e32ecbdf71
 # ╠═721ead19-e92d-4ee7-9475-bba21da3e532
-# ╠═b0aeae73-9a76-42fd-b04f-877855f6787f
+# ╟─b0aeae73-9a76-42fd-b04f-877855f6787f
 # ╠═2824f502-d073-4903-83d7-c0fe4f3e7bb8
-# ╠═4bab4869-622e-49ad-b66a-dbefb0caad10
+# ╟─4bab4869-622e-49ad-b66a-dbefb0caad10
 # ╠═b0fcfd03-67d3-403a-aaf5-5efd5baee89b
 # ╠═f8a956a7-6520-45e4-85e3-487cd433a315
 # ╠═3becbcf2-753c-4662-bc05-be7e625146b0
+# ╠═61e188a0-8080-4e76-8531-cca90d56cc14
 # ╠═5c0b5a16-fd1d-4b8c-aa70-d746332b4d28
 # ╠═31f685d8-b2b3-49d3-88a0-e45f24e69bd8
 # ╟─00000000-0000-0000-0000-000000000001
