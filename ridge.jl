@@ -37,7 +37,7 @@ function get_data()
 	data = CSV.File(HTTP.get(path).body) |> DataFrame
 	data = data[data.age .> 17, :]
 	Random.seed!(69)
-	indices = Random.rand((1:nrow(data)), 10)
+	indices = Random.rand((1:nrow(data)), 20)
 	data[indices, :weight], data[indices, :height]
 end
 
@@ -64,11 +64,14 @@ potencias = repeat(X, 1, maximo_grado) .^ (1:maximo_grado)';
 
 # ╔═╡ 1db18bc1-8e5a-4234-b2d6-7b12bd592987
 md"""
-Hago la regresión con $\lambda=0$
+Definimos el valor de $\lambda$
 """
 
+# ╔═╡ 0f2a796f-38bb-4994-a932-e7953aa1bd2f
+λ = 0
+
 # ╔═╡ 6f5de7cf-c881-4e2f-9bd0-03f8498bbafd
-regresion_ridge = ridge(potencias, y, 0)
+regresion_ridge = ridge(potencias, y, λ)
 
 # ╔═╡ 35d6cf72-aca2-4def-add2-775713546361
 md"""
@@ -171,7 +174,7 @@ A_normalizado, b_normalizado = resultado[1:end-1, :], resultado[end, :]
 
 # ╔═╡ bf19b480-e4e4-4f6f-aa4b-5e1498ebac7e
 md"""
-Creamos un intervalo como ayuda para dibujar el «curva» de regresión:
+Creamos un intervalo como ayuda para dibujar la «curva» de regresión:
 """
 
 # ╔═╡ 57f1e277-dda9-422e-a927-03321e6b92f2
@@ -2040,6 +2043,7 @@ version = "1.4.1+2"
 # ╠═b12699da-72d9-4b75-a777-f8c0dff1a539
 # ╠═69845f5f-aa5c-4f2c-a889-6c1ece385285
 # ╠═1db18bc1-8e5a-4234-b2d6-7b12bd592987
+# ╠═0f2a796f-38bb-4994-a932-e7953aa1bd2f
 # ╠═6f5de7cf-c881-4e2f-9bd0-03f8498bbafd
 # ╠═35d6cf72-aca2-4def-add2-775713546361
 # ╠═05bf3ccb-ef58-4706-b115-29073da58469

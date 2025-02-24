@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.4
+# v0.20.3
 
 using Markdown
 using InteractiveUtils
@@ -37,6 +37,9 @@ begin
 	
 	plotly()
 end
+
+# ╔═╡ 518c90c6-e42d-4c2c-bf1e-8892dac5e4a0
+using Normalization
 
 # ╔═╡ df4e377a-895e-483d-8894-75629bb2533f
 html"""
@@ -1177,6 +1180,8 @@ Lo que queremos es, partiendo de unos valores iniciales para los parámetros $\t
 
 # ╔═╡ 9ab6ffff-263d-47b6-972e-270f4cc614ea
 md"""
+## Idea base del descenso de gradiente
+
 ```math
 \begin{eqnarray*}
 & ... \\
@@ -1250,7 +1255,7 @@ es decir, calculamos el gradiente en el punto actual $\theta^i$, lo multiplicamo
 
 # ╔═╡ 13d9bc4b-ccd2-49d2-9f73-c9b890da6c6b
 md"""
-## Idea base del descenso del gradiente
+## Idea base del descenso de gradiente
 
 La elección de $\eta$ se debe realizar con cuidado. Un valor grande de $\eta$ puede dar lugar a un comportamiento errático cuando el descenso del gradiente se acerca al mínimo de la función de pérdidas.
 
@@ -1342,7 +1347,7 @@ Este caso tiene una solución exacta para $\theta$:
 md"""
 ## Modelos lineales regularizados: Ridge
 
-Veamos un ejemplo sobre un subconjunto de nuestros datos cuando ajustamos a un polinomio de grado 9:
+Veamos un ejemplo sobre un subconjunto de nuestros datos cuando ajustamos a un polinomio con regularización Ridge:
 """
 
 # ╔═╡ 43f68ca8-dd38-4cee-a74f-fa6dfff9a872
@@ -1353,6 +1358,8 @@ names(adultos)
 
 # ╔═╡ 5975aea8-aac1-45b4-bdba-fbe818dff076
 md"""
+## Modelos lineales regularizados: Ridge
+
 Vamos a tomar una muetra de los datos correspondientes a las personas adultas.
 """
 
@@ -1369,7 +1376,10 @@ Definimos el grado del polinomio:
 """
 
 # ╔═╡ bb58c04a-e884-43e7-8fcc-7c2fb29fa859
+# ╠═╡ skip_as_script = true
+#=╠═╡
 maximo_grado = 6
+  ╠═╡ =#
 
 # ╔═╡ 054687a8-d948-447d-8e4a-3b5f94a05ee5
 md"""
@@ -1377,7 +1387,10 @@ Creamos la matriz de potencias:
 """
 
 # ╔═╡ 909d3eaf-f6b8-4bfd-8bb3-2178c2acecc4
+# ╠═╡ skip_as_script = true
+#=╠═╡
 potencias = repeat(muestra_X, 1, maximo_grado) .^ (1:maximo_grado)';
+  ╠═╡ =#
 
 # ╔═╡ e767de20-5188-46f5-add8-97f0fafc1407
 md"""
@@ -1385,7 +1398,9 @@ Hacemos la regresión con $\lambda = 0$:
 """
 
 # ╔═╡ 363847f2-3cc6-4849-8c99-1a358a3227f6
+#=╠═╡
 regresion_ridge = ridge(potencias, muestra_y, 1)
+  ╠═╡ =#
 
 # ╔═╡ 178e6c6e-e469-4a83-80e9-919cf58a2699
 md"""
@@ -1393,10 +1408,14 @@ Extraigo los coeficientes del polinomio y el término independiente.
 """
 
 # ╔═╡ 99acc500-db17-47cb-b1fe-46221270662d
+#=╠═╡
 A, b = regresion_ridge[1:end-1, :], regresion_ridge[end, :]
+  ╠═╡ =#
 
 # ╔═╡ 4cfb2906-1717-4783-b653-4a3c5400842c
 md"""
+## Modelos lineales regularizados: Ridge
+
 Preparo los datos para hacer la predicción.
 """
 
@@ -1404,7 +1423,9 @@ Preparo los datos para hacer la predicción.
 intervalo = range(minimum(muestra_X), maximum(muestra_X), 100)
 
 # ╔═╡ b495bcdb-9204-4c07-a736-19c18622f244
+#=╠═╡
 potencias_prediccion = repeat(intervalo, 1, maximo_grado) .^ (1:maximo_grado)'
+  ╠═╡ =#
 
 # ╔═╡ 521f2427-7018-4672-808e-270aa99799b7
 md"""
@@ -1412,16 +1433,142 @@ Hacemos las predicciones:
 """
 
 # ╔═╡ e55a90ef-6ca5-43b3-b5ce-5e43d2e9cccc
+#=╠═╡
 prediccion = potencias_prediccion * A .+ b
+  ╠═╡ =#
 
 # ╔═╡ cd0cb7ce-9f2d-4c2c-987e-3d5a04c20907
+md"""
+## Modelos lineales regularizados: Ridge
 
+Mostramos el resultados:
+"""
 
 # ╔═╡ 78bba65a-9ce0-4045-abc3-ab515017dc27
+#=╠═╡
 begin
 	scatter(muestra_X, muestra_y, legend=false)
 	plot!(intervalo, prediccion, width=3)
 end
+  ╠═╡ =#
+
+# ╔═╡ 9e9d1dc9-9f77-4e15-a621-3fb4043a462f
+md"""
+## Modelos lineales regularizados: Lasso
+
+En la regularización Lasso el término que se añade a la función de pérdidas es:
+
+$\mathcal{L}(\mathbf{\theta}) = \frac{1}{N} \sum_{i=1}^N \lvert y_i - h(\theta) \rvert ^2
+     1 + \lambda \sum_{j=1}^k \theta_j$
+
+donde $k$ es el grado del polinomio. Fíjate en que no se incluye el parámetro de bias $\theta_0$ en la regularización.
+"""
+
+# ╔═╡ d7642855-cffd-4031-9566-64e7b64b92cb
+md"""
+## Modelos lineales regularizados: Lasso
+
+Para utilizar la regularización Lasso, el procedimiento es muy parecido a la regularización Ridge. Si embargo, hay que tener en cuenta que la regularización Lasso no tiene fórmula exacta y se utiliza descenso de gradiente, que funciona mejor si los datos están normalizados.
+"""
+
+# ╔═╡ db473f0a-09ef-4e60-becf-10ddd49d34d4
+normalizador_X = Normalization.fit(ZScore, muestra_X)
+
+# ╔═╡ d909d343-1628-4460-8294-664004caf098
+X_normalizada = normalizador_X(muestra_X)
+
+# ╔═╡ 86a13490-6ae4-47a9-9e48-14160fb6c80f
+normalizador_y = Normalization.fit(ZScore, muestra_y)
+
+# ╔═╡ 64a2dba2-0470-4db6-a720-717591ec6a62
+y_normalizada = normalizador_y(muestra_y)
+
+# ╔═╡ 464df82b-298b-4424-9165-6b2e25ad0144
+md"""
+Definimos del máximo grado del polinomio:
+"""
+
+# ╔═╡ 8908b623-0ee8-408e-a93a-c981ac9ebe07
+maximo_grado_lasso = 6
+
+# ╔═╡ e899e86b-0605-4672-b717-7dc54b157bdc
+md"""
+Creamos la matriz de potencias:
+"""
+
+# ╔═╡ f78941ec-eeb9-416f-8d19-7c05b7f7d10d
+#=╠═╡
+potencias_lasso = repeat(X_normalizada, 1, maximo_grado) .^ (1:maximo_grado)'
+  ╠═╡ =#
+
+# ╔═╡ ee6aeafb-84b2-460f-8c78-df4e2652098c
+md"""
+Definimos el valor de $\lambda$
+"""
+
+# ╔═╡ 905d9950-c14e-44ce-8b06-40fb6ff6f287
+λ = 0
+
+# ╔═╡ c159d40a-d474-4199-824d-68975c673b5a
+md"""
+Hacemos la regresión Lasso:
+"""
+
+# ╔═╡ 02f9248e-b467-41a1-964a-97713f882736
+#=╠═╡
+regression_lasso = MLJLinearModels.fit(MLJLinearModels.LassoRegression(0.1), potencias_lasso, y_normalizada)
+  ╠═╡ =#
+
+# ╔═╡ 074845dc-c55d-464a-a0be-24986f7e470b
+md"""
+Obetenemos los valores del ajuste:
+"""
+
+# ╔═╡ c38dd6e8-0b2a-4926-a21f-b2fb8369d682
+#=╠═╡
+A_normalizado, b_normalizado = regression_lasso[1:end-1, :], regression_lasso[end, :]
+  ╠═╡ =#
+
+# ╔═╡ 5607f8ed-33f1-4c9d-b98a-66e32ecbdf71
+md"""
+Creamos un intervalo como ayuda para dibujar la «curva» de regresión:
+"""
+
+# ╔═╡ 721ead19-e92d-4ee7-9475-bba21da3e532
+intervalo_normalizado = range(minimum(X_normalizada), maximum(X_normalizada), 100)
+
+# ╔═╡ b0aeae73-9a76-42fd-b04f-877855f6787f
+md"""
+Calculamos las potencias de los puntos del intervalo:
+"""
+
+# ╔═╡ 2824f502-d073-4903-83d7-c0fe4f3e7bb8
+#=╠═╡
+potencias_prediccion_normalizado = repeat(intervalo_normalizado, 1, maximo_grado) .^ (1:maximo_grado)'
+  ╠═╡ =#
+
+# ╔═╡ 4bab4869-622e-49ad-b66a-dbefb0caad10
+md"""
+Realizamos la predicción de cada punto dentro del intervalo:
+"""
+
+# ╔═╡ b0fcfd03-67d3-403a-aaf5-5efd5baee89b
+#=╠═╡
+prediccion_normalizado = potencias_prediccion_normalizado * A_normalizado .+ b_normalizado
+  ╠═╡ =#
+
+# ╔═╡ f8a956a7-6520-45e4-85e3-487cd433a315
+md"""
+Representamos los puntos de conjunto que queremos ajustar, y el polinomio ajustado mediante la regresión Lasso:
+"""
+
+# ╔═╡ 3becbcf2-753c-4662-bc05-be7e625146b0
+#=╠═╡
+begin
+	scatter(X_normalizada, y_normalizada, legend=false)
+	plot!(intervalo_normalizado, prediccion_normalizado, width=3)
+end
+  ╠═╡ =#
 
 # ╔═╡ 5c0b5a16-fd1d-4b8c-aa70-d746332b4d28
 md"""
@@ -1454,6 +1601,7 @@ MLJ = "add582a8-e3ab-11e8-2d5e-e98b27df1bc7"
 MLJLinearModels = "6ee0df7b-362f-4a72-a706-9e79364fb692"
 MLJMultivariateStatsInterface = "1b6a4a23-ba22-4f51-9698-8599985d3728"
 MultivariateStats = "6f286f6a-111f-5878-ab1e-185364afe411"
+Normalization = "be38d6a3-8366-4a42-ad57-222272b5bbe7"
 PlotlyBase = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
 PlotlyKaleido = "f2990250-8cf9-495f-b13a-cce12b45703c"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
@@ -1473,6 +1621,7 @@ MLJ = "~0.20.2"
 MLJLinearModels = "~0.10.0"
 MLJMultivariateStatsInterface = "~0.5.3"
 MultivariateStats = "~0.10.3"
+Normalization = "~0.7.3"
 PlotlyBase = "~0.8.19"
 PlotlyKaleido = "~2.2.5"
 Plots = "~1.40.9"
@@ -1487,7 +1636,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.3"
 manifest_format = "2.0"
-project_hash = "652d0a70623fbedc1c3031d7d98199076f896e8b"
+project_hash = "7dbf4637bf173a6b4870fc4057a05d4052b891aa"
 
 [[deps.ARFFFiles]]
 deps = ["CategoricalArrays", "Dates", "Parsers", "Tables"]
@@ -2720,6 +2869,22 @@ version = "0.4.21"
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
 version = "1.2.0"
 
+[[deps.Normalization]]
+deps = ["Accessors", "LinearAlgebra", "Statistics", "StatsAPI"]
+git-tree-sha1 = "686a1bd494042b29142d920667564c8055bc5738"
+uuid = "be38d6a3-8366-4a42-ad57-222272b5bbe7"
+version = "0.7.3"
+
+    [deps.Normalization.extensions]
+    DataFramesExt = "DataFrames"
+    DimensionalDataExt = "DimensionalData"
+    UnitfulExt = "Unitful"
+
+    [deps.Normalization.weakdeps]
+    DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+    DimensionalData = "0703355e-b756-11e9-17c0-8b28908087d0"
+    Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
+
 [[deps.Observables]]
 git-tree-sha1 = "7438a59546cf62428fc9d1bc94729146d37a7225"
 uuid = "510215fc-4207-5dde-b226-833fc4488ee2"
@@ -3757,6 +3922,7 @@ version = "1.4.1+2"
 # ╔═╡ Cell order:
 # ╟─df4e377a-895e-483d-8894-75629bb2533f
 # ╠═6f6339a7-9b4d-4272-94f7-9234d3d3be41
+# ╠═518c90c6-e42d-4c2c-bf1e-8892dac5e4a0
 # ╠═266e632b-30a5-4ae4-981f-8e2ab61e3232
 # ╠═d0fe37ee-bbc1-11ef-2f0c-4b6bc41d2c3a
 # ╠═cc81afb1-c73d-4e75-b572-21a70608dd9d
@@ -3922,23 +4088,47 @@ version = "1.4.1+2"
 # ╠═95da45a3-5cab-4323-b427-c6291b5b0191
 # ╠═43f68ca8-dd38-4cee-a74f-fa6dfff9a872
 # ╠═e6e771a2-d662-4fea-9b48-63421fd8b851
-# ╠═5975aea8-aac1-45b4-bdba-fbe818dff076
-# ╠═ee8c9183-ead1-4a95-8d2c-818979ae6a05
-# ╠═de4335b6-1f06-4cf0-9d5c-af470eb73930
+# ╟─5975aea8-aac1-45b4-bdba-fbe818dff076
+# ╟─ee8c9183-ead1-4a95-8d2c-818979ae6a05
+# ╟─de4335b6-1f06-4cf0-9d5c-af470eb73930
 # ╠═bb58c04a-e884-43e7-8fcc-7c2fb29fa859
-# ╠═054687a8-d948-447d-8e4a-3b5f94a05ee5
+# ╟─054687a8-d948-447d-8e4a-3b5f94a05ee5
 # ╠═909d3eaf-f6b8-4bfd-8bb3-2178c2acecc4
-# ╠═e767de20-5188-46f5-add8-97f0fafc1407
+# ╟─e767de20-5188-46f5-add8-97f0fafc1407
 # ╠═363847f2-3cc6-4849-8c99-1a358a3227f6
-# ╠═178e6c6e-e469-4a83-80e9-919cf58a2699
+# ╟─178e6c6e-e469-4a83-80e9-919cf58a2699
 # ╠═99acc500-db17-47cb-b1fe-46221270662d
-# ╠═4cfb2906-1717-4783-b653-4a3c5400842c
+# ╟─4cfb2906-1717-4783-b653-4a3c5400842c
 # ╠═32d2acdc-e835-47d1-8979-3336d5312b78
 # ╠═b495bcdb-9204-4c07-a736-19c18622f244
-# ╠═521f2427-7018-4672-808e-270aa99799b7
+# ╟─521f2427-7018-4672-808e-270aa99799b7
 # ╠═e55a90ef-6ca5-43b3-b5ce-5e43d2e9cccc
-# ╠═cd0cb7ce-9f2d-4c2c-987e-3d5a04c20907
+# ╟─cd0cb7ce-9f2d-4c2c-987e-3d5a04c20907
 # ╠═78bba65a-9ce0-4045-abc3-ab515017dc27
+# ╠═9e9d1dc9-9f77-4e15-a621-3fb4043a462f
+# ╠═d7642855-cffd-4031-9566-64e7b64b92cb
+# ╠═db473f0a-09ef-4e60-becf-10ddd49d34d4
+# ╠═d909d343-1628-4460-8294-664004caf098
+# ╠═86a13490-6ae4-47a9-9e48-14160fb6c80f
+# ╠═64a2dba2-0470-4db6-a720-717591ec6a62
+# ╠═464df82b-298b-4424-9165-6b2e25ad0144
+# ╠═8908b623-0ee8-408e-a93a-c981ac9ebe07
+# ╠═e899e86b-0605-4672-b717-7dc54b157bdc
+# ╠═f78941ec-eeb9-416f-8d19-7c05b7f7d10d
+# ╠═ee6aeafb-84b2-460f-8c78-df4e2652098c
+# ╠═905d9950-c14e-44ce-8b06-40fb6ff6f287
+# ╠═c159d40a-d474-4199-824d-68975c673b5a
+# ╠═02f9248e-b467-41a1-964a-97713f882736
+# ╠═074845dc-c55d-464a-a0be-24986f7e470b
+# ╠═c38dd6e8-0b2a-4926-a21f-b2fb8369d682
+# ╠═5607f8ed-33f1-4c9d-b98a-66e32ecbdf71
+# ╠═721ead19-e92d-4ee7-9475-bba21da3e532
+# ╠═b0aeae73-9a76-42fd-b04f-877855f6787f
+# ╠═2824f502-d073-4903-83d7-c0fe4f3e7bb8
+# ╠═4bab4869-622e-49ad-b66a-dbefb0caad10
+# ╠═b0fcfd03-67d3-403a-aaf5-5efd5baee89b
+# ╠═f8a956a7-6520-45e4-85e3-487cd433a315
+# ╠═3becbcf2-753c-4662-bc05-be7e625146b0
 # ╠═5c0b5a16-fd1d-4b8c-aa70-d746332b4d28
 # ╠═31f685d8-b2b3-49d3-88a0-e45f24e69bd8
 # ╟─00000000-0000-0000-0000-000000000001
