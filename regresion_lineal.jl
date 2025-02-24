@@ -42,6 +42,8 @@ end
 using Normalization
 
 # ╔═╡ df4e377a-895e-483d-8894-75629bb2533f
+# ╠═╡ disabled = true
+#=╠═╡
 html"""
 # # Aumentar el zoom hasta 170
 <style>
@@ -70,6 +72,12 @@ html"""
 		margin-right: 80px !important; # Debe quedar comentada para editar
 	}
 </style>
+"""
+  ╠═╡ =#
+
+# ╔═╡ 55ee1eef-992e-4a5f-95dd-9e8790dd5b5f
+html"""
+<link rel="stylesheet" type="text/css" href="https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/mi_estilo.css" media="screen" />
 """
 
 # ╔═╡ 266e632b-30a5-4ae4-981f-8e2ab61e3232
@@ -3941,7 +3949,8 @@ version = "1.4.1+2"
 """
 
 # ╔═╡ Cell order:
-# ╟─df4e377a-895e-483d-8894-75629bb2533f
+# ╠═df4e377a-895e-483d-8894-75629bb2533f
+# ╠═55ee1eef-992e-4a5f-95dd-9e8790dd5b5f
 # ╠═6f6339a7-9b4d-4272-94f7-9234d3d3be41
 # ╠═518c90c6-e42d-4c2c-bf1e-8892dac5e4a0
 # ╠═266e632b-30a5-4ae4-981f-8e2ab61e3232
