@@ -224,9 +224,6 @@ function grafica_peso_altura()
 	plot(p1, p2, size=(900,500))
 end
 
-# ╔═╡ 5d8a3490-f213-4aa7-9230-610d492ca323
-
-
 # ╔═╡ daf598e0-ccb2-489a-8dcd-77e44e9c23fc
 grafica_peso_altura()
 
@@ -242,6 +239,52 @@ Ahora, vamos a intentar construir un clasificador que nos permita realizar
 esa clasificación.
 
 """
+
+# ╔═╡ 239098fc-2202-493f-af15-6dcd85154103
+md"""
+# Obtener los datos
+
+## Conjunto de datos Howell
+Los datos ya los tenemos, son los del conjunto de datos de Howell.
+
+Afortunadamente, los datos están *limpios*, es decir, todas las muestras 
+contienen valores para todas las características, no hay datos duplicados, 
+etcétera.
+
+De nuevo, las conclusiones que extraigamos son válidas únicamente para ese 
+conjunto de datos.
+"""
+
+# ╔═╡ e2b69df9-227d-42b2-a10a-c230525b5a04
+md"""
+# Explorar los datos
+
+## Explorar los datos
+Antes de intentar utilizar algún algoritmo, es muy recomendable estudiar 
+los datos desde el punto de vista estadístico, por ejemplo:
+
+1. ¿Los datos tienen alguna distribución conocida?
+1. ¿Existen correlaciones entre los datos?
+"""
+
+# ╔═╡ ee9223fc-8d4d-45b5-8d19-9f0dfba5596f
+md"""
+## Distribuciones de los datos
+"""
+
+# ╔═╡ 63327e12-c31e-433f-b110-0b4a6acf0e8e
+function distribucionespesoalturaedad()
+	peso = plot(hombres_adultos.weight, seriestype=:stephist, label="Hombres",  grid=false, nbins=10)
+	peso = plot!(mujeres_adultas.weight, seriestype=:stephist, label="Mujeres")
+	altura = plot(hombres_adultos.height, seriestype=:stephist, label="Hombres", grid=false)
+	altura = plot!(mujeres_adultas.height, seriestype=:stephist, label="Mujeres")
+	edad = plot(hombres_adultos.age, seriestype=:stephist, label="Hombres", bins=30:2:63, grid=false)
+	edad = plot!(mujeres_adultas.age, seriestype=:stephist, label="Mujeres", bins=30:2:60)
+	plot(peso, altura, edad, layout=(1,3), size=(900, 500))
+end
+
+# ╔═╡ 51f1622c-d0f7-430c-a2b7-e3ea5c2bbeae
+distribucionespesoalturaedad()
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1604,8 +1647,12 @@ version = "1.4.1+2"
 # ╠═11c9c78a-a2e1-4395-b174-e1577afd9970
 # ╠═336a8e44-150e-461f-a9c9-cc87c94ccccf
 # ╠═d0a45350-a28a-43ad-9009-0bb3ad91da86
-# ╠═5d8a3490-f213-4aa7-9230-610d492ca323
 # ╠═daf598e0-ccb2-489a-8dcd-77e44e9c23fc
 # ╠═8addd58e-47c8-42bf-88cb-c9d33bc77ce9
+# ╠═239098fc-2202-493f-af15-6dcd85154103
+# ╠═e2b69df9-227d-42b2-a10a-c230525b5a04
+# ╠═ee9223fc-8d4d-45b5-8d19-9f0dfba5596f
+# ╠═63327e12-c31e-433f-b110-0b4a6acf0e8e
+# ╠═51f1622c-d0f7-430c-a2b7-e3ea5c2bbeae
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
