@@ -22,6 +22,12 @@ using Distributions
 # ╔═╡ e6901419-169d-4400-b2a1-3bc01342ba59
 using StatsPlots
 
+# ╔═╡ 58ac34c0-0a42-45ee-a830-fad4d5dd9d71
+using HypothesisTests
+
+# ╔═╡ 513b3406-a196-4c31-8d43-e9850c2908bb
+using NamedArrays
+
 # ╔═╡ 2a86bff1-dda4-4412-9300-3d54330e7388
 using PlutoUI
 
@@ -211,22 +217,23 @@ Cargamos los datos con los que vamos a trabajar:
 function carga_datos()
 	url = "https://raw.githubusercontent.com/AprendizajeAutomaticoUJI/DataSets/refs/heads/master/Howell1.csv"
 	data = CSV.File(HTTP.get(url).body) |> DataFrame
-	hombres = data[data.male .== 1, :]
-	hombres_adultos = data[(data.male .== 1) .& (data.age .> 17), :]
-	mujeres = data[data.male .== 0, :]
-	mujeres_adultas = data[(data.male .== 0) .& (data.age .> 17), :]
-	hombres, hombres_adultos, mujeres, mujeres_adultas
+	adultos = data[data.age .> 17, :]
+	hombres = select(data[data.male .== 1, :], Not(:male))
+	hombres_adultos = hombres[hombres.age .> 17, :]
+	mujeres = select(data[data.male .== 0, :], Not(:male))
+	mujeres_adultas = mujeres[mujeres.age .> 17, :]
+	adultos, hombres, hombres_adultos, mujeres, mujeres_adultas
 end
 
 # ╔═╡ 336a8e44-150e-461f-a9c9-cc87c94ccccf
-hombres, hombres_adultos, mujeres, mujeres_adultas = carga_datos();
+adultos, hombres, hombres_adultos, mujeres, mujeres_adultas = carga_datos();
 
 # ╔═╡ d0a45350-a28a-43ad-9009-0bb3ad91da86
 function grafica_peso_altura()
 	p1 = scatter(hombres.weight, hombres.height, xlabel="Peso", ylabel="Altura", label="hombres", title="Todas edades")
 	p1 = scatter!(mujeres.weight, mujeres.height, label="mujeres")
-	p2 = scatter(hombres_adultos.weight, hombres_adultos.height, xlabel="Peso", ylabel="Altura", title="Adultos")
-	p2 = scatter!(mujeres_adultas.weight, mujeres_adultas.height, legend=false)
+	p2 = scatter(hombres_adultos.weight, hombres_adultos.height, xlabel="Peso", ylabel="Altura", title="Adultos", labels=false)
+	p2 = scatter!(mujeres_adultas.weight, mujeres_adultas.height, labels=false)
 	plot(p1, p2, size=(900,500))
 end
 
@@ -300,7 +307,7 @@ lo que sabemos de datos poblacionales generales.
 """
 
 # ╔═╡ 92192af7-a787-4cd8-86a4-13b386b51f10
-function ajuste_normales2()
+function ajuste_normales()
 	hombres_peso = fit(Normal, hombres_adultos.weight)
 	# print(hombres_peso)
 	plot(hombres_adultos.weight, seriestype="stephist", normalize=true, bins=30:3:70, label="Hombres", xlabel="Peso")
@@ -315,15 +322,149 @@ function ajuste_normales2()
 	plot!(mujeres_adultas.height, seriestype="stephist", normalize=true, bins=130:5:180, labels=false)
 	plot_altura = plot!(mujeres_altura, labels=false)
 	plot(plot_peso, plot_altura, layout=(1,2), size=(900,500))
-	hombres_peso, mujeres_peso, hombres_altura, mujeres_altura
 end
 
 # ╔═╡ ad4a41b9-7a8c-4999-a88a-28f816ffb0ba
-hombres_peso, mujeres_peso, hombres_altura, mujeres_altura = ajuste_normales2()
+ajuste_normales()
 
-# ╔═╡ 4f7b9f28-26e6-4679-89bb-980a6751f76a
+# ╔═╡ 0bc95d3e-d681-4be0-8aaf-57758a11a22a
 md"""
+Si comprobamos la bondad de los ajustes a normales.
 
+El p-valor para el ajuste del peso de los hombres con la prueba de Anderson-Darling:
+"""
+
+# ╔═╡ 9e5fa7a9-f7ad-4ab0-ad47-64bb777c584a
+pvalue(OneSampleADTest(hombres_adultos.weight, fit(Normal, hombres_adultos.weight)))
+
+# ╔═╡ 67333fdc-c200-4776-aafb-7947f6be05f9
+md"""
+Para el peso de las mujeres adultas:
+"""
+
+# ╔═╡ 5f306070-918c-4491-992e-6d47307a9139
+pvalue(OneSampleADTest(mujeres_adultas.weight, fit(Normal, mujeres_adultas.weight)))
+
+# ╔═╡ e7341d4c-624e-44d1-9ab4-b30bb6dfef4f
+md"""
+Para la altura de hombres adultos:
+"""
+
+# ╔═╡ 288ed03e-d9e7-41f3-9f91-b67bfda75b0c
+pvalue(OneSampleADTest(hombres_adultos.height, fit(Normal, hombres_adultos.height)))
+
+# ╔═╡ 369232ee-276b-4abb-a308-f3071cb0ffa5
+md"""
+Para la altura de mujeres adultas:
+"""
+
+# ╔═╡ 7d3a83f1-27e6-487f-b85e-96bba7704550
+pvalue(OneSampleADTest(mujeres_adultas.height, fit(Normal, mujeres_adultas.height)))
+
+# ╔═╡ 8e6b402f-cd3e-41e0-9be5-41e939a817f5
+md"""
+Los ajustes parecen ser bastante buenos en todos los casos.
+"""
+
+# ╔═╡ b1f4000f-9fc1-4363-a3c2-f08be4348ac5
+md"""
+## Correlación de los datos
+
+Para el caso de todas las personas adultas, hombres y mujeres:
+"""
+
+# ╔═╡ b248e25c-0507-44df-98f7-af73b72f5be6
+NamedArray(cor(Matrix(adultos)), (names(adultos), names(adultos)))
+
+# ╔═╡ 8e01180b-560c-4eb9-a28f-79e6034e7208
+md"""
+Las correlaciones sólo para el caso de los hombres:
+"""
+
+# ╔═╡ 14bbf814-5254-4528-bcd0-6732aaf46b2c
+NamedArray(cor(Matrix(hombres_adultos)), (names(hombres_adultos), names(hombres_adultos)))
+
+# ╔═╡ 3389b7e8-305a-4242-bae9-926f8bfa5ee8
+md"""
+Para el caso de las mujeres:
+"""
+
+# ╔═╡ c33a49ae-1c51-40cf-8b39-107fc942e362
+NamedArray(cor(Matrix(mujeres_adultas)), (names(mujeres_adultas), names(mujeres_adultas)))
+
+# ╔═╡ ae448d10-e562-4a8f-899e-bc1484e63bf5
+md"""
+## Covarianza en los datos 
+
+Las covarianzas entre las características de los datos para los hombres:
+"""
+
+# ╔═╡ 240fc13e-a96b-4340-bdb3-cc367aab9650
+NamedArray(cov(Matrix(hombres_adultos)), (names(hombres_adultos), names(hombres_adultos)))
+
+# ╔═╡ f57559bd-d99b-43e8-b2dc-5cb75abf668e
+md"""
+Las covarianzas para las mujeres:
+"""
+
+# ╔═╡ e4e11601-94db-4642-af8f-9838d6ca2994
+NamedArray(cov(Matrix(mujeres_adultas)), (names(mujeres_adultas), names(mujeres_adultas)))
+
+# ╔═╡ 3e814d0e-5fe0-475f-a488-40727787dd59
+md"""
+Si nos quedamos sólo con peso y altura, ajustamos a una distribución gaussiana multivariada y visualizamos:
+"""
+
+# ╔═╡ 96ad543b-d968-4fb3-b358-92ea5197436c
+function contorno_normales()
+	hombres = select(hombres_adultos, [:weight, :height])
+	mujeres = select(mujeres_adultas, [:weight, :height])
+	mv_hombres = fit(MvNormal, Matrix(hombres)')
+	mv_mujeres = fit(MvNormal, Matrix(mujeres)')
+	X = range(25, 65, length=100)
+	Y = range(135, 175, length=100)
+	pdf_hombres(x,y) = pdf(mv_hombres, [x, y])
+	pdf_mujeres(x,y) = pdf(mv_mujeres, [x, y])
+	contour(X, Y, pdf_hombres, color=:viridis, xlabel="Peso", ylabel="Altura")
+	p1 = contour!(X, Y, pdf_mujeres, color=:viridis, label="Mujeres")
+	mv_mujeres = MvNormal(mv_hombres.μ, mv_mujeres.Σ)
+	contour(X, Y, pdf_hombres, color=:viridis, xlabel="Peso", ylabel="Altura")
+	p2 = contour!(X, Y, pdf_mujeres, color=:viridis, label="Mujeres")
+	plot(p1, p2, size=(900,500))
+end
+	
+
+# ╔═╡ bf361273-75aa-4620-b63d-a7e8f47f83c8
+contorno_normales()
+
+# ╔═╡ 85cbdac8-a4c8-4a91-ba6d-90f0c55ba818
+md"""
+Vamos a utilizar una prueba de semejanza de matrices de covarianza:
+"""
+
+# ╔═╡ 9458817b-d025-4f73-9c71-42fdb2bbd266
+BartlettTest(Matrix(select(hombres_adultos, Not(:age))), Matrix(select(mujeres_adultas, Not(:age))))
+
+# ╔═╡ 517c9b6c-d4b7-45c6-a916-12f92f07fb08
+md"""
+A la vista del p-valor de esta prueba, podemos considerar que las matrices de covarianzas de hombre y mujeres para peso y altura se *parece lo suficiente*.
+"""
+
+# ╔═╡ bc3c772e-578d-4fea-ad56-bc0b5598d43e
+md"""
+## Conclusiones:
+
+1. Existe una correlación alta entre altura y género.
+1. Existe una correlación moderada entre peso y género.
+1. La correlación entre edad y género es muy pequeña.
+1. Las correlaciones entre peso y altura son parecidas entre hombres y mujeres.
+1. La matriz de covarianza (peso y altura) es parecida entre hombres y mujeres.
+1. Suponemos que la distribución peso-altura sigue una normal para hombres y mujeres.
+"""
+
+# ╔═╡ 2cd44fbd-46e9-4942-ac06-df9c5af1badc
+md"""
+# Preparar los datos
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -333,6 +474,8 @@ CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
+HypothesisTests = "09f84164-cd44-5f33-b23f-e6b0d136a0d5"
+NamedArrays = "86f7a689-2022-50b4-a561-43c23ac3c673"
 PlotlyBase = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
 PlotlyKaleido = "f2990250-8cf9-495f-b13a-cce12b45703c"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
@@ -344,6 +487,8 @@ CSV = "~0.10.15"
 DataFrames = "~1.7.0"
 Distributions = "~0.25.117"
 HTTP = "~1.10.15"
+HypothesisTests = "~0.11.3"
+NamedArrays = "~0.10.3"
 PlotlyBase = "~0.8.19"
 PlotlyKaleido = "~2.2.6"
 Plots = "~1.40.9"
@@ -357,7 +502,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.3"
 manifest_format = "2.0"
-project_hash = "dd78bb9c1d2afcdc5b35624cd26102a786eecec0"
+project_hash = "0e16717127265472cd58c7c1b9bddae1c4e37b35"
 
 [[deps.AbstractFFTs]]
 deps = ["LinearAlgebra"]
@@ -375,6 +520,31 @@ deps = ["Pkg"]
 git-tree-sha1 = "6e1d2a35f2f90a4bc7c2ed98079b2ba09c35b83a"
 uuid = "6e696c72-6542-2067-7265-42206c756150"
 version = "1.3.2"
+
+[[deps.Accessors]]
+deps = ["CompositionsBase", "ConstructionBase", "Dates", "InverseFunctions", "MacroTools"]
+git-tree-sha1 = "0ba8f4c1f06707985ffb4804fdad1bf97b233897"
+uuid = "7d9f7c33-5ae7-4f3b-8dc6-eff91059b697"
+version = "0.1.41"
+
+    [deps.Accessors.extensions]
+    AxisKeysExt = "AxisKeys"
+    IntervalSetsExt = "IntervalSets"
+    LinearAlgebraExt = "LinearAlgebra"
+    StaticArraysExt = "StaticArrays"
+    StructArraysExt = "StructArrays"
+    TestExt = "Test"
+    UnitfulExt = "Unitful"
+
+    [deps.Accessors.weakdeps]
+    AxisKeys = "94b1ba4f-4ee9-5380-92f1-94cde586c3c5"
+    IntervalSets = "8197267c-284f-5f27-9208-e0e47529a953"
+    LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+    Requires = "ae029012-a4dd-5104-9daa-d747884805df"
+    StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
+    StructArrays = "09ab397b-f2b6-538f-b94a-2f83cf4a842a"
+    Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+    Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [[deps.Adapt]]
 deps = ["LinearAlgebra", "Requires"]
@@ -496,6 +666,16 @@ git-tree-sha1 = "64e15186f0aa277e174aa81798f7eb8598e0157e"
 uuid = "5ae59095-9a9b-59fe-a467-6f913c188581"
 version = "0.13.0"
 
+[[deps.Combinatorics]]
+git-tree-sha1 = "08c8b6831dc00bfea825826be0bc8336fc369860"
+uuid = "861a8166-3701-5b0c-9a16-15d98fcdc6aa"
+version = "1.0.2"
+
+[[deps.CommonSolve]]
+git-tree-sha1 = "0eee5eb66b1cf62cd6ad1b460238e60e4b09400c"
+uuid = "38540f10-b2f7-11e9-35d8-d573e4eb0ff2"
+version = "0.2.4"
+
 [[deps.Compat]]
 deps = ["TOML", "UUIDs"]
 git-tree-sha1 = "8ae8d32e09f0dcf42a36b90d4e17f5dd2e4c4215"
@@ -511,11 +691,35 @@ deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
 version = "1.1.1+0"
 
+[[deps.CompositionsBase]]
+git-tree-sha1 = "802bb88cd69dfd1509f6670416bd4434015693ad"
+uuid = "a33af91c-f02d-484b-be07-31d278c5ca2b"
+version = "0.1.2"
+weakdeps = ["InverseFunctions"]
+
+    [deps.CompositionsBase.extensions]
+    CompositionsBaseInverseFunctionsExt = "InverseFunctions"
+
 [[deps.ConcurrentUtilities]]
 deps = ["Serialization", "Sockets"]
 git-tree-sha1 = "d9d26935a0bcffc87d2613ce14c527c99fc543fd"
 uuid = "f0e56b4a-5159-44fe-b623-3e5288b988bb"
 version = "2.5.0"
+
+[[deps.ConstructionBase]]
+git-tree-sha1 = "76219f1ed5771adbb096743bff43fb5fdd4c1157"
+uuid = "187b0558-2788-49d3-abe0-74a17ed4e7c9"
+version = "1.5.8"
+
+    [deps.ConstructionBase.extensions]
+    ConstructionBaseIntervalSetsExt = "IntervalSets"
+    ConstructionBaseLinearAlgebraExt = "LinearAlgebra"
+    ConstructionBaseStaticArraysExt = "StaticArrays"
+
+    [deps.ConstructionBase.weakdeps]
+    IntervalSets = "8197267c-284f-5f27-9208-e0e47529a953"
+    LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+    StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 
 [[deps.Contour]]
 git-tree-sha1 = "439e35b0b36e2e5881738abc8857bd92ad6ff9a8"
@@ -783,6 +987,12 @@ git-tree-sha1 = "7134810b1afce04bbc1045ca1985fbe81ce17653"
 uuid = "ac1192a8-f4b3-4bfe-ba22-af5b92cd3ab2"
 version = "0.9.5"
 
+[[deps.HypothesisTests]]
+deps = ["Combinatorics", "Distributions", "LinearAlgebra", "Printf", "Random", "Rmath", "Roots", "Statistics", "StatsAPI", "StatsBase"]
+git-tree-sha1 = "6c3ce99fdbaf680aa6716f4b919c19e902d67c9c"
+uuid = "09f84164-cd44-5f33-b23f-e6b0d136a0d5"
+version = "0.11.3"
+
 [[deps.IOCapture]]
 deps = ["Logging", "Random"]
 git-tree-sha1 = "b6d6bfdd7ce25b0f9b2f6b3dd56b2673a66c8770"
@@ -822,6 +1032,16 @@ weakdeps = ["Unitful"]
 
     [deps.Interpolations.extensions]
     InterpolationsUnitfulExt = "Unitful"
+
+[[deps.InverseFunctions]]
+git-tree-sha1 = "a779299d77cd080bf77b97535acecd73e1c5e5cb"
+uuid = "3587e190-3f89-42d0-90ee-14403ec27112"
+version = "0.1.17"
+weakdeps = ["Dates", "Test"]
+
+    [deps.InverseFunctions.extensions]
+    InverseFunctionsDatesExt = "Dates"
+    InverseFunctionsTestExt = "Test"
 
 [[deps.InvertedIndices]]
 git-tree-sha1 = "6da3c4316095de0f5ee2ebd875df8721e7e0bdbe"
@@ -1094,6 +1314,12 @@ deps = ["OpenLibm_jll"]
 git-tree-sha1 = "cc0a5deefdb12ab3a096f00a6d42133af4560d71"
 uuid = "77ba4419-2d1f-58cd-9bb1-8ffee604a2e3"
 version = "1.1.2"
+
+[[deps.NamedArrays]]
+deps = ["Combinatorics", "DataStructures", "DelimitedFiles", "InvertedIndices", "LinearAlgebra", "Random", "Requires", "SparseArrays", "Statistics"]
+git-tree-sha1 = "58e317b3b956b8aaddfd33ff4c3e33199cd8efce"
+uuid = "86f7a689-2022-50b4-a561-43c23ac3c673"
+version = "0.10.3"
 
 [[deps.NearestNeighbors]]
 deps = ["Distances", "StaticArrays"]
@@ -1394,6 +1620,26 @@ git-tree-sha1 = "58cdd8fb2201a6267e1db87ff148dd6c1dbd8ad8"
 uuid = "f50d1b31-88e8-58de-be2c-1cc44531875f"
 version = "0.5.1+0"
 
+[[deps.Roots]]
+deps = ["Accessors", "CommonSolve", "Printf"]
+git-tree-sha1 = "e52cf0872526c7a0b3e1af9c58a69b90e19b022e"
+uuid = "f2b01f46-fcfa-551c-844a-d8ac1e96c665"
+version = "2.2.5"
+
+    [deps.Roots.extensions]
+    RootsChainRulesCoreExt = "ChainRulesCore"
+    RootsForwardDiffExt = "ForwardDiff"
+    RootsIntervalRootFindingExt = "IntervalRootFinding"
+    RootsSymPyExt = "SymPy"
+    RootsSymPyPythonCallExt = "SymPyPythonCall"
+
+    [deps.Roots.weakdeps]
+    ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
+    ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
+    IntervalRootFinding = "d2bf35a9-74e0-55ec-b149-d360ff49b807"
+    SymPy = "24249f21-da20-56a4-8eb1-6a02cf4ae2e6"
+    SymPyPythonCall = "bc8888f7-b21e-4b7c-a06a-5d9c9496438c"
+
 [[deps.SHA]]
 uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
 version = "0.7.0"
@@ -1504,14 +1750,11 @@ deps = ["HypergeometricFunctions", "IrrationalConstants", "LogExpFunctions", "Re
 git-tree-sha1 = "b423576adc27097764a90e163157bcfc9acf0f46"
 uuid = "4c63d2b9-4356-54db-8cca-17b64c39e42c"
 version = "1.3.2"
+weakdeps = ["ChainRulesCore", "InverseFunctions"]
 
     [deps.StatsFuns.extensions]
     StatsFunsChainRulesCoreExt = "ChainRulesCore"
     StatsFunsInverseFunctionsExt = "InverseFunctions"
-
-    [deps.StatsFuns.weakdeps]
-    ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
-    InverseFunctions = "3587e190-3f89-42d0-90ee-14403ec27112"
 
 [[deps.StatsPlots]]
 deps = ["AbstractFFTs", "Clustering", "DataStructures", "Distributions", "Interpolations", "KernelDensity", "LinearAlgebra", "MultivariateStats", "NaNMath", "Observables", "Plots", "RecipesBase", "RecipesPipeline", "Reexport", "StatsBase", "TableOperations", "Tables", "Widgets"]
@@ -1617,14 +1860,11 @@ deps = ["Dates", "LinearAlgebra", "Random"]
 git-tree-sha1 = "c0667a8e676c53d390a09dc6870b3d8d6650e2bf"
 uuid = "1986cc42-f94f-5a68-af5c-568840ba703d"
 version = "1.22.0"
+weakdeps = ["ConstructionBase", "InverseFunctions"]
 
     [deps.Unitful.extensions]
     ConstructionBaseUnitfulExt = "ConstructionBase"
     InverseFunctionsUnitfulExt = "InverseFunctions"
-
-    [deps.Unitful.weakdeps]
-    ConstructionBase = "187b0558-2788-49d3-abe0-74a17ed4e7c9"
-    InverseFunctions = "3587e190-3f89-42d0-90ee-14403ec27112"
 
 [[deps.UnitfulLatexify]]
 deps = ["LaTeXStrings", "Latexify", "Unitful"]
@@ -1680,9 +1920,9 @@ version = "1.6.1"
 
 [[deps.XML2_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Libiconv_jll", "Zlib_jll"]
-git-tree-sha1 = "ee6f41aac16f6c9a8cab34e2f7a200418b1cc1e3"
+git-tree-sha1 = "b8b243e47228b4a3877f1dd6aee0c5d56db7fcf4"
 uuid = "02c8fc9c-b97f-50b9-bbe4-9be30ff0a78a"
-version = "2.13.6+0"
+version = "2.13.6+1"
 
 [[deps.XSLT_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Libgcrypt_jll", "Libgpg_error_jll", "Libiconv_jll", "XML2_jll", "Zlib_jll"]
@@ -1847,9 +2087,9 @@ version = "1.2.13+1"
 
 [[deps.Zstd_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "622cf78670d067c738667aaa96c553430b65e269"
+git-tree-sha1 = "446b23e73536f84e8037f5dce465e92275f6a308"
 uuid = "3161d3a3-bdf6-5164-811a-617609db77b4"
-version = "1.5.7+0"
+version = "1.5.7+1"
 
 [[deps.eudev_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg", "gperf_jll"]
@@ -1973,7 +2213,9 @@ version = "1.4.1+2"
 # ╠═3748086b-5bb8-409e-807e-9e8c8845cf03
 # ╠═f19c87ed-bfc5-4eca-b61b-5bca6bd8eb65
 # ╠═e6901419-169d-4400-b2a1-3bc01342ba59
+# ╠═58ac34c0-0a42-45ee-a830-fad4d5dd9d71
 # ╠═86baef7c-e1aa-4e24-b6e0-ed9b40761059
+# ╠═513b3406-a196-4c31-8d43-e9850c2908bb
 # ╠═2a86bff1-dda4-4412-9300-3d54330e7388
 # ╠═0d1ffc59-3f36-49e6-a0f4-c0c91fe9b5b8
 # ╠═95697151-e85c-42b3-8c92-cb206ed70e0b
@@ -2003,6 +2245,32 @@ version = "1.4.1+2"
 # ╟─7a153f0b-a604-4cbc-9af1-911b247ebc7a
 # ╠═92192af7-a787-4cd8-86a4-13b386b51f10
 # ╠═ad4a41b9-7a8c-4999-a88a-28f816ffb0ba
-# ╠═4f7b9f28-26e6-4679-89bb-980a6751f76a
+# ╠═0bc95d3e-d681-4be0-8aaf-57758a11a22a
+# ╠═9e5fa7a9-f7ad-4ab0-ad47-64bb777c584a
+# ╠═67333fdc-c200-4776-aafb-7947f6be05f9
+# ╠═5f306070-918c-4491-992e-6d47307a9139
+# ╠═e7341d4c-624e-44d1-9ab4-b30bb6dfef4f
+# ╠═288ed03e-d9e7-41f3-9f91-b67bfda75b0c
+# ╠═369232ee-276b-4abb-a308-f3071cb0ffa5
+# ╠═7d3a83f1-27e6-487f-b85e-96bba7704550
+# ╠═8e6b402f-cd3e-41e0-9be5-41e939a817f5
+# ╠═b1f4000f-9fc1-4363-a3c2-f08be4348ac5
+# ╠═b248e25c-0507-44df-98f7-af73b72f5be6
+# ╠═8e01180b-560c-4eb9-a28f-79e6034e7208
+# ╠═14bbf814-5254-4528-bcd0-6732aaf46b2c
+# ╠═3389b7e8-305a-4242-bae9-926f8bfa5ee8
+# ╠═c33a49ae-1c51-40cf-8b39-107fc942e362
+# ╠═ae448d10-e562-4a8f-899e-bc1484e63bf5
+# ╠═240fc13e-a96b-4340-bdb3-cc367aab9650
+# ╠═f57559bd-d99b-43e8-b2dc-5cb75abf668e
+# ╠═e4e11601-94db-4642-af8f-9838d6ca2994
+# ╠═3e814d0e-5fe0-475f-a488-40727787dd59
+# ╠═96ad543b-d968-4fb3-b358-92ea5197436c
+# ╠═bf361273-75aa-4620-b63d-a7e8f47f83c8
+# ╠═85cbdac8-a4c8-4a91-ba6d-90f0c55ba818
+# ╠═9458817b-d025-4f73-9c71-42fdb2bbd266
+# ╠═517c9b6c-d4b7-45c6-a916-12f92f07fb08
+# ╠═bc3c772e-578d-4fea-ad56-bc0b5598d43e
+# ╠═2cd44fbd-46e9-4942-ac06-df9c5af1badc
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
