@@ -28,6 +28,9 @@ using HypothesisTests
 # ╔═╡ 513b3406-a196-4c31-8d43-e9850c2908bb
 using NamedArrays
 
+# ╔═╡ e6f3eab0-69c9-4866-bce7-5f4a3786f009
+using GLM
+
 # ╔═╡ 2a86bff1-dda4-4412-9300-3d54330e7388
 using PlutoUI
 
@@ -465,7 +468,205 @@ md"""
 # ╔═╡ 2cd44fbd-46e9-4942-ac06-df9c5af1badc
 md"""
 # Preparar los datos
+
+Afortunadamente, esta base de datos ya está preparada. 
+
+La preparación de los datos es una tarea muy costosa en tiempo. La limpieza de 
+los datos implica, por ejemplo:
+
+1. Eliminar datos duplicados.
+1. Eliminar datos que son erróneos.
+1. Decidir qué hacer con los datos de los que falta alguna característica:
+    1. Eliminarlos.
+    1. Imputar un valor a la característica ausente.
 """
+
+# ╔═╡ 30f3a04d-fe07-4293-b457-e26299d216d9
+md"""
+# El algoritmo de regresión logística para tareas de clasificación
+
+## Clasificación con dos clases
+El problema de clasificar una persona de la base de datos Howell por género 
+es un problema con dos únicas clases. Para generalizar, vamos a llamar a estas 
+clases $C_1$ y $C_2$.
+
+Utilizamos el teorema de Bayes para calcular la probabilidad de que una 
+muestra $x$ pertenezca a la clase $C_1$:
+
+$p(C_1|x) = \frac{p(C_1)p(x|C_1)}{p(C_1)p(x|C_1) + p(C_2)p(x|C_2)}$
+"""
+
+# ╔═╡ 97fe3b83-59a4-4474-bc53-a81a018518d4
+md"""
+## Clasificación con dos clases
+Dividiendo numerador y denominador por el numerador:
+
+$p(C_1|x) = \frac{1}{1 + \frac{p(C_2)p(x|C_2)}{p(C_1)p(x|C_1)}} = \frac{1}{1 + e^{-a}} = \sigma(a)$
+
+donde $\sigma(a)$ es la función sigmoide con:
+
+$a = ln \frac{p(C_1)p(x|C_1)}{p(C_2)p(x|C_2)}$
+"""
+
+# ╔═╡ 441170ee-8d7f-4b36-ab2d-8075c4196b5d
+md"""
+## Clasificación con dos clases
+
+Y este es el aspecto de la función sigmoide:
+"""
+
+# ╔═╡ 19db055b-db56-4f64-bab7-6f598c93e175
+σ(x) = 1 / (1 + exp(-x))
+
+# ╔═╡ 330e6f0f-f955-405d-8c66-ae9efa8d7e0a
+plot(range(-6, 6, 100), σ, xlabel="x", ylabel="σ(x)", title="Función sigmoide", legend=false)
+
+# ╔═╡ 8f6a1785-f5fc-4216-af16-8c84d46b5b40
+md"""
+## Clasificación con dos clases
+
+De momento, todo esto parece un poco artificial, pero va a ir tomando sentido.
+
+Ahora supongamos que:
+
+1. Las distribuciones de las variables en las clases $C_1$ y $C_2$ son 
+gaussianas.
+1. Las correlaciones de las variables son iguales en las dos clases.
+
+Fíjate en que estas suposiciones son «validas» para los datos de Howell. Es 
+importante comprobar que nuestros datos cumplen estas dos condiciones si vamos 
+a aplicar la formulación siguiente.
+"""
+
+# ╔═╡ d48f86ef-1894-4f82-ab34-6b4553996902
+md"""
+## Clasificación con dos clases
+
+La distribución gaussiana en D dimensiones es:
+
+$p(x|C_k) = \frac{1}{(2\pi)^{D/2}} \frac{1}{\lvert \Sigma \rvert^{1/2}} exp \Bigl \{ - \frac{1}{2} (x-\mu_k)^T \Sigma^{-1} (x-\mu_k) \Bigr \}$
+
+Donde $k$ es 1 ó 2 para indicar la clase, $\mu_k$ es la media de la clase $k$, 
+y $\Sigma$ la matriz de covarianza.
+"""
+
+# ╔═╡ cd15154f-fc0f-41ba-a711-0236ffa9f04d
+md"""
+## Clasificación con dos clases
+
+Si particularizamos para $k=1$ y $k=2$ y sustituimos en las formulas de la 
+sigmoide obtenemos:
+
+$p(C_1|x) = \sigma(\theta^T x + \theta_0) = \sigma(\theta^T x)$
+
+Esto significa que si hacemos una transformación lineal sobre una muestra 
+$\theta^T x$ y sobre el resultado aplicamos la función 
+$\sigma(\theta^T x)$ obtenemos la probabilidad de que la muestra $x$.
+
+Nos queda por calcular los parámetros de la transformación.
+"""
+
+# ╔═╡ f057fb6c-af57-46c0-b712-06eed205dbc8
+md"""
+## Clasificación con dos clases
+Los parámetros son:
+
+$\theta= \Sigma^{-1}(\mu_1 - \mu_2); \: \theta_0= -\frac{1}{2} \mu_1^T \Sigma^{-1} \mu_1 + \frac{1}{2} \mu_1^T \Sigma^{-1} \mu_1 + ln \frac{p(C_1)}{p(C_2)}$
+
+Donde los parámetros $\mu_1$, $\mu_2$ y $\Sigma$ los podemos obtener aplicando 
+el principio de máxima verosimilitud al conjunto de nuestros datos.
+"""
+
+# ╔═╡ 0ab915b8-2d9d-4edf-9b26-a7783eb6326e
+md"""
+## Clasificación con dos clases
+Si tomamos $p(C_1) = q$, y por lo tanto $p(C_2) = 1-q$ y definimos 
+$t_n = 1$ si la muestra pertenece a la clase $C_1$ y $t_n = 0$ si la muestra 
+pertenece a la clase $C_2$ y hacemos uso de la definición de probabilidad:
+
+$p(x_n, C_1) = p(C_1) p(x_n|C_1) = q N(x_n|\mu_1 \Sigma)$
+$p(x_n, C_2) = p(C_2) p(x_n|C_2) = (1-q) N(x_n|\mu_2 \Sigma)$
+
+Y aplicamos el principio de máxima verosimilitud a nuestro conjunto de datos:
+
+$p(\pmb{t}|q, \mu_1, \mu_2, \Sigma) = \prod_{n=1}^N [q N(x_n|\mu_1, \Sigma)]^{t_n} [(1-q) N(x_n|\mu_2, \Sigma)]^{(1-t_n)}$
+"""
+
+# ╔═╡ 97b78daf-0932-4950-bfe5-def83b79f199
+md"""
+## Clasificación con dos clases
+
+Si tomamos la derivada de la anterior expresión con respecto a $q$ e igualamos 
+a cero:
+
+$q = \frac{1}{N} \sum_{n=1}^N t_n = \frac{N_1}{N_1 + N_2} = \frac{N_1}{N}$
+$1 - q = \frac{N_2}{N}$
+
+Como intuitivamente se puede esperar la probabilidad de pertenecer a una clase 
+es la razón del número de miembros de esa clase sobre el total.
+"""
+
+# ╔═╡ 72bfb2fd-7ff4-42a0-9bf1-1266fa1d86ba
+md"""
+## Clasificación con dos clases
+
+Tomando derivadas con respecto a $\mu_1$, igualando a cero; y después con 
+respecto a $\mu_2$:
+
+$\mu_1 = \frac{1}{N} \sum_{n=1}^{N} x_n t_n$
+$\mu_2 = \frac{1}{N} \sum_{n=1}^{N} x_n (1-t_n)$
+
+La media para la clase $C_1$ está formada por la contribución de los miembros 
+de esa clase, y lo mismo para la clase $C_2$.
+"""
+
+# ╔═╡ 409db5f5-d986-4e5e-af5d-1de216cfba1d
+md"""
+## Clasificación con dos clases
+
+Finalmente, tomando la derivada con respecto a $\Sigma$ e igualando a cero:
+
+$\Sigma = \frac{N_1}{N} S_1 + \frac{N_2}{N} S_2$
+
+Donde:
+
+$S_1 = \frac{1}{N_1} \sum_{n \in C_1} (x_n - \mu_1)(x_n-\mu_1)^T$
+$S_2 = \frac{1}{N_2} \sum_{n \in C_2} (x_n - \mu_2)(x_n-\mu_2)^T$
+"""
+
+# ╔═╡ 3cf08dc9-e14a-4b33-a31b-43e4d9494995
+md"""
+# Aplicación a lod datos de Howell
+
+
+"""
+
+# ╔═╡ 2c3194d2-56b4-4aff-8570-533a0ee0ff7f
+formula = @formula(male ~ weight + height)
+
+# ╔═╡ b760b715-a03b-49e0-902c-5b14e656c066
+regresion = glm(formula, select(adultos, Not(:age)), Binomial(), ProbitLink())
+
+# ╔═╡ 5df8c38f-69a3-4af2-a19c-ee0183caa144
+prediccion_male = predict(regresion, select(adultos, Not(:age)))
+
+# ╔═╡ 1396b070-65ab-4ae1-bcc7-f8981d4009ba
+regresion.model.pp.beta0
+
+# ╔═╡ 3e1f1fd8-07a5-4115-83fa-0880d5c62af1
+adultos[1, :]
+
+# ╔═╡ 61a8e9a9-0766-4e56-a368-708bcf837bc1
+ind = 8
+
+# ╔═╡ 8660d7f8-3500-4521-91bd-470a5338e9b3
+Vector(adultos[ind,:])
+
+# ╔═╡ ac831c12-b402-4646-84d6-4adf1e37a24b
+σ(-29.2028 + adultos[ind, :weight] * (-0.00421826) + adultos[ind, :height] * 0.189557)
+
+# ╔═╡ 168c5e81-5a16-4b18-9564-9894d3cbe8f1
+σ(-55.96595497063919 + adultos[ind, :weight] * (-0.00975935) + adultos[ind, :height] * 0.364067)
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -473,6 +674,7 @@ PLUTO_PROJECT_TOML_CONTENTS = """
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+GLM = "38e38edf-8417-5370-95a0-9cbb8c7f171a"
 HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 HypothesisTests = "09f84164-cd44-5f33-b23f-e6b0d136a0d5"
 NamedArrays = "86f7a689-2022-50b4-a561-43c23ac3c673"
@@ -486,6 +688,7 @@ StatsPlots = "f3b207a7-027a-5e70-b257-86293d7955fd"
 CSV = "~0.10.15"
 DataFrames = "~1.7.0"
 Distributions = "~0.25.117"
+GLM = "~1.9.0"
 HTTP = "~1.10.15"
 HypothesisTests = "~0.11.3"
 NamedArrays = "~0.10.3"
@@ -502,7 +705,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.3"
 manifest_format = "2.0"
-project_hash = "0e16717127265472cd58c7c1b9bddae1c4e37b35"
+project_hash = "c9190854f5bf50b913957f9ca704a8fdc17b6676"
 
 [[deps.AbstractFFTs]]
 deps = ["LinearAlgebra"]
@@ -921,6 +1124,12 @@ deps = ["Artifacts", "JLLWrappers", "Libdl", "Libglvnd_jll", "Xorg_libXcursor_jl
 git-tree-sha1 = "fcb0584ff34e25155876418979d4c8971243bb89"
 uuid = "0656b61e-2033-5cc2-a64a-77c0f6c09b89"
 version = "3.4.0+2"
+
+[[deps.GLM]]
+deps = ["Distributions", "LinearAlgebra", "Printf", "Reexport", "SparseArrays", "SpecialFunctions", "Statistics", "StatsAPI", "StatsBase", "StatsFuns", "StatsModels"]
+git-tree-sha1 = "273bd1cd30768a2fddfa3fd63bbc746ed7249e5f"
+uuid = "38e38edf-8417-5370-95a0-9cbb8c7f171a"
+version = "1.9.0"
 
 [[deps.GR]]
 deps = ["Artifacts", "Base64", "DelimitedFiles", "Downloads", "GR_jll", "HTTP", "JSON", "Libdl", "LinearAlgebra", "Preferences", "Printf", "Qt6Wayland_jll", "Random", "Serialization", "Sockets", "TOML", "Tar", "Test", "p7zip_jll"]
@@ -1665,6 +1874,11 @@ deps = ["Distributed", "Mmap", "Random", "Serialization"]
 uuid = "1a1011a3-84de-559e-8e89-a11a2f7dc383"
 version = "1.11.0"
 
+[[deps.ShiftedArrays]]
+git-tree-sha1 = "503688b59397b3307443af35cd953a13e8005c16"
+uuid = "1277b4bf-5013-50f5-be3d-901d8477a67a"
+version = "2.0.0"
+
 [[deps.Showoff]]
 deps = ["Dates", "Grisu"]
 git-tree-sha1 = "91eddf657aca81df9ae6ceb20b959ae5653ad1de"
@@ -1755,6 +1969,12 @@ weakdeps = ["ChainRulesCore", "InverseFunctions"]
     [deps.StatsFuns.extensions]
     StatsFunsChainRulesCoreExt = "ChainRulesCore"
     StatsFunsInverseFunctionsExt = "InverseFunctions"
+
+[[deps.StatsModels]]
+deps = ["DataAPI", "DataStructures", "LinearAlgebra", "Printf", "REPL", "ShiftedArrays", "SparseArrays", "StatsAPI", "StatsBase", "StatsFuns", "Tables"]
+git-tree-sha1 = "9022bcaa2fc1d484f1326eaa4db8db543ca8c66d"
+uuid = "3eaba693-59b7-5ba5-a881-562e759f1c8d"
+version = "0.7.4"
 
 [[deps.StatsPlots]]
 deps = ["AbstractFFTs", "Clustering", "DataStructures", "Distributions", "Interpolations", "KernelDensity", "LinearAlgebra", "MultivariateStats", "NaNMath", "Observables", "Plots", "RecipesBase", "RecipesPipeline", "Reexport", "StatsBase", "TableOperations", "Tables", "Widgets"]
@@ -2216,6 +2436,7 @@ version = "1.4.1+2"
 # ╠═58ac34c0-0a42-45ee-a830-fad4d5dd9d71
 # ╠═86baef7c-e1aa-4e24-b6e0-ed9b40761059
 # ╠═513b3406-a196-4c31-8d43-e9850c2908bb
+# ╠═e6f3eab0-69c9-4866-bce7-5f4a3786f009
 # ╠═2a86bff1-dda4-4412-9300-3d54330e7388
 # ╠═0d1ffc59-3f36-49e6-a0f4-c0c91fe9b5b8
 # ╠═95697151-e85c-42b3-8c92-cb206ed70e0b
@@ -2272,5 +2493,28 @@ version = "1.4.1+2"
 # ╠═517c9b6c-d4b7-45c6-a916-12f92f07fb08
 # ╠═bc3c772e-578d-4fea-ad56-bc0b5598d43e
 # ╠═2cd44fbd-46e9-4942-ac06-df9c5af1badc
+# ╠═30f3a04d-fe07-4293-b457-e26299d216d9
+# ╠═97fe3b83-59a4-4474-bc53-a81a018518d4
+# ╠═441170ee-8d7f-4b36-ab2d-8075c4196b5d
+# ╠═19db055b-db56-4f64-bab7-6f598c93e175
+# ╠═330e6f0f-f955-405d-8c66-ae9efa8d7e0a
+# ╠═8f6a1785-f5fc-4216-af16-8c84d46b5b40
+# ╠═d48f86ef-1894-4f82-ab34-6b4553996902
+# ╠═cd15154f-fc0f-41ba-a711-0236ffa9f04d
+# ╠═f057fb6c-af57-46c0-b712-06eed205dbc8
+# ╠═0ab915b8-2d9d-4edf-9b26-a7783eb6326e
+# ╠═97b78daf-0932-4950-bfe5-def83b79f199
+# ╠═72bfb2fd-7ff4-42a0-9bf1-1266fa1d86ba
+# ╠═409db5f5-d986-4e5e-af5d-1de216cfba1d
+# ╠═3cf08dc9-e14a-4b33-a31b-43e4d9494995
+# ╠═2c3194d2-56b4-4aff-8570-533a0ee0ff7f
+# ╠═b760b715-a03b-49e0-902c-5b14e656c066
+# ╠═5df8c38f-69a3-4af2-a19c-ee0183caa144
+# ╠═1396b070-65ab-4ae1-bcc7-f8981d4009ba
+# ╠═3e1f1fd8-07a5-4115-83fa-0880d5c62af1
+# ╠═61a8e9a9-0766-4e56-a368-708bcf837bc1
+# ╠═8660d7f8-3500-4521-91bd-470a5338e9b3
+# ╠═ac831c12-b402-4646-84d6-4adf1e37a24b
+# ╠═168c5e81-5a16-4b18-9564-9894d3cbe8f1
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
