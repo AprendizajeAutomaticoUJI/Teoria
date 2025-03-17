@@ -642,7 +642,7 @@ $S_2 = \frac{1}{N_2} \sum_{n \in C_2} (x_n - \mu_2)(x_n-\mu_2)^T$
 
 # ╔═╡ 3cf08dc9-e14a-4b33-a31b-43e4d9494995
 md"""
-# Aplicación a lod datos de Howell
+# Aplicación a los datos de Howell
 
 
 """
