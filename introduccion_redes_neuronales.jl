@@ -16,6 +16,9 @@ using HTTP
 # ╔═╡ ee78d551-2259-4955-b934-c60d3453706c
 using PlutoUI
 
+# ╔═╡ a7c9f0c1-e76a-460c-a31a-3d2b42ca3118
+using MLJ
+
 # ╔═╡ 5e06e76f-68de-4e65-9fe9-66040dca0932
 using Flux
 
@@ -324,6 +327,12 @@ optimizador_howell = Flux.setup(Adam(), red_howell)
 
 # ╔═╡ 17fc15fd-1eda-4dae-ae51-e0b5610f0041
 datos_howell = [(X_howell, y_howell)]
+
+# ╔═╡ 2b5d2a45-4174-49b9-8504-c1f0e3c0ad44
+mse = []
+
+# ╔═╡ 117b5260-17d1-4645-ba9f-9303a6a974a9
+mse_val = []
 
 # ╔═╡ 8f400ee4-3e73-4770-b39a-317df4ae9b0e
 let
@@ -2266,6 +2275,7 @@ version = "1.4.1+2"
 # ╠═aa6d92eb-7a97-4084-bfc7-8474b34a2c71
 # ╠═8bf751cf-2510-4748-8697-2e3177013785
 # ╠═ee78d551-2259-4955-b934-c60d3453706c
+# ╠═a7c9f0c1-e76a-460c-a31a-3d2b42ca3118
 # ╠═5e06e76f-68de-4e65-9fe9-66040dca0932
 # ╠═6020693f-5639-4408-ab53-9845658eadba
 # ╠═6aa62fa1-f7e1-4bd2-8e4c-f6ab51c05490
@@ -2313,6 +2323,8 @@ version = "1.4.1+2"
 # ╠═840f3d96-441d-450f-a7a5-825184267d53
 # ╠═d48b0309-1d28-40ea-a848-7dee2496159e
 # ╠═17fc15fd-1eda-4dae-ae51-e0b5610f0041
+# ╠═2b5d2a45-4174-49b9-8504-c1f0e3c0ad44
+# ╠═117b5260-17d1-4645-ba9f-9303a6a974a9
 # ╠═8f400ee4-3e73-4770-b39a-317df4ae9b0e
 # ╠═ff74834b-f674-4ec9-a1d0-5422dd228915
 # ╠═5f28926b-f7a4-4a6f-a37d-d59fbd1c01c5
