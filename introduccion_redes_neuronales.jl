@@ -299,8 +299,11 @@ Primero leemos los datos:
 # ╔═╡ 2468a791-2cdb-4ace-9037-c68f828e3608
 howell = CSV.File(HTTP.get("https://raw.githubusercontent.com/AprendizajeAutomaticoUJI/DataSets/refs/heads/master/Howell1.csv").body) |> DataFrame
 
+# ╔═╡ ab5c1498-7e07-4301-9de8-b1a08b7a5482
+caracteristicas = [:weight, :age, :male]
+
 # ╔═╡ b2d8ab25-73e2-45d0-81d8-5de3b34ea2ba
-X_howell = Float32.(Matrix(howell[:, [:weight, :age, :male]])')
+X_howell = Float32.(Matrix(howell[:, caracteristicas])')
 
 # ╔═╡ 4363ae8d-ecc6-41fa-aa5d-6373aa281dcb
 y_howell = Float32.(howell. height')
@@ -337,6 +340,26 @@ end
 let
 	scatter(howell.weight, howell.height, title="Ajuste con MLP", xlabel="weight", ylabel="height", label="Real")
 	scatter!(howell.weight, red_howell(X_howell)[1,:], label="Ajuste")
+end
+
+# ╔═╡ 5f28926b-f7a4-4a6f-a37d-d59fbd1c01c5
+let
+	l = @layout[
+		a{0.6w} [grid(2,1)]
+	]
+	X_howell_hombres = Float32.(Matrix(howell[howell.male.==1, caracteristicas])')
+	X_howell_mujeeres = Float32.(Matrix(howell[howell.male.==0, caracteristicas])')
+	scatter(howell[howell.male.==1, :weight], howell[howell.male.==1, :height], label="Hombres", color=:blue, xlabel="Peso", ylabel="Altura")
+	scatter!(howell[howell.male.==0, :weight], howell[howell.male.==0, :height], label="Mujeres", color=:green)
+	scatter!(howell[howell.male.==1, :weight], red_howell(X_howell_hombres)[1,:], label="Hombres ajuste", color=:orange)
+	p = scatter!(howell[howell.male.==0, :weight], red_howell(X_howell_mujeeres)[1,:], label="Mujeres ajuste", color=:magenta)
+	
+	scatter(howell[howell.male.==1, :weight], howell[howell.male.==1, :height], label="Hombres", color=:blue, xlabel="Peso", ylabel="Altura")
+	p1 = scatter!(howell[howell.male.==1, :weight], red_howell(X_howell_hombres)[1,:], label="Hombres ajuste", color=:orange)
+
+	scatter(howell[howell.male.==0, :weight], howell[howell.male.==0, :height], label="Mujeres", color=:green)
+	p2 = scatter!(howell[howell.male.==0, :weight], red_howell(X_howell_mujeeres)[1,:], label="Mujeres ajuste", color=:magenta, xlabel="Peso", ylabel="Altura")
+	plot(p, p1, p2, layout=l, size=(1200, 600))
 end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -2283,6 +2306,7 @@ version = "1.4.1+2"
 # ╠═53e3d912-fb70-4501-817d-e8568bea9b81
 # ╠═28882d51-20d8-4fa8-8ebd-0dc3e3198af0
 # ╠═2468a791-2cdb-4ace-9037-c68f828e3608
+# ╠═ab5c1498-7e07-4301-9de8-b1a08b7a5482
 # ╠═b2d8ab25-73e2-45d0-81d8-5de3b34ea2ba
 # ╠═4363ae8d-ecc6-41fa-aa5d-6373aa281dcb
 # ╠═6b510711-b6a5-40b6-84da-0d463bb6f6c1
@@ -2291,5 +2315,6 @@ version = "1.4.1+2"
 # ╠═17fc15fd-1eda-4dae-ae51-e0b5610f0041
 # ╠═8f400ee4-3e73-4770-b39a-317df4ae9b0e
 # ╠═ff74834b-f674-4ec9-a1d0-5422dd228915
+# ╠═5f28926b-f7a4-4a6f-a37d-d59fbd1c01c5
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
