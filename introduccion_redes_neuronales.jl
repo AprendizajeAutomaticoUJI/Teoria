@@ -17,7 +17,7 @@ using HTTP
 using PlutoUI
 
 # ╔═╡ a7c9f0c1-e76a-460c-a31a-3d2b42ca3118
-using MLJ
+using MLJ: partition
 
 # ╔═╡ 5e06e76f-68de-4e65-9fe9-66040dca0932
 using Flux
@@ -305,15 +305,24 @@ howell = CSV.File(HTTP.get("https://raw.githubusercontent.com/AprendizajeAutomat
 # ╔═╡ ab5c1498-7e07-4301-9de8-b1a08b7a5482
 caracteristicas = [:weight, :age, :male]
 
+# ╔═╡ 792ae261-d6a5-4efc-b395-54538fe5c167
+entrenamiento_howell, validacion_howell = partition(howell, 0.8, rng=123)
+
 # ╔═╡ b2d8ab25-73e2-45d0-81d8-5de3b34ea2ba
-X_howell = Float32.(Matrix(howell[:, caracteristicas])')
+X_entrenamiento_howell = Float32.(Matrix(entrenamiento_howell[:, caracteristicas])')
 
 # ╔═╡ 4363ae8d-ecc6-41fa-aa5d-6373aa281dcb
-y_howell = Float32.(howell. height')
+y_entrenamiento_howell = Float32.(entrenamiento_howell.height')
+
+# ╔═╡ 06a400a3-9ca2-4038-be73-9be58ff22d94
+X_validacion_howell = Float32.(Matrix(validacion_howell[:, caracteristicas])')
+
+# ╔═╡ 96cf537d-eaf7-4790-962d-de6eb3922ef3
+y_validacion_howell = Float32.(validacion_howell.height')
 
 # ╔═╡ 6b510711-b6a5-40b6-84da-0d463bb6f6c1
 red_howell = Chain(
-	Dense(size(X_howell, 1) => 3, tanh),
+	Dense(size(X_entrenamiento_howell, 1) => 3, tanh),
 	Dense(3 => 3, tanh),
 	Dense(3 => 3, tanh),
 	Dense(3 => 1)
@@ -326,29 +335,37 @@ perdidas_howell(modelo, X, y) = Flux.Losses.mse(modelo(X), y)
 optimizador_howell = Flux.setup(Adam(), red_howell)
 
 # ╔═╡ 17fc15fd-1eda-4dae-ae51-e0b5610f0041
-datos_howell = [(X_howell, y_howell)]
-
-# ╔═╡ 2b5d2a45-4174-49b9-8504-c1f0e3c0ad44
-mse = []
-
-# ╔═╡ 117b5260-17d1-4645-ba9f-9303a6a974a9
-mse_val = []
+datos_howell = [(X_entrenamiento_howell, y_entrenamiento_howell)]
 
 # ╔═╡ 8f400ee4-3e73-4770-b39a-317df4ae9b0e
-let
+function entrena()
+	mse = []
+	mse_validacion = []
 	with_logger(NullLogger()) do
 		for epoca in 1:50000
 			Flux.train!(perdidas_howell, red_howell, datos_howell, optimizador_howell)
+			push!(mse, perdidas_howell(red_howell, X_entrenamiento_howell, y_entrenamiento_howell))
+			push!(mse_validacion, perdidas_howell(red_howell, X_validacion_howell, y_validacion_howell))
 		end
 	end
-	@info perdidas_howell(red_howell, X_howell, y_howell)
-	nothing
+	@info perdidas_howell(red_howell, X_entrenamiento_howell, y_entrenamiento_howell)
+	@info perdidas_howell(red_howell, X_validacion_howell, y_validacion_howell)
+	(mse, mse_validacion)
+end
+
+# ╔═╡ 63a26003-f633-4d93-a135-369ae8d802c5
+mse, mse_validacion = entrena()
+
+# ╔═╡ bb922155-c271-49ff-9526-3d7a228ace37
+let
+	plot(mse, label="Entrenamiento", ylims=(0, 100))
+	plot!(mse_validacion, label="Validación")
 end
 
 # ╔═╡ ff74834b-f674-4ec9-a1d0-5422dd228915
 let
-	scatter(howell.weight, howell.height, title="Ajuste con MLP", xlabel="weight", ylabel="height", label="Real")
-	scatter!(howell.weight, red_howell(X_howell)[1,:], label="Ajuste")
+	scatter(entrenamiento_howell.weight, entrenamiento_howell.height, title="Ajuste con MLP", xlabel="weight", ylabel="height", label="Real")
+	scatter!(entrenamiento_howell.weight, red_howell(X_entrenamiento_howell)[1,:], label="Ajuste")
 end
 
 # ╔═╡ 5f28926b-f7a4-4a6f-a37d-d59fbd1c01c5
@@ -356,18 +373,18 @@ let
 	l = @layout[
 		a{0.6w} [grid(2,1)]
 	]
-	X_howell_hombres = Float32.(Matrix(howell[howell.male.==1, caracteristicas])')
-	X_howell_mujeeres = Float32.(Matrix(howell[howell.male.==0, caracteristicas])')
-	scatter(howell[howell.male.==1, :weight], howell[howell.male.==1, :height], label="Hombres", color=:blue, xlabel="Peso", ylabel="Altura")
-	scatter!(howell[howell.male.==0, :weight], howell[howell.male.==0, :height], label="Mujeres", color=:green)
-	scatter!(howell[howell.male.==1, :weight], red_howell(X_howell_hombres)[1,:], label="Hombres ajuste", color=:orange)
-	p = scatter!(howell[howell.male.==0, :weight], red_howell(X_howell_mujeeres)[1,:], label="Mujeres ajuste", color=:magenta)
+	X_howell_hombres = Float32.(Matrix(entrenamiento_howell[entrenamiento_howell.male.==1, caracteristicas])')
+	X_howell_mujeeres = Float32.(Matrix(entrenamiento_howell[entrenamiento_howell.male.==0, caracteristicas])')
+	scatter(entrenamiento_howell[entrenamiento_howell.male.==1, :weight], entrenamiento_howell[entrenamiento_howell.male.==1, :height], label="Hombres", color=:blue, xlabel="Peso", ylabel="Altura")
+	scatter!(entrenamiento_howell[entrenamiento_howell.male.==0, :weight], entrenamiento_howell[entrenamiento_howell.male.==0, :height], label="Mujeres", color=:green)
+	scatter!(entrenamiento_howell[entrenamiento_howell.male.==1, :weight], red_howell(X_howell_hombres)[1,:], label="Hombres ajuste", color=:orange)
+	p = scatter!(entrenamiento_howell[entrenamiento_howell.male.==0, :weight], red_howell(X_howell_mujeeres)[1,:], label="Mujeres ajuste", color=:magenta)
 	
-	scatter(howell[howell.male.==1, :weight], howell[howell.male.==1, :height], label="Hombres", color=:blue, xlabel="Peso", ylabel="Altura")
-	p1 = scatter!(howell[howell.male.==1, :weight], red_howell(X_howell_hombres)[1,:], label="Hombres ajuste", color=:orange)
+	scatter(entrenamiento_howell[entrenamiento_howell.male.==1, :weight], entrenamiento_howell[entrenamiento_howell.male.==1, :height], label="Hombres", color=:blue, xlabel="Peso", ylabel="Altura")
+	p1 = scatter!(entrenamiento_howell[entrenamiento_howell.male.==1, :weight], red_howell(X_howell_hombres)[1,:], label="Hombres ajuste", color=:orange)
 
-	scatter(howell[howell.male.==0, :weight], howell[howell.male.==0, :height], label="Mujeres", color=:green)
-	p2 = scatter!(howell[howell.male.==0, :weight], red_howell(X_howell_mujeeres)[1,:], label="Mujeres ajuste", color=:magenta, xlabel="Peso", ylabel="Altura")
+	scatter(entrenamiento_howell[entrenamiento_howell.male.==0, :weight], entrenamiento_howell[entrenamiento_howell.male.==0, :height], label="Mujeres", color=:green)
+	p2 = scatter!(entrenamiento_howell[entrenamiento_howell.male.==0, :weight], red_howell(X_howell_mujeeres)[1,:], label="Mujeres ajuste", color=:magenta, xlabel="Peso", ylabel="Altura")
 	plot(p, p1, p2, layout=l, size=(1200, 600))
 end
 
@@ -2594,15 +2611,18 @@ version = "1.4.1+2"
 # ╠═28882d51-20d8-4fa8-8ebd-0dc3e3198af0
 # ╠═2468a791-2cdb-4ace-9037-c68f828e3608
 # ╠═ab5c1498-7e07-4301-9de8-b1a08b7a5482
+# ╠═792ae261-d6a5-4efc-b395-54538fe5c167
 # ╠═b2d8ab25-73e2-45d0-81d8-5de3b34ea2ba
 # ╠═4363ae8d-ecc6-41fa-aa5d-6373aa281dcb
+# ╠═06a400a3-9ca2-4038-be73-9be58ff22d94
+# ╠═96cf537d-eaf7-4790-962d-de6eb3922ef3
 # ╠═6b510711-b6a5-40b6-84da-0d463bb6f6c1
 # ╠═840f3d96-441d-450f-a7a5-825184267d53
 # ╠═d48b0309-1d28-40ea-a848-7dee2496159e
 # ╠═17fc15fd-1eda-4dae-ae51-e0b5610f0041
-# ╠═2b5d2a45-4174-49b9-8504-c1f0e3c0ad44
-# ╠═117b5260-17d1-4645-ba9f-9303a6a974a9
 # ╠═8f400ee4-3e73-4770-b39a-317df4ae9b0e
+# ╠═63a26003-f633-4d93-a135-369ae8d802c5
+# ╠═bb922155-c271-49ff-9526-3d7a228ace37
 # ╠═ff74834b-f674-4ec9-a1d0-5422dd228915
 # ╠═5f28926b-f7a4-4a6f-a37d-d59fbd1c01c5
 # ╟─00000000-0000-0000-0000-000000000001
