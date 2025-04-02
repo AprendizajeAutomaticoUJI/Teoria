@@ -28,6 +28,9 @@ using Logging
 # ╔═╡ 6aa62fa1-f7e1-4bd2-8e4c-f6ab51c05490
 using Plots
 
+# ╔═╡ a3d7c6fd-07a4-4280-9170-167c17299e91
+using Random: shuffle
+
 # ╔═╡ d5fd2304-0353-11f0-29d8-3158c4dbe8dd
 # html"""
 # <link rel="stylesheet" type="text/css" href="https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/mi_estilo.css" media="screen" />
@@ -287,8 +290,165 @@ Fuente: https://www.deep-mind.org/2023/03/26/the-universal-approximation-theorem
 
 # ╔═╡ 53e3d912-fb70-4501-817d-e8568bea9b81
 md"""
-Doy un salto para implementar una red con los datos de Howell.
+# Entrenamiento de una NN
 """
+
+# ╔═╡ b4e00721-1b78-4cda-a26e-474d4fa4230a
+md"""
+## Entrenamiento de una NN
+
+El problema con estas redes es:
+
+1. Si se conocen los pesos de la red es muy sencillo calcular la salida.
+1. Calcular los pesos para que la red ajuste las salidas a partir de las entradas es muy complicado.
+
+La solución al cálculo de los pesos de la red es el algoritmo de retro **propagación (back propagation)**. El algoritmo llamado **back propagation** fue aplicado en la década de 1980 para entrenar redes neuronales, en particular MLP.
+"""
+
+# ╔═╡ 1474cc4c-b3e4-4e14-9af8-11d05f1a8584
+md"""
+## Entrenamiento de una NN
+
+El algoritmo **back propagation** es una combinación de varios ingredientes, 
+entre ellos:
+
+1. Descenso de gradiente.
+1. Regla de la cadena en derivadas parciales.
+"""
+
+# ╔═╡ e365ac10-8744-41e6-a550-861e60108782
+md"""
+## Entrenamiento de una NN
+
+De un modo muy somero el algoritmo funciona del siguiente modo:
+
+1. Se inicializan, de manera aleatoria, los pesos de la red.
+1. Para cada dato del conjunto de entrenamiento, se calcula su salida.
+1. Se calcula el error entre la salida calculada y la real.
+1. Se utiliza descenso de gradiente para calcular los nuevos pesos de la última capa.
+"""
+
+# ╔═╡ f08f7c50-0b54-4c0d-b65a-b0389d41d2a9
+md"""
+## Entrenamiento de una NN
+
+5. Se propaga hacia atrás la actualización de los pesos utilizando la regla de la cadena hasta que se actualizan los pesos de todas las capas.
+1. Se repite el proceso desde el punto 2, hasta un número determinado de pasos o hasta que la actualización de los pesos no es significativa en dos pasos consecutivos.
+
+"""
+
+# ╔═╡ 1a52c360-1fb4-49df-a0f2-8a75f0f981d8
+md"""
+## Entrenamiento de una NN
+
+Detalles a tener en cuenta:
+
+1. El problema de optimización no es cuadrático (mínimo de la función de pérdidas), luego no está garantizado que el algoritmo se detenga en el mínimo global.
+1. El resultado depende de los valores aleatorios iniciales que se asignan a los pesos.
+1. El algoritmo puede **fallar** porque al propagar el gradiente este se **desvanezca** o **explote**.
+
+"""
+
+# ╔═╡ 0a978bc5-bf88-4702-90ac-821604054683
+md"""
+## Entrenamiento de una NN
+
+En resumen, poder aplicar el algoritmo **back propagation** para entrenar redes 
+neuronales no es el final de la historia.
+
+Para realizar el ajuste de los pesos de la red necesitamos, entre otros, los 
+siguientes ingredientes:
+
+1. Elegir unos **buenos** pesos aleatorios iniciales.
+1. Elegir la función de activación.
+1. Elegir un optimizador adecuado.
+
+Además de la propia arquitectura de la red y otros hiperparámetros en la etapa 
+de entrenamiento.
+"""
+
+# ╔═╡ e4619111-2f92-4b45-8ab8-9fb9f8157f6f
+md"""
+# Las NN son aproximadores universales
+"""
+
+# ╔═╡ c05393f4-df33-4945-9d20-3f92d8938588
+md"""
+## Teorema de aproximadores universales
+
+Una red neuronal con un única capa y un número arbitrario de neuronas puede ajustar cualquier función a la salida.
+
+[Esta referencia](https://www.deep-mind.org/2023/03/26/the-universal-approximation-theorem/) es una muy buena presentación del teorema de aproximadores universales.
+"""
+
+# ╔═╡ 3dd87947-6800-4529-b057-3be85f454e21
+md"""
+## Teorema de aproximadores universales
+Este ejemplo muestra 50 puntos de la función $f(x) = x^2$ y el ajuste realizado 
+por una red neuronal (puntos) con una única capa y 800 neuronas.
+"""
+
+# ╔═╡ 595a9bb4-a6f5-4862-b405-3bd7edd735ce
+Resource(
+	url_imagenes * "ajuste_cuadrado.png"
+)
+
+# ╔═╡ dccb64be-ee47-495d-ab9a-439f0eafb4b0
+md"""
+## Teorema de aproximadores universales
+
+Este otro ejemplo muestra el caso de la función $f(x) = seno(x)$. De nuevo 
+los puntos representan 50 valores estimados por la red con una única 
+capa de 500 neuronas.
+"""
+
+# ╔═╡ c86d2d32-bcaa-4a7f-ae07-60d7dd777003
+Resource(
+	url_imagenes * "ajuste_seno.png"
+)
+
+# ╔═╡ a8c7d8c1-f9e1-448d-8832-82f4e6df33b7
+md"""
+# Crear una NN con Flux
+## Biblioteca
+[Flux](https://fluxml.ai/) es una biblioteca escrita en Julia para trabajar con redes neuronales.
+
+Para usar Flux, debemos importarla de este modo:
+
+```julia
+using Flux
+```
+"""
+
+# ╔═╡ 7827ecab-178e-4286-9482-b787b95e949f
+md"""
+## Pasos para el entrenamiento de la red
+
+Los pasos para crear y entrenar una red son:
+
+1. Definir la arquitectura de la red.
+1. **Compilar** la red para seleccionar entre otros:
+    * Función de pérdidas.
+    * Optimizador.
+    * Métrica de evaluación del entrenamiento.
+1. Entrenar la red con un conjunto de datos.
+"""
+
+# ╔═╡ 57174712-848c-4868-89f3-5f6b67953312
+md"""
+## Creación de la red
+
+Como ejemplo, vamos a crear una red que ajuste los datos de la función seno:
+"""
+
+# ╔═╡ 9143e7f3-ddbd-4757-a202-7c7b7f4c7468
+let
+	x_t = Float32.(collect(range(0, 2π, 50)))
+	y_t = sin.(x_t)
+	x_train = shuffle(x_t)
+	y_train = sin.(x_train)
+	plot(x_t, y_t, title="Función seno", legends=false)
+end
 
 # ╔═╡ 28882d51-20d8-4fa8-8ebd-0dc3e3198af0
 md"""
@@ -399,6 +559,7 @@ Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
 MLJ = "add582a8-e3ab-11e8-2d5e-e98b27df1bc7"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
 [compat]
 CSV = "~0.10.15"
@@ -416,7 +577,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.4"
 manifest_format = "2.0"
-project_hash = "51ee963e215fcf37cb62477b40a646595f5b5624"
+project_hash = "04efe0d14aa6fd6be3e4ec0387cc1767dbe75482"
 
 [[deps.ARFFFiles]]
 deps = ["CategoricalArrays", "Dates", "Parsers", "Tables"]
@@ -2573,6 +2734,7 @@ version = "1.4.1+2"
 # ╠═5e06e76f-68de-4e65-9fe9-66040dca0932
 # ╠═6020693f-5639-4408-ab53-9845658eadba
 # ╠═6aa62fa1-f7e1-4bd2-8e4c-f6ab51c05490
+# ╠═a3d7c6fd-07a4-4280-9170-167c17299e91
 # ╠═785309b6-ddfc-4e99-9699-63f60e73a787
 # ╠═0b5df837-5a80-43c6-b3ce-a1554d550776
 # ╠═2c54bdd7-0d73-496c-9fd1-031dcdf2c861
@@ -2608,6 +2770,22 @@ version = "1.4.1+2"
 # ╠═b6e330c6-8285-4f5b-a933-7c5a35f1fbab
 # ╠═8e144c0b-8ae4-4865-931f-a52afa55965d
 # ╠═53e3d912-fb70-4501-817d-e8568bea9b81
+# ╠═b4e00721-1b78-4cda-a26e-474d4fa4230a
+# ╠═1474cc4c-b3e4-4e14-9af8-11d05f1a8584
+# ╠═e365ac10-8744-41e6-a550-861e60108782
+# ╠═f08f7c50-0b54-4c0d-b65a-b0389d41d2a9
+# ╠═1a52c360-1fb4-49df-a0f2-8a75f0f981d8
+# ╠═0a978bc5-bf88-4702-90ac-821604054683
+# ╠═e4619111-2f92-4b45-8ab8-9fb9f8157f6f
+# ╠═c05393f4-df33-4945-9d20-3f92d8938588
+# ╠═3dd87947-6800-4529-b057-3be85f454e21
+# ╠═595a9bb4-a6f5-4862-b405-3bd7edd735ce
+# ╠═dccb64be-ee47-495d-ab9a-439f0eafb4b0
+# ╠═c86d2d32-bcaa-4a7f-ae07-60d7dd777003
+# ╠═a8c7d8c1-f9e1-448d-8832-82f4e6df33b7
+# ╠═7827ecab-178e-4286-9482-b787b95e949f
+# ╠═57174712-848c-4868-89f3-5f6b67953312
+# ╠═9143e7f3-ddbd-4757-a202-7c7b7f4c7468
 # ╠═28882d51-20d8-4fa8-8ebd-0dc3e3198af0
 # ╠═2468a791-2cdb-4ace-9037-c68f828e3608
 # ╠═ab5c1498-7e07-4301-9de8-b1a08b7a5482
