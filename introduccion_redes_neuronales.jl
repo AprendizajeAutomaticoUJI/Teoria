@@ -447,8 +447,34 @@ let
 	y_t = sin.(x_t)
 	x_train = shuffle(x_t)
 	y_train = sin.(x_train)
-	plot(x_t, y_t, title="Función seno", legends=false)
+	scatter(x_t, y_t, title="Función seno", legends=false)
 end
+
+# ╔═╡ d0a3a855-bc5f-4c84-b735-80a8ac71d94c
+md"""
+## Creación de la red
+
+La red se define encadenando una serie de capas:
+"""
+
+# ╔═╡ 2b7ee756-8187-4176-b731-7bdfbcf2ec05
+modelo_seno = Chain(
+	Dense(1 => 3, tanh),
+	Dense(3 => 3, tanh),
+	Dense(3 => 1)
+)
+
+# ╔═╡ 4487a15e-2c7c-4aad-91af-5859d65c775c
+md"""
+La red tiene la siguiente estrcutura:
+
+1. La capa de entrada con una neurona a la entrada y tres salidas hacia la siguiente capa densamente conectada (cada neurona de entradas se conecta con todas las neuronas de la siguiente capa)
+1. Una capa intermedia con tres neuronas a la entrada y tres salidas hacia la siguente capa densamente conectada.
+1. Una capa de salida con una neurona.
+"""
+
+# ╔═╡ 83232d18-3921-4d29-b422-965df54d6520
+summary(modelo_seno)
 
 # ╔═╡ 28882d51-20d8-4fa8-8ebd-0dc3e3198af0
 md"""
@@ -2786,6 +2812,10 @@ version = "1.4.1+2"
 # ╠═7827ecab-178e-4286-9482-b787b95e949f
 # ╠═57174712-848c-4868-89f3-5f6b67953312
 # ╠═9143e7f3-ddbd-4757-a202-7c7b7f4c7468
+# ╠═d0a3a855-bc5f-4c84-b735-80a8ac71d94c
+# ╠═2b7ee756-8187-4176-b731-7bdfbcf2ec05
+# ╠═4487a15e-2c7c-4aad-91af-5859d65c775c
+# ╠═83232d18-3921-4d29-b422-965df54d6520
 # ╠═28882d51-20d8-4fa8-8ebd-0dc3e3198af0
 # ╠═2468a791-2cdb-4ace-9037-c68f828e3608
 # ╠═ab5c1498-7e07-4301-9de8-b1a08b7a5482
