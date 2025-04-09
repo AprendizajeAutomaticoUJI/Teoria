@@ -73,16 +73,14 @@ de regresión.
 md"""
 ## Introducción
 
-Las redes neuronales son modelos de aprendizaje automático muy potentes, pero 
-complicados de entrenar.
+El [premio Nobel de Física de 2024](https://elpais.com/ciencia/2024-10-08/premio-nobel-de-fisica.html) 
+se otorgó a John Hopfield y Geoffrey Hinton 
+por sus contribuciones dentro del campo de la redes neuronales.
 
-Su entrenamiento se basa en el algoritmo de retro propagación, que es un una 
-combinación del algoritmo de descenso de 
-gradiente y de la regla de la cadena.
-
-Las redes neuronales pueden resolver tanto problemas supervisados como no 
-supervisados. Además se pueden utilizar tanto en tareas de clasificación como 
-de regresión.
+El [premio Nobel de Química de 2024](https://elpais.com/ciencia/2024-10-09/premio-nobel-de-quimica.html) 
+se otorgó a John Jumper, Demis Hassabis y 
+David Baker por la aplicación del aprendizaje profundo a resolver el problema 
+del plegamiento de proteínas.
 """
 
 # ╔═╡ f65234a5-1af3-48de-be23-a6c3050b79a6
@@ -193,7 +191,7 @@ Resource(
 md"""
 ## Estructura de una neurona artificial
 Activación de la neurona artificial. Cada seña de entrada se multiplica por 
-un peso y se añade un _bias_.
+un peso y se añade un **bias**.
 """
 
 # ╔═╡ df53f204-76e8-43f7-858f-48c5f8f78eeb
@@ -205,7 +203,7 @@ Resource(
 # ╔═╡ c3685572-264d-48d9-aee6-142ae90576b3
 md"""
 ## Estructura de una neurona artificial
-Aunque _apilemos_ varias capas el resultado es siempre lineal con respecto de 
+Aunque **apilemos** varias capas el resultado es siempre lineal con respecto de 
 los valores de entrada (_Demostración_).
 """
 
@@ -217,7 +215,7 @@ Resource(
 
 # ╔═╡ d0e46bda-cd81-4717-87b1-e5ef283f6e7b
 md"""
-Es necesario introducir la _no linearidad_ de otro modo.
+Es necesario introducir la **no linearidad** de otro modo.
 """
 
 # ╔═╡ 9d41b30b-afab-4f83-ae60-9fc50dea90b9
@@ -273,7 +271,7 @@ md"""
 ## Estructura de una NN
 
 El siguiente paso fue añadir sucesivas capas para mejorar los resultados 
-de las redes. Esta arquitectura se llama _Multi Layer Perceptron_ (MLP).
+de las redes. Esta arquitectura se llama **Multi Layer Perceptron** (MLP).
 """
 
 # ╔═╡ b6e330c6-8285-4f5b-a933-7c5a35f1fbab
@@ -436,29 +434,108 @@ Los pasos para crear y entrenar una red son:
 
 # ╔═╡ 57174712-848c-4868-89f3-5f6b67953312
 md"""
-## Creación de la red
+## Crear la red
 
 Como ejemplo, vamos a crear una red que ajuste los datos de la función seno:
 """
 
 # ╔═╡ 9143e7f3-ddbd-4757-a202-7c7b7f4c7468
-let
-	x_t = Float32.(collect(range(0, 2π, 50)))
+function crea_datos()
+	x_t = Float32.(collect(range(0, 2π, 50))')
 	y_t = sin.(x_t)
 	x_train = shuffle(x_t)
 	y_train = sin.(x_train)
-	scatter(x_t, y_t, title="Función seno", legends=false)
-end
+	return x_t, y_t, x_train, y_train 
+end;
+
+# ╔═╡ cce25fb8-c343-4866-80fa-d2d9714d9731
+x_t, y_t, x_train, y_train = crea_datos();
+
+# ╔═╡ aa6459b3-3e45-4951-8279-54a4c72bf99c
+scatter(x_train[1,:], y_train[1,:], title="Función seno", legends=false)
 
 # ╔═╡ d0a3a855-bc5f-4c84-b735-80a8ac71d94c
 md"""
-## Creación de la red
+## Crear la red
 
 La red se define encadenando una serie de capas:
 """
 
-# ╔═╡ 2b7ee756-8187-4176-b731-7bdfbcf2ec05
+# ╔═╡ 4312e730-bf64-4081-bf37-6062c3c3acbd
 modelo_seno = Chain(
+	Dense(1 => 500, tanh),
+	Dense(500 => 1)
+)
+
+# ╔═╡ 8498d094-5069-4fb6-8d12-9f1721f9b4ac
+md"""
+La red tiene la siguiente estructura:
+
+1. La capa de entrada con una neurona a la entrada y qunientas salidas hacia la siguiente capa densamente conectada (cada neurona de entradas se conecta con todas las neuronas de la siguiente capa)
+1. Una capa intermedia con quinientas neuronas a la entrada y una salida hacia la siguente capa densamente conectada.
+1. Una capa de salida con una neurona.
+
+Importante, la red tiene 1501 parámetros que entrenar.
+"""
+
+# ╔═╡ 3a9b314f-7181-4e1e-9b87-e41d8b3bb49e
+md"""
+## Crear la red
+
+Ahora creamos el optimizador que vamos a utilizar, la métrica que va a usar el optimizador, y preparamos los datos:
+"""
+
+# ╔═╡ 8d12a618-19cd-4777-91e5-bf36c9490c17
+optimizador = Flux.setup(Adam(0.05), modelo_seno);
+
+# ╔═╡ df3f2655-66a2-4bf4-852b-c9574c2d2748
+md"""
+El optimizador que usamos en Adam con una tasa de aprendizaje $η = 0.05$
+"""
+
+# ╔═╡ 5883dec1-c9e2-4b1a-b53d-f87f85f30db2
+perdidas(modelo, X, y) = Flux.Losses.mse(modelo(X), y);
+
+# ╔═╡ 5da5c8fa-a0e8-4f0d-8eaf-4fd0b2c00ed4
+datos = [(x_train, y_train)];
+
+# ╔═╡ 0f9f1ef8-a591-45ce-8c97-507144441660
+md"""
+## Entrenar la red
+
+Finalmente ya podemos entrenar la red:
+"""
+
+# ╔═╡ 5b9f4efc-8917-4a9b-bba7-5c5477bf4cbf
+with_logger(NullLogger()) do
+	for epoca in 1:1000
+		Flux.train!(perdidas, modelo_seno, datos, optimizador)
+	end
+end
+
+# ╔═╡ 07bb71de-f226-40fb-b735-73863bf0688e
+begin
+	plot(y_t[1,:], label="Seno")
+	scatter!(modelo_seno(x_t)[1,:], label="Ajuste")
+end
+
+# ╔═╡ 209d3b9a-67db-4b28-804a-393aaa2e64e9
+"MSE: ", perdidas(modelo_seno, x_train, y_train)
+
+# ╔═╡ a05f8886-30fe-4a08-861a-b730709032d9
+md"""
+El ajuste es no está nada mal.
+"""
+
+# ╔═╡ 7f9436bf-06ab-41fb-a435-61f815b6787e
+md"""
+## Entrenar la red
+
+Vamos a probar con una red con dos capas densamente conectadas, pero esta vez usando sólo tres neuronas en cada capa:
+"""
+
+# ╔═╡ 2b7ee756-8187-4176-b731-7bdfbcf2ec05
+modelo_seno_profundo = Chain(
 	Dense(1 => 3, tanh),
 	Dense(3 => 3, tanh),
 	Dense(3 => 1)
@@ -466,15 +543,45 @@ modelo_seno = Chain(
 
 # ╔═╡ 4487a15e-2c7c-4aad-91af-5859d65c775c
 md"""
-La red tiene la siguiente estrcutura:
+La red tiene la siguiente estructura:
 
 1. La capa de entrada con una neurona a la entrada y tres salidas hacia la siguiente capa densamente conectada (cada neurona de entradas se conecta con todas las neuronas de la siguiente capa)
 1. Una capa intermedia con tres neuronas a la entrada y tres salidas hacia la siguente capa densamente conectada.
 1. Una capa de salida con una neurona.
+
+Importante, en este caso la red sólo tiene 22 parámetros que entrenar.
 """
 
-# ╔═╡ 83232d18-3921-4d29-b422-965df54d6520
-summary(modelo_seno)
+# ╔═╡ 839d9885-b6f7-4c23-ae5f-8db14145c553
+md"""
+## Entrenar la red
+
+Sólo nos queda definir el optimizador, y entrenar la red:
+"""
+
+# ╔═╡ 13f55aab-0a02-4bc7-9b9a-8765c15586b8
+optimizador_profundo = Flux.setup(Adam(0.05), modelo_seno_profundo);
+
+# ╔═╡ 398910d5-be33-49a4-a761-8bcbcd872eb8
+with_logger(NullLogger()) do
+	for epoca in 1:1000
+		Flux.train!(perdidas, modelo_seno_profundo, datos, optimizador_profundo)
+	end
+end
+
+# ╔═╡ af5c6a1f-5053-49a4-a2de-7bc7139f58bb
+begin
+	plot(y_t[1,:], label="Seno")
+	scatter!(modelo_seno_profundo(x_t)[1,:], label="Ajuste")
+end
+
+# ╔═╡ a306ffcd-5f77-4082-891d-0fbe202f8181
+perdidas(modelo_seno_profundo, x_train, y_train)
+
+# ╔═╡ fb46d3c7-e9d5-466e-b0dc-851d6da3c755
+md"""
+El ajuste es incluso un poco mejor.
+"""
 
 # ╔═╡ 28882d51-20d8-4fa8-8ebd-0dc3e3198af0
 md"""
@@ -487,6 +594,13 @@ Primero leemos los datos:
 
 # ╔═╡ 2468a791-2cdb-4ace-9037-c68f828e3608
 howell = CSV.File(HTTP.get("https://raw.githubusercontent.com/AprendizajeAutomaticoUJI/DataSets/refs/heads/master/Howell1.csv").body) |> DataFrame
+
+# ╔═╡ 24e3d668-c6fd-475b-8eae-afed0343123e
+md"""
+## Ejemplo con los datos de Howell
+
+Vamos a dividir el cojunto de datos inicial en un conjunto de entrenamiento y otro de validación, para ver los buena que es la red:
+"""
 
 # ╔═╡ ab5c1498-7e07-4301-9de8-b1a08b7a5482
 caracteristicas = [:weight, :age, :male]
@@ -506,6 +620,13 @@ X_validacion_howell = Float32.(Matrix(validacion_howell[:, caracteristicas])')
 # ╔═╡ 96cf537d-eaf7-4790-962d-de6eb3922ef3
 y_validacion_howell = Float32.(validacion_howell.height')
 
+# ╔═╡ 8f023a0e-94d9-4390-a048-3e815d13dd75
+md"""
+## Ejemplo con los datos de Howell
+
+Ahora creamos la red, el optimizador y definimos los datos:
+"""
+
 # ╔═╡ 6b510711-b6a5-40b6-84da-0d463bb6f6c1
 red_howell = Chain(
 	Dense(size(X_entrenamiento_howell, 1) => 3, tanh),
@@ -514,14 +635,18 @@ red_howell = Chain(
 	Dense(3 => 1)
 )
 
-# ╔═╡ 840f3d96-441d-450f-a7a5-825184267d53
-perdidas_howell(modelo, X, y) = Flux.Losses.mse(modelo(X), y)
-
 # ╔═╡ d48b0309-1d28-40ea-a848-7dee2496159e
 optimizador_howell = Flux.setup(Adam(), red_howell)
 
 # ╔═╡ 17fc15fd-1eda-4dae-ae51-e0b5610f0041
 datos_howell = [(X_entrenamiento_howell, y_entrenamiento_howell)]
+
+# ╔═╡ c3d0c723-0852-4365-9e4c-b64d95a1bcb8
+md"""
+## Ejemplo con los datos de Howell
+
+Entrenamos la red:
+"""
 
 # ╔═╡ 8f400ee4-3e73-4770-b39a-317df4ae9b0e
 function entrena()
@@ -529,15 +654,22 @@ function entrena()
 	mse_validacion = []
 	with_logger(NullLogger()) do
 		for epoca in 1:50000
-			Flux.train!(perdidas_howell, red_howell, datos_howell, optimizador_howell)
-			push!(mse, perdidas_howell(red_howell, X_entrenamiento_howell, y_entrenamiento_howell))
-			push!(mse_validacion, perdidas_howell(red_howell, X_validacion_howell, y_validacion_howell))
+			Flux.train!(perdidas, red_howell, datos_howell, optimizador_howell)
+			push!(mse, perdidas(red_howell, X_entrenamiento_howell, y_entrenamiento_howell))
+			push!(mse_validacion, perdidas(red_howell, X_validacion_howell, y_validacion_howell))
 		end
 	end
-	@info perdidas_howell(red_howell, X_entrenamiento_howell, y_entrenamiento_howell)
-	@info perdidas_howell(red_howell, X_validacion_howell, y_validacion_howell)
+	@info perdidas(red_howell, X_entrenamiento_howell, y_entrenamiento_howell)
+	@info perdidas(red_howell, X_validacion_howell, y_validacion_howell)
 	(mse, mse_validacion)
-end
+end;
+
+# ╔═╡ 855f71e1-105d-4082-9097-8587de06ce45
+md"""
+## Ejemplo con los datos de Howell
+
+Vemos los resultados:
+"""
 
 # ╔═╡ 63a26003-f633-4d93-a135-369ae8d802c5
 mse, mse_validacion = entrena()
@@ -548,11 +680,25 @@ let
 	plot!(mse_validacion, label="Validación")
 end
 
+# ╔═╡ 7ac53bef-54ba-4a4b-9a99-de6423249572
+md"""
+## Ejemplo con los datos de Howell
+
+Este es el ajuste:
+"""
+
 # ╔═╡ ff74834b-f674-4ec9-a1d0-5422dd228915
 let
 	scatter(entrenamiento_howell.weight, entrenamiento_howell.height, title="Ajuste con MLP", xlabel="weight", ylabel="height", label="Real")
 	scatter!(entrenamiento_howell.weight, red_howell(X_entrenamiento_howell)[1,:], label="Ajuste")
 end
+
+# ╔═╡ d5ec1fbe-138d-4da1-83de-95dd1565dac7
+md"""
+## Ejemplo con los datos de Howell
+
+Si separamos por sexo:
+"""
 
 # ╔═╡ 5f28926b-f7a4-4a6f-a37d-d59fbd1c01c5
 let
@@ -560,19 +706,29 @@ let
 		a{0.6w} [grid(2,1)]
 	]
 	X_howell_hombres = Float32.(Matrix(entrenamiento_howell[entrenamiento_howell.male.==1, caracteristicas])')
-	X_howell_mujeeres = Float32.(Matrix(entrenamiento_howell[entrenamiento_howell.male.==0, caracteristicas])')
+	X_howell_mujeres = Float32.(Matrix(entrenamiento_howell[entrenamiento_howell.male.==0, caracteristicas])')
 	scatter(entrenamiento_howell[entrenamiento_howell.male.==1, :weight], entrenamiento_howell[entrenamiento_howell.male.==1, :height], label="Hombres", color=:blue, xlabel="Peso", ylabel="Altura")
 	scatter!(entrenamiento_howell[entrenamiento_howell.male.==0, :weight], entrenamiento_howell[entrenamiento_howell.male.==0, :height], label="Mujeres", color=:green)
 	scatter!(entrenamiento_howell[entrenamiento_howell.male.==1, :weight], red_howell(X_howell_hombres)[1,:], label="Hombres ajuste", color=:orange)
-	p = scatter!(entrenamiento_howell[entrenamiento_howell.male.==0, :weight], red_howell(X_howell_mujeeres)[1,:], label="Mujeres ajuste", color=:magenta)
+	p = scatter!(entrenamiento_howell[entrenamiento_howell.male.==0, :weight], red_howell(X_howell_mujeres)[1,:], label="Mujeres ajuste", color=:magenta)
 	
 	scatter(entrenamiento_howell[entrenamiento_howell.male.==1, :weight], entrenamiento_howell[entrenamiento_howell.male.==1, :height], label="Hombres", color=:blue, xlabel="Peso", ylabel="Altura")
 	p1 = scatter!(entrenamiento_howell[entrenamiento_howell.male.==1, :weight], red_howell(X_howell_hombres)[1,:], label="Hombres ajuste", color=:orange)
 
 	scatter(entrenamiento_howell[entrenamiento_howell.male.==0, :weight], entrenamiento_howell[entrenamiento_howell.male.==0, :height], label="Mujeres", color=:green)
-	p2 = scatter!(entrenamiento_howell[entrenamiento_howell.male.==0, :weight], red_howell(X_howell_mujeeres)[1,:], label="Mujeres ajuste", color=:magenta, xlabel="Peso", ylabel="Altura")
+	p2 = scatter!(entrenamiento_howell[entrenamiento_howell.male.==0, :weight], red_howell(X_howell_mujeres)[1,:], label="Mujeres ajuste", color=:magenta, xlabel="Peso", ylabel="Altura")
 	plot(p, p1, p2, layout=l, size=(1200, 600))
 end
+
+# ╔═╡ 3584250c-f199-4c27-ba22-d359b245b02c
+md"""
+# Redes neuronales como clasificadores
+"""
+
+# ╔═╡ bb87c341-2e49-43c1-a93d-4ded2ca0a3a8
+md"""
+# Resumen
+"""
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -2812,26 +2968,53 @@ version = "1.4.1+2"
 # ╠═7827ecab-178e-4286-9482-b787b95e949f
 # ╠═57174712-848c-4868-89f3-5f6b67953312
 # ╠═9143e7f3-ddbd-4757-a202-7c7b7f4c7468
+# ╠═cce25fb8-c343-4866-80fa-d2d9714d9731
+# ╠═aa6459b3-3e45-4951-8279-54a4c72bf99c
 # ╠═d0a3a855-bc5f-4c84-b735-80a8ac71d94c
+# ╠═4312e730-bf64-4081-bf37-6062c3c3acbd
+# ╠═8498d094-5069-4fb6-8d12-9f1721f9b4ac
+# ╠═3a9b314f-7181-4e1e-9b87-e41d8b3bb49e
+# ╠═8d12a618-19cd-4777-91e5-bf36c9490c17
+# ╠═df3f2655-66a2-4bf4-852b-c9574c2d2748
+# ╠═5883dec1-c9e2-4b1a-b53d-f87f85f30db2
+# ╠═5da5c8fa-a0e8-4f0d-8eaf-4fd0b2c00ed4
+# ╠═0f9f1ef8-a591-45ce-8c97-507144441660
+# ╠═5b9f4efc-8917-4a9b-bba7-5c5477bf4cbf
+# ╠═07bb71de-f226-40fb-b735-73863bf0688e
+# ╠═209d3b9a-67db-4b28-804a-393aaa2e64e9
+# ╠═a05f8886-30fe-4a08-861a-b730709032d9
+# ╠═7f9436bf-06ab-41fb-a435-61f815b6787e
 # ╠═2b7ee756-8187-4176-b731-7bdfbcf2ec05
 # ╠═4487a15e-2c7c-4aad-91af-5859d65c775c
-# ╠═83232d18-3921-4d29-b422-965df54d6520
+# ╠═839d9885-b6f7-4c23-ae5f-8db14145c553
+# ╠═13f55aab-0a02-4bc7-9b9a-8765c15586b8
+# ╠═398910d5-be33-49a4-a761-8bcbcd872eb8
+# ╠═af5c6a1f-5053-49a4-a2de-7bc7139f58bb
+# ╠═a306ffcd-5f77-4082-891d-0fbe202f8181
+# ╠═fb46d3c7-e9d5-466e-b0dc-851d6da3c755
 # ╠═28882d51-20d8-4fa8-8ebd-0dc3e3198af0
 # ╠═2468a791-2cdb-4ace-9037-c68f828e3608
+# ╠═24e3d668-c6fd-475b-8eae-afed0343123e
 # ╠═ab5c1498-7e07-4301-9de8-b1a08b7a5482
 # ╠═792ae261-d6a5-4efc-b395-54538fe5c167
 # ╠═b2d8ab25-73e2-45d0-81d8-5de3b34ea2ba
 # ╠═4363ae8d-ecc6-41fa-aa5d-6373aa281dcb
 # ╠═06a400a3-9ca2-4038-be73-9be58ff22d94
 # ╠═96cf537d-eaf7-4790-962d-de6eb3922ef3
+# ╠═8f023a0e-94d9-4390-a048-3e815d13dd75
 # ╠═6b510711-b6a5-40b6-84da-0d463bb6f6c1
-# ╠═840f3d96-441d-450f-a7a5-825184267d53
 # ╠═d48b0309-1d28-40ea-a848-7dee2496159e
 # ╠═17fc15fd-1eda-4dae-ae51-e0b5610f0041
+# ╠═c3d0c723-0852-4365-9e4c-b64d95a1bcb8
 # ╠═8f400ee4-3e73-4770-b39a-317df4ae9b0e
+# ╠═855f71e1-105d-4082-9097-8587de06ce45
 # ╠═63a26003-f633-4d93-a135-369ae8d802c5
 # ╠═bb922155-c271-49ff-9526-3d7a228ace37
+# ╠═7ac53bef-54ba-4a4b-9a99-de6423249572
 # ╠═ff74834b-f674-4ec9-a1d0-5422dd228915
+# ╠═d5ec1fbe-138d-4da1-83de-95dd1565dac7
 # ╠═5f28926b-f7a4-4a6f-a37d-d59fbd1c01c5
+# ╠═3584250c-f199-4c27-ba22-d359b245b02c
+# ╠═bb87c341-2e49-43c1-a93d-4ded2ca0a3a8
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
