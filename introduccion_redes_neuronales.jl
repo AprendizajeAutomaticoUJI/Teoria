@@ -17,7 +17,7 @@ using HTTP
 using PlutoUI
 
 # ╔═╡ a7c9f0c1-e76a-460c-a31a-3d2b42ca3118
-using MLJ: partition
+using MLJ: partition, ConfusionMatrix
 
 # ╔═╡ 5e06e76f-68de-4e65-9fe9-66040dca0932
 using Flux
@@ -724,6 +724,118 @@ end
 md"""
 # Redes neuronales como clasificadores
 """
+
+# ╔═╡ e67aa374-2ad6-42ab-8127-5658a8236363
+md"""
+## Clasificación con NN
+
+Ahora vamos a utilizar una red neuronal, pero esta vez para tareas de 
+clasificación.
+
+Vamos a utilizar el conjunto de datos de Howell, e intentar predecir el sexo 
+de una de las muestras a partir del resto de sus características. Vamos a 
+utilizar sólo los datos de las personas adultas del conjunto de datos.
+"""
+
+# ╔═╡ ed7fc6a7-6f89-4d88-92aa-ec96e9171c6a
+md"""
+## Clasificación con NN
+
+Dividimos el conjunto inicial en un subconjunto de datos de entrenamiento y otro de pruebas:
+"""
+
+# ╔═╡ 6e0c2dc5-0037-480f-9b47-0ef951a0af86
+entrenamiento_clasificacion_howell, prueba_clasificacion_howell = partition(howell, 0.8, rng=234);
+
+# ╔═╡ a4d9101a-99c0-4949-b8bb-e440a74c3193
+md"""
+## Clasificación con NN
+
+Seleccionamos las características de los datos de entrada:
+"""
+
+# ╔═╡ c25f9730-f107-4cc3-a517-542b17e58901
+caracteristicas_clasificacion = [:weight, :height, :age]
+
+# ╔═╡ 7b180556-ecd3-480f-bb1b-7adb84f91ccf
+X_entrenamiento_clasificacion = Float32.(Matrix(entrenamiento_clasificacion_howell[:, caracteristicas_clasificacion])')
+
+# ╔═╡ 7af6e33b-b9cf-4428-b457-0fbc7f0c5eb0
+y_entrenamiento_clasificacion = Float32.(Flux.onehotbatch(entrenamiento_clasificacion_howell.male, 0:1))
+
+# ╔═╡ 015c2a61-f7b4-41d9-81c7-85299de42a52
+X_prueba_clasificacion = Float32.(Matrix(prueba_clasificacion_howell[:, caracteristicas_clasificacion])')
+
+# ╔═╡ de7228bc-fc1c-4540-a0fb-89b80aaca8fe
+y_prueba_clasificacion = Float32.(Flux.onehotbatch(prueba_clasificacion_howell.male, 0:1))
+
+# ╔═╡ 68b75daf-9bc0-449b-971c-901255a9ef27
+typeof(y_prueba_clasificacion)
+
+# ╔═╡ 152393b0-d3cc-461e-a1a1-c0b2050c957e
+md"""
+## Clasificación con NN
+
+Construimos la red:
+"""
+
+# ╔═╡ 03c5c00b-a013-4730-bae3-b028649c5714
+red_clasificacion = Chain(
+	Dense(3 => 3, relu),
+	Dense(3 => 3, relu),
+	Dense(3 => 2),
+	softmax
+)
+
+# ╔═╡ 21ad8727-1da3-4ee0-a93c-b874b415b3d6
+md"""
+Detalles:
+* Tres capas.
+* La función de activación de las dos primeras capas es relu.
+* La función de activación de la capa de salida es softmax.
+"""
+
+# ╔═╡ 56817bd3-041c-41a2-806d-ddca6ecce036
+md"""
+## Clasificación con NN
+
+Definimos el optimizador, la función de pérdidas y los datos:
+"""
+
+# ╔═╡ df83a14f-1c98-4e04-bf21-d922fb11cc70
+optimizador_clasificacion = Flux.setup(Adam(0.001), red_clasificacion)
+
+# ╔═╡ 014f2d31-8084-4720-bec1-aef01454dfb7
+perdidas_clasificacion(modelo, X, y) = Flux.Losses.crossentropy(red_clasificacion(X), y)
+
+# ╔═╡ d55aee49-7914-4a6e-a0cd-704af123c20b
+datos_clasificacion = [(X_entrenamiento_clasificacion, y_entrenamiento_clasificacion)]
+
+# ╔═╡ e98382a3-5a96-4d4c-8748-97231231393a
+function entrena_clasificacion()
+	with_logger(NullLogger()) do
+		for epoca in 1:5000
+			Flux.train!(perdidas_clasificacion, red_clasificacion, datos_clasificacion, optimizador_clasificacion)
+		end
+	end
+	@info perdidas_clasificacion(red_clasificacion, X_entrenamiento_clasificacion, y_entrenamiento_clasificacion)
+	@info perdidas_clasificacion(red_clasificacion, X_prueba_clasificacion, y_prueba_clasificacion)
+end
+
+# ╔═╡ 00719c6c-41dd-47d2-9c66-e9169bada27c
+entrena_clasificacion()
+
+# ╔═╡ a4125cd2-ef5d-4844-8d17-61814a2435d6
+red_clasificacion(X_prueba_clasificacion)
+
+# ╔═╡ 3dabfb4e-3f0b-42c0-82db-9c9e56922137
+acc = sum(Flux.onecold(red_clasificacion(X_prueba_clasificacion), 0:1) .== Flux.onecold(y_prueba_clasificacion, 0:1)) / size(y_prueba_clasificacion, 2)
+
+# ╔═╡ fe721db0-5c99-4a59-8b7e-c08e14eb4d08
+y_prueba_clasificacion
+
+# ╔═╡ f15af338-b9bf-40f4-ba5c-9922550a9482
+ConfusionMatrix()()
 
 # ╔═╡ bb87c341-2e49-43c1-a93d-4ded2ca0a3a8
 md"""
@@ -3015,6 +3127,29 @@ version = "1.4.1+2"
 # ╠═d5ec1fbe-138d-4da1-83de-95dd1565dac7
 # ╠═5f28926b-f7a4-4a6f-a37d-d59fbd1c01c5
 # ╠═3584250c-f199-4c27-ba22-d359b245b02c
+# ╠═e67aa374-2ad6-42ab-8127-5658a8236363
+# ╠═ed7fc6a7-6f89-4d88-92aa-ec96e9171c6a
+# ╠═6e0c2dc5-0037-480f-9b47-0ef951a0af86
+# ╠═a4d9101a-99c0-4949-b8bb-e440a74c3193
+# ╠═c25f9730-f107-4cc3-a517-542b17e58901
+# ╠═7b180556-ecd3-480f-bb1b-7adb84f91ccf
+# ╠═7af6e33b-b9cf-4428-b457-0fbc7f0c5eb0
+# ╠═015c2a61-f7b4-41d9-81c7-85299de42a52
+# ╠═de7228bc-fc1c-4540-a0fb-89b80aaca8fe
+# ╠═68b75daf-9bc0-449b-971c-901255a9ef27
+# ╠═152393b0-d3cc-461e-a1a1-c0b2050c957e
+# ╠═03c5c00b-a013-4730-bae3-b028649c5714
+# ╠═21ad8727-1da3-4ee0-a93c-b874b415b3d6
+# ╠═56817bd3-041c-41a2-806d-ddca6ecce036
+# ╠═df83a14f-1c98-4e04-bf21-d922fb11cc70
+# ╠═014f2d31-8084-4720-bec1-aef01454dfb7
+# ╠═d55aee49-7914-4a6e-a0cd-704af123c20b
+# ╠═e98382a3-5a96-4d4c-8748-97231231393a
+# ╠═00719c6c-41dd-47d2-9c66-e9169bada27c
+# ╠═a4125cd2-ef5d-4844-8d17-61814a2435d6
+# ╠═3dabfb4e-3f0b-42c0-82db-9c9e56922137
+# ╠═fe721db0-5c99-4a59-8b7e-c08e14eb4d08
+# ╠═f15af338-b9bf-40f4-ba5c-9922550a9482
 # ╠═bb87c341-2e49-43c1-a93d-4ded2ca0a3a8
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
