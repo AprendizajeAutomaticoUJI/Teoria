@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.3
+# v0.20.6
 
 using Markdown
 using InteractiveUtils
@@ -30,6 +30,9 @@ using Plots
 
 # ╔═╡ a3d7c6fd-07a4-4280-9170-167c17299e91
 using Random: shuffle
+
+# ╔═╡ b844f3ab-c048-4df9-9f01-0b8748ebbb1e
+using MLJ
 
 # ╔═╡ d5fd2304-0353-11f0-29d8-3158c4dbe8dd
 # html"""
@@ -806,7 +809,10 @@ Definimos el optimizador, la función de pérdidas y los datos:
 optimizador_clasificacion = Flux.setup(Adam(0.001), red_clasificacion)
 
 # ╔═╡ 014f2d31-8084-4720-bec1-aef01454dfb7
-perdidas_clasificacion(modelo, X, y) = Flux.Losses.crossentropy(red_clasificacion(X), y)
+perdidas_clasificacion(modelo, X, y) = Flux.Losses.logitcrossentropy(red_clasificacion(X), y)
+
+# ╔═╡ 22792f59-3996-4af2-a167-435e6ad79b1b
+pp(modelo, X, y) = Flux.Losses.logitcrossentropy(red_clasificacion(X), y)
 
 # ╔═╡ d55aee49-7914-4a6e-a0cd-704af123c20b
 datos_clasificacion = [(X_entrenamiento_clasificacion, y_entrenamiento_clasificacion)]
@@ -835,7 +841,7 @@ acc = sum(Flux.onecold(red_clasificacion(X_prueba_clasificacion), 0:1) .== Flux.
 y_prueba_clasificacion
 
 # ╔═╡ f15af338-b9bf-40f4-ba5c-9922550a9482
-ConfusionMatrix()()
+MLJ.confusion_matrix(Flux.onecold(y_prueba_clasificacion, 0:1), Flux.onecold(red_clasificacion(X_prueba_clasificacion), 0:1))
 
 # ╔═╡ bb87c341-2e49-43c1-a93d-4ded2ca0a3a8
 md"""
@@ -869,7 +875,7 @@ PlutoUI = "~0.7.61"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.11.4"
+julia_version = "1.11.5"
 manifest_format = "2.0"
 project_hash = "04efe0d14aa6fd6be3e4ec0387cc1767dbe75482"
 
@@ -2067,7 +2073,7 @@ version = "0.3.27+1"
 [[deps.OpenLibm_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "05823500-19ac-5b8b-9628-191a04bc5112"
-version = "0.8.1+4"
+version = "0.8.5+0"
 
 [[deps.OpenML]]
 deps = ["ARFFFiles", "HTTP", "JSON", "Markdown", "Pkg", "Scratch"]
@@ -3029,6 +3035,7 @@ version = "1.4.1+2"
 # ╠═6020693f-5639-4408-ab53-9845658eadba
 # ╠═6aa62fa1-f7e1-4bd2-8e4c-f6ab51c05490
 # ╠═a3d7c6fd-07a4-4280-9170-167c17299e91
+# ╠═b844f3ab-c048-4df9-9f01-0b8748ebbb1e
 # ╠═785309b6-ddfc-4e99-9699-63f60e73a787
 # ╠═0b5df837-5a80-43c6-b3ce-a1554d550776
 # ╠═2c54bdd7-0d73-496c-9fd1-031dcdf2c861
@@ -3143,6 +3150,7 @@ version = "1.4.1+2"
 # ╠═56817bd3-041c-41a2-806d-ddca6ecce036
 # ╠═df83a14f-1c98-4e04-bf21-d922fb11cc70
 # ╠═014f2d31-8084-4720-bec1-aef01454dfb7
+# ╠═22792f59-3996-4af2-a167-435e6ad79b1b
 # ╠═d55aee49-7914-4a6e-a0cd-704af123c20b
 # ╠═e98382a3-5a96-4d4c-8748-97231231393a
 # ╠═00719c6c-41dd-47d2-9c66-e9169bada27c
