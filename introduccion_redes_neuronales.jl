@@ -29,10 +29,13 @@ using Logging
 using Plots
 
 # ╔═╡ a3d7c6fd-07a4-4280-9170-167c17299e91
-using Random: shuffle
+using Random
 
 # ╔═╡ b844f3ab-c048-4df9-9f01-0b8748ebbb1e
 using MLJ
+
+# ╔═╡ 0a3d364a-af50-435f-b094-ff392acfa922
+using Normalization
 
 # ╔═╡ d5fd2304-0353-11f0-29d8-3158c4dbe8dd
 # html"""
@@ -744,11 +747,40 @@ utilizar sólo los datos de las personas adultas del conjunto de datos.
 md"""
 ## Clasificación con NN
 
-Dividimos el conjunto inicial en un subconjunto de datos de entrenamiento y otro de pruebas:
+No quedamos sólo con las personas adultas, y dividimos el conjunto inicial en un subconjunto de datos de entrenamiento y otro de pruebas:
 """
 
+# ╔═╡ fd9766e3-4a9f-4746-b695-c2b20b192897
+adultas = howell[howell.age .> 17, :]
+
+# ╔═╡ 75a7fc03-26fc-458d-bb0e-e0ed26b0ff65
+md"""
+Para que los experimentos sean reproducibles inicializamos la semilla del generador de números aleatorios:
+"""
+
+# ╔═╡ 4320b284-f595-4408-920a-d93cbfae2116
+semilla = 2
+
+# ╔═╡ 7a08c1e0-de42-4644-ab97-5bb3e5e07805
+Random.seed!(semilla)
+
 # ╔═╡ 6e0c2dc5-0037-480f-9b47-0ef951a0af86
-entrenamiento_clasificacion_howell, prueba_clasificacion_howell = partition(howell, 0.8, rng=234);
+entrenamiento_clasificacion_howell, prueba_clasificacion_howell = partition(adultas, 0.75, rng=semilla);
+
+# ╔═╡ 237e0af0-7abd-4d0d-82a5-be590e3a0555
+md"""
+Creamos una función de utilidad para normalizar los datos, ya que las redes funcionan mejor cuando el rango de datos es similar para todas las caracteríscias.
+"""
+
+# ╔═╡ f03bcd24-fb92-45f7-8489-0901ec8714b2
+function normaliza_matriz(M, N)
+	resultado = ones(size(M))
+	for c in 1:size(M, 2)
+		normalizador = fit(MinMax, N[:,c])
+		resultado[:,c] = normalize(M[:,c], normalizador)
+	end
+	return resultado
+end
 
 # ╔═╡ a4d9101a-99c0-4949-b8bb-e440a74c3193
 md"""
@@ -761,19 +793,32 @@ Seleccionamos las características de los datos de entrada:
 caracteristicas_clasificacion = [:weight, :height, :age]
 
 # ╔═╡ 7b180556-ecd3-480f-bb1b-7adb84f91ccf
-X_entrenamiento_clasificacion = Float32.(Matrix(entrenamiento_clasificacion_howell[:, caracteristicas_clasificacion])')
+X_entrenamiento_clasificacion = Float32.(Matrix(entrenamiento_clasificacion_howell[:, caracteristicas_clasificacion]))
+
+# ╔═╡ fb6b3f31-c188-4c82-bc15-996fd909bfcf
+md"""
+Normalizamos las columnas de la matriz, y la traspongo:
+"""
+
+# ╔═╡ fa68f129-609d-442f-8d9d-06e3a0bc5bb7
+X_entrenamiento_normalizada = Float32.(normaliza_matriz(X_entrenamiento_clasificacion, X_entrenamiento_clasificacion))'
 
 # ╔═╡ 7af6e33b-b9cf-4428-b457-0fbc7f0c5eb0
 y_entrenamiento_clasificacion = Float32.(Flux.onehotbatch(entrenamiento_clasificacion_howell.male, 0:1))
 
 # ╔═╡ 015c2a61-f7b4-41d9-81c7-85299de42a52
-X_prueba_clasificacion = Float32.(Matrix(prueba_clasificacion_howell[:, caracteristicas_clasificacion])')
+X_prueba_clasificacion = Float32.(Matrix(prueba_clasificacion_howell[:, caracteristicas_clasificacion]))
+
+# ╔═╡ 71dd85c1-e743-4641-9522-8904da9fa04e
+md"""
+Igual que antes la normalizamos, pero los normalizadores son los de la matriz X\_entrenamiento\_classificacion, y la trasponemos:
+"""
+
+# ╔═╡ 1859f9ea-cb27-4acb-a2bf-b7dd63fa47eb
+X_prueba_normalizada = Float32.(normaliza_matriz(X_prueba_clasificacion, X_entrenamiento_clasificacion)')
 
 # ╔═╡ de7228bc-fc1c-4540-a0fb-89b80aaca8fe
 y_prueba_clasificacion = Float32.(Flux.onehotbatch(prueba_clasificacion_howell.male, 0:1))
-
-# ╔═╡ 68b75daf-9bc0-449b-971c-901255a9ef27
-typeof(y_prueba_clasificacion)
 
 # ╔═╡ 152393b0-d3cc-461e-a1a1-c0b2050c957e
 md"""
@@ -809,43 +854,75 @@ Definimos el optimizador, la función de pérdidas y los datos:
 optimizador_clasificacion = Flux.setup(Adam(0.001), red_clasificacion)
 
 # ╔═╡ 014f2d31-8084-4720-bec1-aef01454dfb7
-perdidas_clasificacion(modelo, X, y) = Flux.Losses.logitcrossentropy(red_clasificacion(X), y)
-
-# ╔═╡ 22792f59-3996-4af2-a167-435e6ad79b1b
-pp(modelo, X, y) = Flux.Losses.logitcrossentropy(red_clasificacion(X), y)
+perdidas_clasificacion(modelo, X, y) = Flux.Losses.logitbinarycrossentropy(modelo(X), y)
 
 # ╔═╡ d55aee49-7914-4a6e-a0cd-704af123c20b
-datos_clasificacion = [(X_entrenamiento_clasificacion, y_entrenamiento_clasificacion)]
+datos_clasificacion = [(X_entrenamiento_normalizada, y_entrenamiento_clasificacion)]
+
+# ╔═╡ 5dfda864-7b57-4b85-b583-24b21c7d7b70
+md"""
+Entrenamos la red:
+"""
 
 # ╔═╡ e98382a3-5a96-4d4c-8748-97231231393a
-function entrena_clasificacion()
+function entrena_clasificacion!(perdidas, red, datos, optimizador)
 	with_logger(NullLogger()) do
 		for epoca in 1:5000
-			Flux.train!(perdidas_clasificacion, red_clasificacion, datos_clasificacion, optimizador_clasificacion)
+			Flux.train!(perdidas, red, datos, optimizador)
 		end
 	end
-	@info perdidas_clasificacion(red_clasificacion, X_entrenamiento_clasificacion, y_entrenamiento_clasificacion)
-	@info perdidas_clasificacion(red_clasificacion, X_prueba_clasificacion, y_prueba_clasificacion)
 end
 
 # ╔═╡ 00719c6c-41dd-47d2-9c66-e9169bada27c
-entrena_clasificacion()
+entrena_clasificacion!(perdidas_clasificacion, red_clasificacion, datos_clasificacion, optimizador_clasificacion)
 
-# ╔═╡ a4125cd2-ef5d-4844-8d17-61814a2435d6
-red_clasificacion(X_prueba_clasificacion)
-
-# ╔═╡ 3dabfb4e-3f0b-42c0-82db-9c9e56922137
-acc = sum(Flux.onecold(red_clasificacion(X_prueba_clasificacion), 0:1) .== Flux.onecold(y_prueba_clasificacion, 0:1)) / size(y_prueba_clasificacion, 2)
-
-# ╔═╡ fe721db0-5c99-4a59-8b7e-c08e14eb4d08
-y_prueba_clasificacion
+# ╔═╡ c3c1cb31-fac1-4758-a60e-e5231b046d81
+md"""
+Mostramos la matriz de confusión:
+"""
 
 # ╔═╡ f15af338-b9bf-40f4-ba5c-9922550a9482
-MLJ.confusion_matrix(Flux.onecold(y_prueba_clasificacion, 0:1), Flux.onecold(red_clasificacion(X_prueba_clasificacion), 0:1))
+MLJ.confusion_matrix(Flux.onecold(y_prueba_clasificacion, 0:1), Flux.onecold(red_clasificacion(X_prueba_normalizada), 0:1))
+
+# ╔═╡ 7626e1b9-e312-4e96-9ee1-925d80ae0cb3
+md"""
+Calculamos la precisión de la red creada sobre los datos de prueba:
+"""
+
+# ╔═╡ b06be04c-f11b-4a15-89f1-7e05326996fe
+MLJ.accuracy(Flux.onecold(red_clasificacion(X_prueba_normalizada), 0:1), Flux.onecold(y_prueba_clasificacion, 0:1))
 
 # ╔═╡ bb87c341-2e49-43c1-a93d-4ded2ca0a3a8
 md"""
 # Resumen
+## Resumen
+
+* Las redes neuronales (profundas) están inspiradas en el funcionamiento de las  neuronas (conexiones, funciones de activación, etc.).
+* Las redes neuronales están formadas por capas de neuronas interconectadas  entre ellas.
+* El entrenamiento de una red implica calcular los pesos entre las conexiones  de las neuronas.
+"""
+
+# ╔═╡ 63e06ba9-d51d-4748-81d6-06bc379c2d2e
+md"""
+## Resumen
+
+* Las redes neuronales son aproximadores universales.
+* Las redes neuronales se pueden utilizar tanto para problemas de regresión como de clasificación.
+* Las redes neuronales son susceptibles al sobreajuste de los pesos.
+* Las redes neuronales se entrenan con la técnica de retro propagación, que se puede resumir en regla de la cadena más descenso de gradiente.
+"""
+
+# ╔═╡ 33873026-0946-4887-b3c7-25128377f3eb
+md"""
+# Referencias
+
+Algunas referencias interesantes
+
+1. [Herramienta para visualizar redes neuronales.](https://playground.tensorflow.org)
+1. [Las redes neuronales son aproximadores universales.](https://www.deep-mind.org/2023/03/26/the-universal-approximation-theorem/)
+1. [¿Qué es una red neuronal?](https://www.youtube.com/watch?v=jKCQsndqEGQ)
+1. [Neural networks.](https://www.youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi)
+1. [Alpha Go.](https://www.youtube.com/watch?v=WXuK6gekU1Y)
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -857,6 +934,7 @@ Flux = "587475ba-b771-5e3f-ad9e-33799f191a9c"
 HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
 MLJ = "add582a8-e3ab-11e8-2d5e-e98b27df1bc7"
+Normalization = "be38d6a3-8366-4a42-ad57-222272b5bbe7"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
@@ -867,6 +945,7 @@ DataFrames = "~1.7.0"
 Flux = "~0.16.3"
 HTTP = "~1.10.15"
 MLJ = "~0.20.7"
+Normalization = "~0.7.3"
 Plots = "~1.40.9"
 PlutoUI = "~0.7.61"
 """
@@ -877,7 +956,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.5"
 manifest_format = "2.0"
-project_hash = "04efe0d14aa6fd6be3e4ec0387cc1767dbe75482"
+project_hash = "4ef2641a704aef9cd665c3deac50da4eda3b3547"
 
 [[deps.ARFFFiles]]
 deps = ["CategoricalArrays", "Dates", "Parsers", "Tables"]
@@ -2053,6 +2132,22 @@ version = "0.1.5"
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
 version = "1.2.0"
 
+[[deps.Normalization]]
+deps = ["Accessors", "LinearAlgebra", "Statistics", "StatsAPI"]
+git-tree-sha1 = "686a1bd494042b29142d920667564c8055bc5738"
+uuid = "be38d6a3-8366-4a42-ad57-222272b5bbe7"
+version = "0.7.3"
+
+    [deps.Normalization.extensions]
+    DataFramesExt = "DataFrames"
+    DimensionalDataExt = "DimensionalData"
+    UnitfulExt = "Unitful"
+
+    [deps.Normalization.weakdeps]
+    DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+    DimensionalData = "0703355e-b756-11e9-17c0-8b28908087d0"
+    Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
+
 [[deps.Ogg_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
 git-tree-sha1 = "887579a3eb005446d514ab7aeac5d1d027658b8f"
@@ -3036,6 +3131,7 @@ version = "1.4.1+2"
 # ╠═6aa62fa1-f7e1-4bd2-8e4c-f6ab51c05490
 # ╠═a3d7c6fd-07a4-4280-9170-167c17299e91
 # ╠═b844f3ab-c048-4df9-9f01-0b8748ebbb1e
+# ╠═0a3d364a-af50-435f-b094-ff392acfa922
 # ╠═785309b6-ddfc-4e99-9699-63f60e73a787
 # ╠═0b5df837-5a80-43c6-b3ce-a1554d550776
 # ╠═2c54bdd7-0d73-496c-9fd1-031dcdf2c861
@@ -3136,28 +3232,39 @@ version = "1.4.1+2"
 # ╠═3584250c-f199-4c27-ba22-d359b245b02c
 # ╠═e67aa374-2ad6-42ab-8127-5658a8236363
 # ╠═ed7fc6a7-6f89-4d88-92aa-ec96e9171c6a
+# ╠═fd9766e3-4a9f-4746-b695-c2b20b192897
+# ╠═75a7fc03-26fc-458d-bb0e-e0ed26b0ff65
+# ╠═4320b284-f595-4408-920a-d93cbfae2116
+# ╠═7a08c1e0-de42-4644-ab97-5bb3e5e07805
 # ╠═6e0c2dc5-0037-480f-9b47-0ef951a0af86
+# ╠═237e0af0-7abd-4d0d-82a5-be590e3a0555
+# ╠═f03bcd24-fb92-45f7-8489-0901ec8714b2
 # ╠═a4d9101a-99c0-4949-b8bb-e440a74c3193
 # ╠═c25f9730-f107-4cc3-a517-542b17e58901
 # ╠═7b180556-ecd3-480f-bb1b-7adb84f91ccf
+# ╠═fb6b3f31-c188-4c82-bc15-996fd909bfcf
+# ╠═fa68f129-609d-442f-8d9d-06e3a0bc5bb7
 # ╠═7af6e33b-b9cf-4428-b457-0fbc7f0c5eb0
 # ╠═015c2a61-f7b4-41d9-81c7-85299de42a52
+# ╠═71dd85c1-e743-4641-9522-8904da9fa04e
+# ╠═1859f9ea-cb27-4acb-a2bf-b7dd63fa47eb
 # ╠═de7228bc-fc1c-4540-a0fb-89b80aaca8fe
-# ╠═68b75daf-9bc0-449b-971c-901255a9ef27
 # ╠═152393b0-d3cc-461e-a1a1-c0b2050c957e
 # ╠═03c5c00b-a013-4730-bae3-b028649c5714
 # ╠═21ad8727-1da3-4ee0-a93c-b874b415b3d6
 # ╠═56817bd3-041c-41a2-806d-ddca6ecce036
 # ╠═df83a14f-1c98-4e04-bf21-d922fb11cc70
 # ╠═014f2d31-8084-4720-bec1-aef01454dfb7
-# ╠═22792f59-3996-4af2-a167-435e6ad79b1b
 # ╠═d55aee49-7914-4a6e-a0cd-704af123c20b
+# ╠═5dfda864-7b57-4b85-b583-24b21c7d7b70
 # ╠═e98382a3-5a96-4d4c-8748-97231231393a
 # ╠═00719c6c-41dd-47d2-9c66-e9169bada27c
-# ╠═a4125cd2-ef5d-4844-8d17-61814a2435d6
-# ╠═3dabfb4e-3f0b-42c0-82db-9c9e56922137
-# ╠═fe721db0-5c99-4a59-8b7e-c08e14eb4d08
+# ╠═c3c1cb31-fac1-4758-a60e-e5231b046d81
 # ╠═f15af338-b9bf-40f4-ba5c-9922550a9482
+# ╠═7626e1b9-e312-4e96-9ee1-925d80ae0cb3
+# ╠═b06be04c-f11b-4a15-89f1-7e05326996fe
 # ╠═bb87c341-2e49-43c1-a93d-4ded2ca0a3a8
+# ╠═63e06ba9-d51d-4748-81d6-06bc379c2d2e
+# ╠═33873026-0946-4887-b3c7-25128377f3eb
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
