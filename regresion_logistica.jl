@@ -28,9 +28,6 @@ using HypothesisTests
 # ╔═╡ 513b3406-a196-4c31-8d43-e9850c2908bb
 using NamedArrays
 
-# ╔═╡ e6f3eab0-69c9-4866-bce7-5f4a3786f009
-using GLM
-
 # ╔═╡ 018db6c4-5039-494a-b3be-60f436f0c4a5
 using MLJLinearModels
 
@@ -55,10 +52,13 @@ import PlotlyKaleido
 import Distributions: fit
 
 # ╔═╡ f68d1864-4289-4f66-b351-2255877309c8
-import MLJ: confusion_matrix, partition
+import MLJ: confusion_matrix, partition, accuracy, roc_curve
 
 # ╔═╡ 86baef7c-e1aa-4e24-b6e0-ed9b40761059
 plotly()
+
+# ╔═╡ e6f3eab0-69c9-4866-bce7-5f4a3786f009
+# using GLM
 
 # ╔═╡ 0d1ffc59-3f36-49e6-a0f4-c0c91fe9b5b8
 TableOfContents(title = "Contenidos", depth=1)
@@ -657,14 +657,17 @@ md"""
 Primero dividimos el conjunto de datos en entrenamiento y prueba:
 """
 
+# ╔═╡ 350afb0c-dc70-47f8-a393-ee462f01798f
+entrenamiento, prueba = partition(adultos, 0.8, rng=123)
+
 # ╔═╡ 2c3194d2-56b4-4aff-8570-533a0ee0ff7f
 formula = @formula(male ~ weight + height)
 
 # ╔═╡ b760b715-a03b-49e0-902c-5b14e656c066
-regresion = glm(formula, select(adultos, Not(:age)), Binomial(), ProbitLink())
+regresion = glm(formula, select(entrenamiento, Not(:age)), Binomial(), ProbitLink())
 
 # ╔═╡ 5df8c38f-69a3-4af2-a19c-ee0183caa144
-prediccion_male = GLM.predict(regresion, select(adultos, Not(:age)))
+prediccion_male = GLM.predict(regresion, select(prueba, Not(:age)))
 
 # ╔═╡ e0c77eb1-123b-42cf-bae4-873d9d5d6129
 function ajusta_probabilidad(inicial, umbral)
@@ -679,10 +682,16 @@ end
 ajusta_probabilidad.(prediccion_male, 0.5)
 
 # ╔═╡ 5479a5a3-79b6-4a9a-8aaf-7c39c080a682
-adultos.male
+prueba.male
 
 # ╔═╡ 4ecd8b18-de9a-4550-a21f-8ece1948d2fa
-confusion_matrix(ajusta_probabilidad.(prediccion_male, 0.5), adultos.male)
+confusion_matrix(ajusta_probabilidad.(prediccion_male, 0.5), prueba.male)
+
+# ╔═╡ d50e2a13-a0a6-4592-9c75-b1057afc5649
+accuracy(ajusta_probabilidad.(prediccion_male, 0.5), prueba.male)
+
+# ╔═╡ 29c2ef73-aa01-453c-a7ca-b88499de18c4
+roc_curve(ajusta_probabilidad.(prediccion_male, 0.5), prueba.male)
 
 # ╔═╡ 1396b070-65ab-4ae1-bcc7-f8981d4009ba
 regresion.model.pp.beta0
@@ -725,7 +734,6 @@ PLUTO_PROJECT_TOML_CONTENTS = """
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
-GLM = "38e38edf-8417-5370-95a0-9cbb8c7f171a"
 HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 HypothesisTests = "09f84164-cd44-5f33-b23f-e6b0d136a0d5"
 MLJ = "add582a8-e3ab-11e8-2d5e-e98b27df1bc7"
@@ -741,7 +749,6 @@ StatsPlots = "f3b207a7-027a-5e70-b257-86293d7955fd"
 CSV = "~0.10.15"
 DataFrames = "~1.7.0"
 Distributions = "~0.25.117"
-GLM = "~1.9.0"
 HTTP = "~1.10.15"
 HypothesisTests = "~0.11.3"
 MLJ = "~0.20.7"
@@ -760,7 +767,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.5"
 manifest_format = "2.0"
-project_hash = "4c0874272f461e41db7a9cbbd0d247d2a8baab0c"
+project_hash = "3fffe0958b9624492427cb24d056b0e0bc08ec52"
 
 [[deps.ARFFFiles]]
 deps = ["CategoricalArrays", "Dates", "Parsers", "Tables"]
@@ -1383,12 +1390,6 @@ deps = ["Artifacts", "JLLWrappers", "Libdl", "Libglvnd_jll", "Xorg_libXcursor_jl
 git-tree-sha1 = "fcb0584ff34e25155876418979d4c8971243bb89"
 uuid = "0656b61e-2033-5cc2-a64a-77c0f6c09b89"
 version = "3.4.0+2"
-
-[[deps.GLM]]
-deps = ["Distributions", "LinearAlgebra", "Printf", "Reexport", "SparseArrays", "SpecialFunctions", "Statistics", "StatsAPI", "StatsBase", "StatsFuns", "StatsModels"]
-git-tree-sha1 = "273bd1cd30768a2fddfa3fd63bbc746ed7249e5f"
-uuid = "38e38edf-8417-5370-95a0-9cbb8c7f171a"
-version = "1.9.0"
 
 [[deps.GPUArraysCore]]
 deps = ["Adapt"]
@@ -2392,11 +2393,6 @@ deps = ["Distributed", "Mmap", "Random", "Serialization"]
 uuid = "1a1011a3-84de-559e-8e89-a11a2f7dc383"
 version = "1.11.0"
 
-[[deps.ShiftedArrays]]
-git-tree-sha1 = "503688b59397b3307443af35cd953a13e8005c16"
-uuid = "1277b4bf-5013-50f5-be3d-901d8477a67a"
-version = "2.0.0"
-
 [[deps.ShowCases]]
 git-tree-sha1 = "7f534ad62ab2bd48591bdeac81994ea8c445e4a5"
 uuid = "605ecd9f-84a6-4c9e-81e2-4798472b76a3"
@@ -2530,12 +2526,6 @@ weakdeps = ["ChainRulesCore", "InverseFunctions"]
     [deps.StatsFuns.extensions]
     StatsFunsChainRulesCoreExt = "ChainRulesCore"
     StatsFunsInverseFunctionsExt = "InverseFunctions"
-
-[[deps.StatsModels]]
-deps = ["DataAPI", "DataStructures", "LinearAlgebra", "Printf", "REPL", "ShiftedArrays", "SparseArrays", "StatsAPI", "StatsBase", "StatsFuns", "Tables"]
-git-tree-sha1 = "9022bcaa2fc1d484f1326eaa4db8db543ca8c66d"
-uuid = "3eaba693-59b7-5ba5-a881-562e759f1c8d"
-version = "0.7.4"
 
 [[deps.StatsPlots]]
 deps = ["AbstractFFTs", "Clustering", "DataStructures", "Distributions", "Interpolations", "KernelDensity", "LinearAlgebra", "MultivariateStats", "NaNMath", "Observables", "Plots", "RecipesBase", "RecipesPipeline", "Reexport", "StatsBase", "TableOperations", "Tables", "Widgets"]
@@ -3106,6 +3096,7 @@ version = "1.4.1+2"
 # ╟─409db5f5-d986-4e5e-af5d-1de216cfba1d
 # ╠═3cf08dc9-e14a-4b33-a31b-43e4d9494995
 # ╠═a3889151-f6b0-42a7-9251-14136107d5f7
+# ╠═350afb0c-dc70-47f8-a393-ee462f01798f
 # ╠═2c3194d2-56b4-4aff-8570-533a0ee0ff7f
 # ╠═b760b715-a03b-49e0-902c-5b14e656c066
 # ╠═5df8c38f-69a3-4af2-a19c-ee0183caa144
@@ -3113,6 +3104,8 @@ version = "1.4.1+2"
 # ╠═0dca6521-80cd-4584-b784-829b364a27d1
 # ╠═5479a5a3-79b6-4a9a-8aaf-7c39c080a682
 # ╠═4ecd8b18-de9a-4550-a21f-8ece1948d2fa
+# ╠═d50e2a13-a0a6-4592-9c75-b1057afc5649
+# ╠═29c2ef73-aa01-453c-a7ca-b88499de18c4
 # ╠═1396b070-65ab-4ae1-bcc7-f8981d4009ba
 # ╠═3e1f1fd8-07a5-4115-83fa-0880d5c62af1
 # ╠═61a8e9a9-0766-4e56-a368-708bcf837bc1
