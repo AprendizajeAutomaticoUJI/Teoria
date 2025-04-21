@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.3
+# v0.20.6
 
 using Markdown
 using InteractiveUtils
@@ -41,15 +41,21 @@ using MLJ
 using PlutoUI
 
 # ╔═╡ 67ff8652-f2c7-11ef-3967-593c57b25a22
-html"""
-<link rel="stylesheet" type="text/css" href="https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/mi_estilo.css" media="screen" />
-"""
+# html"""
+# <link rel="stylesheet" type="text/css" href="https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/mi_estilo.css" media="screen" />
+# """
 
 # ╔═╡ f4492566-e856-4fc1-b5f7-6897874cf19f
 import PlotlyBase
 
 # ╔═╡ 3748086b-5bb8-409e-807e-9e8c8845cf03
 import PlotlyKaleido
+
+# ╔═╡ a4488176-5912-4879-afca-1b4112457dec
+import Distributions: fit
+
+# ╔═╡ f68d1864-4289-4f66-b351-2255877309c8
+import MLJ: confusion_matrix, partition
 
 # ╔═╡ 86baef7c-e1aa-4e24-b6e0-ed9b40761059
 plotly()
@@ -297,12 +303,12 @@ md"""
 # ╔═╡ 63327e12-c31e-433f-b110-0b4a6acf0e8e
 function distribucionespesoalturaedad()
 	nbins = 12
-	peso = plot(hombres_adultos.weight, seriestype=:stephist, label="Hombres",  grid=false, xlabel="Peso", ylabel="Número personas", bins=30:3:70)
-	peso = plot!(mujeres_adultas.weight, seriestype=:stephist, label="Mujeres", bins=30:3:70)
-	altura = plot(hombres_adultos.height, seriestype=:stephist, grid=false, labels=false, xlabel="Altura", ylabel="Número personas", bins=130:5:180)
-	altura = plot!(mujeres_adultas.height, seriestype=:stephist, labels=false, bins=130:5:180)
-	edad = plot(hombres_adultos.age, seriestype=:stephist, labels=false, grid=false, xlabel="Edad", bins=0:10:100, ylabel="Número personas")
-	edad = plot!(mujeres_adultas.age, seriestype=:stephist, labels=false, bins=0:10:100)
+	peso = plot(hombres_adultos.weight, seriestype=:hist, alpha=0.5, label="Hombres",  grid=false, xlabel="Peso", ylabel="Número personas", bins=30:3:70)
+	peso = plot!(mujeres_adultas.weight, seriestype=:hist, alpha=0.5, label="Mujeres", bins=30:3:70)
+	altura = plot(hombres_adultos.height, seriestype=:hist, alpha=0.5, grid=false, labels=false, xlabel="Altura", ylabel="Número personas", bins=130:5:180)
+	altura = plot!(mujeres_adultas.height, seriestype=:hist, alpha=0.5, labels=false, bins=130:5:180)
+	edad = plot(hombres_adultos.age, seriestype=:hist, alpha=0.5, labels=false, grid=false, xlabel="Edad", bins=0:10:100, ylabel="Número personas")
+	edad = plot!(mujeres_adultas.age, seriestype=:hist, alpha=0.5, labels=false, bins=0:10:100)
 	plot(peso, altura, edad, layout=(1,3), size=(900, 500))
 end
 
@@ -434,11 +440,11 @@ function contorno_normales()
 	Y = range(135, 175, length=100)
 	pdf_hombres(x,y) = pdf(mv_hombres, [x, y])
 	pdf_mujeres(x,y) = pdf(mv_mujeres, [x, y])
-	contour(X, Y, pdf_hombres, color=:viridis, xlabel="Peso", ylabel="Altura")
-	p1 = contour!(X, Y, pdf_mujeres, color=:viridis, label="Mujeres")
+	contour(X, Y, pdf_hombres, color=:viridis, xlabel="Peso", ylabel="Altura", title="Covarianzas originales", legend=false, label="Hombres")
+	p1 = contour!(X, Y, pdf_mujeres, label="Mujeres")
 	mv_mujeres = MvNormal(mv_hombres.μ, mv_mujeres.Σ)
-	contour(X, Y, pdf_hombres, color=:viridis, xlabel="Peso", ylabel="Altura")
-	p2 = contour!(X, Y, pdf_mujeres, color=:viridis, label="Mujeres")
+	contour(X, Y, pdf_hombres, color=:viridis, xlabel="Peso", ylabel="Altura", title="Covarianzas con el origen desplazado", legend=false, label="Hombres")
+	p2 = contour!(X, Y, pdf_mujeres, label="Mujeres")
 	plot(p1, p2, size=(900,500))
 end
 	
@@ -535,8 +541,7 @@ De momento, todo esto parece un poco artificial, pero va a ir tomando sentido.
 
 Ahora supongamos que:
 
-1. Las distribuciones de las variables en las clases $C_1$ y $C_2$ son 
-gaussianas.
+1. Las distribuciones de las variables en las clases $C_1$ y $C_2$ son gaussianas.
 1. Las correlaciones de las variables son iguales en las dos clases.
 
 Fíjate en que estas suposiciones son «validas» para los datos de Howell. Es 
@@ -643,8 +648,13 @@ $S_2 = \frac{1}{N_2} \sum_{n \in C_2} (x_n - \mu_2)(x_n-\mu_2)^T$
 # ╔═╡ 3cf08dc9-e14a-4b33-a31b-43e4d9494995
 md"""
 # Aplicación a los datos de Howell
+"""
 
+# ╔═╡ a3889151-f6b0-42a7-9251-14136107d5f7
+md"""
+## Aplicación a los datos de Howell
 
+Primero dividimos el conjunto de datos en entrenamiento y prueba:
 """
 
 # ╔═╡ 2c3194d2-56b4-4aff-8570-533a0ee0ff7f
@@ -654,7 +664,25 @@ formula = @formula(male ~ weight + height)
 regresion = glm(formula, select(adultos, Not(:age)), Binomial(), ProbitLink())
 
 # ╔═╡ 5df8c38f-69a3-4af2-a19c-ee0183caa144
-prediccion_male = predict(regresion, select(adultos, Not(:age)))
+prediccion_male = GLM.predict(regresion, select(adultos, Not(:age)))
+
+# ╔═╡ e0c77eb1-123b-42cf-bae4-873d9d5d6129
+function ajusta_probabilidad(inicial, umbral)
+	if inicial < umbral
+		return 0
+	else
+		return 1
+	end
+end
+
+# ╔═╡ 0dca6521-80cd-4584-b784-829b364a27d1
+ajusta_probabilidad.(prediccion_male, 0.5)
+
+# ╔═╡ 5479a5a3-79b6-4a9a-8aaf-7c39c080a682
+adultos.male
+
+# ╔═╡ 4ecd8b18-de9a-4550-a21f-8ece1948d2fa
+confusion_matrix(ajusta_probabilidad.(prediccion_male, 0.5), adultos.male)
 
 # ╔═╡ 1396b070-65ab-4ae1-bcc7-f8981d4009ba
 regresion.model.pp.beta0
@@ -730,7 +758,7 @@ StatsPlots = "~0.15.7"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.11.4"
+julia_version = "1.11.5"
 manifest_format = "2.0"
 project_hash = "4c0874272f461e41db7a9cbbd0d247d2a8baab0c"
 
@@ -2001,7 +2029,7 @@ version = "0.3.27+1"
 [[deps.OpenLibm_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "05823500-19ac-5b8b-9628-191a04bc5112"
-version = "0.8.1+4"
+version = "0.8.5+0"
 
 [[deps.OpenML]]
 deps = ["ARFFFiles", "HTTP", "JSON", "Markdown", "Pkg", "Scratch"]
@@ -2998,8 +3026,10 @@ version = "1.4.1+2"
 # ╠═f4492566-e856-4fc1-b5f7-6897874cf19f
 # ╠═3748086b-5bb8-409e-807e-9e8c8845cf03
 # ╠═f19c87ed-bfc5-4eca-b61b-5bca6bd8eb65
+# ╠═a4488176-5912-4879-afca-1b4112457dec
 # ╠═e6901419-169d-4400-b2a1-3bc01342ba59
 # ╠═58ac34c0-0a42-45ee-a830-fad4d5dd9d71
+# ╠═f68d1864-4289-4f66-b351-2255877309c8
 # ╠═86baef7c-e1aa-4e24-b6e0-ed9b40761059
 # ╠═513b3406-a196-4c31-8d43-e9850c2908bb
 # ╠═e6f3eab0-69c9-4866-bce7-5f4a3786f009
@@ -3028,56 +3058,61 @@ version = "1.4.1+2"
 # ╠═8addd58e-47c8-42bf-88cb-c9d33bc77ce9
 # ╠═239098fc-2202-493f-af15-6dcd85154103
 # ╠═e2b69df9-227d-42b2-a10a-c230525b5a04
-# ╠═ee9223fc-8d4d-45b5-8d19-9f0dfba5596f
+# ╟─ee9223fc-8d4d-45b5-8d19-9f0dfba5596f
 # ╠═63327e12-c31e-433f-b110-0b4a6acf0e8e
 # ╠═51f1622c-d0f7-430c-a2b7-e3ea5c2bbeae
 # ╟─7a153f0b-a604-4cbc-9af1-911b247ebc7a
 # ╠═92192af7-a787-4cd8-86a4-13b386b51f10
 # ╠═ad4a41b9-7a8c-4999-a88a-28f816ffb0ba
-# ╠═0bc95d3e-d681-4be0-8aaf-57758a11a22a
+# ╟─0bc95d3e-d681-4be0-8aaf-57758a11a22a
 # ╠═9e5fa7a9-f7ad-4ab0-ad47-64bb777c584a
-# ╠═67333fdc-c200-4776-aafb-7947f6be05f9
+# ╟─67333fdc-c200-4776-aafb-7947f6be05f9
 # ╠═5f306070-918c-4491-992e-6d47307a9139
-# ╠═e7341d4c-624e-44d1-9ab4-b30bb6dfef4f
+# ╟─e7341d4c-624e-44d1-9ab4-b30bb6dfef4f
 # ╠═288ed03e-d9e7-41f3-9f91-b67bfda75b0c
-# ╠═369232ee-276b-4abb-a308-f3071cb0ffa5
+# ╟─369232ee-276b-4abb-a308-f3071cb0ffa5
 # ╠═7d3a83f1-27e6-487f-b85e-96bba7704550
-# ╠═8e6b402f-cd3e-41e0-9be5-41e939a817f5
-# ╠═b1f4000f-9fc1-4363-a3c2-f08be4348ac5
+# ╟─8e6b402f-cd3e-41e0-9be5-41e939a817f5
+# ╟─b1f4000f-9fc1-4363-a3c2-f08be4348ac5
 # ╠═b248e25c-0507-44df-98f7-af73b72f5be6
-# ╠═8e01180b-560c-4eb9-a28f-79e6034e7208
+# ╟─8e01180b-560c-4eb9-a28f-79e6034e7208
 # ╠═14bbf814-5254-4528-bcd0-6732aaf46b2c
-# ╠═3389b7e8-305a-4242-bae9-926f8bfa5ee8
+# ╟─3389b7e8-305a-4242-bae9-926f8bfa5ee8
 # ╠═c33a49ae-1c51-40cf-8b39-107fc942e362
-# ╠═ae448d10-e562-4a8f-899e-bc1484e63bf5
+# ╟─ae448d10-e562-4a8f-899e-bc1484e63bf5
 # ╠═240fc13e-a96b-4340-bdb3-cc367aab9650
-# ╠═f57559bd-d99b-43e8-b2dc-5cb75abf668e
+# ╟─f57559bd-d99b-43e8-b2dc-5cb75abf668e
 # ╠═e4e11601-94db-4642-af8f-9838d6ca2994
-# ╠═3e814d0e-5fe0-475f-a488-40727787dd59
+# ╟─3e814d0e-5fe0-475f-a488-40727787dd59
 # ╠═96ad543b-d968-4fb3-b358-92ea5197436c
 # ╠═bf361273-75aa-4620-b63d-a7e8f47f83c8
-# ╠═85cbdac8-a4c8-4a91-ba6d-90f0c55ba818
+# ╟─85cbdac8-a4c8-4a91-ba6d-90f0c55ba818
 # ╠═9458817b-d025-4f73-9c71-42fdb2bbd266
-# ╠═517c9b6c-d4b7-45c6-a916-12f92f07fb08
-# ╠═bc3c772e-578d-4fea-ad56-bc0b5598d43e
-# ╠═2cd44fbd-46e9-4942-ac06-df9c5af1badc
-# ╠═30f3a04d-fe07-4293-b457-e26299d216d9
-# ╠═97fe3b83-59a4-4474-bc53-a81a018518d4
-# ╠═441170ee-8d7f-4b36-ab2d-8075c4196b5d
+# ╟─517c9b6c-d4b7-45c6-a916-12f92f07fb08
+# ╟─bc3c772e-578d-4fea-ad56-bc0b5598d43e
+# ╟─2cd44fbd-46e9-4942-ac06-df9c5af1badc
+# ╟─30f3a04d-fe07-4293-b457-e26299d216d9
+# ╟─97fe3b83-59a4-4474-bc53-a81a018518d4
+# ╟─441170ee-8d7f-4b36-ab2d-8075c4196b5d
 # ╠═19db055b-db56-4f64-bab7-6f598c93e175
 # ╠═330e6f0f-f955-405d-8c66-ae9efa8d7e0a
-# ╠═8f6a1785-f5fc-4216-af16-8c84d46b5b40
-# ╠═d48f86ef-1894-4f82-ab34-6b4553996902
-# ╠═cd15154f-fc0f-41ba-a711-0236ffa9f04d
-# ╠═f057fb6c-af57-46c0-b712-06eed205dbc8
-# ╠═0ab915b8-2d9d-4edf-9b26-a7783eb6326e
-# ╠═97b78daf-0932-4950-bfe5-def83b79f199
-# ╠═72bfb2fd-7ff4-42a0-9bf1-1266fa1d86ba
-# ╠═409db5f5-d986-4e5e-af5d-1de216cfba1d
+# ╟─8f6a1785-f5fc-4216-af16-8c84d46b5b40
+# ╟─d48f86ef-1894-4f82-ab34-6b4553996902
+# ╟─cd15154f-fc0f-41ba-a711-0236ffa9f04d
+# ╟─f057fb6c-af57-46c0-b712-06eed205dbc8
+# ╟─0ab915b8-2d9d-4edf-9b26-a7783eb6326e
+# ╟─97b78daf-0932-4950-bfe5-def83b79f199
+# ╟─72bfb2fd-7ff4-42a0-9bf1-1266fa1d86ba
+# ╟─409db5f5-d986-4e5e-af5d-1de216cfba1d
 # ╠═3cf08dc9-e14a-4b33-a31b-43e4d9494995
+# ╠═a3889151-f6b0-42a7-9251-14136107d5f7
 # ╠═2c3194d2-56b4-4aff-8570-533a0ee0ff7f
 # ╠═b760b715-a03b-49e0-902c-5b14e656c066
 # ╠═5df8c38f-69a3-4af2-a19c-ee0183caa144
+# ╠═e0c77eb1-123b-42cf-bae4-873d9d5d6129
+# ╠═0dca6521-80cd-4584-b784-829b364a27d1
+# ╠═5479a5a3-79b6-4a9a-8aaf-7c39c080a682
+# ╠═4ecd8b18-de9a-4550-a21f-8ece1948d2fa
 # ╠═1396b070-65ab-4ae1-bcc7-f8981d4009ba
 # ╠═3e1f1fd8-07a5-4115-83fa-0880d5c62af1
 # ╠═61a8e9a9-0766-4e56-a368-708bcf837bc1
