@@ -52,13 +52,10 @@ import PlotlyKaleido
 import Distributions: fit
 
 # ╔═╡ f68d1864-4289-4f66-b351-2255877309c8
-import MLJ: confusion_matrix, partition, accuracy, roc_curve
+# import MLJ: confusion_matrix, partition, accuracy, roc_curve
 
 # ╔═╡ 86baef7c-e1aa-4e24-b6e0-ed9b40761059
 plotly()
-
-# ╔═╡ e6f3eab0-69c9-4866-bce7-5f4a3786f009
-# using GLM
 
 # ╔═╡ 0d1ffc59-3f36-49e6-a0f4-c0c91fe9b5b8
 TableOfContents(title = "Contenidos", depth=1)
@@ -657,76 +654,132 @@ md"""
 Primero dividimos el conjunto de datos en entrenamiento y prueba:
 """
 
-# ╔═╡ 350afb0c-dc70-47f8-a393-ee462f01798f
-entrenamiento, prueba = partition(adultos, 0.8, rng=123)
-
-# ╔═╡ 2c3194d2-56b4-4aff-8570-533a0ee0ff7f
-formula = @formula(male ~ weight + height)
-
-# ╔═╡ b760b715-a03b-49e0-902c-5b14e656c066
-regresion = glm(formula, select(entrenamiento, Not(:age)), Binomial(), ProbitLink())
-
-# ╔═╡ 5df8c38f-69a3-4af2-a19c-ee0183caa144
-prediccion_male = GLM.predict(regresion, select(prueba, Not(:age)))
-
-# ╔═╡ e0c77eb1-123b-42cf-bae4-873d9d5d6129
-function ajusta_probabilidad(inicial, umbral)
-	if inicial < umbral
-		return 0
-	else
-		return 1
-	end
-end
-
-# ╔═╡ 0dca6521-80cd-4584-b784-829b364a27d1
-ajusta_probabilidad.(prediccion_male, 0.5)
-
-# ╔═╡ 5479a5a3-79b6-4a9a-8aaf-7c39c080a682
-prueba.male
-
-# ╔═╡ 4ecd8b18-de9a-4550-a21f-8ece1948d2fa
-confusion_matrix(ajusta_probabilidad.(prediccion_male, 0.5), prueba.male)
-
-# ╔═╡ d50e2a13-a0a6-4592-9c75-b1057afc5649
-accuracy(ajusta_probabilidad.(prediccion_male, 0.5), prueba.male)
-
-# ╔═╡ 29c2ef73-aa01-453c-a7ca-b88499de18c4
-roc_curve(ajusta_probabilidad.(prediccion_male, 0.5), prueba.male)
-
-# ╔═╡ 1396b070-65ab-4ae1-bcc7-f8981d4009ba
-regresion.model.pp.beta0
-
-# ╔═╡ 3e1f1fd8-07a5-4115-83fa-0880d5c62af1
-adultos[1, :]
-
-# ╔═╡ 61a8e9a9-0766-4e56-a368-708bcf837bc1
-ind = 8
-
-# ╔═╡ 8660d7f8-3500-4521-91bd-470a5338e9b3
-Vector(adultos[ind,:])
-
-# ╔═╡ ac831c12-b402-4646-84d6-4adf1e37a24b
-σ(-29.2028 + adultos[ind, :weight] * (-0.00421826) + adultos[ind, :height] * 0.189557)
-
-# ╔═╡ 168c5e81-5a16-4b18-9564-9894d3cbe8f1
-σ(-55.96595497063919 + adultos[ind, :weight] * (-0.00975935) + adultos[ind, :height] * 0.364067)
-
 # ╔═╡ 83b5d2b4-ab18-461a-a291-a9790cb62af8
 md"""
 ## Voy a intentar regresión logística con MLJ
 """
 
 # ╔═╡ 46448798-4d11-45bd-9fce-a2c2d9118763
-LogisticClassifier = @load LogisticClassifier pkg=MLJLinearModels
+LogisticClassifier = @load LogisticClassifier pkg=MLJLinearModels verbosity=0
 
 # ╔═╡ 52abed5f-197b-4308-a875-1c351725358d
-X = select(adultos, [:weight, :height])
+X = select(entrenamiento, [:weight, :height])
 
 # ╔═╡ 02f644b9-a877-4e91-9c4f-aff38a3dac2a
-y = OrderedFactor(adultos[:, :male])
+y = coerce(entrenamiento.male, OrderedFactor)
 
 # ╔═╡ 122c7f45-af9d-43a7-ba90-455b22196166
 maquina = fit!(machine(LogisticClassifier(), X, y))
+
+# ╔═╡ 5a41f8da-a56e-4e1a-ad3c-815df8872d90
+ŷ = predict_mode(maquina, select(prueba, [:weight, :height]))
+
+# ╔═╡ 768664b2-2e79-4408-b5ac-04828cfc0669
+ŷ
+
+# ╔═╡ eecc3c99-8539-4a9e-b5f6-a22364afbadb
+prueba.male
+
+# ╔═╡ ee79aa91-420d-44a6-bc17-4a5a5f6e6231
+confusion_matrix(ŷ, prueba.male)
+
+# ╔═╡ c12c09f0-75db-4a40-a201-1bd8d69b482a
+accuracy(ŷ, prueba.male)
+
+# ╔═╡ ececc102-a1d5-4669-8bea-6a3deabc540b
+fpr, tpr = roc_curve(predict(maquina, select(prueba, [:weight, :height])), coerce(prueba.male, OrderedFactor))
+
+# ╔═╡ ce15f735-0e8a-47fe-90f3-d06fbc296b33
+auc = area_under_curve(predict(maquina, select(prueba, [:weight, :height])), coerce(prueba.male, OrderedFactor))
+
+# ╔═╡ 46bc179b-7c0e-4987-8a64-ecbd28847e80
+plot(fpr,tpr, title="Curva ROC auc=$auc", xlabel="False positive rate", ylabel="True positive rate", legend=false)
+
+# ╔═╡ efa6b1c3-e6aa-4e6b-b745-0595d36f59a8
+md"""
+Utilizando cross validation:
+"""
+
+# ╔═╡ fa8dc7ad-c6cb-4f69-8e5d-738bcc45354a
+evaluate!(
+    maquina,
+    resampling=CV(nfolds=15),
+    measures=[log_loss, accuracy],
+)
+
+
+# ╔═╡ 0c7b05ae-b4c9-475b-983a-29df7298cb11
+md"""
+## Apliación a los datos de Howell
+
+Para finalizar, vamos a visualizar cómo se distribuyen los datos transformados sobre la sigmoide. Esto aclara qué está haciendo el clasificador.
+
+Creamos matrices para hombres y mujers con las columnas de peso, altura y añadios una tercera columna para bias:
+"""
+
+# ╔═╡ 9c4ed964-c3b2-4ac3-833e-98af8e787b53
+hombres_plot = cat(Matrix(hombres_adultos[:,[:weight, :height]]), ones(size(hombres_adultos, 1)), dims=2)
+
+# ╔═╡ a963e81f-011c-4211-a2f6-b3fd24810196
+mujeres_plot= cat(Matrix(mujeres_adultas[:, [:weight, :height]]), ones(size(mujeres_adultas, 1)), dims=2)
+
+# ╔═╡ 4651681e-d16b-462b-b51c-bde9efb44eb6
+md"""
+Multiplicamos cada matriz por el vector de coeficientes del ajuste, y del vector resultante calculamos el valor de la sigmoide:
+"""
+
+# ╔═╡ b57f71a8-4cba-4afb-86c6-c8240e8fc49d
+transformado_hombres = hombres_plot * maquina.fitresult[1]
+
+# ╔═╡ b9f24a63-4fc9-47da-b3cf-adce20b0cea3
+sigma_hombres = σ.(transformado_hombres)
+
+# ╔═╡ 70c6667b-64b1-4c24-ae3b-612bb89c5d0e
+transformado_mujeres = mujeres_plot * maquina.fitresult[1]
+
+# ╔═╡ 92acf800-30e8-4d06-bb3d-11db12498fcb
+sigma_mujeres = σ.(transformado_mujeres)
+
+# ╔═╡ 113481b8-5cdb-4f0a-a26d-2db2ec3eccec
+md"""
+## Aplicación a los datos de Howell
+
+Ahora ya podemos visualizar los datos:
+"""
+
+# ╔═╡ d2f46c79-ab68-4ca0-aef1-48d5f2e2edc4
+function datos_sobre_sigmoide(trasformado_hombres, sigma_hombre, transformado_mujeres, sigma_mujeres)
+	scatter(transformado_hombres, sigma_hombres, label="Hombres", markerstrokewidth=0, alpha=0.5)
+	scatter!(transformado_mujeres, sigma_mujeres, label="Mujeres", legend=:bottomright, markerstrokewidth=0, alpha=0.5, title="Distribución de los datos por sexo sobre la sigmoide", xlabel="Valor transformado", ylabel="Sigmoide")
+end
+
+# ╔═╡ b8b7f2c9-10ed-487f-9690-a4be2a245f0c
+datos_sobre_sigmoide(transformado_hombres, sigma_hombres, transformado_mujeres, sigma_mujeres)
+
+# ╔═╡ 303bace0-02ac-4501-a76d-018adeb5714a
+md"""
+# Resumen
+"""
+
+# ╔═╡ 536fe5a2-395f-4cd9-9791-606ea6db96ed
+md"""
+## Resumen
+
+* La regresión logística es un algoritmo de clasificación.
+* La regresión logística funciona muy bien si los datos siguen una distribución gaussiana y sus matrices de covarianza son iguales.
+* Para deducir las fórmulas hemos utilizado el teorema de Bayes y el principio de máxima verosimilitud.
+* También hemos deducido la función de pérdidas sobre la que se puede aplicar la técnica de descenso de gradiente.
+* Es importante comprobar que nuestros datos cumplen con las condiciones de normalidad e igualdad de matrices de covarianza.
+"""
+
+# ╔═╡ 350afb0c-dc70-47f8-a393-ee462f01798f
+entrenamiento, prueba = partition(adultos, 0.75, rng=3)
+
+# ╔═╡ a75fa817-478c-4c55-af3b-95cd32ff7c0e
+# ╠═╡ disabled = true
+#=╠═╡
+entrenamiento = prueba = adultos
+  ╠═╡ =#
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -3022,7 +3075,6 @@ version = "1.4.1+2"
 # ╠═f68d1864-4289-4f66-b351-2255877309c8
 # ╠═86baef7c-e1aa-4e24-b6e0-ed9b40761059
 # ╠═513b3406-a196-4c31-8d43-e9850c2908bb
-# ╠═e6f3eab0-69c9-4866-bce7-5f4a3786f009
 # ╠═018db6c4-5039-494a-b3be-60f436f0c4a5
 # ╠═6a690dd8-eb37-435e-ab77-989fb3c32006
 # ╠═2a86bff1-dda4-4412-9300-3d54330e7388
@@ -3097,25 +3149,34 @@ version = "1.4.1+2"
 # ╠═3cf08dc9-e14a-4b33-a31b-43e4d9494995
 # ╠═a3889151-f6b0-42a7-9251-14136107d5f7
 # ╠═350afb0c-dc70-47f8-a393-ee462f01798f
-# ╠═2c3194d2-56b4-4aff-8570-533a0ee0ff7f
-# ╠═b760b715-a03b-49e0-902c-5b14e656c066
-# ╠═5df8c38f-69a3-4af2-a19c-ee0183caa144
-# ╠═e0c77eb1-123b-42cf-bae4-873d9d5d6129
-# ╠═0dca6521-80cd-4584-b784-829b364a27d1
-# ╠═5479a5a3-79b6-4a9a-8aaf-7c39c080a682
-# ╠═4ecd8b18-de9a-4550-a21f-8ece1948d2fa
-# ╠═d50e2a13-a0a6-4592-9c75-b1057afc5649
-# ╠═29c2ef73-aa01-453c-a7ca-b88499de18c4
-# ╠═1396b070-65ab-4ae1-bcc7-f8981d4009ba
-# ╠═3e1f1fd8-07a5-4115-83fa-0880d5c62af1
-# ╠═61a8e9a9-0766-4e56-a368-708bcf837bc1
-# ╠═8660d7f8-3500-4521-91bd-470a5338e9b3
-# ╠═ac831c12-b402-4646-84d6-4adf1e37a24b
-# ╠═168c5e81-5a16-4b18-9564-9894d3cbe8f1
+# ╠═a75fa817-478c-4c55-af3b-95cd32ff7c0e
 # ╠═83b5d2b4-ab18-461a-a291-a9790cb62af8
 # ╠═46448798-4d11-45bd-9fce-a2c2d9118763
 # ╠═52abed5f-197b-4308-a875-1c351725358d
 # ╠═02f644b9-a877-4e91-9c4f-aff38a3dac2a
 # ╠═122c7f45-af9d-43a7-ba90-455b22196166
+# ╠═5a41f8da-a56e-4e1a-ad3c-815df8872d90
+# ╠═768664b2-2e79-4408-b5ac-04828cfc0669
+# ╠═eecc3c99-8539-4a9e-b5f6-a22364afbadb
+# ╠═ee79aa91-420d-44a6-bc17-4a5a5f6e6231
+# ╠═c12c09f0-75db-4a40-a201-1bd8d69b482a
+# ╠═ececc102-a1d5-4669-8bea-6a3deabc540b
+# ╠═ce15f735-0e8a-47fe-90f3-d06fbc296b33
+# ╠═46bc179b-7c0e-4987-8a64-ecbd28847e80
+# ╠═efa6b1c3-e6aa-4e6b-b745-0595d36f59a8
+# ╠═fa8dc7ad-c6cb-4f69-8e5d-738bcc45354a
+# ╠═0c7b05ae-b4c9-475b-983a-29df7298cb11
+# ╠═9c4ed964-c3b2-4ac3-833e-98af8e787b53
+# ╠═a963e81f-011c-4211-a2f6-b3fd24810196
+# ╠═4651681e-d16b-462b-b51c-bde9efb44eb6
+# ╠═b57f71a8-4cba-4afb-86c6-c8240e8fc49d
+# ╠═b9f24a63-4fc9-47da-b3cf-adce20b0cea3
+# ╠═70c6667b-64b1-4c24-ae3b-612bb89c5d0e
+# ╠═92acf800-30e8-4d06-bb3d-11db12498fcb
+# ╠═113481b8-5cdb-4f0a-a26d-2db2ec3eccec
+# ╠═d2f46c79-ab68-4ca0-aef1-48d5f2e2edc4
+# ╠═b8b7f2c9-10ed-487f-9690-a4be2a245f0c
+# ╠═303bace0-02ac-4501-a76d-018adeb5714a
+# ╠═536fe5a2-395f-4cd9-9791-606ea6db96ed
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
