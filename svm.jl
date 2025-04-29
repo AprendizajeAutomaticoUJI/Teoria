@@ -83,20 +83,38 @@ El objetivo de las Máquinas de Soporte Vectorial es crear un modelo de clasific
 Clasificación binaria.
 """
 
+# ╔═╡ 8064744a-796c-44a7-a2ab-d60909ecbe0d
+function evalua(x, θ, θ0)
+	return -(x*θ[1] + θ0) / θ[2]
+end
+
+# ╔═╡ 40151e5b-9c13-4178-9de1-0feeb4bf31ac
+function genera_datos(θ, θ0, muestras)
+	xs = 10 * rand(2 * muestras)
+	y = [evalua(x, θ, θ0) for x in xs]
+	positivos = y[1:muestras] + rand(muestras) .+ 1
+	negativos = y[muestras+1:2*muestras] - rand(muestras)
+	clase = cat(repeat(["positivo"], muestras), repeat(["negativo"], muestras), dims=1)
+	return xs, cat(positivos, negativos, dims=1), clase
+end
+
+# ╔═╡ 6ad9413a-b85f-44ae-9312-0903a12016a5
+x, y, clase = genera_datos([-1.0,2.0], 3.0, 20)
+
 # ╔═╡ 44b90fef-44bd-4e32-958f-b743b5ed2393
-positivos = [rand()*5 + 5 for i in 1:10]
+# positivos = [2*rand() + 3 for i in 1:10]
 
 # ╔═╡ 1745d074-9876-4713-8264-74c1e45500e0
-negativos = [rand()*5 - 5 for i in 1:10]
+# negativos = [-2*rand() - 3 for i in 1:10]
 
 # ╔═╡ 217521cd-80ed-4836-b3f7-7dea0504b9b7
-y = cat(positivos, negativos, dims=1)
+# y = cat(positivos, negativos, dims=1)
 
 # ╔═╡ 9f8cc688-049c-45cb-93ed-8167569246cb
-x = rand(20) * 10
+# x = rand(20) * 10
 
 # ╔═╡ 6231d984-cfc5-449b-8ce0-828801d75ba2
-clase = cat(repeat(["positivo"], 10), repeat(["negativo"], 10), dims=1)
+# clase = cat(repeat(["positivo"], 10), repeat(["negativo"], 10), dims=1)
 
 # ╔═╡ c55facf6-29ad-4cce-9f91-e1e053c7aa70
 datos = DataFrame(x=x, y=y, clase=clase)
@@ -142,7 +160,75 @@ begin
 end
 
 # ╔═╡ 73e5056b-b779-42a2-8d49-bd6137cce00f
-maquina.fitresult
+Xmaquina = maquina.fitresult[1].SVs.X
+
+# ╔═╡ edf85cdc-ff72-4560-8c29-c79184bfeadc
+coefs = maquina.fitresult[1].coefs
+
+# ╔═╡ 761df5c6-4dcd-4ff2-bdc2-9b701dc9c450
+coef0 = maquina.fitresult[1].coef0
+
+# ╔═╡ aa531714-7f84-4766-8bf8-67e3105cc3f3
+θ = Xmaquina * coefs
+
+# ╔═╡ b9073f63-e424-4030-acbe-29cfc4182f78
+Xmaquina[:,1]' * Xmaquina
+
+# ╔═╡ d592975d-cf31-4583-b40d-6e26fa2b0ec5
+Xmaquina[:,1]' * Xmaquina * coefs
+
+# ╔═╡ 57627d35-5403-4196-8ea4-a8f5345a9bdc
+Xmaquina[:,:]' * Xmaquina * coefs
+
+# ╔═╡ 04eeb7fa-7d67-4a57-b270-35d1c3595f35
+# a = [1 -1 -1]' + Xmaquina' * Xmaquina * coefs
+
+# ╔═╡ 0aeb4801-9f35-44d2-90f9-5342fbc7af8a
+a = sign.(coefs) - Xmaquina' * Xmaquina * coefs
+
+# ╔═╡ 943beaf5-9e48-4c37-88c1-8063ab7928ca
+suma = sum(a)/length(a)
+
+# ╔═╡ 5820307e-c8d8-4519-862b-389b73f7c3dc
+d = 1 / sqrt(θ' * θ)[1:1][1]
+
+# ╔═╡ 96e11f75-b7f0-4562-a602-25bc5fba8122
+# sign.(coefs)
+
+# ╔═╡ 13d6fa16-5462-4f61-80e5-27c9090d43e2
+fitted_params(maquina)
+
+# ╔═╡ 41d37242-7712-4d0f-8a3b-91a18833e1a0
+Matrix(X)[18,:]' * θ
+
+# ╔═╡ b586098f-32a1-4574-8a21-a2ef7843f91b
+θp = [-θ[2], θ[1]]
+
+# ╔═╡ 54ddac4a-978e-4527-99e1-85632e108628
+coso2 = (θ[1]*10 + 1) / -θ[2]
+
+# ╔═╡ 3c62a451-a2af-4376-b615-4cac7ceb4a3a
+begin
+	algo = 0
+	menosalgo = 0
+	scatter(coso[1,:], coso[2,:], markersize=7, color=:white, label="Soporte", legend=false)
+	scatter!(datos[datos.clase.=="positivo", :x], datos[datos.clase.=="positivo", :y], label="Positivo")
+	scatter!(datos[datos.clase.=="negativo", :x], datos[datos.clase.=="negativo", :y], label="Negativo")
+	# plot!([0, 10], [-1/θ[2], coso2])
+	plot!([0, 10], [evalua(0, [θ[1],θ[2]], suma), evalua(10, [θ[1],θ[2]], suma)], color=:black)
+	plot!([0, 10], [evalua(0, [θ[1],θ[2]], suma)+d, evalua(10, [θ[1],θ[2]], suma)+d], color=:black, linestyle=:dash)
+	plot!([0, 10], [evalua(0, [θ[1],θ[2]], suma)-d, evalua(10, [θ[1],θ[2]], suma)-d], color=:black, linestyle=:dash)
+	# plot!([0, 10], [0+menosalgo, coso2+menosalgo])
+end
+
+# ╔═╡ f3ca0105-1903-4e8c-b743-83ae8cb8633b
+evalua(0, [0.1,2], 10)
+
+# ╔═╡ 1d87a38a-78a7-428c-9ae8-18d58e9acb88
+evalua(10, [0.1,2], 10)
+
+# ╔═╡ bab20254-c17a-4167-b866-4187969a48ec
+# doc("SVC", pkg="LIBSVM")
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -2087,6 +2173,9 @@ version = "1.4.1+2"
 # ╠═b44ddc15-a3e7-4282-ae23-18a163c3aad2
 # ╠═4b30ab11-03a3-4bde-bd55-1e8f737157b6
 # ╠═1ba4957e-ef24-43ed-915d-e5fe1ef4b2aa
+# ╠═8064744a-796c-44a7-a2ab-d60909ecbe0d
+# ╠═40151e5b-9c13-4178-9de1-0feeb4bf31ac
+# ╠═6ad9413a-b85f-44ae-9312-0903a12016a5
 # ╠═44b90fef-44bd-4e32-958f-b743b5ed2393
 # ╠═1745d074-9876-4713-8264-74c1e45500e0
 # ╠═217521cd-80ed-4836-b3f7-7dea0504b9b7
@@ -2105,5 +2194,24 @@ version = "1.4.1+2"
 # ╠═41630357-71bd-4fc2-bcee-a0e95c0819a3
 # ╠═e7198063-24cf-4801-b196-02683a5e4e95
 # ╠═73e5056b-b779-42a2-8d49-bd6137cce00f
+# ╠═edf85cdc-ff72-4560-8c29-c79184bfeadc
+# ╠═761df5c6-4dcd-4ff2-bdc2-9b701dc9c450
+# ╠═aa531714-7f84-4766-8bf8-67e3105cc3f3
+# ╠═b9073f63-e424-4030-acbe-29cfc4182f78
+# ╠═d592975d-cf31-4583-b40d-6e26fa2b0ec5
+# ╠═57627d35-5403-4196-8ea4-a8f5345a9bdc
+# ╠═04eeb7fa-7d67-4a57-b270-35d1c3595f35
+# ╠═0aeb4801-9f35-44d2-90f9-5342fbc7af8a
+# ╠═943beaf5-9e48-4c37-88c1-8063ab7928ca
+# ╠═5820307e-c8d8-4519-862b-389b73f7c3dc
+# ╠═96e11f75-b7f0-4562-a602-25bc5fba8122
+# ╠═13d6fa16-5462-4f61-80e5-27c9090d43e2
+# ╠═41d37242-7712-4d0f-8a3b-91a18833e1a0
+# ╠═b586098f-32a1-4574-8a21-a2ef7843f91b
+# ╠═54ddac4a-978e-4527-99e1-85632e108628
+# ╠═3c62a451-a2af-4376-b615-4cac7ceb4a3a
+# ╠═f3ca0105-1903-4e8c-b743-83ae8cb8633b
+# ╠═1d87a38a-78a7-428c-9ae8-18d58e9acb88
+# ╠═bab20254-c17a-4167-b866-4187969a48ec
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
