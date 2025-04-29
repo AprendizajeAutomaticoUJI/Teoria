@@ -16,6 +16,9 @@ using MLJ
 # ╔═╡ 319a328e-96fa-4852-a766-1de322033450
 using PlutoUI
 
+# ╔═╡ 507dba8d-bb19-4551-9c34-333a729936bf
+using LinearAlgebra: norm
+
 # ╔═╡ 50449444-1f95-11f0-3642-89804cc4dc84
 # html"""
 # <link rel="stylesheet" type="text/css" href="https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/mi_estilo.css" media="screen" />
@@ -99,22 +102,7 @@ function genera_datos(θ, θ0, muestras)
 end
 
 # ╔═╡ 6ad9413a-b85f-44ae-9312-0903a12016a5
-x, y, clase = genera_datos([-1.0,2.0], 3.0, 20)
-
-# ╔═╡ 44b90fef-44bd-4e32-958f-b743b5ed2393
-# positivos = [2*rand() + 3 for i in 1:10]
-
-# ╔═╡ 1745d074-9876-4713-8264-74c1e45500e0
-# negativos = [-2*rand() - 3 for i in 1:10]
-
-# ╔═╡ 217521cd-80ed-4836-b3f7-7dea0504b9b7
-# y = cat(positivos, negativos, dims=1)
-
-# ╔═╡ 9f8cc688-049c-45cb-93ed-8167569246cb
-# x = rand(20) * 10
-
-# ╔═╡ 6231d984-cfc5-449b-8ce0-828801d75ba2
-# clase = cat(repeat(["positivo"], 10), repeat(["negativo"], 10), dims=1)
+x, y, clase = genera_datos([1.0,2.0], 5.0, 20)
 
 # ╔═╡ c55facf6-29ad-4cce-9f91-e1e053c7aa70
 datos = DataFrame(x=x, y=y, clase=clase)
@@ -180,20 +168,17 @@ Xmaquina[:,1]' * Xmaquina * coefs
 # ╔═╡ 57627d35-5403-4196-8ea4-a8f5345a9bdc
 Xmaquina[:,:]' * Xmaquina * coefs
 
-# ╔═╡ 04eeb7fa-7d67-4a57-b270-35d1c3595f35
-# a = [1 -1 -1]' + Xmaquina' * Xmaquina * coefs
-
 # ╔═╡ 0aeb4801-9f35-44d2-90f9-5342fbc7af8a
 a = sign.(coefs) - Xmaquina' * Xmaquina * coefs
 
 # ╔═╡ 943beaf5-9e48-4c37-88c1-8063ab7928ca
 suma = sum(a)/length(a)
 
-# ╔═╡ 5820307e-c8d8-4519-862b-389b73f7c3dc
-d = 1 / sqrt(θ' * θ)[1:1][1]
+# ╔═╡ fea531f7-dfff-4bd4-84ac-52b8c69c758b
+d = 1 / norm(θ)
 
-# ╔═╡ 96e11f75-b7f0-4562-a602-25bc5fba8122
-# sign.(coefs)
+# ╔═╡ ba42a740-7292-43ab-93b8-5f1d637cda5a
+1 / sqrt(5)
 
 # ╔═╡ 13d6fa16-5462-4f61-80e5-27c9090d43e2
 fitted_params(maquina)
@@ -218,23 +203,14 @@ begin
 	plot!([0, 10], [evalua(0, [θ[1],θ[2]], suma), evalua(10, [θ[1],θ[2]], suma)], color=:black)
 	plot!([0, 10], [evalua(0, [θ[1],θ[2]], suma)+d, evalua(10, [θ[1],θ[2]], suma)+d], color=:black, linestyle=:dash)
 	plot!([0, 10], [evalua(0, [θ[1],θ[2]], suma)-d, evalua(10, [θ[1],θ[2]], suma)-d], color=:black, linestyle=:dash)
-	# plot!([0, 10], [0+menosalgo, coso2+menosalgo])
 end
-
-# ╔═╡ f3ca0105-1903-4e8c-b743-83ae8cb8633b
-evalua(0, [0.1,2], 10)
-
-# ╔═╡ 1d87a38a-78a7-428c-9ae8-18d58e9acb88
-evalua(10, [0.1,2], 10)
-
-# ╔═╡ bab20254-c17a-4167-b866-4187969a48ec
-# doc("SVC", pkg="LIBSVM")
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 LIBSVM = "b1bec4e5-fd48-53fe-b0cb-9723c09d164b"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 MLJ = "add582a8-e3ab-11e8-2d5e-e98b27df1bc7"
 MLJLIBSVMInterface = "61c7150f-6c77-4bb1-949c-13197eac2a52"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
@@ -255,7 +231,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.5"
 manifest_format = "2.0"
-project_hash = "39ae1c0a566ffbc871c58f76bb850243bfd5e4c9"
+project_hash = "bdec2ed8985fbf0d0b06b67ae844f23a432b879c"
 
 [[deps.ARFFFiles]]
 deps = ["CategoricalArrays", "Dates", "Parsers", "Tables"]
@@ -2166,21 +2142,17 @@ version = "1.4.1+2"
 # ╠═64a828bf-a426-417a-8994-7661b53e22ab
 # ╠═d2159870-7d0e-46a7-bda4-4e259e075906
 # ╠═319a328e-96fa-4852-a766-1de322033450
+# ╠═507dba8d-bb19-4551-9c34-333a729936bf
 # ╠═17a8e36a-0257-45b0-9ded-a43a85979709
 # ╠═d2d91db2-0213-4329-9d6a-524b5602e987
 # ╠═7fd1c6ad-a229-4123-bbeb-c4b55d5ffc31
 # ╠═782310a4-9d89-4332-9cad-b6ab46a24a2a
 # ╠═b44ddc15-a3e7-4282-ae23-18a163c3aad2
-# ╠═4b30ab11-03a3-4bde-bd55-1e8f737157b6
-# ╠═1ba4957e-ef24-43ed-915d-e5fe1ef4b2aa
+# ╟─4b30ab11-03a3-4bde-bd55-1e8f737157b6
+# ╟─1ba4957e-ef24-43ed-915d-e5fe1ef4b2aa
 # ╠═8064744a-796c-44a7-a2ab-d60909ecbe0d
 # ╠═40151e5b-9c13-4178-9de1-0feeb4bf31ac
 # ╠═6ad9413a-b85f-44ae-9312-0903a12016a5
-# ╠═44b90fef-44bd-4e32-958f-b743b5ed2393
-# ╠═1745d074-9876-4713-8264-74c1e45500e0
-# ╠═217521cd-80ed-4836-b3f7-7dea0504b9b7
-# ╠═9f8cc688-049c-45cb-93ed-8167569246cb
-# ╠═6231d984-cfc5-449b-8ce0-828801d75ba2
 # ╠═c55facf6-29ad-4cce-9f91-e1e053c7aa70
 # ╠═8d94edc6-042e-4932-a7ed-57d71d6f56a2
 # ╠═8bb58a9c-d947-4470-9348-f8dc6c4d3e11
@@ -2200,18 +2172,14 @@ version = "1.4.1+2"
 # ╠═b9073f63-e424-4030-acbe-29cfc4182f78
 # ╠═d592975d-cf31-4583-b40d-6e26fa2b0ec5
 # ╠═57627d35-5403-4196-8ea4-a8f5345a9bdc
-# ╠═04eeb7fa-7d67-4a57-b270-35d1c3595f35
 # ╠═0aeb4801-9f35-44d2-90f9-5342fbc7af8a
 # ╠═943beaf5-9e48-4c37-88c1-8063ab7928ca
-# ╠═5820307e-c8d8-4519-862b-389b73f7c3dc
-# ╠═96e11f75-b7f0-4562-a602-25bc5fba8122
+# ╠═fea531f7-dfff-4bd4-84ac-52b8c69c758b
+# ╠═ba42a740-7292-43ab-93b8-5f1d637cda5a
 # ╠═13d6fa16-5462-4f61-80e5-27c9090d43e2
 # ╠═41d37242-7712-4d0f-8a3b-91a18833e1a0
 # ╠═b586098f-32a1-4574-8a21-a2ef7843f91b
 # ╠═54ddac4a-978e-4527-99e1-85632e108628
 # ╠═3c62a451-a2af-4376-b615-4cac7ceb4a3a
-# ╠═f3ca0105-1903-4e8c-b743-83ae8cb8633b
-# ╠═1d87a38a-78a7-428c-9ae8-18d58e9acb88
-# ╠═bab20254-c17a-4167-b866-4187969a48ec
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
