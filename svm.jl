@@ -95,6 +95,13 @@ El objetivo de las Máquinas de Soporte Vectorial es crear un modelo de clasific
 Clasificación binaria.
 """
 
+# ╔═╡ 39859999-911e-4a27-8760-e7f6a2d9b030
+md"""
+## Hiperplano de separación entre dos clases
+
+Vamos a empezar con un conjunto de datos sencillo, en dos dimensiones, y separable mediante una recta (un hiperplano en dos dimensiones)
+"""
+
 # ╔═╡ 8064744a-796c-44a7-a2ab-d60909ecbe0d
 function evalua(x, θ, θ0)
 	return -(x*θ[1] + θ0) / θ[2]
@@ -114,7 +121,7 @@ function genera_datos(θ, θ0, muestras)
 end
 
 # ╔═╡ c55facf6-29ad-4cce-9f91-e1e053c7aa70
-datos = genera_datos([1.0,2.0], 5.0, 20)
+datos = genera_datos([0.1,2.0], 5.0, 5)
 
 # ╔═╡ 8d94edc6-042e-4932-a7ed-57d71d6f56a2
 function plot_datos(datos)
@@ -124,6 +131,411 @@ end
 
 # ╔═╡ 8bb58a9c-d947-4470-9348-f8dc6c4d3e11
 plot_datos(datos)
+
+# ╔═╡ 953e4a5d-1094-49cf-86df-736a4166ab00
+md"""
+## Hiperplano de separación entre dos clases
+
+¿Cuál es la mejor recta que separa las muestras dejando a un lado las positivas y al otro las negativas? En principio, tenemos muchas opciones.
+"""
+
+# ╔═╡ 131778f5-3927-4daf-a5f0-1e69e65bc773
+function plot_hiperplanos(datos)
+	plot_datos(datos)
+	plot!([0, 10], [-2,-2.5], showlegend=false, linewidth=2)
+	plot!([0, 10], [-2.5, -2.4], showlegend=false, linewidth=2)
+	plot!([0, 10], [-1.75, -2.75], showlegend=false, linewidth=2)
+end
+
+# ╔═╡ bf8856f1-8e20-4288-9db8-906e12088412
+plot_hiperplanos(datos)
+
+# ╔═╡ 85589b93-c3fc-417f-bfda-0d44c9d5d4c7
+md"""
+## Hiperplano de separación entre dos clases
+
+Vamos a definir como **mejor solución** aquella línea que deja un mayor **margen** entre los dos conjuntos de datos.
+"""
+
+# ╔═╡ 6fbac7ed-919b-4696-be02-9c88a7e9a3a2
+md"""
+## Hiperplano de separación entre dos clases
+
+Ya tenemos definido nuestro objetivo, encontrar el hiperplano de separación que deja el mayor margen entre las muestras de los dos conjuntos de datos.
+
+"""
+
+# ╔═╡ 69d6b42a-a8fb-4590-9c41-1a5885ffe42d
+md"""
+# Construir la solución
+"""
+
+# ╔═╡ 80ab3767-3a6f-4151-8c71-95b2290e40d0
+md"""
+## Ecuación de la recta
+Los puntos de la recta que estamos buscando cumplen la siguiente ecuación:
+
+$y(x) = \theta^T x + \theta_0 = 0$
+"""
+
+# ╔═╡ 51ae1229-3bbb-46cd-8721-70b8f93e4889
+md"""
+!!! danger "Atención"
+
+Cuidado $\theta$ no es el vector director de la recta, de hecho es un vector 
+perpendicular a la recta (*Demostración*); y $\theta_0$ no es el corte con el eje de ordenadas.
+"""
+
+# ╔═╡ c7531d9b-19b1-4940-af5a-7adec5033039
+md"""
+## Ecuación de la recta
+Sí que es interesante que veamos cómo calcular la distancia de la recta al 
+origen, que viene dada por la siguiente expresión (*Demostración*):
+
+$d = \frac{\theta^T x}{\|\theta\|} = \frac{-\theta_0}{\| \theta \|}$
+
+Dónde $x$ es cualquier punto que pertenezca a la recta.
+"""
+
+# ╔═╡ 2815c0a0-c83d-4f97-9877-7e842817d6ce
+md"""
+!!! info "Importante"
+Si multiplicamos el vector $\theta$ y el escalar $\theta_0$ por la misma 
+constante:
+
+- La dirección del vector director no cambia.
+- La distancia de la recta al origen tampoco cambia.
+
+"""
+
+# ╔═╡ 1aff9435-6ee9-4028-aea3-482a2f46c099
+md"""
+## Criterio de clasificación
+
+El siguiente paso es establecer un criterio para decidir si una muestra 
+la clasificamos como positiva o negativa.
+"""
+
+# ╔═╡ ef1817d9-3e3f-44b8-bb7c-65cce84898ee
+md"""
+## Criterio de clasificación
+La primera idea brillante es, ya que podemos ajustar $\theta$ y $\theta_0$ con 
+una constante y seguir teniendo la misma recta, lo vamos a hacer de tal modo que:
+
+Las muestras positivas cumplan:
+
+$y(x_{+}) = \theta^T x_+ + \theta_0 \ge 1$
+
+Y las negativas:
+
+$y(x_{-}) = \theta^T x_- + \theta_0 \le -1$
+
+"""
+
+# ╔═╡ b4825656-168a-44c6-952e-5f228ae248c6
+md"""
+## Criterio de clasificación
+Vamos intentar condensar ambas expresiones en una única expresión, para ello 
+definimos:
+
+$t_n = +1 \: si \: x_n: positiva$
+$t_n = -1 \: si \: x_n: negativa$
+
+Ahora podemos escribir:
+
+$t_n(y(x_n)) = t_n(\theta^T x_n + \theta_0) \ge 1 \\$
+"""
+
+# ╔═╡ 8567201c-8811-4809-b3cd-a1d6ff4ae333
+md"""
+## Criterio de clasificación
+
+O lo que es lo mismo:
+
+$\boxed{t_n(\theta^T x_n + \theta_0) - 1 \ge 0}$
+
+Donde la igualdad se cumple justo para los puntos que están en las líneas de 
+margen.
+"""
+
+# ╔═╡ 4ab666f2-078c-4414-8c77-151e38882b1f
+md"""
+## Anchura del margen
+
+La anchura del margen $a$ es (*Demostración*):
+
+$a = \frac{\theta^T}{\| \theta \|} (v_+ - v_-) = \frac{1}{\| \theta \|} 
+(\theta^T v_+ - \theta^T v_-)$
+
+
+$t_n(\theta^T x_n + \theta_0) - 1 = 0$
+
+Para un punto límete en la zona positiva:
+
+$v_+ \rightarrow 1(\theta^T v_+ + \theta_0) - 1 = 0$
+$\theta^T v_+ = 1 - \theta_0$
+
+Para un punto límite en la zona negativa:
+
+$v_- \rightarrow -1(\theta^T v_- + \theta_0) - 1 = 0$
+$\theta^T v_- = -1 - \theta_0$
+"""
+
+# ╔═╡ 009833dd-3e5d-424c-aec0-c0a353526cc1
+md"""
+## Anchura del margen
+
+Finalmente:
+
+$a = \frac{1}{\| \theta \|} [1 - \theta_0 - (-\theta_0 - 1)] = \frac{2}{\| \theta \|}$
+"""
+
+# ╔═╡ d1df1292-66d0-4a60-bbaf-e71c799e7f54
+md"""
+## Problema de optimización
+
+Resumiendo, la anchura que debemos maximizar es:
+
+$a = \frac{2}{\| \theta \|}$
+
+Pero es más interesante minimizar su inversa al cuadrado:
+
+$h = \frac{1}{2} \| \theta \|^2$
+
+Con las restricciones (una por cada elemento del conjunto):
+
+$t_n(\theta^T x_n + \theta_0) - 1 \ge 0$
+
+Que es un problema de optimización. 
+"""
+
+# ╔═╡ 54104ab5-6417-4e32-a89d-2e85852bf243
+md"""
+## Problema de optimización
+
+Para solucionarlo vamos a hacer uso de los 
+multiplicadores de Lagrange (*Ver Apéndice E de libro de Bishop*) lo que 
+implica definir la siguiente Lagrangiana (*Ejemplo*):
+
+$L(\theta, \theta_0, \alpha_n) = \frac{1}{2} \| \theta \|^2 - \sum_{n=1}^N \alpha_n [t_n(\theta^T x_n + \theta_0) - 1]$
+
+Con todos los parámetros de Lagrange $\alpha_n \ge 0$.
+
+Fíjate en que la Lagrangiana depende de $(\theta, \theta_0, \alpha_n)$, y lo 
+que conocemos son las $x_n$ y $t_n$. Es un problema de optimización difícil de 
+resolver.
+"""
+
+# ╔═╡ 1d7a822d-80f8-4c19-873d-06259663ff03
+md"""
+## Problema de optimización
+
+$L(\theta, \theta_0, \alpha_n) = \frac{1}{2} \| \theta \|^2 - \sum_{n=1}^N \alpha_n [t_n(\theta^T x_n + \theta_0) - 1]$
+"""
+
+# ╔═╡ 86588b2e-d8de-45f7-af7a-27f88a739c2b
+md"""
+!!! info "Nota"
+Los signos en la Lagrangiana son opuestos porque estamos maximizando la 
+primera expresión, pero minimizando la segunda.
+"""
+
+# ╔═╡ 5938fc64-d79d-4068-9967-60e695cb7d7b
+md"""
+## Problema de optimización
+
+El siguiente paso es encontrar los extremos de la Lagrangiana con respecto de 
+$\theta$ y $\theta_0$. Para ello, derivamos la Lagrangiana con respecto a ellos, 
+igualamos a cero y despejamos:
+
+$\frac{\partial L}{\partial \theta} = \theta - \sum_{n=1}^N \alpha_n t_n x_n = 0 
+\rightarrow \boxed{\theta = \sum_{n=1}^N \alpha_n t_n x_n}$
+$\frac{\partial L}{\partial \theta_0} = - \sum_{n=1}^N \alpha_n t_n = 0 
+\rightarrow \boxed{\sum_{n=1}^N \alpha_n t_n = 0}$
+
+Parece que ya tenemos parte del problema solucionado, pero aún no del todo, 
+porque no conocemos el valor de las $\alpha_n$ y, de momento, no tenemos una 
+expresión para calcular $\theta_0$.
+"""
+
+# ╔═╡ c4abe55a-dc53-44db-87f8-3894d8657eb2
+md"""
+## Problema de optimización
+
+La segunda idea brillante es sustituir la expresión para $\theta$ de la anterior 
+expresión en la Lagrangiana, y hacer uso de la segunda expresión, con lo que 
+la Lagrangina nos queda como (*Demostrar*):
+
+$L(\alpha_n) = -\frac{1}{2} \sum_{n=1}^N \sum_{m=1}^N \alpha_n \alpha_m t_n t_m 
+x_n^T x_m + \sum_{n=1}^N \alpha_n$
+"""
+
+# ╔═╡ d37e739b-051c-4566-a96b-d5f480f8b0e3
+md"""
+## Problema de optimización
+
+Si comparamos las dos expresiones:
+
+$L(\theta, \theta_0, \alpha_n) = \frac{1}{2} \| \theta \|^2 - \sum_{n=1}^N \alpha_n [t_n(\theta^T x_n + \theta_0) - 1]$
+
+$L(\alpha_n) = -\frac{1}{2} \sum_{n=1}^N \sum_{m=1}^N \alpha_n \alpha_m t_n t_m 
+x_n^T x_m + \sum_{n=1}^N \alpha_n$
+
+La segunda tiene menos parámetros desconocidos. De hecho, la nueva expresión de
+la Lagrangiana es un problema cuadrático de minimización que siempre tiene
+solución numérica.
+"""
+
+# ╔═╡ b76e2333-b854-414e-a293-5a3c0c12d501
+md"""
+## Problema de optimización
+
+$L(\alpha_n) = -\frac{1}{2} \sum_{n=1}^N \sum_{m=1}^N \alpha_n \alpha_m t_n t_m 
+x_n^T x_m + \sum_{n=1}^N \alpha_n$
+
+Se puede demostrar que este problema de optimización añade una nueva 
+restricción a las dos que ya tenemos, con lo que tenemos esta serie de 
+restricciones:
+
+$\alpha_n \ge 0$
+$t_n y(x_n) - 1 \ge 0$
+$\alpha_n [t_n y(x_n) - 1] = 0$
+
+La última restricción es la clave.
+"""
+
+# ╔═╡ 6be601d9-8531-4dc3-a144-109eb3404f54
+md"""
+## Problema de optimización
+
+$\alpha_n [t_n y(x_n) - 1] = 0$
+
+Para que se cumpla esta condición tenemos dos opciones:
+
+$\alpha_n = 0$
+$t_n y(x_n) - 1 = 0$
+
+La primera opción nos dice que el vector $x_n$ (dato de entrenamiento) no contribuye 
+a la solución para obtener el valor de $\theta$.
+
+$\theta = \sum_{n=1}^N \alpha_n t_n x_n$
+"""
+
+# ╔═╡ 6d1d0839-80c9-4342-8be1-160be3e13bd8
+md"""
+## Problema de optimización
+
+La segunda opción:
+
+$t_n y(x_n) - 1 = 0$
+
+Nos dice que el vector $x_n$ (dato de entrenamiento) está sobre la recta del 
+margen, y sí contribuye a la solución de $\theta$. 
+
+ $x_n$ **es un vector de soporte!!!**.
+
+Con toda esta información, ahora sí, podemos calcular el valor de $\theta_0$ 
+que lo tenemos aún pendiente.
+"""
+
+# ╔═╡ 4827551b-e68d-4014-8337-611c9063c8a8
+md"""
+## Problema de optimización
+
+Sustituyendo en la expresión de la condición que el vector esté sobre la 
+recta del margen:
+
+$t_n (\theta^T x_n + \theta_0) = 1$
+
+La expresión de $\theta$ (sumatorio sólo se extiende sobre los vectores de 
+soporte):
+
+$\theta = \sum_{x_m \in S} \alpha_m t_m x_m$
+"""
+
+# ╔═╡ 072b2b88-3b59-4c07-a6db-683b167fbbd8
+md"""
+## Problema de optimización
+
+Tenemos:
+
+$t_n \left[ \left( \sum_{x_m \in S} \alpha_m t_m x_m^T x_n \right) + \theta_0 \right] = 1$
+
+Que se puede modificar para facilitar el trabajo de los algoritmos de 
+optimización (*Bishop, 2006*).
+"""
+
+# ╔═╡ fc88a32b-743a-4871-b230-01a011eb525a
+md"""
+## Problema de optimización
+
+Si la anterior expresión la multiplicamos por $t_n$ y sumamos sobre todos los 
+vectores de soporte, podemos despejar $\theta_0$ (*Demostración*):
+
+$\theta_0 = \frac{1}{N_S} \left[ \sum_{x_n \in S} \left( t_n - 
+\sum_{x_m \in S} \alpha_m t_m x_m^T x_n \right) \right]$
+
+Que junto a:
+
+$\theta = \sum_{x_m \in S} \alpha_m t_m x_m$
+
+Resuelve el problema de clasificación.
+"""
+
+# ╔═╡ ea6d7c95-821e-4aac-89e3-d31cf49df971
+md"""
+## Problema de optimización
+
+En la solución sólo están implicadas las $x_n \in S$, que hemos encontrado 
+resolviendo un problema de optimización cuadrático, las que hemos llamado 
+vectores de soporte.
+
+Cuando tenemos que clasificar una nueva muestra, aplicamos:
+
+$y(x) = \theta^T x + \theta_0$
+
+Si $y(x) > 0$ la muestra la clasificamos como positiva.
+
+Si $y(x) <0$ la muestra la clasificamos como negativa.
+
+El algoritmo de clasificación es muy rápido.
+"""
+
+# ╔═╡ 6d5b3e7b-7b66-4b95-9702-cf1979d14c05
+md"""
+## Resumen
+Lo que buscamos es la recta (hiperplano) que separa las muestras y tiene mayor 
+margen.
+
+1. Hemos partido de la ecuación de la recta.
+1. Hemos definido el criterio de clasificación de muestra positiva o negativa. 
+1. Hemos construido la Lagrangiana $\rightarrow$ problema de optimización.
+1. En la solución que encontramos sólo participan algunos de los datos 
+dentro de todo el conjunto.
+"""
+
+# ╔═╡ bbbe0d1c-acb9-4f69-9e38-8d5b89280c03
+md"""
+## Resumen
+
+Las máquinas de soporte vectorial funcionan muy bien cuando nuestro conjunto 
+de entrenamiento contiene unos cuantos miles de muestras. Si tenemos muchas 
+muestras, el entrenamiento puede ser lento.
+"""
+
+# ╔═╡ 1cc522fb-bc85-412f-973c-110704feb331
+md"""
+## Show me the code
+
+Después de la teoría, veamos cómo utilizar la implementación de scikit-learn
+(¿Qué es eso del kernel?)
+"""
+
+# ╔═╡ 86c37218-4567-477e-83d9-0bd90086afb2
+
+
+# ╔═╡ eb6960c3-8f73-4c0a-adf6-839d0c10878c
+
 
 # ╔═╡ 643abb55-37d8-4277-a3e4-3883a85c5ee3
 SVC = @load SVC pkg=LIBSVM verbosity=0
@@ -144,22 +556,21 @@ maquina = machine(modelo, X, y)
 fit!(maquina)
 
 # ╔═╡ 2f645347-30ad-43e3-9439-b60ea0a33136
-coso = maquina.fitresult[1].SVs.X
+vectores_soporte = maquina.fitresult[1].SVs.X
 
-# ╔═╡ 41630357-71bd-4fc2-bcee-a0e95c0819a3
-scatter(coso[1,:], coso[2,:])
+# ╔═╡ edffe592-e174-41a2-b697-279d4b7eda37
+function plot_soporte(vectores_soporte)
+	scatter!(vectores_soporte[1,:], vectores_soporte[2,:], markersize=7, label="Soporte", markeralpha=0, markerstrokealpha=1, markerstrokecolor=:black)
+end
 
 # ╔═╡ e7198063-24cf-4801-b196-02683a5e4e95
-function plot_datos_soporte(datos)
+function plot_datos_soporte(datos, vectores_soporte)
 	plot_datos(datos)
-	scatter!(coso[1,:], coso[2,:], markersize=7, label="Soporte", markeralpha=0, markerstrokealpha=1, markerstrokecolor=:black)
+	plot_soporte(vectores_soporte)
 end
 
 # ╔═╡ ee2743f1-c6cb-4bec-935c-b70af7c28afe
-plot_datos_soporte(datos)
-
-# ╔═╡ 73e5056b-b779-42a2-8d49-bd6137cce00f
-Xmaquina = maquina.fitresult[1].SVs.X
+plot_datos_soporte(datos, vectores_soporte)
 
 # ╔═╡ edf85cdc-ff72-4560-8c29-c79184bfeadc
 coefs = maquina.fitresult[1].coefs
@@ -168,19 +579,19 @@ coefs = maquina.fitresult[1].coefs
 coef0 = maquina.fitresult[1].coef0
 
 # ╔═╡ aa531714-7f84-4766-8bf8-67e3105cc3f3
-θ = Xmaquina * coefs
+θ = vectores_soporte * coefs
 
 # ╔═╡ b9073f63-e424-4030-acbe-29cfc4182f78
-Xmaquina[:,1]' * Xmaquina
+vectores_soporte[:,1]' * vectores_soporte
 
 # ╔═╡ d592975d-cf31-4583-b40d-6e26fa2b0ec5
-Xmaquina[:,1]' * Xmaquina * coefs
+vectores_soporte[:,1]' * vectores_soporte * coefs
 
 # ╔═╡ 57627d35-5403-4196-8ea4-a8f5345a9bdc
-Xmaquina[:,:]' * Xmaquina * coefs
+vectores_soporte[:,:]' * vectores_soporte * coefs
 
 # ╔═╡ 0aeb4801-9f35-44d2-90f9-5342fbc7af8a
-a = sign.(coefs) - Xmaquina' * Xmaquina * coefs
+a = sign.(coefs) - vectores_soporte' * vectores_soporte * coefs
 
 # ╔═╡ 943beaf5-9e48-4c37-88c1-8063ab7928ca
 suma = sum(a)/length(a)
@@ -194,25 +605,34 @@ d = 1 / norm(θ)
 # ╔═╡ 13d6fa16-5462-4f61-80e5-27c9090d43e2
 fitted_params(maquina)
 
-# ╔═╡ 41d37242-7712-4d0f-8a3b-91a18833e1a0
-Matrix(X)[18,:]' * θ
-
-# ╔═╡ b586098f-32a1-4574-8a21-a2ef7843f91b
-θp = [-θ[2], θ[1]]
-
-# ╔═╡ 54ddac4a-978e-4527-99e1-85632e108628
-coso2 = (θ[1]*10 + 1) / -θ[2]
-
-# ╔═╡ 3916ea5b-c11e-416e-b95f-760684f0f7ad
-function plot_datos_soporte_limites(datos)
-	plot_datos_soporte(datos)
+# ╔═╡ e9bb1b66-90b7-4d2a-bd08-eeccd5b89d58
+function plot_limites(vectores_soporte)
 	plot!([0, 10], [evalua(0, [θ[1],θ[2]], suma), evalua(10, [θ[1],θ[2]], suma)], color=:black, showlegend=false)
 	plot!([0, 10], [evalua(0, [θ[1],θ[2]], suma)+d, evalua(10, [θ[1],θ[2]], suma)+d], color=:black, linestyle=:dash, showlegend=false)
 	plot!([0, 10], [evalua(0, [θ[1],θ[2]], suma)-d, evalua(10, [θ[1],θ[2]], suma)-d], color=:black, linestyle=:dash, showlegend=false)
 end
 
+# ╔═╡ 3916ea5b-c11e-416e-b95f-760684f0f7ad
+function plot_datos_soporte_limites(datos, vectores_soporte)
+	plot_datos(datos)
+	plot_soporte(vectores_soporte)
+	plot_limites(vectores_soporte)
+end
+
 # ╔═╡ e72c0f9c-7233-42da-af5c-0da3348e63fd
-plot_datos_soporte_limites(datos)
+plot_datos_soporte_limites(datos, vectores_soporte)
+
+# ╔═╡ 71103b9c-4d79-4f0e-845b-a84e8de1d063
+function plot_datos_limites(datos, vectores_soporte)
+	plot_datos(datos)
+	plot_limites(vectores_soporte)
+end
+
+# ╔═╡ f43e4aa9-29b0-4e94-8486-17c40fc385a7
+plot_datos_limites(datos, vectores_soporte)
+
+# ╔═╡ 9b1b2fd2-d2cb-44a5-8842-be320c17b3fb
+plot_datos_limites(datos, vectores_soporte)
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -2184,11 +2604,49 @@ version = "1.4.1+2"
 # ╠═b44ddc15-a3e7-4282-ae23-18a163c3aad2
 # ╟─4b30ab11-03a3-4bde-bd55-1e8f737157b6
 # ╟─1ba4957e-ef24-43ed-915d-e5fe1ef4b2aa
+# ╠═39859999-911e-4a27-8760-e7f6a2d9b030
 # ╠═8064744a-796c-44a7-a2ab-d60909ecbe0d
 # ╠═40151e5b-9c13-4178-9de1-0feeb4bf31ac
 # ╠═c55facf6-29ad-4cce-9f91-e1e053c7aa70
 # ╠═8d94edc6-042e-4932-a7ed-57d71d6f56a2
 # ╠═8bb58a9c-d947-4470-9348-f8dc6c4d3e11
+# ╠═953e4a5d-1094-49cf-86df-736a4166ab00
+# ╠═131778f5-3927-4daf-a5f0-1e69e65bc773
+# ╠═bf8856f1-8e20-4288-9db8-906e12088412
+# ╠═85589b93-c3fc-417f-bfda-0d44c9d5d4c7
+# ╠═f43e4aa9-29b0-4e94-8486-17c40fc385a7
+# ╠═6fbac7ed-919b-4696-be02-9c88a7e9a3a2
+# ╠═69d6b42a-a8fb-4590-9c41-1a5885ffe42d
+# ╠═80ab3767-3a6f-4151-8c71-95b2290e40d0
+# ╠═51ae1229-3bbb-46cd-8721-70b8f93e4889
+# ╠═c7531d9b-19b1-4940-af5a-7adec5033039
+# ╠═2815c0a0-c83d-4f97-9877-7e842817d6ce
+# ╠═1aff9435-6ee9-4028-aea3-482a2f46c099
+# ╠═9b1b2fd2-d2cb-44a5-8842-be320c17b3fb
+# ╠═ef1817d9-3e3f-44b8-bb7c-65cce84898ee
+# ╠═b4825656-168a-44c6-952e-5f228ae248c6
+# ╠═8567201c-8811-4809-b3cd-a1d6ff4ae333
+# ╠═4ab666f2-078c-4414-8c77-151e38882b1f
+# ╠═009833dd-3e5d-424c-aec0-c0a353526cc1
+# ╠═d1df1292-66d0-4a60-bbaf-e71c799e7f54
+# ╠═54104ab5-6417-4e32-a89d-2e85852bf243
+# ╠═1d7a822d-80f8-4c19-873d-06259663ff03
+# ╠═86588b2e-d8de-45f7-af7a-27f88a739c2b
+# ╠═5938fc64-d79d-4068-9967-60e695cb7d7b
+# ╠═c4abe55a-dc53-44db-87f8-3894d8657eb2
+# ╠═d37e739b-051c-4566-a96b-d5f480f8b0e3
+# ╠═b76e2333-b854-414e-a293-5a3c0c12d501
+# ╠═6be601d9-8531-4dc3-a144-109eb3404f54
+# ╠═6d1d0839-80c9-4342-8be1-160be3e13bd8
+# ╠═4827551b-e68d-4014-8337-611c9063c8a8
+# ╠═072b2b88-3b59-4c07-a6db-683b167fbbd8
+# ╠═fc88a32b-743a-4871-b230-01a011eb525a
+# ╠═ea6d7c95-821e-4aac-89e3-d31cf49df971
+# ╠═6d5b3e7b-7b66-4b95-9702-cf1979d14c05
+# ╠═bbbe0d1c-acb9-4f69-9e38-8d5b89280c03
+# ╠═1cc522fb-bc85-412f-973c-110704feb331
+# ╠═86c37218-4567-477e-83d9-0bd90086afb2
+# ╠═eb6960c3-8f73-4c0a-adf6-839d0c10878c
 # ╠═643abb55-37d8-4277-a3e4-3883a85c5ee3
 # ╠═ca98f95a-f479-43e5-bbfd-f47123ebd27d
 # ╠═cbd7ba6e-2ac2-431c-a01c-f4e8017edd33
@@ -2196,10 +2654,9 @@ version = "1.4.1+2"
 # ╠═47c61751-73d4-4954-940a-dea937e1e8d6
 # ╠═6ddba88f-ab66-469f-a5dd-68dfb97b235b
 # ╠═2f645347-30ad-43e3-9439-b60ea0a33136
-# ╠═41630357-71bd-4fc2-bcee-a0e95c0819a3
+# ╠═edffe592-e174-41a2-b697-279d4b7eda37
 # ╠═e7198063-24cf-4801-b196-02683a5e4e95
 # ╠═ee2743f1-c6cb-4bec-935c-b70af7c28afe
-# ╠═73e5056b-b779-42a2-8d49-bd6137cce00f
 # ╠═edf85cdc-ff72-4560-8c29-c79184bfeadc
 # ╠═761df5c6-4dcd-4ff2-bdc2-9b701dc9c450
 # ╠═aa531714-7f84-4766-8bf8-67e3105cc3f3
@@ -2211,10 +2668,9 @@ version = "1.4.1+2"
 # ╠═fea531f7-dfff-4bd4-84ac-52b8c69c758b
 # ╠═ba42a740-7292-43ab-93b8-5f1d637cda5a
 # ╠═13d6fa16-5462-4f61-80e5-27c9090d43e2
-# ╠═41d37242-7712-4d0f-8a3b-91a18833e1a0
-# ╠═b586098f-32a1-4574-8a21-a2ef7843f91b
-# ╠═54ddac4a-978e-4527-99e1-85632e108628
 # ╠═3916ea5b-c11e-416e-b95f-760684f0f7ad
 # ╠═e72c0f9c-7233-42da-af5c-0da3348e63fd
+# ╠═e9bb1b66-90b7-4d2a-bd08-eeccd5b89d58
+# ╠═71103b9c-4d79-4f0e-845b-a84e8de1d063
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
