@@ -24,11 +24,20 @@ using LinearAlgebra: norm
 # <link rel="stylesheet" type="text/css" href="https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/mi_estilo.css" media="screen" />
 # """
 
+# ╔═╡ e83b5f25-3fd0-4b85-8295-f1b4eafa8770
+import PlotlyBase
+
+# ╔═╡ 77c442ed-f830-4f26-901a-1ed528a67d0b
+import PlotlyKaleido
+
 # ╔═╡ 64a828bf-a426-417a-8994-7661b53e22ab
 import LIBSVM
 
 # ╔═╡ d2159870-7d0e-46a7-bda4-4e259e075906
 import MLJLIBSVMInterface
+
+# ╔═╡ f996441d-9968-4e5c-b814-25bfb0413d61
+plotly()
 
 # ╔═╡ 17a8e36a-0257-45b0-9ded-a43a85979709
 TableOfContents(title="Contenidos", depth=1)
@@ -97,20 +106,20 @@ function genera_datos(θ, θ0, muestras)
 	y = [evalua(x, θ, θ0) for x in xs]
 	positivos = y[1:muestras] + rand(muestras) .+ 1
 	negativos = y[muestras+1:2*muestras] - rand(muestras)
+	y = cat(positivos, negativos, dims=1)
 	clase = cat(repeat(["positivo"], muestras), repeat(["negativo"], muestras), dims=1)
-	return xs, cat(positivos, negativos, dims=1), clase
+	clase = coerce(clase, Multiclass)
+	datos = DataFrame(x=xs, y=y, clase=clase)
+	return datos
 end
 
-# ╔═╡ 6ad9413a-b85f-44ae-9312-0903a12016a5
-x, y, clase = genera_datos([1.0,2.0], 5.0, 20)
-
 # ╔═╡ c55facf6-29ad-4cce-9f91-e1e053c7aa70
-datos = DataFrame(x=x, y=y, clase=clase)
+datos = genera_datos([1.0,2.0], 5.0, 20)
 
 # ╔═╡ 8d94edc6-042e-4932-a7ed-57d71d6f56a2
 function plot_datos(datos)
-	scatter(datos[datos.clase.=="positivo", :x], datos[datos.clase.=="positivo", :y], label="Positivo")
-	scatter!(datos[datos.clase.=="negativo", :x], datos[datos.clase.=="negativo", :y], label="Negativo")
+	scatter(datos[datos.clase.=="positivo", :x], datos[datos.clase.=="positivo", :y], label="Positivo", color=:blue)
+	scatter!(datos[datos.clase.=="negativo", :x], datos[datos.clase.=="negativo", :y], label="Negativo", color=:red)
 end
 
 # ╔═╡ 8bb58a9c-d947-4470-9348-f8dc6c4d3e11
@@ -126,10 +135,10 @@ modelo = SVC(kernel=LIBSVM.Kernel.Linear)
 X = select(datos, [:x, :y])
 
 # ╔═╡ 581cf399-766e-42ca-9112-78f99128440e
-yy = coerce(datos.clase, Multiclass)
+y = datos.clase
 
 # ╔═╡ 47c61751-73d4-4954-940a-dea937e1e8d6
-maquina = machine(modelo, X, yy)
+maquina = machine(modelo, X, y)
 
 # ╔═╡ 6ddba88f-ab66-469f-a5dd-68dfb97b235b
 fit!(maquina)
@@ -141,11 +150,13 @@ coso = maquina.fitresult[1].SVs.X
 scatter(coso[1,:], coso[2,:])
 
 # ╔═╡ e7198063-24cf-4801-b196-02683a5e4e95
-begin
-	scatter(coso[1,:], coso[2,:], markersize=7, color=:white, label="Soporte")
-	scatter!(datos[datos.clase.=="positivo", :x], datos[datos.clase.=="positivo", :y], label="Positivo")
-	scatter!(datos[datos.clase.=="negativo", :x], datos[datos.clase.=="negativo", :y], label="Negativo")
+function plot_datos_soporte(datos)
+	plot_datos(datos)
+	scatter!(coso[1,:], coso[2,:], markersize=7, label="Soporte", markeralpha=0, markerstrokealpha=1, markerstrokecolor=:black)
 end
+
+# ╔═╡ ee2743f1-c6cb-4bec-935c-b70af7c28afe
+plot_datos_soporte(datos)
 
 # ╔═╡ 73e5056b-b779-42a2-8d49-bd6137cce00f
 Xmaquina = maquina.fitresult[1].SVs.X
@@ -192,18 +203,16 @@ Matrix(X)[18,:]' * θ
 # ╔═╡ 54ddac4a-978e-4527-99e1-85632e108628
 coso2 = (θ[1]*10 + 1) / -θ[2]
 
-# ╔═╡ 3c62a451-a2af-4376-b615-4cac7ceb4a3a
-begin
-	algo = 0
-	menosalgo = 0
-	scatter(coso[1,:], coso[2,:], markersize=7, color=:white, label="Soporte", legend=false)
-	scatter!(datos[datos.clase.=="positivo", :x], datos[datos.clase.=="positivo", :y], label="Positivo")
-	scatter!(datos[datos.clase.=="negativo", :x], datos[datos.clase.=="negativo", :y], label="Negativo")
-	# plot!([0, 10], [-1/θ[2], coso2])
-	plot!([0, 10], [evalua(0, [θ[1],θ[2]], suma), evalua(10, [θ[1],θ[2]], suma)], color=:black)
-	plot!([0, 10], [evalua(0, [θ[1],θ[2]], suma)+d, evalua(10, [θ[1],θ[2]], suma)+d], color=:black, linestyle=:dash)
-	plot!([0, 10], [evalua(0, [θ[1],θ[2]], suma)-d, evalua(10, [θ[1],θ[2]], suma)-d], color=:black, linestyle=:dash)
+# ╔═╡ 3916ea5b-c11e-416e-b95f-760684f0f7ad
+function plot_datos_soporte_limites(datos)
+	plot_datos_soporte(datos)
+	plot!([0, 10], [evalua(0, [θ[1],θ[2]], suma), evalua(10, [θ[1],θ[2]], suma)], color=:black, showlegend=false)
+	plot!([0, 10], [evalua(0, [θ[1],θ[2]], suma)+d, evalua(10, [θ[1],θ[2]], suma)+d], color=:black, linestyle=:dash, showlegend=false)
+	plot!([0, 10], [evalua(0, [θ[1],θ[2]], suma)-d, evalua(10, [θ[1],θ[2]], suma)-d], color=:black, linestyle=:dash, showlegend=false)
 end
+
+# ╔═╡ e72c0f9c-7233-42da-af5c-0da3348e63fd
+plot_datos_soporte_limites(datos)
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -213,6 +222,8 @@ LIBSVM = "b1bec4e5-fd48-53fe-b0cb-9723c09d164b"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 MLJ = "add582a8-e3ab-11e8-2d5e-e98b27df1bc7"
 MLJLIBSVMInterface = "61c7150f-6c77-4bb1-949c-13197eac2a52"
+PlotlyBase = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
+PlotlyKaleido = "f2990250-8cf9-495f-b13a-cce12b45703c"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 
@@ -221,6 +232,8 @@ DataFrames = "~1.7.0"
 LIBSVM = "~0.8.1"
 MLJ = "~0.20.7"
 MLJLIBSVMInterface = "~0.2.1"
+PlotlyBase = "~0.8.19"
+PlotlyKaleido = "~2.2.6"
 Plots = "~1.40.12"
 PlutoUI = "~0.7.61"
 """
@@ -231,7 +244,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.5"
 manifest_format = "2.0"
-project_hash = "bdec2ed8985fbf0d0b06b67ae844f23a432b879c"
+project_hash = "f0f48f53e30813d82e34f79009334225dfbe86ab"
 
 [[deps.ARFFFiles]]
 deps = ["CategoricalArrays", "Dates", "Parsers", "Tables"]
@@ -883,6 +896,12 @@ git-tree-sha1 = "49fb3cb53362ddadb4415e9b73926d6b40709e70"
 uuid = "b14d175d-62b4-44ba-8fb7-3064adc8c3ec"
 version = "0.2.4"
 
+[[deps.Kaleido_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "43032da5832754f58d14a91ffbe86d5f176acda9"
+uuid = "f7e6163d-2fa5-5f23-b69c-1db539e41963"
+version = "0.2.1+0"
+
 [[deps.KernelAbstractions]]
 deps = ["Adapt", "Atomix", "InteractiveUtils", "MacroTools", "PrecompileTools", "Requires", "StaticArrays", "UUIDs"]
 git-tree-sha1 = "80d268b2f4e396edc5ea004d1e0f569231c71e9e"
@@ -1348,6 +1367,18 @@ deps = ["ColorSchemes", "Colors", "Dates", "PrecompileTools", "Printf", "Random"
 git-tree-sha1 = "3ca9a356cd2e113c420f2c13bea19f8d3fb1cb18"
 uuid = "995b91a9-d308-5afd-9ec6-746e21dbc043"
 version = "1.4.3"
+
+[[deps.PlotlyBase]]
+deps = ["ColorSchemes", "Dates", "DelimitedFiles", "DocStringExtensions", "JSON", "LaTeXStrings", "Logging", "Parameters", "Pkg", "REPL", "Requires", "Statistics", "UUIDs"]
+git-tree-sha1 = "56baf69781fc5e61607c3e46227ab17f7040ffa2"
+uuid = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
+version = "0.8.19"
+
+[[deps.PlotlyKaleido]]
+deps = ["Artifacts", "Base64", "JSON", "Kaleido_jll"]
+git-tree-sha1 = "ba551e47d7eac212864fdfea3bd07f30202b4a5b"
+uuid = "f2990250-8cf9-495f-b13a-cce12b45703c"
+version = "2.2.6"
 
 [[deps.Plots]]
 deps = ["Base64", "Contour", "Dates", "Downloads", "FFMPEG", "FixedPointNumbers", "GR", "JLFzf", "JSON", "LaTeXStrings", "Latexify", "LinearAlgebra", "Measures", "NaNMath", "Pkg", "PlotThemes", "PlotUtils", "PrecompileTools", "Printf", "REPL", "Random", "RecipesBase", "RecipesPipeline", "Reexport", "RelocatableFolders", "Requires", "Scratch", "Showoff", "SparseArrays", "Statistics", "StatsBase", "TOML", "UUIDs", "UnicodeFun", "UnitfulLatexify", "Unzip"]
@@ -2138,11 +2169,14 @@ version = "1.4.1+2"
 # ╠═50449444-1f95-11f0-3642-89804cc4dc84
 # ╠═9420c5df-1b5c-4185-b7c1-f4c1de794b39
 # ╠═87613936-7ddb-452e-8389-09f5f6e2eaee
+# ╠═e83b5f25-3fd0-4b85-8295-f1b4eafa8770
+# ╠═77c442ed-f830-4f26-901a-1ed528a67d0b
 # ╠═a23524a7-b4a4-4bd7-aec8-e15800823dfe
 # ╠═64a828bf-a426-417a-8994-7661b53e22ab
 # ╠═d2159870-7d0e-46a7-bda4-4e259e075906
 # ╠═319a328e-96fa-4852-a766-1de322033450
 # ╠═507dba8d-bb19-4551-9c34-333a729936bf
+# ╠═f996441d-9968-4e5c-b814-25bfb0413d61
 # ╠═17a8e36a-0257-45b0-9ded-a43a85979709
 # ╠═d2d91db2-0213-4329-9d6a-524b5602e987
 # ╠═7fd1c6ad-a229-4123-bbeb-c4b55d5ffc31
@@ -2152,7 +2186,6 @@ version = "1.4.1+2"
 # ╟─1ba4957e-ef24-43ed-915d-e5fe1ef4b2aa
 # ╠═8064744a-796c-44a7-a2ab-d60909ecbe0d
 # ╠═40151e5b-9c13-4178-9de1-0feeb4bf31ac
-# ╠═6ad9413a-b85f-44ae-9312-0903a12016a5
 # ╠═c55facf6-29ad-4cce-9f91-e1e053c7aa70
 # ╠═8d94edc6-042e-4932-a7ed-57d71d6f56a2
 # ╠═8bb58a9c-d947-4470-9348-f8dc6c4d3e11
@@ -2165,6 +2198,7 @@ version = "1.4.1+2"
 # ╠═2f645347-30ad-43e3-9439-b60ea0a33136
 # ╠═41630357-71bd-4fc2-bcee-a0e95c0819a3
 # ╠═e7198063-24cf-4801-b196-02683a5e4e95
+# ╠═ee2743f1-c6cb-4bec-935c-b70af7c28afe
 # ╠═73e5056b-b779-42a2-8d49-bd6137cce00f
 # ╠═edf85cdc-ff72-4560-8c29-c79184bfeadc
 # ╠═761df5c6-4dcd-4ff2-bdc2-9b701dc9c450
@@ -2180,6 +2214,7 @@ version = "1.4.1+2"
 # ╠═41d37242-7712-4d0f-8a3b-91a18833e1a0
 # ╠═b586098f-32a1-4574-8a21-a2ef7843f91b
 # ╠═54ddac4a-978e-4527-99e1-85632e108628
-# ╠═3c62a451-a2af-4376-b615-4cac7ceb4a3a
+# ╠═3916ea5b-c11e-416e-b95f-760684f0f7ad
+# ╠═e72c0f9c-7233-42da-af5c-0da3348e63fd
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

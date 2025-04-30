@@ -808,15 +808,15 @@ md"""
 * Es importante comprobar que nuestros datos cumplen con las condiciones de normalidad e igualdad de matrices de covarianza.
 """
 
+# ╔═╡ 350afb0c-dc70-47f8-a393-ee462f01798f
+#=╠═╡
+entrenamiento, prueba = partition(adultos, 0.75, rng=3)
+  ╠═╡ =#
+
 # ╔═╡ a75fa817-478c-4c55-af3b-95cd32ff7c0e
 # ╠═╡ disabled = true
 #=╠═╡
 entrenamiento = prueba = adultos
-  ╠═╡ =#
-
-# ╔═╡ 350afb0c-dc70-47f8-a393-ee462f01798f
-#=╠═╡
-entrenamiento, prueba = partition(adultos, 0.75, rng=3)
   ╠═╡ =#
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
