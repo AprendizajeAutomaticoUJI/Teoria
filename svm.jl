@@ -826,7 +826,7 @@ function datos_circulares(muestras, separacion)
 end
 
 # ╔═╡ 5ac9e1ca-ddd9-40ef-bbc0-0b70c7bf00ff
-datos_complicados = datos_circulares(50, 0.5)
+datos_complicados = datos_circulares(25, 0.5)
 
 # ╔═╡ 73e33858-0c2f-45a5-9063-be5417f860a0
 plot_datos(datos_complicados)
