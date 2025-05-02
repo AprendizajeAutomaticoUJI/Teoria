@@ -636,17 +636,19 @@ Ya tenemos todos los ingredientes para visualizarlos:
 """
 
 # ╔═╡ e9bb1b66-90b7-4d2a-bd08-eeccd5b89d58
-function plot_limites(vectores_soporte)
-	plot!([0, 10], [evalua(0, [θ[1],θ[2]], θ0), evalua(10, [θ[1],θ[2]], θ0)], color=:black, showlegend=false)
-	plot!([0, 10], [evalua(0, [θ[1],θ[2]], θ0)+d, evalua(10, [θ[1],θ[2]], θ0)+d], color=:black, linestyle=:dash, showlegend=false)
-	plot!([0, 10], [evalua(0, [θ[1],θ[2]], θ0)-d, evalua(10, [θ[1],θ[2]], θ0)-d], color=:black, linestyle=:dash, showlegend=false)
+function plot_limites(vectores_soporte, min, max)
+	plot!([min, max], [evalua(min, [θ[1],θ[2]], θ0), evalua(max, [θ[1],θ[2]], θ0)], color=:black, showlegend=false)
+	plot!([min, max], [evalua(min, [θ[1],θ[2]], θ0)+d, evalua(max, [θ[1],θ[2]], θ0)+d], color=:black, linestyle=:dash, showlegend=false)
+	plot!([min, max], [evalua(min, [θ[1],θ[2]], θ0)-d, evalua(max, [θ[1],θ[2]], θ0)-d], color=:black, linestyle=:dash, showlegend=false)
 end
 
 # ╔═╡ 3916ea5b-c11e-416e-b95f-760684f0f7ad
 function plot_datos_soporte_limites(datos, vectores_soporte)
 	plot_datos(datos)
+	min = minimum(datos.x)
+	max = maximum(datos.x)
 	plot_soporte(vectores_soporte)
-	plot_limites(vectores_soporte)
+	plot_limites(vectores_soporte, min, max)
 end
 
 # ╔═╡ e72c0f9c-7233-42da-af5c-0da3348e63fd
@@ -655,7 +657,9 @@ plot_datos_soporte_limites(datos, vectores_soporte)
 # ╔═╡ 71103b9c-4d79-4f0e-845b-a84e8de1d063
 function plot_datos_limites(datos, vectores_soporte)
 	plot_datos(datos)
-	plot_limites(vectores_soporte)
+	min = minimum(datos.x)
+	max = maximum(datos.x)
+	plot_limites(vectores_soporte, min, max)
 end
 
 # ╔═╡ f43e4aa9-29b0-4e94-8486-17c40fc385a7
@@ -720,6 +724,69 @@ fit!(maquina_solapados)
 
 # ╔═╡ 36130a1c-6fb6-4c6f-b280-87a9c2573bda
 plot_datos_soporte_limites(solapados, maquina_solapados.fitresult[1].SVs.X)
+
+# ╔═╡ 75055e24-2f7c-41eb-a643-b4f8b23cc150
+md"""
+# El truco del kernel
+"""
+
+# ╔═╡ 18bfb1ef-db71-455a-ac0c-00fb6db43f59
+function datos_linealmente_no_separables()
+	x = coerce([-4,-3,-2,2,3,4,-1,0,1], Continuous)
+	y = repeat([0], 9)
+	y² = [e*e for e in x]
+	clase = cat(repeat(["positivo"], 6), repeat(["negativo"], 3), dims=1)
+	clase = coerce(clase, Multiclass)
+	return DataFrame(x = x, y = y, clase = clase), DataFrame(x = x, y = y², clase = clase)
+end
+
+# ╔═╡ 52934098-0e3e-46e2-bc3d-d927d5c71dae
+datos_no_separables, datos_separables = datos_linealmente_no_separables()
+
+# ╔═╡ 6aae73b0-9f59-422a-a7b2-9d2c97297229
+md"""
+## Problemas linealmente no separable
+
+Observa el siguiente conjunto de datos:
+"""
+
+# ╔═╡ 79d9dfc6-9f8e-4fe9-953b-b11de1232adc
+plot_datos(datos_no_separables)
+
+# ╔═╡ 263ebdd6-8461-4207-8fdd-4bca929edbd1
+md"""
+Fíjate que cada muestra sólo tiene valor para una característica y la 
+etiqueta de la clase.
+"""
+
+# ╔═╡ e1274616-d152-4b2e-9f71-c2cdc4f3cc1f
+md"""
+## Problemas linealmente no separables
+
+Ahora, vamos a hacer un truco aumentando el número de características de cada 
+muestra $(x) \rightarrow (x, x^2)$:
+"""
+
+# ╔═╡ 56c22652-b91c-4f9f-b814-5144ff3c80ec
+plot_datos(datos_separables)
+
+# ╔═╡ c28301a5-b989-4448-8c5f-96d4164c35ba
+md"""
+## Problemas linealmente no separables
+
+Ahora el problema sí que es linealmente separable:
+"""
+
+# ╔═╡ bfa971c4-5352-40a6-92fd-eb0d8a0ac766
+maquina_separable = machine(SVC(kernel=LIBSVM.Kernel.Linear), select(datos_separables, [:x, :y]), datos_separables.clase) |> fit!
+
+# ╔═╡ 7c46edc6-cb4d-48cb-a0fc-bfa932a19b88
+plot_datos_soporte_limites(datos_separables, maquina_separable.fitresult[1].SVs.X)
+
+# ╔═╡ 95f79035-684b-460c-a834-c837305b58e8
+md"""
+Hola
+"""
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -2770,5 +2837,17 @@ version = "1.4.1+2"
 # ╠═afc5cf1a-5bd4-4b68-8b77-0b83fc53f441
 # ╠═0fb4d386-44a8-4092-bf77-a729e857609c
 # ╠═36130a1c-6fb6-4c6f-b280-87a9c2573bda
+# ╠═75055e24-2f7c-41eb-a643-b4f8b23cc150
+# ╠═18bfb1ef-db71-455a-ac0c-00fb6db43f59
+# ╠═52934098-0e3e-46e2-bc3d-d927d5c71dae
+# ╠═6aae73b0-9f59-422a-a7b2-9d2c97297229
+# ╠═79d9dfc6-9f8e-4fe9-953b-b11de1232adc
+# ╠═263ebdd6-8461-4207-8fdd-4bca929edbd1
+# ╠═e1274616-d152-4b2e-9f71-c2cdc4f3cc1f
+# ╠═56c22652-b91c-4f9f-b814-5144ff3c80ec
+# ╠═c28301a5-b989-4448-8c5f-96d4164c35ba
+# ╠═bfa971c4-5352-40a6-92fd-eb0d8a0ac766
+# ╠═7c46edc6-cb4d-48cb-a0fc-bfa932a19b88
+# ╠═95f79035-684b-460c-a834-c837305b58e8
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
