@@ -628,7 +628,7 @@ La mitad del tamaño del margen es:
 """
 
 # ╔═╡ fea531f7-dfff-4bd4-84ac-52b8c69c758b
-d = 1 / norm(θ)
+# d = 1 / norm(θ)
 
 # ╔═╡ d72b00e7-7682-4183-8b8d-49889143616d
 md"""
@@ -636,23 +636,24 @@ Ya tenemos todos los ingredientes para visualizarlos:
 """
 
 # ╔═╡ e9bb1b66-90b7-4d2a-bd08-eeccd5b89d58
-function plot_limites(vectores_soporte, min, max)
+function plot_limites(vectores_soporte, min, max, θ, θ0)
+	d = 1 / norm(θ)
 	plot!([min, max], [evalua(min, [θ[1],θ[2]], θ0), evalua(max, [θ[1],θ[2]], θ0)], color=:black, showlegend=false)
 	plot!([min, max], [evalua(min, [θ[1],θ[2]], θ0)+d, evalua(max, [θ[1],θ[2]], θ0)+d], color=:black, linestyle=:dash, showlegend=false)
 	plot!([min, max], [evalua(min, [θ[1],θ[2]], θ0)-d, evalua(max, [θ[1],θ[2]], θ0)-d], color=:black, linestyle=:dash, showlegend=false)
 end
 
 # ╔═╡ 3916ea5b-c11e-416e-b95f-760684f0f7ad
-function plot_datos_soporte_limites(datos, vectores_soporte)
+function plot_datos_soporte_limites(datos, vectores_soporte, θ, θ0)
 	plot_datos(datos)
 	min = minimum(datos.x)
 	max = maximum(datos.x)
 	plot_soporte(vectores_soporte)
-	plot_limites(vectores_soporte, min, max)
+	plot_limites(vectores_soporte, min, max, θ, θ0)
 end
 
 # ╔═╡ e72c0f9c-7233-42da-af5c-0da3348e63fd
-plot_datos_soporte_limites(datos, vectores_soporte)
+plot_datos_soporte_limites(datos, vectores_soporte, θ, θ0)
 
 # ╔═╡ 71103b9c-4d79-4f0e-845b-a84e8de1d063
 function plot_datos_limites(datos, vectores_soporte)
@@ -723,7 +724,7 @@ maquina_solapados = machine(SVC(kernel=LIBSVM.Kernel.Linear), select(solapados, 
 fit!(maquina_solapados)
 
 # ╔═╡ 36130a1c-6fb6-4c6f-b280-87a9c2573bda
-plot_datos_soporte_limites(solapados, maquina_solapados.fitresult[1].SVs.X)
+plot_datos_soporte_limites(solapados, maquina_solapados.fitresult[1].SVs.X, θ, θ0)
 
 # ╔═╡ 75055e24-2f7c-41eb-a643-b4f8b23cc150
 md"""
@@ -780,8 +781,21 @@ Ahora el problema sí que es linealmente separable:
 # ╔═╡ bfa971c4-5352-40a6-92fd-eb0d8a0ac766
 maquina_separable = machine(SVC(kernel=LIBSVM.Kernel.Linear), select(datos_separables, [:x, :y]), datos_separables.clase) |> fit!
 
+# ╔═╡ 9d9a7d17-e611-4405-bfc5-c1d11ef99622
+function calcula_θ(maquina)
+	vectores_soporte = maquina.fitresult[1].SVs.X
+	coeficientes = maquina.fitresult[1].coefs
+	θ = vectores_soporte * coeficientes
+	θ0s = sign.(coeficientes) - vectores_soporte' * vectores_soporte * coeficientes
+	θ0 = sum(θ0s) / length(θ0s)
+	return θ, θ0
+end
+
+# ╔═╡ 8c21e423-4d94-49d4-befe-060bebd9db13
+θ_separable, θ0_separable = calcula_θ(maquina_separable)
+
 # ╔═╡ 7c46edc6-cb4d-48cb-a0fc-bfa932a19b88
-plot_datos_soporte_limites(datos_separables, maquina_separable.fitresult[1].SVs.X)
+plot_datos_soporte_limites(datos_separables, maquina_separable.fitresult[1].SVs.X, θ_separable, θ0_separable)
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -2842,6 +2856,8 @@ version = "1.4.1+2"
 # ╠═56c22652-b91c-4f9f-b814-5144ff3c80ec
 # ╠═c28301a5-b989-4448-8c5f-96d4164c35ba
 # ╠═bfa971c4-5352-40a6-92fd-eb0d8a0ac766
+# ╠═9d9a7d17-e611-4405-bfc5-c1d11ef99622
+# ╠═8c21e423-4d94-49d4-befe-060bebd9db13
 # ╠═7c46edc6-cb4d-48cb-a0fc-bfa932a19b88
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
