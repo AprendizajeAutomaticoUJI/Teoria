@@ -794,6 +794,52 @@ vectores_seperable, θ_separable, θ0_separable = calcula_vectores_θ(maquina_se
 # ╔═╡ 7c46edc6-cb4d-48cb-a0fc-bfa932a19b88
 plot_datos_soporte_limites(datos_separables, vectores_seperable, θ_separable, θ0_separable)
 
+# ╔═╡ d4c709aa-7a89-4250-bd83-4b0601428d5a
+md"""
+Hemos ampliado el número de características en el conjunto de datos, y ahora el conjunto es separable.
+"""
+
+# ╔═╡ c729f381-b810-459c-8b16-ff88852f1e8d
+md"""
+## Problemas linealmente no separables
+
+Vamos a ver un ejemplo más complejo:
+"""
+
+# ╔═╡ f1c240f7-ef5d-4296-923b-0243735112ba
+function datos_circulares(muestras, separacion)
+	ϕ = 2π * rand(2*muestras)
+	x = cos.(ϕ)
+	y = sin.(ϕ)
+
+	x_positivas = [2 * d + sign(d) * separacion * rand() for d in x[1:muestras]]
+	x_negativas = [0.5 * d + sign(d) * separacion * rand() for d in x[muestras+1:2*muestras]]
+	y_positivas = [2 * d + sign(d) * separacion *rand() for d in y[1:muestras]]
+	y_negativas = [0.5 * d + sign(d) * separacion * rand() for d in y[muestras+1:2*muestras]]
+	x = cat(x_positivas, x_negativas, dims=1)
+	y = cat(y_positivas, y_negativas, dims=1)
+	clase = cat(repeat(["positivo"], muestras), repeat(["negativo"], muestras), dims=1)
+	clase = coerce(clase, Multiclass)
+	datos = DataFrame(x=x, y=y, clase=clase)
+	
+	return datos
+end
+
+# ╔═╡ 5ac9e1ca-ddd9-40ef-bbc0-0b70c7bf00ff
+datos_complicados = datos_circulares(50, 0.5)
+
+# ╔═╡ 73e33858-0c2f-45a5-9063-be5417f860a0
+plot_datos(datos_complicados)
+
+# ╔═╡ 5def91d4-b9ef-4aa6-b0eb-d2b7c4ef6b86
+maquina_complicada = machine(SVC(kernel=LIBSVM.Kernel.RadialBasis), select(datos_complicados, [:x, :y]), datos_complicados.clase) |> fit!
+
+# ╔═╡ 53b5d2f7-2cfd-4ec3-b2c9-f9d8af30718e
+ŷ = predict(maquina_complicada, select(datos_complicados, [:x, :y]))
+
+# ╔═╡ d918ad69-de3f-4009-8527-e601368e030b
+misclassification_rate(ŷ, datos_complicados.clase)
+
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
@@ -2854,5 +2900,13 @@ version = "1.4.1+2"
 # ╠═9d9a7d17-e611-4405-bfc5-c1d11ef99622
 # ╠═8c21e423-4d94-49d4-befe-060bebd9db13
 # ╠═7c46edc6-cb4d-48cb-a0fc-bfa932a19b88
+# ╠═d4c709aa-7a89-4250-bd83-4b0601428d5a
+# ╠═c729f381-b810-459c-8b16-ff88852f1e8d
+# ╠═f1c240f7-ef5d-4296-923b-0243735112ba
+# ╠═5ac9e1ca-ddd9-40ef-bbc0-0b70c7bf00ff
+# ╠═73e33858-0c2f-45a5-9063-be5417f860a0
+# ╠═5def91d4-b9ef-4aa6-b0eb-d2b7c4ef6b86
+# ╠═53b5d2f7-2cfd-4ec3-b2c9-f9d8af30718e
+# ╠═d918ad69-de3f-4009-8527-e601368e030b
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
