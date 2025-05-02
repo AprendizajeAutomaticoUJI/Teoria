@@ -527,21 +527,27 @@ muestras, el entrenamiento puede ser lento.
 md"""
 ## Show me the code
 
-Después de la teoría, veamos cómo utilizar la implementación de scikit-learn
-(¿Qué es eso del kernel?)
+Después de la teoría, veamos cómo utilizar la implementación de MLJ
+(¿Qué es eso del kernel?).
+
+Primero cargamos la estructura para crear un SVM:
 """
-
-# ╔═╡ 86c37218-4567-477e-83d9-0bd90086afb2
-
-
-# ╔═╡ eb6960c3-8f73-4c0a-adf6-839d0c10878c
-
 
 # ╔═╡ 643abb55-37d8-4277-a3e4-3883a85c5ee3
 SVC = @load SVC pkg=LIBSVM verbosity=0
 
+# ╔═╡ 02be1603-d7bb-44bb-a2a6-371e417c046d
+md"""
+Una vez cargada, la instanciamos indicando que queremos usar un kernell lineal:
+"""
+
 # ╔═╡ ca98f95a-f479-43e5-bbfd-f47123ebd27d
 modelo = SVC(kernel=LIBSVM.Kernel.Linear)
+
+# ╔═╡ f3a85143-8ca8-4372-8b47-4944f17be226
+md"""
+Ahora definimos los datos:
+"""
 
 # ╔═╡ cbd7ba6e-2ac2-431c-a01c-f4e8017edd33
 X = select(datos, [:x, :y])
@@ -549,11 +555,26 @@ X = select(datos, [:x, :y])
 # ╔═╡ 581cf399-766e-42ca-9112-78f99128440e
 y = datos.clase
 
+# ╔═╡ 537d3854-87c8-439e-9f66-643a44a91a3b
+md"""
+Finalmente, creamos la maquina que contiene el modelo y los datos; esto es propio de MLJ, para que el trabajo con cualquier modelo de ML se construya y entrene siguiendo el mismo procedimiento.
+"""
+
 # ╔═╡ 47c61751-73d4-4954-940a-dea937e1e8d6
 maquina = machine(modelo, X, y)
 
+# ╔═╡ 139b5358-8313-4613-b095-72c6361ebc16
+md"""
+Ahora ya podemos entrenar la máquina:
+"""
+
 # ╔═╡ 6ddba88f-ab66-469f-a5dd-68dfb97b235b
 fit!(maquina)
+
+# ╔═╡ eff50047-8b7b-4170-8ff5-f6eec94e45fd
+md"""
+Una vez entrenada, podemos ver cuales son los vectores de soporte que ha encontrado, y los podemos mostrar en una gráfica:
+"""
 
 # ╔═╡ 2f645347-30ad-43e3-9439-b60ea0a33136
 vectores_soporte = maquina.fitresult[1].SVs.X
@@ -572,44 +593,53 @@ end
 # ╔═╡ ee2743f1-c6cb-4bec-935c-b70af7c28afe
 plot_datos_soporte(datos, vectores_soporte)
 
+# ╔═╡ f3bb92ad-27e8-4b58-a6dd-b4eb67c64b05
+md"""
+Los coeficientes encontrados son el producto de $\alpha_m t_m$ de la ecuación:
+
+$\theta = \sum_{x_m \in S} \alpha_m t_m x_m$
+"""
+
 # ╔═╡ edf85cdc-ff72-4560-8c29-c79184bfeadc
 coefs = maquina.fitresult[1].coefs
 
-# ╔═╡ 761df5c6-4dcd-4ff2-bdc2-9b701dc9c450
-coef0 = maquina.fitresult[1].coef0
+# ╔═╡ aacb9351-7d2e-4515-9f7d-f107c461676c
+md"""
+Por lo tanto, $\theta$ la podemos calcular como el producto:
+"""
 
 # ╔═╡ aa531714-7f84-4766-8bf8-67e3105cc3f3
 θ = vectores_soporte * coefs
 
-# ╔═╡ b9073f63-e424-4030-acbe-29cfc4182f78
-vectores_soporte[:,1]' * vectores_soporte
-
-# ╔═╡ d592975d-cf31-4583-b40d-6e26fa2b0ec5
-vectores_soporte[:,1]' * vectores_soporte * coefs
-
-# ╔═╡ 57627d35-5403-4196-8ea4-a8f5345a9bdc
-vectores_soporte[:,:]' * vectores_soporte * coefs
+# ╔═╡ 1fc57d4e-e3c8-4cb9-b296-a4e719841cac
+md"""
+Y $\theta_0$ la podemos calcular como:
+"""
 
 # ╔═╡ 0aeb4801-9f35-44d2-90f9-5342fbc7af8a
-a = sign.(coefs) - vectores_soporte' * vectores_soporte * coefs
+θ0s = sign.(coefs) - vectores_soporte' * vectores_soporte * coefs
 
-# ╔═╡ 943beaf5-9e48-4c37-88c1-8063ab7928ca
-suma = sum(a)/length(a)
+# ╔═╡ eda3131e-5d03-45de-8530-f757af210450
+θ0 = sum(θ0s) / length(θ0s)
+
+# ╔═╡ 71df9d03-14fb-4200-9090-0f67909b0f1a
+md"""
+La mitad del tamaño del margen es:
+"""
 
 # ╔═╡ fea531f7-dfff-4bd4-84ac-52b8c69c758b
 d = 1 / norm(θ)
 
-# ╔═╡ ba42a740-7292-43ab-93b8-5f1d637cda5a
-1 / sqrt(5)
-
-# ╔═╡ 13d6fa16-5462-4f61-80e5-27c9090d43e2
-fitted_params(maquina)
+# ╔═╡ d72b00e7-7682-4183-8b8d-49889143616d
+md"""
+Ya tenemos todos los ingredientes para visualizarlos:
+"""
 
 # ╔═╡ e9bb1b66-90b7-4d2a-bd08-eeccd5b89d58
 function plot_limites(vectores_soporte)
-	plot!([0, 10], [evalua(0, [θ[1],θ[2]], suma), evalua(10, [θ[1],θ[2]], suma)], color=:black, showlegend=false)
-	plot!([0, 10], [evalua(0, [θ[1],θ[2]], suma)+d, evalua(10, [θ[1],θ[2]], suma)+d], color=:black, linestyle=:dash, showlegend=false)
-	plot!([0, 10], [evalua(0, [θ[1],θ[2]], suma)-d, evalua(10, [θ[1],θ[2]], suma)-d], color=:black, linestyle=:dash, showlegend=false)
+	plot!([0, 10], [evalua(0, [θ[1],θ[2]], θ0), evalua(10, [θ[1],θ[2]], θ0)], color=:black, showlegend=false)
+	plot!([0, 10], [evalua(0, [θ[1],θ[2]], θ0)+d, evalua(10, [θ[1],θ[2]], θ0)+d], color=:black, linestyle=:dash, showlegend=false)
+	plot!([0, 10], [evalua(0, [θ[1],θ[2]], θ0)-d, evalua(10, [θ[1],θ[2]], θ0)-d], color=:black, linestyle=:dash, showlegend=false)
 end
 
 # ╔═╡ 3916ea5b-c11e-416e-b95f-760684f0f7ad
@@ -2645,30 +2675,32 @@ version = "1.4.1+2"
 # ╠═6d5b3e7b-7b66-4b95-9702-cf1979d14c05
 # ╠═bbbe0d1c-acb9-4f69-9e38-8d5b89280c03
 # ╠═1cc522fb-bc85-412f-973c-110704feb331
-# ╠═86c37218-4567-477e-83d9-0bd90086afb2
-# ╠═eb6960c3-8f73-4c0a-adf6-839d0c10878c
 # ╠═643abb55-37d8-4277-a3e4-3883a85c5ee3
+# ╠═02be1603-d7bb-44bb-a2a6-371e417c046d
 # ╠═ca98f95a-f479-43e5-bbfd-f47123ebd27d
+# ╠═f3a85143-8ca8-4372-8b47-4944f17be226
 # ╠═cbd7ba6e-2ac2-431c-a01c-f4e8017edd33
 # ╠═581cf399-766e-42ca-9112-78f99128440e
+# ╠═537d3854-87c8-439e-9f66-643a44a91a3b
 # ╠═47c61751-73d4-4954-940a-dea937e1e8d6
+# ╠═139b5358-8313-4613-b095-72c6361ebc16
 # ╠═6ddba88f-ab66-469f-a5dd-68dfb97b235b
+# ╠═eff50047-8b7b-4170-8ff5-f6eec94e45fd
 # ╠═2f645347-30ad-43e3-9439-b60ea0a33136
 # ╠═edffe592-e174-41a2-b697-279d4b7eda37
 # ╠═e7198063-24cf-4801-b196-02683a5e4e95
 # ╠═ee2743f1-c6cb-4bec-935c-b70af7c28afe
+# ╠═f3bb92ad-27e8-4b58-a6dd-b4eb67c64b05
 # ╠═edf85cdc-ff72-4560-8c29-c79184bfeadc
-# ╠═761df5c6-4dcd-4ff2-bdc2-9b701dc9c450
+# ╠═aacb9351-7d2e-4515-9f7d-f107c461676c
 # ╠═aa531714-7f84-4766-8bf8-67e3105cc3f3
-# ╠═b9073f63-e424-4030-acbe-29cfc4182f78
-# ╠═d592975d-cf31-4583-b40d-6e26fa2b0ec5
-# ╠═57627d35-5403-4196-8ea4-a8f5345a9bdc
+# ╠═1fc57d4e-e3c8-4cb9-b296-a4e719841cac
 # ╠═0aeb4801-9f35-44d2-90f9-5342fbc7af8a
-# ╠═943beaf5-9e48-4c37-88c1-8063ab7928ca
+# ╠═eda3131e-5d03-45de-8530-f757af210450
+# ╠═71df9d03-14fb-4200-9090-0f67909b0f1a
 # ╠═fea531f7-dfff-4bd4-84ac-52b8c69c758b
-# ╠═ba42a740-7292-43ab-93b8-5f1d637cda5a
-# ╠═13d6fa16-5462-4f61-80e5-27c9090d43e2
 # ╠═3916ea5b-c11e-416e-b95f-760684f0f7ad
+# ╠═d72b00e7-7682-4183-8b8d-49889143616d
 # ╠═e72c0f9c-7233-42da-af5c-0da3348e63fd
 # ╠═e9bb1b66-90b7-4d2a-bd08-eeccd5b89d58
 # ╠═71103b9c-4d79-4f0e-845b-a84e8de1d063
