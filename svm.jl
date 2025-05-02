@@ -783,11 +783,6 @@ maquina_separable = machine(SVC(kernel=LIBSVM.Kernel.Linear), select(datos_separ
 # ╔═╡ 7c46edc6-cb4d-48cb-a0fc-bfa932a19b88
 plot_datos_soporte_limites(datos_separables, maquina_separable.fitresult[1].SVs.X)
 
-# ╔═╡ 95f79035-684b-460c-a834-c837305b58e8
-md"""
-Hola
-"""
-
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
@@ -2848,6 +2843,5 @@ version = "1.4.1+2"
 # ╠═c28301a5-b989-4448-8c5f-96d4164c35ba
 # ╠═bfa971c4-5352-40a6-92fd-eb0d8a0ac766
 # ╠═7c46edc6-cb4d-48cb-a0fc-bfa932a19b88
-# ╠═95f79035-684b-460c-a834-c837305b58e8
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
