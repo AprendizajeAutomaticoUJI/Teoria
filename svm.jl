@@ -840,6 +840,26 @@ maquina_complicada = machine(SVC(kernel=LIBSVM.Kernel.RadialBasis), select(datos
 # ╔═╡ d918ad69-de3f-4009-8527-e601368e030b
 misclassification_rate(ŷ, datos_complicados.clase)
 
+# ╔═╡ c0ded5f0-d008-416d-95db-9a6b60f24f13
+function clase(x,y)
+	ŷ = predict(maquina_complicada, Matrix([x y]))
+	if categorical(["positivo"]) == ŷ
+		return 1
+	else
+		return 2
+	end
+end
+
+# ╔═╡ 252f7a84-84df-45ad-be70-f2f1d0822dee
+r = -3:0.02:3
+
+# ╔═╡ 4a4b5991-1e17-4223-9ce7-fc9cbb8ccd9c
+begin
+	plot_datos(datos_complicados)
+	plot_datos_soporte(datos_complicados, maquina_complicada.fitresult[1].SVs.X)
+	contour!(r, r, clase, f=true, nlev=2, alpha=0.3)
+end
+
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
@@ -2908,5 +2928,8 @@ version = "1.4.1+2"
 # ╠═5def91d4-b9ef-4aa6-b0eb-d2b7c4ef6b86
 # ╠═53b5d2f7-2cfd-4ec3-b2c9-f9d8af30718e
 # ╠═d918ad69-de3f-4009-8527-e601368e030b
+# ╠═c0ded5f0-d008-416d-95db-9a6b60f24f13
+# ╠═252f7a84-84df-45ad-be70-f2f1d0822dee
+# ╠═4a4b5991-1e17-4223-9ce7-fc9cbb8ccd9c
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
