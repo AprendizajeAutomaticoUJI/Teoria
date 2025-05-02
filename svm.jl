@@ -664,6 +664,63 @@ plot_datos_limites(datos, vectores_soporte)
 # ╔═╡ 9b1b2fd2-d2cb-44a5-8842-be320c17b3fb
 plot_datos_limites(datos, vectores_soporte)
 
+# ╔═╡ 4c8f525a-ca10-4854-a55a-8c620a21f9e8
+md"""
+# Muestras solapadas
+"""
+
+# ╔═╡ 64859989-d320-44d2-97da-4c08f75e17c2
+md"""
+## Muestras solapadas
+
+Antes de pasar a ver qué es el kernel, vamos a analizar el caso en el que las 
+muestras están solapadas, están en la región de la clase contraria.
+"""
+
+# ╔═╡ 4fa4e2da-bdd8-4337-bcd8-568f0c546079
+function datos_solapados(datos, θ, θ0)
+	copia = copy(datos)
+	xs = 10 * rand(2)
+	y = [evalua(x, θ, θ0) for x in xs]
+	positivo = y[1] + rand() .+ 1
+	negativo = y[2] - rand()
+	push!(copia, [xs[1], positivo, "negativo"])
+	push!(copia, [xs[2], negativo, "positivo"])
+	return copia
+end
+
+# ╔═╡ 74279119-259e-4527-a6eb-bc49d7d656c9
+solapados = datos_solapados(datos, [0.1,2.0], 5.0)
+
+# ╔═╡ 18dab33a-0097-45dd-bc64-e279a2f55a9d
+plot_datos(solapados)
+
+# ╔═╡ 4949384c-5eb4-4497-82b7-d5a075613fc4
+md"""
+## Muestras solapadas
+
+No vamos a entrar en el detalle de la demostración (*Bishop 2006*).
+
+La cantidad (relacionado con la distancia) que esta vez debemos minimizar es:
+
+$C \sum_{n=1}^N \xi_n+ \frac{1}{2} \| \theta \|^2$
+
+1.  $\xi_n = 1$ si $x_n$ está sobre la recta.
+1.  $\xi_n = 0$ si $x_n$ está sobre el margen o más allá.
+1.  $\xi_n < 1$ si el punto está entre el margen y la recta, lado correcto.
+1.  $\xi_n > 1$ si el punto está entre el margen y la recta, lado incorrecto.
+1.  $C$ es un parámetro de regularización.
+"""
+
+# ╔═╡ afc5cf1a-5bd4-4b68-8b77-0b83fc53f441
+maquina_solapados = machine(SVC(kernel=LIBSVM.Kernel.Linear), select(solapados, [:x, :y]), solapados.clase)
+
+# ╔═╡ 0fb4d386-44a8-4092-bf77-a729e857609c
+fit!(maquina_solapados)
+
+# ╔═╡ 36130a1c-6fb6-4c6f-b280-87a9c2573bda
+plot_datos_soporte_limites(solapados, maquina_solapados.fitresult[1].SVs.X)
+
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
@@ -2704,5 +2761,14 @@ version = "1.4.1+2"
 # ╠═e72c0f9c-7233-42da-af5c-0da3348e63fd
 # ╠═e9bb1b66-90b7-4d2a-bd08-eeccd5b89d58
 # ╠═71103b9c-4d79-4f0e-845b-a84e8de1d063
+# ╠═4c8f525a-ca10-4854-a55a-8c620a21f9e8
+# ╠═64859989-d320-44d2-97da-4c08f75e17c2
+# ╠═4fa4e2da-bdd8-4337-bcd8-568f0c546079
+# ╠═74279119-259e-4527-a6eb-bc49d7d656c9
+# ╠═18dab33a-0097-45dd-bc64-e279a2f55a9d
+# ╠═4949384c-5eb4-4497-82b7-d5a075613fc4
+# ╠═afc5cf1a-5bd4-4b68-8b77-0b83fc53f441
+# ╠═0fb4d386-44a8-4092-bf77-a729e857609c
+# ╠═36130a1c-6fb6-4c6f-b280-87a9c2573bda
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
