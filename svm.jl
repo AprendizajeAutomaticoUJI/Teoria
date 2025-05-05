@@ -829,16 +829,202 @@ end
 datos_complicados = datos_circulares(25, 0.5)
 
 # ╔═╡ 73e33858-0c2f-45a5-9063-be5417f860a0
-plot_datos(datos_complicados)
+function plot_datos_complicados(datos)
+	plot_datos(datos)
+	plot!(size=(400,400))
+end
+
+# ╔═╡ 69168a15-aa7a-4951-8d47-bca2fce8b8bd
+plot_datos_complicados(datos_complicados)
+
+# ╔═╡ ac224512-fe67-44fc-bd0d-e0875a1a621e
+md"""
+Claramente, no es linealmente separable.
+"""
+
+# ╔═╡ 92004858-7f72-41ee-affa-645f63be89c2
+md"""
+## Problemas linealmente no separables
+
+Para cada punto $p = (p_1,p_2)$ vamos a realizar la siguiente transformación:
+
+$\phi: \mathbb{R^2} \rightarrow \mathbb{R^3}$
+$(p_1, p_2) \rightarrow (p_1^2, p_2^2, \sqrt{2}p_1 p_2)$
+
+Ahora sí que podemos separar las muestras con un hiperplano:
+"""
+
+# ╔═╡ 68cbe021-7e17-48bb-875c-d938c797ecf4
+function visualizacion3d(datos)
+	positivos = datos[datos.clase .== "positivo", :]
+	negativos = datos[datos.clase .== "negativo", :]
+	x² = positivos.x .* positivos.x
+	y² = positivos.y .* positivos.y
+	xy = sqrt(2) .* positivos.x .* positivos.y
+	scatter(x², y², xy, label="Positivos")
+	x² = negativos.x .* negativos.x
+	y² = negativos.y .* negativos.y
+	xy = sqrt(2) .* negativos.x .* negativos.y
+	scatter!(x², y², xy, label="Negativos")
+end
+
+# ╔═╡ dc253228-bc9b-4f3b-9e32-e425525d1f2b
+visualizacion3d(datos_complicados)
+
+# ╔═╡ 51855f1c-4e7b-45a3-8de5-d3a6308f6984
+md"""
+## De nuevo la Lagrangiana
+
+Por otro lado, esta es la lagrangiana que hemos minimizado:
+
+$L(\alpha_n) = -\frac{1}{2} \sum_{n=1}^N \sum_{m=1}^N \alpha_n \alpha_m t_n t_m 
+x_n^T x_m + \sum_{n=1}^N \alpha_n$
+
+El punto importante es que aparecen términos del producto escalar de dos 
+puntos del conjunto de entrenamiento $x_n^T, x_m$, con:
+
+$x_n, x_m \in \mathbb{R^D}$
+
+Donde $D$ es la dimensión del espacio.
+"""
+
+# ╔═╡ 4678c32a-3c64-459d-bebf-d1bfd345137b
+md"""
+## De nuevo la Lagrangiana
+
+Quizás, la lagrangiana no se pueda minimizar en un espacio de dimensión $D$, 
+pero sí se puede minimizar en un espacio de dimensión superior:
+
+$\phi: \mathbb{R^D} \rightarrow \mathbb{R^E}$
+$x \in \mathbb{R^D} \rightarrow \phi(x) \in \mathbb{R^E}$
+
+Con $E > D$.
+
+$L(\alpha_n) = -\frac{1}{2} \sum_{n=1}^N \sum_{m=1}^N \alpha_n \alpha_m t_n t_m 
+\phi(x_n^T) \phi(x_m) + \sum_{n=1}^N \alpha_n$
+"""
+
+# ╔═╡ 0e7bf41b-3935-4f0c-a27e-a8cf17ab51f6
+md"""
+## El truco del kernel
+
+El punto importe es el producto de los vectores transformados:
+
+$\phi(x_n^T) \phi(x_m)$
+
+Puede ocurrir que al transformar los vectores de partida lleguemos a un 
+espacio con muchas más dimensiones que el original, y el producto de los 
+vectores transformados sea impracticable (Ej: el kernel gaussiano transforma 
+un vector de dimensión n a un espacio de infinitas dimensiones).
+"""
+
+# ╔═╡ 101a42d9-b3cf-48e8-b6a9-a66cdcb25937
+md"""
+## El truco del kernel
+El truco consiste en elegir una transformación $\phi(\cdot)$ de tal modo que 
+cuando tenga que hacer el producto escalar $\phi(x_n^T) \phi(x_m)$ no tenga 
+que hacer las transformaciones $\phi(\cdot)$ de cada vector porque sé como 
+calcular ese producto sin tener que hacerlas.
+
+Volvamos al ejemplo inicial:
+
+$\phi: \mathbb{R^2} \rightarrow \mathbb{R^3}$
+$x = (x_1, x_2) \rightarrow \phi(x) = (x_1^2, x_2^2, \sqrt{2}x_1 x_2)$
+$x^{\prime} = (x_1^{\prime}, x_2^{\prime}) \rightarrow \phi(x^{\prime}) = 
+(x_1^{\prime 2}, x_2^{\prime 2}, \sqrt{2}x_1^{\prime} x_2^{\prime})$
+"""
+
+# ╔═╡ 3c56b4fa-1953-4487-a9d7-7217296a6aa4
+md"""
+## El truco del kernel
+
+Multiplicamos escalarmente los vectores transformados:
+
+$\phi(x) \phi(x^{\prime}) = (x_1^2, x_2^2, \sqrt{2}x_1 x_2) \cdot 
+(x_1^{\prime 2}, x_2^{\prime 2}, \sqrt{2}x_1^{\prime} x_2^{\prime}) =$
+$x_1^2 x_1^{\prime 2} + x_2^2 x_2^{\prime 2} + 2 x_1 x_1^{\prime} x_2 x_2^{\prime} =$
+$[(x_1, x_2) \cdot (x_1^{\prime}, x_2^{\prime})]^2 = k(x, x^{\prime})$
+
+El kernel $k(x, x^{\prime})$ se calcula a partir de los vectores sin transformar, 
+y el resultado es el mismo que el del producto escalar de los vectores 
+transformados.
+"""
+
+# ╔═╡ e54f0557-6fb4-47b3-babf-ad26ed84bad4
+md"""
+## El truco del kernel
+
+Luego:
+
+$L(\alpha_n) = -\frac{1}{2} \sum_{n=1}^N \sum_{m=1}^N \alpha_n \alpha_m t_n t_m 
+\phi(x_n^T) \phi(x_m) + \sum_{n=1}^N \alpha_n$
+
+$L(\alpha_n) = -\frac{1}{2} \sum_{n=1}^N \sum_{m=1}^N \alpha_n \alpha_m t_n t_m 
+k(x_n, x_m) + \sum_{n=1}^N \alpha_n$
+
+Lo complicado es encontrar los kernels.
+"""
+
+# ╔═╡ 230bdcb8-11cb-4be8-95d2-db72d46e9b2a
+md"""
+## El truco del kernel
+
+La condición (**fuerte**) que debe cumplir el kernel es que debe ser igual al 
+producto escalar de los vectores transformados.
+
+Algunos kernels:
+
+- Lineal: $k(x,x^{\prime}) = x^t x^{\prime}$
+- Polinomial: $k(x,x^{\prime}) = (\gamma x^t x^{\prime} + r)^d$
+- Gaussiano: $k(x,x^{\prime}) = exp(-\gamma \|x^t x^{\prime}\|^2$
+- Sigmoide: $k(x,x^{\prime}) = tanh(\gamma x^T x^{\prime} + r)$
+"""
+
+# ╔═╡ 1d54255b-2aa3-40e7-bc54-bcd1ca83e00b
+md"""
+## El truco del kernel
+
+Resulta más sencillo construir nuevos kernels a partir de kernels conocidos 
+usando las siguientes reglas:
+
+-  $k(x,x^{\prime}) = ck_1(x,x^{\prime})$
+-  $k(x,x^{\prime}) = f(x)k_1(x,x^{\prime}) f(x^{\prime})$
+-  $k(x,x^{\prime}) = k_1(x,x^{\prime}) + k_2(x,x^{\prime})$
+-  $k(x,x^{\prime}) = k_1(x,x^{\prime}) k_2(x,x^{\prime})$
+"""
+
+# ╔═╡ 1c0b295f-ebac-4f47-8241-da3abbc17ae7
+md"""
+## Show me the code
+
+Vamos a probar un kernel gaussiano:
+"""
 
 # ╔═╡ 5def91d4-b9ef-4aa6-b0eb-d2b7c4ef6b86
 maquina_complicada = machine(SVC(kernel=LIBSVM.Kernel.RadialBasis), select(datos_complicados, [:x, :y]), datos_complicados.clase) |> fit!
+
+# ╔═╡ f1ee699d-535a-436a-ba30-6face48018db
+md"""
+## Show me the code
+
+Hacemos las predicciones (estamos utilizando el conjunto de datos de entrenamiento!!!), y calculamos la fracción de datos mal clasificados
+"""
 
 # ╔═╡ 53b5d2f7-2cfd-4ec3-b2c9-f9d8af30718e
 ŷ = predict(maquina_complicada, select(datos_complicados, [:x, :y]))
 
 # ╔═╡ d918ad69-de3f-4009-8527-e601368e030b
 misclassification_rate(ŷ, datos_complicados.clase)
+
+# ╔═╡ 98f63cb9-2d89-466b-8217-2ad6b982c5b9
+
+
+# ╔═╡ fd82cb57-a7b4-445d-86d5-0d7aaf12f878
+md"""
+## Show me the code
+
+Veamos la frontera de clasificación para este caso:
+"""
 
 # ╔═╡ c0ded5f0-d008-416d-95db-9a6b60f24f13
 function clase(x,y)
@@ -850,15 +1036,32 @@ function clase(x,y)
 	end
 end
 
-# ╔═╡ 252f7a84-84df-45ad-be70-f2f1d0822dee
-r = -3:0.02:3
-
-# ╔═╡ 4a4b5991-1e17-4223-9ce7-fc9cbb8ccd9c
-begin
+# ╔═╡ 2dceb906-68d8-4334-bc0e-254fa2f87872
+function plot_kernel_gaussiano(datos, maquina)
+	r = -3:0.02:3
 	plot_datos(datos_complicados)
 	plot_datos_soporte(datos_complicados, maquina_complicada.fitresult[1].SVs.X)
-	contour!(r, r, clase, f=true, nlev=2, alpha=0.3)
+	contour!(r, r, clase, f=true, nlev=2, alpha=0.3, cbar=false, size=(400,400))
 end
+
+# ╔═╡ 5a3c78c9-6cfa-4cde-8815-0260cf468c2e
+plot_kernel_gaussiano(datos_complicados, maquina_complicada)
+
+# ╔═╡ f92f1c74-5d7f-4c11-b140-5c8be0ae80e2
+md"""
+## Creatividad
+
+¿Se te ocurre alguna otra solución ad-hoc para solucionar el problema de 
+clasificación de estos datos?
+"""
+
+# ╔═╡ 0b5cd707-9937-44aa-aa9e-d02d806776e9
+plot_datos_complicados(datos_complicados)
+
+# ╔═╡ 498ef0a1-b7e1-4829-89b4-21c904a87d2d
+md"""
+# Aplicación
+"""
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -2925,11 +3128,31 @@ version = "1.4.1+2"
 # ╠═f1c240f7-ef5d-4296-923b-0243735112ba
 # ╠═5ac9e1ca-ddd9-40ef-bbc0-0b70c7bf00ff
 # ╠═73e33858-0c2f-45a5-9063-be5417f860a0
+# ╠═69168a15-aa7a-4951-8d47-bca2fce8b8bd
+# ╠═ac224512-fe67-44fc-bd0d-e0875a1a621e
+# ╠═92004858-7f72-41ee-affa-645f63be89c2
+# ╠═68cbe021-7e17-48bb-875c-d938c797ecf4
+# ╠═dc253228-bc9b-4f3b-9e32-e425525d1f2b
+# ╠═51855f1c-4e7b-45a3-8de5-d3a6308f6984
+# ╠═4678c32a-3c64-459d-bebf-d1bfd345137b
+# ╠═0e7bf41b-3935-4f0c-a27e-a8cf17ab51f6
+# ╠═101a42d9-b3cf-48e8-b6a9-a66cdcb25937
+# ╠═3c56b4fa-1953-4487-a9d7-7217296a6aa4
+# ╠═e54f0557-6fb4-47b3-babf-ad26ed84bad4
+# ╠═230bdcb8-11cb-4be8-95d2-db72d46e9b2a
+# ╠═1d54255b-2aa3-40e7-bc54-bcd1ca83e00b
+# ╠═1c0b295f-ebac-4f47-8241-da3abbc17ae7
 # ╠═5def91d4-b9ef-4aa6-b0eb-d2b7c4ef6b86
+# ╠═f1ee699d-535a-436a-ba30-6face48018db
 # ╠═53b5d2f7-2cfd-4ec3-b2c9-f9d8af30718e
 # ╠═d918ad69-de3f-4009-8527-e601368e030b
+# ╠═98f63cb9-2d89-466b-8217-2ad6b982c5b9
+# ╠═fd82cb57-a7b4-445d-86d5-0d7aaf12f878
 # ╠═c0ded5f0-d008-416d-95db-9a6b60f24f13
-# ╠═252f7a84-84df-45ad-be70-f2f1d0822dee
-# ╠═4a4b5991-1e17-4223-9ce7-fc9cbb8ccd9c
+# ╠═2dceb906-68d8-4334-bc0e-254fa2f87872
+# ╠═5a3c78c9-6cfa-4cde-8815-0260cf468c2e
+# ╠═f92f1c74-5d7f-4c11-b140-5c8be0ae80e2
+# ╠═0b5cd707-9937-44aa-aa9e-d02d806776e9
+# ╠═498ef0a1-b7e1-4829-89b4-21c904a87d2d
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

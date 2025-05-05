@@ -654,6 +654,15 @@ md"""
 Primero dividimos el conjunto de datos en entrenamiento y prueba:
 """
 
+# ╔═╡ 350afb0c-dc70-47f8-a393-ee462f01798f
+entrenamiento, prueba = partition(adultos, 0.75, rng=3)
+
+# ╔═╡ a75fa817-478c-4c55-af3b-95cd32ff7c0e
+# ╠═╡ disabled = true
+#=╠═╡
+entrenamiento = prueba = adultos
+  ╠═╡ =#
+
 # ╔═╡ 83b5d2b4-ab18-461a-a291-a9790cb62af8
 md"""
 ## Voy a intentar regresión logística con MLJ
@@ -663,59 +672,37 @@ md"""
 LogisticClassifier = @load LogisticClassifier pkg=MLJLinearModels verbosity=0
 
 # ╔═╡ 52abed5f-197b-4308-a875-1c351725358d
-#=╠═╡
 X = select(entrenamiento, [:weight, :height])
-  ╠═╡ =#
 
 # ╔═╡ 02f644b9-a877-4e91-9c4f-aff38a3dac2a
-#=╠═╡
 y = coerce(entrenamiento.male, OrderedFactor)
-  ╠═╡ =#
 
 # ╔═╡ 122c7f45-af9d-43a7-ba90-455b22196166
-#=╠═╡
 maquina = fit!(machine(LogisticClassifier(), X, y))
-  ╠═╡ =#
 
 # ╔═╡ 5a41f8da-a56e-4e1a-ad3c-815df8872d90
-#=╠═╡
 ŷ = predict_mode(maquina, select(prueba, [:weight, :height]))
-  ╠═╡ =#
 
 # ╔═╡ 768664b2-2e79-4408-b5ac-04828cfc0669
-#=╠═╡
 ŷ
-  ╠═╡ =#
 
 # ╔═╡ eecc3c99-8539-4a9e-b5f6-a22364afbadb
-#=╠═╡
 prueba.male
-  ╠═╡ =#
 
 # ╔═╡ ee79aa91-420d-44a6-bc17-4a5a5f6e6231
-#=╠═╡
 confusion_matrix(ŷ, prueba.male)
-  ╠═╡ =#
 
 # ╔═╡ c12c09f0-75db-4a40-a201-1bd8d69b482a
-#=╠═╡
 accuracy(ŷ, prueba.male)
-  ╠═╡ =#
 
 # ╔═╡ ececc102-a1d5-4669-8bea-6a3deabc540b
-#=╠═╡
 fpr, tpr = roc_curve(predict(maquina, select(prueba, [:weight, :height])), coerce(prueba.male, OrderedFactor))
-  ╠═╡ =#
 
 # ╔═╡ ce15f735-0e8a-47fe-90f3-d06fbc296b33
-#=╠═╡
 auc = area_under_curve(predict(maquina, select(prueba, [:weight, :height])), coerce(prueba.male, OrderedFactor))
-  ╠═╡ =#
 
 # ╔═╡ 46bc179b-7c0e-4987-8a64-ecbd28847e80
-#=╠═╡
 plot(fpr,tpr, title="Curva ROC auc=$auc", xlabel="False positive rate", ylabel="True positive rate", legend=false)
-  ╠═╡ =#
 
 # ╔═╡ efa6b1c3-e6aa-4e6b-b745-0595d36f59a8
 md"""
@@ -723,14 +710,12 @@ Utilizando cross validation:
 """
 
 # ╔═╡ fa8dc7ad-c6cb-4f69-8e5d-738bcc45354a
-#=╠═╡
 evaluate!(
     maquina,
     resampling=CV(nfolds=15),
     measures=[log_loss, accuracy],
 )
 
-  ╠═╡ =#
 
 # ╔═╡ 0c7b05ae-b4c9-475b-983a-29df7298cb11
 md"""
@@ -753,24 +738,16 @@ Multiplicamos cada matriz por el vector de coeficientes del ajuste, y del vector
 """
 
 # ╔═╡ b57f71a8-4cba-4afb-86c6-c8240e8fc49d
-#=╠═╡
 transformado_hombres = hombres_plot * maquina.fitresult[1]
-  ╠═╡ =#
 
 # ╔═╡ b9f24a63-4fc9-47da-b3cf-adce20b0cea3
-#=╠═╡
 sigma_hombres = σ.(transformado_hombres)
-  ╠═╡ =#
 
 # ╔═╡ 70c6667b-64b1-4c24-ae3b-612bb89c5d0e
-#=╠═╡
 transformado_mujeres = mujeres_plot * maquina.fitresult[1]
-  ╠═╡ =#
 
 # ╔═╡ 92acf800-30e8-4d06-bb3d-11db12498fcb
-#=╠═╡
 sigma_mujeres = σ.(transformado_mujeres)
-  ╠═╡ =#
 
 # ╔═╡ 113481b8-5cdb-4f0a-a26d-2db2ec3eccec
 md"""
@@ -780,17 +757,13 @@ Ahora ya podemos visualizar los datos:
 """
 
 # ╔═╡ d2f46c79-ab68-4ca0-aef1-48d5f2e2edc4
-#=╠═╡
 function datos_sobre_sigmoide(trasformado_hombres, sigma_hombre, transformado_mujeres, sigma_mujeres)
 	scatter(transformado_hombres, sigma_hombres, label="Hombres", markerstrokewidth=0, alpha=0.5)
 	scatter!(transformado_mujeres, sigma_mujeres, label="Mujeres", legend=:bottomright, markerstrokewidth=0, alpha=0.5, title="Distribución de los datos por sexo sobre la sigmoide", xlabel="Valor transformado", ylabel="Sigmoide")
 end
-  ╠═╡ =#
 
 # ╔═╡ b8b7f2c9-10ed-487f-9690-a4be2a245f0c
-#=╠═╡
 datos_sobre_sigmoide(transformado_hombres, sigma_hombres, transformado_mujeres, sigma_mujeres)
-  ╠═╡ =#
 
 # ╔═╡ 303bace0-02ac-4501-a76d-018adeb5714a
 md"""
@@ -807,17 +780,6 @@ md"""
 * También hemos deducido la función de pérdidas sobre la que se puede aplicar la técnica de descenso de gradiente.
 * Es importante comprobar que nuestros datos cumplen con las condiciones de normalidad e igualdad de matrices de covarianza.
 """
-
-# ╔═╡ 350afb0c-dc70-47f8-a393-ee462f01798f
-#=╠═╡
-entrenamiento, prueba = partition(adultos, 0.75, rng=3)
-  ╠═╡ =#
-
-# ╔═╡ a75fa817-478c-4c55-af3b-95cd32ff7c0e
-# ╠═╡ disabled = true
-#=╠═╡
-entrenamiento = prueba = adultos
-  ╠═╡ =#
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
