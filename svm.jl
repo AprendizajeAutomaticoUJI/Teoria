@@ -19,6 +19,9 @@ using PlutoUI
 # ╔═╡ 507dba8d-bb19-4551-9c34-333a729936bf
 using LinearAlgebra: norm
 
+# ╔═╡ 75fd441f-a01e-4fff-ab9c-78ff3dce359f
+include("utilidades.jl")
+
 # ╔═╡ 50449444-1f95-11f0-3642-89804cc4dc84
 # html"""
 # <link rel="stylesheet" type="text/css" href="https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/mi_estilo.css" media="screen" />
@@ -122,6 +125,9 @@ end
 
 # ╔═╡ c55facf6-29ad-4cce-9f91-e1e053c7aa70
 datos = genera_datos([0.1,2.0], 5.0, 5)
+
+# ╔═╡ f47c2397-d8fd-48f3-89cd-51399ac2be90
+# datos = genera_datos([.26679248982037507, -0.014910417266357001], -40.58458179553991, 5)
 
 # ╔═╡ 8d94edc6-042e-4932-a7ed-57d71d6f56a2
 function plot_datos(datos)
@@ -627,7 +633,7 @@ md"""
 Ya tenemos todos los ingredientes para visualizarlos:
 """
 
-# ╔═╡ e9bb1b66-90b7-4d2a-bd08-eeccd5b89d58
+# ╔═╡ 9f54f451-63b8-4399-b219-4170c260e50d
 function plot_limites(datos, vectores_soporte, θ, θ0)
 	min = minimum(datos.x)
 	max = maximum(datos.x)
@@ -647,11 +653,21 @@ end
 # ╔═╡ e72c0f9c-7233-42da-af5c-0da3348e63fd
 plot_datos_soporte_limites(datos, vectores_soporte, θ, θ0)
 
+# ╔═╡ e9bb1b66-90b7-4d2a-bd08-eeccd5b89d58
+function G(datos, vectores_soporte, θ, θ0)
+	min = minimum(datos.x)
+	max = maximum(datos.x)
+	d = 1 / norm(θ) # La mitad de la anchura del margen
+	plot!([min, max], [evalua(min, [θ[1],θ[2]], θ0), evalua(max, [θ[1],θ[2]], θ0)], color=:black, showlegend=false)
+	plot!([min, max], [evalua(min, [θ[1],θ[2]], θ0)+d, evalua(max, [θ[1],θ[2]], θ0)+d], color=:black, linestyle=:dash, showlegend=false)
+	plot!([min, max], [evalua(min, [θ[1],θ[2]], θ0)-d, evalua(max, [θ[1],θ[2]], θ0)-d], color=:black, linestyle=:dash, showlegend=false)
+end
+
 # ╔═╡ 71103b9c-4d79-4f0e-845b-a84e8de1d063
 function plot_datos_limites(datos, vectores_soporte)
 	plot_datos(datos)
-	min = minimum(datos.x)
-	max = maximum(datos.x)
+	# min = minimum(datos.x)
+	# max = maximum(datos.x)
 	plot_limites(datos, vectores_soporte, θ, θ0)
 end
 
@@ -1017,7 +1033,9 @@ Hacemos las predicciones (estamos utilizando el conjunto de datos de entrenamien
 misclassification_rate(ŷ, datos_complicados.clase)
 
 # ╔═╡ 98f63cb9-2d89-466b-8217-2ad6b982c5b9
-
+md"""
+Todos los dato se han clasificado bien.
+"""
 
 # ╔═╡ fd82cb57-a7b4-445d-86d5-0d7aaf12f878
 md"""
@@ -1063,10 +1081,76 @@ md"""
 # Aplicación
 """
 
+# ╔═╡ 3e3792e8-da1c-48ef-a321-0dca7cb7da2e
+md"""
+## Aplicación a Howell
+
+Vamos a aplicar SVM al caso de los datos de Howell. Vamos a utilizar,
+inicialmente un kernel lineal:
+"""
+
+# ╔═╡ cc6fd538-8be5-4833-834d-2ee320a27d2b
+adultos, hombres, hombres_adultos, mujeres, mujeres_adultas = carga_datos()
+
+# ╔═╡ b15e57d0-9953-4205-bd4c-100d8088c6e6
+datos_adultos = select(adultos, [:weight, :height, :male])
+
+# ╔═╡ f66bd026-b341-4799-957e-fd88cfd55897
+rename!(datos_adultos, [:x, :y, :clase])
+
+# ╔═╡ e808535f-fcfe-4229-8165-2388b94f7319
+datos_adultos[!, :clase] = [if x == 1 "positivo" else "negativo" end for x in datos_adultos.clase]
+
+# ╔═╡ bfc27df1-fd51-463c-94b1-63826560f0f1
+datos_adultos[!, :clase] = coerce(datos_adultos.clase, Multiclass)
+
+# ╔═╡ d07c2b6f-3145-4f2a-a9e9-acaac491621b
+entrenamiento_howell, prueba_howell = partition(eachindex(datos_adultos.clase), 0.75, shuffle=true)
+
+# ╔═╡ 371e9ae2-ee34-4b76-9f3f-836b837d0e9a
+maquina_howell = machine(SVC(kernel=LIBSVM.Kernel.Linear), select(datos_adultos, [:x, :y]), datos_adultos.clase)
+
+# ╔═╡ 22f06593-18e7-40e1-a638-eb64fb3776da
+fit!(maquina_howell, rows=entrenamiento_howell)
+
+# ╔═╡ b1c6dd76-0e10-4361-9549-5de0d2ad3a7e
+ŷ_howell = predict(maquina_howell, rows=prueba_howell)
+
+# ╔═╡ a3976136-6172-4283-8343-2ac5d42e71d5
+misclassification_rate(ŷ_howell, datos_adultos[prueba_howell, :clase])
+
+# ╔═╡ a85d5c45-90da-4a27-9a45-e154244078db
+confusion_matrix(ŷ_howell, datos_adultos[prueba_howell, :clase])
+
+# ╔═╡ 777908f7-b3bc-430e-b94c-845b52cb3df1
+function plot_howell_svm(adultos, maquina)
+	vectores_soporte = maquina.fitresult[1].SVs.X
+	coeficientes = maquina.fitresult[1].coefs
+	θ = vectores_soporte * coeficientes
+	print(θ)
+	θ0s = sign.(coeficientes) - vectores_soporte' * vectores_soporte * coeficientes
+	θ0 = sum(θ0s) / length(θ0s)
+	print(θ0)
+	plot_datos_soporte_limites(adultos, vectores_soporte, θ, θ0)
+	# plot_datos_soporte(adultos, vectores_soporte)
+	# plot_limites(adultos, vectores_soporte, θ, θ0)
+end
+
+# ╔═╡ f00c1e3a-040a-48a6-b3d8-c2e660df3c47
+maquina_howell.fitresult
+
+# ╔═╡ 37cd702c-c9f0-47a0-b955-a7702cdc9fe7
+maquina_separable.fitresult
+
+# ╔═╡ 24470b0d-35ce-45bc-9848-40a1cf8641a5
+plot_howell_svm(datos_adultos, maquina_howell)
+
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
+CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 LIBSVM = "b1bec4e5-fd48-53fe-b0cb-9723c09d164b"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 MLJ = "add582a8-e3ab-11e8-2d5e-e98b27df1bc7"
@@ -1093,7 +1177,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.5"
 manifest_format = "2.0"
-project_hash = "f0f48f53e30813d82e34f79009334225dfbe86ab"
+project_hash = "9a4b284e5a9f3cb9b8e6ddb5e28802788ca20a71"
 
 [[deps.ARFFFiles]]
 deps = ["CategoricalArrays", "Dates", "Parsers", "Tables"]
@@ -1220,6 +1304,12 @@ deps = ["Artifacts", "JLLWrappers", "Libdl"]
 git-tree-sha1 = "1b96ea4a01afe0ea4090c5c8039690672dd13f2e"
 uuid = "6e34b625-4abd-537c-b88f-471c36dfa7a0"
 version = "1.0.9+0"
+
+[[deps.CSV]]
+deps = ["CodecZlib", "Dates", "FilePathsBase", "InlineStrings", "Mmap", "Parsers", "PooledArrays", "PrecompileTools", "SentinelArrays", "Tables", "Unicode", "WeakRefStrings", "WorkerUtilities"]
+git-tree-sha1 = "deddd8725e5e1cc49ee205a1964256043720a6c3"
+uuid = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
+version = "0.10.15"
 
 [[deps.Cairo_jll]]
 deps = ["Artifacts", "Bzip2_jll", "CompilerSupportLibraries_jll", "Fontconfig_jll", "FreeType2_jll", "Glib_jll", "JLLWrappers", "LZO_jll", "Libdl", "Pixman_jll", "Xorg_libXext_jll", "Xorg_libXrender_jll", "Zlib_jll", "libpng_jll"]
@@ -2735,6 +2825,17 @@ git-tree-sha1 = "5db3e9d307d32baba7067b13fc7b5aa6edd4a19a"
 uuid = "2381bf8a-dfd0-557d-9999-79630e7b1b91"
 version = "1.36.0+0"
 
+[[deps.WeakRefStrings]]
+deps = ["DataAPI", "InlineStrings", "Parsers"]
+git-tree-sha1 = "b1be2855ed9ed8eac54e5caff2afcdb442d52c23"
+uuid = "ea10d353-3f73-51f8-a26c-33c1cb351aa5"
+version = "1.4.2"
+
+[[deps.WorkerUtilities]]
+git-tree-sha1 = "cd1659ba0d57b71a464a29e64dbc67cfe83d54e7"
+uuid = "76eceee3-57b5-4d4a-8e66-0e911cebbf60"
+version = "1.6.1"
+
 [[deps.XML2_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Libiconv_jll", "Zlib_jll"]
 git-tree-sha1 = "b8b243e47228b4a3877f1dd6aee0c5d56db7fcf4"
@@ -3025,6 +3126,7 @@ version = "1.4.1+2"
 # ╠═d2159870-7d0e-46a7-bda4-4e259e075906
 # ╠═319a328e-96fa-4852-a766-1de322033450
 # ╠═507dba8d-bb19-4551-9c34-333a729936bf
+# ╠═75fd441f-a01e-4fff-ab9c-78ff3dce359f
 # ╠═f996441d-9968-4e5c-b814-25bfb0413d61
 # ╠═17a8e36a-0257-45b0-9ded-a43a85979709
 # ╠═d2d91db2-0213-4329-9d6a-524b5602e987
@@ -3037,6 +3139,7 @@ version = "1.4.1+2"
 # ╠═8064744a-796c-44a7-a2ab-d60909ecbe0d
 # ╠═40151e5b-9c13-4178-9de1-0feeb4bf31ac
 # ╠═c55facf6-29ad-4cce-9f91-e1e053c7aa70
+# ╠═f47c2397-d8fd-48f3-89cd-51399ac2be90
 # ╠═8d94edc6-042e-4932-a7ed-57d71d6f56a2
 # ╠═8bb58a9c-d947-4470-9348-f8dc6c4d3e11
 # ╠═953e4a5d-1094-49cf-86df-736a4166ab00
@@ -3098,6 +3201,7 @@ version = "1.4.1+2"
 # ╠═eda3131e-5d03-45de-8530-f757af210450
 # ╠═3916ea5b-c11e-416e-b95f-760684f0f7ad
 # ╠═d72b00e7-7682-4183-8b8d-49889143616d
+# ╠═9f54f451-63b8-4399-b219-4170c260e50d
 # ╠═e72c0f9c-7233-42da-af5c-0da3348e63fd
 # ╠═e9bb1b66-90b7-4d2a-bd08-eeccd5b89d58
 # ╠═71103b9c-4d79-4f0e-845b-a84e8de1d063
@@ -3154,5 +3258,21 @@ version = "1.4.1+2"
 # ╠═f92f1c74-5d7f-4c11-b140-5c8be0ae80e2
 # ╠═0b5cd707-9937-44aa-aa9e-d02d806776e9
 # ╠═498ef0a1-b7e1-4829-89b4-21c904a87d2d
+# ╠═3e3792e8-da1c-48ef-a321-0dca7cb7da2e
+# ╠═cc6fd538-8be5-4833-834d-2ee320a27d2b
+# ╠═b15e57d0-9953-4205-bd4c-100d8088c6e6
+# ╠═f66bd026-b341-4799-957e-fd88cfd55897
+# ╠═e808535f-fcfe-4229-8165-2388b94f7319
+# ╠═bfc27df1-fd51-463c-94b1-63826560f0f1
+# ╠═d07c2b6f-3145-4f2a-a9e9-acaac491621b
+# ╠═371e9ae2-ee34-4b76-9f3f-836b837d0e9a
+# ╠═22f06593-18e7-40e1-a638-eb64fb3776da
+# ╠═b1c6dd76-0e10-4361-9549-5de0d2ad3a7e
+# ╠═a3976136-6172-4283-8343-2ac5d42e71d5
+# ╠═a85d5c45-90da-4a27-9a45-e154244078db
+# ╠═777908f7-b3bc-430e-b94c-845b52cb3df1
+# ╠═f00c1e3a-040a-48a6-b3d8-c2e660df3c47
+# ╠═37cd702c-c9f0-47a0-b955-a7702cdc9fe7
+# ╠═24470b0d-35ce-45bc-9848-40a1cf8641a5
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
