@@ -637,7 +637,7 @@ Ya tenemos todos los ingredientes para visualizarlos:
 function plot_limites(datos, vectores_soporte, θ, θ0)
 	min = minimum(datos.x)
 	max = maximum(datos.x)
-	d = 1 / norm(θ) # La mitad de la anchura del margen
+	d = 1.0 / norm(θ) # La mitad de la anchura del margen
 	plot!([min, max], [evalua(min, [θ[1],θ[2]], θ0), evalua(max, [θ[1],θ[2]], θ0)], color=:black, showlegend=false)
 	plot!([min, max], [evalua(min, [θ[1],θ[2]], θ0)+d, evalua(max, [θ[1],θ[2]], θ0)+d], color=:black, linestyle=:dash, showlegend=false)
 	plot!([min, max], [evalua(min, [θ[1],θ[2]], θ0)-d, evalua(max, [θ[1],θ[2]], θ0)-d], color=:black, linestyle=:dash, showlegend=false)
@@ -1045,8 +1045,8 @@ Veamos la frontera de clasificación para este caso:
 """
 
 # ╔═╡ c0ded5f0-d008-416d-95db-9a6b60f24f13
-function clase(x,y)
-	ŷ = predict(maquina_complicada, Matrix([x y]))
+function clase(x,y, maquina=maquina_complicada)
+	ŷ = predict(maquina, Matrix([x y]))
 	if categorical(["positivo"]) == ŷ
 		return 1
 	else
@@ -1059,7 +1059,7 @@ function plot_kernel_gaussiano(datos, maquina)
 	r = -3:0.02:3
 	plot_datos(datos_complicados)
 	plot_datos_soporte(datos_complicados, maquina_complicada.fitresult[1].SVs.X)
-	contour!(r, r, clase, f=true, nlev=2, alpha=0.3, cbar=false, size=(400,400))
+	contour!(r, r, clase, f=true, nlev=2, alpha=0.0, cbar=false, size=(400,400))
 end
 
 # ╔═╡ 5a3c78c9-6cfa-4cde-8815-0260cf468c2e
@@ -1089,26 +1089,26 @@ Vamos a aplicar SVM al caso de los datos de Howell. Vamos a utilizar,
 inicialmente un kernel lineal:
 """
 
-# ╔═╡ cc6fd538-8be5-4833-834d-2ee320a27d2b
-adultos, hombres, hombres_adultos, mujeres, mujeres_adultas = carga_datos()
+# ╔═╡ cd24b8a6-bc56-49e2-a396-bc64fd4ad111
+function carga_datos_howell()
+	url = "https://raw.githubusercontent.com/AprendizajeAutomaticoUJI/DataSets/refs/heads/master/Howell1.csv"
+	data = CSV.File(HTTP.get(url).body) |> DataFrame
+	adultos = data[data.age .> 17, [:weight, :height, :male]]
+	# adultos = data[:, [:weight, :height, :male]]
+	rename!(adultos, [:x, :y, :clase])
+	adultos[!, :clase] = [if x == 1 "positivo" else "negativo" end for x in adultos.clase]
+	adultos[!, :clase] = coerce(adultos.clase, OrderedFactor)
+	return adultos
+end
 
-# ╔═╡ b15e57d0-9953-4205-bd4c-100d8088c6e6
-datos_adultos = select(adultos, [:weight, :height, :male])
-
-# ╔═╡ f66bd026-b341-4799-957e-fd88cfd55897
-rename!(datos_adultos, [:x, :y, :clase])
-
-# ╔═╡ e808535f-fcfe-4229-8165-2388b94f7319
-datos_adultos[!, :clase] = [if x == 1 "positivo" else "negativo" end for x in datos_adultos.clase]
-
-# ╔═╡ bfc27df1-fd51-463c-94b1-63826560f0f1
-datos_adultos[!, :clase] = coerce(datos_adultos.clase, Multiclass)
+# ╔═╡ b1747147-a6e3-4060-8e2f-7df50bef2de0
+adultos = carga_datos_howell()
 
 # ╔═╡ d07c2b6f-3145-4f2a-a9e9-acaac491621b
-entrenamiento_howell, prueba_howell = partition(eachindex(datos_adultos.clase), 0.75, shuffle=true)
+entrenamiento_howell, prueba_howell = partition(eachindex(adultos.clase), 0.75, shuffle=true)
 
 # ╔═╡ 371e9ae2-ee34-4b76-9f3f-836b837d0e9a
-maquina_howell = machine(SVC(kernel=LIBSVM.Kernel.Linear), select(datos_adultos, [:x, :y]), datos_adultos.clase)
+maquina_howell = machine(SVC(kernel=LIBSVM.Kernel.Linear), select(adultos, [:x, :y]), adultos.clase)
 
 # ╔═╡ 22f06593-18e7-40e1-a638-eb64fb3776da
 fit!(maquina_howell, rows=entrenamiento_howell)
@@ -1117,33 +1117,58 @@ fit!(maquina_howell, rows=entrenamiento_howell)
 ŷ_howell = predict(maquina_howell, rows=prueba_howell)
 
 # ╔═╡ a3976136-6172-4283-8343-2ac5d42e71d5
-misclassification_rate(ŷ_howell, datos_adultos[prueba_howell, :clase])
+misclassification_rate(ŷ_howell, adultos[prueba_howell, :clase])
 
 # ╔═╡ a85d5c45-90da-4a27-9a45-e154244078db
-confusion_matrix(ŷ_howell, datos_adultos[prueba_howell, :clase])
+confusion_matrix(ŷ_howell, adultos[prueba_howell, :clase])
 
 # ╔═╡ 777908f7-b3bc-430e-b94c-845b52cb3df1
 function plot_howell_svm(adultos, maquina)
 	vectores_soporte = maquina.fitresult[1].SVs.X
 	coeficientes = maquina.fitresult[1].coefs
 	θ = vectores_soporte * coeficientes
-	print(θ)
+	# print(θ, "  ", norm(θ))
 	θ0s = sign.(coeficientes) - vectores_soporte' * vectores_soporte * coeficientes
 	θ0 = sum(θ0s) / length(θ0s)
-	print(θ0)
 	plot_datos_soporte_limites(adultos, vectores_soporte, θ, θ0)
-	# plot_datos_soporte(adultos, vectores_soporte)
-	# plot_limites(adultos, vectores_soporte, θ, θ0)
 end
 
-# ╔═╡ f00c1e3a-040a-48a6-b3d8-c2e660df3c47
+# ╔═╡ 24470b0d-35ce-45bc-9848-40a1cf8641a5
+plot_howell_svm(adultos, maquina_howell)
+
+# ╔═╡ fad4ea0c-39c1-4f75-91b8-2b9a877e93f6
+maquina_howell_rbf = machine(SVC(kernel=LIBSVM.Kernel.RadialBasis), select(adultos, [:x, :y]), adultos.clase)
+
+# ╔═╡ aa89be4d-ccd1-4086-bb16-1cad7c656b0b
+fit!(maquina_howell_rbf, rows=entrenamiento_howell)
+
+# ╔═╡ 0e2764cd-3105-4aae-9392-7dda60fde4ad
 maquina_howell.fitresult
 
-# ╔═╡ 37cd702c-c9f0-47a0-b955-a7702cdc9fe7
-maquina_separable.fitresult
+# ╔═╡ 6b4678c0-10c1-4e0c-8b10-d75c1d04ed6e
+maquina_howell_rbf.fitresult
 
-# ╔═╡ 24470b0d-35ce-45bc-9848-40a1cf8641a5
-plot_howell_svm(datos_adultos, maquina_howell)
+# ╔═╡ ad4ca3aa-0078-43a4-94ec-da0f030ed623
+plot_howell_svm(adultos, maquina_howell_rbf)
+
+# ╔═╡ a70d2ea4-612f-4832-a55d-fe51d894631e
+ŷ_howell_poli = predict(maquina_howell_rbf, rows=prueba_howell)
+
+# ╔═╡ ff333f42-9a30-4d38-ac92-e95e1e73f72a
+misclassification_rate(ŷ_howell_poli, adultos[prueba_howell, :clase])
+
+# ╔═╡ 0185a95b-4e1e-432c-9241-3a7cd70e5d05
+confusion_matrix(ŷ_howell_poli, adultos[prueba_howell, :clase])
+
+# ╔═╡ c89e1126-3b58-4acc-95b9-21105077300a
+begin
+	r1 = 30:0.1:70
+	r2 = 130:0.1:180
+	plot_datos(adultos)
+	plot_datos_soporte(adultos, maquina_howell_rbf.fitresult[1].SVs.X)
+	c(x, y) = clase(x, y, maquina_howell_rbf)
+	contour!(r1, r2, c, f=true, nlev=2, alpha=0.0, cbar=false, size=(400,400))
+end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -3259,11 +3284,8 @@ version = "1.4.1+2"
 # ╠═0b5cd707-9937-44aa-aa9e-d02d806776e9
 # ╠═498ef0a1-b7e1-4829-89b4-21c904a87d2d
 # ╠═3e3792e8-da1c-48ef-a321-0dca7cb7da2e
-# ╠═cc6fd538-8be5-4833-834d-2ee320a27d2b
-# ╠═b15e57d0-9953-4205-bd4c-100d8088c6e6
-# ╠═f66bd026-b341-4799-957e-fd88cfd55897
-# ╠═e808535f-fcfe-4229-8165-2388b94f7319
-# ╠═bfc27df1-fd51-463c-94b1-63826560f0f1
+# ╠═cd24b8a6-bc56-49e2-a396-bc64fd4ad111
+# ╠═b1747147-a6e3-4060-8e2f-7df50bef2de0
 # ╠═d07c2b6f-3145-4f2a-a9e9-acaac491621b
 # ╠═371e9ae2-ee34-4b76-9f3f-836b837d0e9a
 # ╠═22f06593-18e7-40e1-a638-eb64fb3776da
@@ -3271,8 +3293,15 @@ version = "1.4.1+2"
 # ╠═a3976136-6172-4283-8343-2ac5d42e71d5
 # ╠═a85d5c45-90da-4a27-9a45-e154244078db
 # ╠═777908f7-b3bc-430e-b94c-845b52cb3df1
-# ╠═f00c1e3a-040a-48a6-b3d8-c2e660df3c47
-# ╠═37cd702c-c9f0-47a0-b955-a7702cdc9fe7
 # ╠═24470b0d-35ce-45bc-9848-40a1cf8641a5
+# ╠═fad4ea0c-39c1-4f75-91b8-2b9a877e93f6
+# ╠═aa89be4d-ccd1-4086-bb16-1cad7c656b0b
+# ╠═0e2764cd-3105-4aae-9392-7dda60fde4ad
+# ╠═6b4678c0-10c1-4e0c-8b10-d75c1d04ed6e
+# ╠═ad4ca3aa-0078-43a4-94ec-da0f030ed623
+# ╠═a70d2ea4-612f-4832-a55d-fe51d894631e
+# ╠═ff333f42-9a30-4d38-ac92-e95e1e73f72a
+# ╠═0185a95b-4e1e-432c-9241-3a7cd70e5d05
+# ╠═c89e1126-3b58-4acc-95b9-21105077300a
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

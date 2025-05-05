@@ -698,6 +698,12 @@ accuracy(ŷ, prueba.male)
 # ╔═╡ ececc102-a1d5-4669-8bea-6a3deabc540b
 fpr, tpr = roc_curve(predict(maquina, select(prueba, [:weight, :height])), coerce(prueba.male, OrderedFactor))
 
+# ╔═╡ 50d77a1c-a13d-4aa6-95f9-3f4dbba8bda8
+typeof(coerce(prueba.male, OrderedFactor))
+
+# ╔═╡ f3f6159e-261d-4f75-9ea2-36998b4578eb
+typeof(predict(maquina, select(prueba, [:weight, :height])))
+
 # ╔═╡ ce15f735-0e8a-47fe-90f3-d06fbc296b33
 auc = area_under_curve(predict(maquina, select(prueba, [:weight, :height])), coerce(prueba.male, OrderedFactor))
 
@@ -3161,6 +3167,8 @@ version = "1.4.1+2"
 # ╠═ee79aa91-420d-44a6-bc17-4a5a5f6e6231
 # ╠═c12c09f0-75db-4a40-a201-1bd8d69b482a
 # ╠═ececc102-a1d5-4669-8bea-6a3deabc540b
+# ╠═50d77a1c-a13d-4aa6-95f9-3f4dbba8bda8
+# ╠═f3f6159e-261d-4f75-9ea2-36998b4578eb
 # ╠═ce15f735-0e8a-47fe-90f3-d06fbc296b33
 # ╠═46bc179b-7c0e-4987-8a64-ecbd28847e80
 # ╠═efa6b1c3-e6aa-4e6b-b745-0595d36f59a8
