@@ -27,6 +27,151 @@ Grado en Inteligencia Robótica - Universitat Jaume I (UJI)
 """
 
 # ╔═╡ 7debff7b-7ac3-42c2-80ed-404e4dd6dc18
+md"""
+## Mis datos
+
+Óscar Belmonte Fernández.
+
+Despacho TI-1203-DD.
+
+Página web: [http://www3.uji.es/~belfern](http://www3.uji.es/~belfern)
+
+Correo electrónico: [oscar.belmonte@uji.es](mailto:oscar.belmonte@uji.es)
+
+**Tutorías**
+
+Martes: 12:00 a 13:30
+
+Miércoles: 12:00 a 13:30 
+"""
+
+# ╔═╡ bebd3486-d3d5-4b64-b667-5ab441d79d5c
+md"""
+## Estructura de la asignatura
+
+|Actividad|Presenciales|No presenciales|
+|---------|:------------:|:---------------:|
+|Enseñanzas teóricas| 28 |  |
+|Enseñanzas prácticas de laboratorio| 20|  |
+|Evaluación| 4 |  |
+|Trabajo personal| 60 |  |
+|Trabajo de preparación de exámenes|  | 38 |
+|Total| 52 | 98 |
+"""
+
+# ╔═╡ 2edb759d-92a8-4eeb-a81a-d178dad933df
+md"""
+## Relación con otras asignaturas del grado
+
+* IR2119 - Fundamentos de Inteligencia Artificial.
+* IR2122 - Reconocimiento de patrones.
+* IR2128 - Sistemas inteligentes.
+"""
+
+# ╔═╡ 8843dc3e-586a-43d0-b6d0-c9f63f3726f7
+md"""
+## Resultados de aprendizaje
+
+1. Aplicar métodos de regresión lineal y logística a problemas de regresión y clasificación.
+2. Aplicar máquinas de vectores soporte a problemas de clasificación lineal y no lineal.
+3. Diseñar, implementar y evaluar modelos de aprendizaje profundo para la solución de problemas de representación, clasificación y reconstrucción de imágenes.
+4. Aplicar paradigmas de transferencia de aprendizaje basados en modelos de aprendizaje profundo para la solución de problemas con pocos datos o que requieran adaptación de dominio.
+"""
+
+# ╔═╡ cc721787-1bca-4e46-a6f4-f7d869e82cdc
+md"""
+## Resultados de aprendizaje
+
+5. Aplicar métodos de aprendizaje por refuerzo a la solución de problemas en el ámbito de la robótica.
+6. Diseñar e implementar procesos efectivos de entrenamiento y evaluación de sistemas inteligentes.
+7. Interpretar índices de rendimiento de procesos de entrenamiento y evaluación de redes profundas.
+"""
+
+# ╔═╡ 0100f308-a45b-409d-9bfd-eb92046a8ac0
+md"""
+## Temario de teoría
+
+1. Introducción al Aprendizaje Automático.
+1. Regresión lineal.
+1. Desarrollo de proyectos de Aprendizaje Automático.
+1. Regresión logística.
+1. Máquinas de soporte vectorial.
+1. Aprendizaje profundo.
+1. Aprendizaje por refuerzo.
+"""
+
+# ╔═╡ 38780e19-1508-411a-86b5-bc35794561e3
+md"""
+## Temario de prácticas
+
+1. Regresión lineal.
+1. Regresión logística.
+1. Máquinas de soporte vectorial.
+1. Aprendizaje profundo.
+1. Aprendizaje por refuerzo.
+"""
+
+# ╔═╡ a8bba0f1-7f62-48f3-9074-40a639ef2daa
+md"""
+## Metodología
+
+**Teoría**
+
+* Presentación de contenidos teóricos.
+* Los contenidos teóricos se evaluarán mediante un examen.
+"""
+
+# ╔═╡ c080fdd4-9e69-4922-b418-27c67385f3be
+md"""
+## Metodología
+
+**Prácticas**
+
+* Presentación de las prácticas.
+* Las prácticas se realizarán en pareja.
+* Presentación del código de resolución de la práctica.
+* Las práctica se evalúan como Apta/No apta.
+"""
+
+# ╔═╡ bf1db002-603f-408a-aa77-1b043b796bb6
+md"""
+## Bibliografía
+
+**Bibliografía Básica**
+
+1. Christopher M. Bishop. Pattern Recognition and Machine Learning.
+   Springer-Verlag New York Inc.; 2006.
+1. Ian Goodfellow, Yoshua Bengio and Aaron Courville. Deep Learning. MIT Press. 2016.
+1. Richard S. Sutton and Andrew G. Barto. Reinforcement Learning: An Introduction. Bradford Books. 2018.
+
+**Bibliografía complementaria**
+
+1. Bogumil Kaminski. Julia for Data Analysis. Manning. 2013.
+1. Miguel Morales. Grokking Deep Reinforcement Learning. Maning. 2020.
+1. Simone Scardapane. Alice’s adventures in a differentiable wonderland : a primer on designing neural networks. 2024.
+1. Christopher M. Bishop and Hugh Bishop. Deep learning : foundations and concepts. Springer. 2024.
+"""
+
+# ╔═╡ a215b103-c532-47c8-bc3c-785fe331e633
+md"""
+## Sistema de evaluación
+
+|        Prueba           | Ponderación |
+|-------------------------|:-----------:|
+| Evaluación de prácticas | 50% |
+| Examen final            | 50% |
+| Total                   | 100% |
+
+Las fechas de los exámenes están en el 
+[SIA](https://ujiapps.uji.es/sia/rest/publicacion/2025/estudio/244/asignatura/IR2130/examenes).
+"""
+
+# ╔═╡ c2a05357-be60-48cf-9da9-68d71a1eaec3
+md"""
+# ¿Preguntas?
+"""
+
+# ╔═╡ 692b56ed-6ab7-4a54-9ae9-f7446484d619
 
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -325,5 +470,17 @@ version = "17.4.0+2"
 # ╠═f35234c3-e5eb-41b3-ba3d-57dc44613f29
 # ╠═c22c21ac-7988-4fe4-9540-8ded260c95f6
 # ╠═7debff7b-7ac3-42c2-80ed-404e4dd6dc18
+# ╠═bebd3486-d3d5-4b64-b667-5ab441d79d5c
+# ╠═2edb759d-92a8-4eeb-a81a-d178dad933df
+# ╠═8843dc3e-586a-43d0-b6d0-c9f63f3726f7
+# ╠═cc721787-1bca-4e46-a6f4-f7d869e82cdc
+# ╠═0100f308-a45b-409d-9bfd-eb92046a8ac0
+# ╠═38780e19-1508-411a-86b5-bc35794561e3
+# ╠═a8bba0f1-7f62-48f3-9074-40a639ef2daa
+# ╠═c080fdd4-9e69-4922-b418-27c67385f3be
+# ╠═bf1db002-603f-408a-aa77-1b043b796bb6
+# ╠═a215b103-c532-47c8-bc3c-785fe331e633
+# ╠═c2a05357-be60-48cf-9da9-68d71a1eaec3
+# ╠═692b56ed-6ab7-4a54-9ae9-f7446484d619
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
