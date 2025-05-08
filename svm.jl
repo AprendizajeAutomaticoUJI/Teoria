@@ -19,9 +19,6 @@ using PlutoUI
 # ╔═╡ 507dba8d-bb19-4551-9c34-333a729936bf
 using LinearAlgebra: norm
 
-# ╔═╡ 75fd441f-a01e-4fff-ab9c-78ff3dce359f
-include("utilidades.jl")
-
 # ╔═╡ 50449444-1f95-11f0-3642-89804cc4dc84
 # html"""
 # <link rel="stylesheet" type="text/css" href="https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/mi_estilo.css" media="screen" />
@@ -38,6 +35,9 @@ import LIBSVM
 
 # ╔═╡ d2159870-7d0e-46a7-bda4-4e259e075906
 import MLJLIBSVMInterface
+
+# ╔═╡ 75fd441f-a01e-4fff-ab9c-78ff3dce359f
+# include("utilidades.jl")
 
 # ╔═╡ f996441d-9968-4e5c-b814-25bfb0413d61
 plotly()
@@ -1085,7 +1085,9 @@ md"""
 md"""
 ## Aplicación a Howell
 
-Vamos a aplicar SVM al caso de los datos de Howell. Vamos a utilizar,
+Vamos a aplicar SVM al caso de los datos de Howell. Primero cargamos los datos:
+
+Vamos a utilizar,
 inicialmente un kernel lineal:
 """
 
@@ -1104,23 +1106,58 @@ end
 # ╔═╡ b1747147-a6e3-4060-8e2f-7df50bef2de0
 adultos = carga_datos_howell()
 
+# ╔═╡ b142e855-46c9-47fe-a54b-ffc10eab7419
+md"""
+Dividimos los datos en un conjunto de entrenamiento y otro de pruebas:
+"""
+
 # ╔═╡ d07c2b6f-3145-4f2a-a9e9-acaac491621b
 entrenamiento_howell, prueba_howell = partition(eachindex(adultos.clase), 0.75, shuffle=true)
+
+# ╔═╡ 34681997-7bb6-4d89-8117-02d189b0daec
+md"""
+Creamos la máquina:
+"""
 
 # ╔═╡ 371e9ae2-ee34-4b76-9f3f-836b837d0e9a
 maquina_howell = machine(SVC(kernel=LIBSVM.Kernel.Linear), select(adultos, [:x, :y]), adultos.clase)
 
+# ╔═╡ a4e1a29d-8ad5-42e0-9197-021bd20df262
+md"""
+La entrenamos:
+"""
+
 # ╔═╡ 22f06593-18e7-40e1-a638-eb64fb3776da
 fit!(maquina_howell, rows=entrenamiento_howell)
+
+# ╔═╡ 28bdecaf-7954-4329-a3c5-d48c0e42e463
+md"""
+Estimamos la clase de los datos de prueba:
+"""
 
 # ╔═╡ b1c6dd76-0e10-4361-9549-5de0d2ad3a7e
 ŷ_howell = predict(maquina_howell, rows=prueba_howell)
 
+# ╔═╡ a3014ff8-729c-46d1-aa13-0be2490e22d5
+md"""
+La ratio de muestras mal clasificadas:
+"""
+
 # ╔═╡ a3976136-6172-4283-8343-2ac5d42e71d5
 misclassification_rate(ŷ_howell, adultos[prueba_howell, :clase])
 
+# ╔═╡ 1dc1e60e-d51d-493e-8cf2-a076cb114ca1
+md"""
+La matriz de confusión:
+"""
+
 # ╔═╡ a85d5c45-90da-4a27-9a45-e154244078db
 confusion_matrix(ŷ_howell, adultos[prueba_howell, :clase])
+
+# ╔═╡ 9e783f7b-c0fd-4221-a015-45b74c76f220
+md"""
+Mostramos gráficamente el resultado:
+"""
 
 # ╔═╡ 777908f7-b3bc-430e-b94c-845b52cb3df1
 function plot_howell_svm(adultos, maquina)
@@ -1136,29 +1173,50 @@ end
 # ╔═╡ 24470b0d-35ce-45bc-9848-40a1cf8641a5
 plot_howell_svm(adultos, maquina_howell)
 
+# ╔═╡ e8f72d35-67a8-4672-ac17-8d12dce84f49
+md"""
+Ahora vamos a probar un kernel RBF (Radial Basis Function). Es muy sencillo, sólo tenemos que indicarlo en el moento de crear la máquina, y el resto del procedimiento es el mismo:
+"""
+
 # ╔═╡ fad4ea0c-39c1-4f75-91b8-2b9a877e93f6
 maquina_howell_rbf = machine(SVC(kernel=LIBSVM.Kernel.RadialBasis), select(adultos, [:x, :y]), adultos.clase)
+
+# ╔═╡ be4c0c6c-e9c6-4f38-9e5a-41d721b7bdab
+md"""
+Entrenamos la máquina:
+"""
 
 # ╔═╡ aa89be4d-ccd1-4086-bb16-1cad7c656b0b
 fit!(maquina_howell_rbf, rows=entrenamiento_howell)
 
-# ╔═╡ 0e2764cd-3105-4aae-9392-7dda60fde4ad
-maquina_howell.fitresult
-
-# ╔═╡ 6b4678c0-10c1-4e0c-8b10-d75c1d04ed6e
-maquina_howell_rbf.fitresult
-
-# ╔═╡ ad4ca3aa-0078-43a4-94ec-da0f030ed623
-plot_howell_svm(adultos, maquina_howell_rbf)
+# ╔═╡ 15c5b90e-f19a-4639-92b4-9ec4cdde09ec
+md"""
+Estimamos la clase de los datos de prueba:
+"""
 
 # ╔═╡ a70d2ea4-612f-4832-a55d-fe51d894631e
-ŷ_howell_poli = predict(maquina_howell_rbf, rows=prueba_howell)
+ŷ_howell_rbf = predict(maquina_howell_rbf, rows=prueba_howell)
 
-# ╔═╡ ff333f42-9a30-4d38-ac92-e95e1e73f72a
-misclassification_rate(ŷ_howell_poli, adultos[prueba_howell, :clase])
+# ╔═╡ 7245d4bf-9ae9-42c4-b217-45ef3ad5daf1
+md"""
+Mostramos la matriz de confusión, es muy parecida al caso lineal:
+"""
 
 # ╔═╡ 0185a95b-4e1e-432c-9241-3a7cd70e5d05
-confusion_matrix(ŷ_howell_poli, adultos[prueba_howell, :clase])
+confusion_matrix(ŷ_howell_rbf, adultos[prueba_howell, :clase])
+
+# ╔═╡ 7ec54078-3007-4ac3-b213-4c5bcf7b1176
+md"""
+La ratio de muestras mal clasificadas:
+"""
+
+# ╔═╡ ff333f42-9a30-4d38-ac92-e95e1e73f72a
+misclassification_rate(ŷ_howell_rbf, adultos[prueba_howell, :clase])
+
+# ╔═╡ 08018313-909f-4050-91aa-58af6d5a7245
+md"""
+Y finalmente mostramos la frontera de decisión:
+"""
 
 # ╔═╡ c89e1126-3b58-4acc-95b9-21105077300a
 begin
@@ -1169,6 +1227,28 @@ begin
 	c(x, y) = clase(x, y, maquina_howell_rbf)
 	contour!(r1, r2, c, f=true, nlev=2, alpha=0.0, cbar=false, size=(400,400))
 end
+
+# ╔═╡ 0c14eae8-a69b-4b25-a226-1cc76204c6d7
+md"""
+# Resumen
+"""
+
+# ╔═╡ 1fa8bfbe-a6e4-4c6e-aac0-f7041e7a56a5
+md"""
+## Resumen
+
+- Las Máquinas de Soporte Vectorial fueron desarrolladas para resolver problemas de clasificación binaria.
+- El objetivo es encontrar el hiperplano que separa las muestras de las dos clases, y que tiene el máximo margen entre ellas.
+- El problema de separación por un hiperplano se puede extender a otras fronteras de separación introduciendo el truco del kernel.
+"""
+
+# ╔═╡ 1558e7cb-13c2-469e-a0a6-7dd4f7085b0c
+md"""
+## Resumen
+
+- Las SVM funcionan muy bien cuando el número de muestras en nuestro conjunto de datos de unos cuantos miles, más allá, el algoritmo de entrenamiento puede ser muy lenta.
+- La contrapartida es que la clasificación de nuevas muestras es muy rápida.
+"""
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -3286,22 +3366,35 @@ version = "1.4.1+2"
 # ╠═3e3792e8-da1c-48ef-a321-0dca7cb7da2e
 # ╠═cd24b8a6-bc56-49e2-a396-bc64fd4ad111
 # ╠═b1747147-a6e3-4060-8e2f-7df50bef2de0
+# ╠═b142e855-46c9-47fe-a54b-ffc10eab7419
 # ╠═d07c2b6f-3145-4f2a-a9e9-acaac491621b
+# ╠═34681997-7bb6-4d89-8117-02d189b0daec
 # ╠═371e9ae2-ee34-4b76-9f3f-836b837d0e9a
+# ╠═a4e1a29d-8ad5-42e0-9197-021bd20df262
 # ╠═22f06593-18e7-40e1-a638-eb64fb3776da
+# ╠═28bdecaf-7954-4329-a3c5-d48c0e42e463
 # ╠═b1c6dd76-0e10-4361-9549-5de0d2ad3a7e
+# ╠═a3014ff8-729c-46d1-aa13-0be2490e22d5
 # ╠═a3976136-6172-4283-8343-2ac5d42e71d5
+# ╠═1dc1e60e-d51d-493e-8cf2-a076cb114ca1
 # ╠═a85d5c45-90da-4a27-9a45-e154244078db
+# ╠═9e783f7b-c0fd-4221-a015-45b74c76f220
 # ╠═777908f7-b3bc-430e-b94c-845b52cb3df1
 # ╠═24470b0d-35ce-45bc-9848-40a1cf8641a5
+# ╠═e8f72d35-67a8-4672-ac17-8d12dce84f49
 # ╠═fad4ea0c-39c1-4f75-91b8-2b9a877e93f6
+# ╠═be4c0c6c-e9c6-4f38-9e5a-41d721b7bdab
 # ╠═aa89be4d-ccd1-4086-bb16-1cad7c656b0b
-# ╠═0e2764cd-3105-4aae-9392-7dda60fde4ad
-# ╠═6b4678c0-10c1-4e0c-8b10-d75c1d04ed6e
-# ╠═ad4ca3aa-0078-43a4-94ec-da0f030ed623
+# ╠═15c5b90e-f19a-4639-92b4-9ec4cdde09ec
 # ╠═a70d2ea4-612f-4832-a55d-fe51d894631e
-# ╠═ff333f42-9a30-4d38-ac92-e95e1e73f72a
+# ╠═7245d4bf-9ae9-42c4-b217-45ef3ad5daf1
 # ╠═0185a95b-4e1e-432c-9241-3a7cd70e5d05
+# ╠═7ec54078-3007-4ac3-b213-4c5bcf7b1176
+# ╠═ff333f42-9a30-4d38-ac92-e95e1e73f72a
+# ╠═08018313-909f-4050-91aa-58af6d5a7245
 # ╠═c89e1126-3b58-4acc-95b9-21105077300a
+# ╠═0c14eae8-a69b-4b25-a226-1cc76204c6d7
+# ╠═1fa8bfbe-a6e4-4c6e-aac0-f7041e7a56a5
+# ╠═1558e7cb-13c2-469e-a0a6-7dd4f7085b0c
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
