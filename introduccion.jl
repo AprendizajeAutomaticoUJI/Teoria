@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.3
+# v0.20.6
 
 #> [frontmatter]
 #> title = "Introducción al aprendizaje automático"
@@ -18,9 +18,9 @@ begin
 end
 
 # ╔═╡ 07b1def1-1b33-460a-9683-358dc757f6d0
-html"""
-<link rel="stylesheet" type="text/css" href="https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/mi_estilo.css" media="screen" />
-"""
+# html"""
+# <link rel="stylesheet" type="text/css" href="https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/mi_estilo.css" media="screen" />
+# """
 
 # ╔═╡ 13faae83-cbcf-4184-a921-9d14482a9636
 TableOfContents(title = "Contenidos", depth=1)
@@ -385,7 +385,7 @@ PlutoUI = "~0.7.60"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.11.4"
+julia_version = "1.11.5"
 manifest_format = "2.0"
 project_hash = "d5a16573bd99918e0319a62afd437a859fb80972"
 
@@ -916,7 +916,7 @@ version = "0.3.27+1"
 [[deps.OpenLibm_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "05823500-19ac-5b8b-9628-191a04bc5112"
-version = "0.8.1+4"
+version = "0.8.5+0"
 
 [[deps.OpenSSL]]
 deps = ["BitFlags", "Dates", "MozillaCACerts_jll", "OpenSSL_jll", "Sockets"]
