@@ -36,9 +36,6 @@ import LIBSVM
 # ╔═╡ d2159870-7d0e-46a7-bda4-4e259e075906
 import MLJLIBSVMInterface
 
-# ╔═╡ 75fd441f-a01e-4fff-ab9c-78ff3dce359f
-# include("utilidades.jl")
-
 # ╔═╡ f996441d-9968-4e5c-b814-25bfb0413d61
 plotly()
 
@@ -3231,7 +3228,6 @@ version = "1.4.1+2"
 # ╠═d2159870-7d0e-46a7-bda4-4e259e075906
 # ╠═319a328e-96fa-4852-a766-1de322033450
 # ╠═507dba8d-bb19-4551-9c34-333a729936bf
-# ╠═75fd441f-a01e-4fff-ab9c-78ff3dce359f
 # ╠═f996441d-9968-4e5c-b814-25bfb0413d61
 # ╠═17a8e36a-0257-45b0-9ded-a43a85979709
 # ╠═d2d91db2-0213-4329-9d6a-524b5602e987
