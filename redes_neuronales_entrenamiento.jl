@@ -682,7 +682,96 @@ modelo_seno = Chain(
 md"""
 ## Capas de normalización por lotes
 
+Normaliza las entradas:
 
+```{.julia}
+modelo_seno = Chain(
+	Dense(1 => 3, tanh),
+	BatchNorm(3),
+	Dense(3 => 3)
+)
+```
+
+Normaliza las entradas antes de la segunda capa densa. El resultado es que se evita el desvanecimiento o la explosión del gradiente reduciendo el tiempo de entrenamiento y el sobre entrenamiento.
+
+"""
+
+# ╔═╡ 53eaee3b-d022-4cae-acc6-d982b83c2d2d
+md"""
+## Capas de Dropout
+
+**Desactivan** un porcentaje de neuronas durante la fase de entrenamiento:
+
+```{.julia}
+Dropout(0.2)
+```
+
+El argumento es la fracción de neuronas que se desactivan.
+
+```{.julia}
+modelo_seno = Chain(
+	Dense(1 => 3, tanh),
+	Dropout(0.2),
+	...
+)
+```
+
+El 20% de las entradas a la capa Dropout quedan congeladas.
+"""
+
+# ╔═╡ d72df279-51b9-4df0-bf36-6c610c91e0a1
+md"""
+# Resumen
+"""
+
+# ╔═╡ 8026d340-a5c3-4b7d-954f-d36fe2f5dbd5
+md"""
+## Resumen
+
+Entrenar una red neuronal es una tarea técnicamente compleja.
+
+Los principales problemas con los que nos encontramos son:
+
+1. Inicializar los parámetros de la red.
+1. Controlar el desvanecimiento/explosión del gradiente.
+1. Reducir el tiempo de entrenamiento.
+1. Sobreajustar los datos de entrenamiento.
+"""
+
+# ╔═╡ 06801c1f-e27c-4abd-910f-9055159f3716
+md"""
+## Resumen
+
+La investigación en redes neuronales ha ido solucionando cada uno de estos 
+problemas:
+
+1. Evitar inicializar los parámetros de la red de forma aleaotoria.
+1. Utilizar normalización por lotes.
+1. Utilizar funciones de activación alternativas a la función sigmoide y 
+tangente hiperbólica.
+1. Utilizar mejores optimizadores que el descenso estocástico de gradiente.
+1. Utilizar regularización dropout.
+"""
+
+# ╔═╡ 23c6e0f5-dd40-42de-8861-5b3627832a71
+md"""
+## Resumen
+
+Es importante que aprecies que muchos de los resultados y técnicas que hemos 
+visto son muy recientes.
+
+La investigación en redes neuronales es un tema de gran actualidad.
+
+Los resultados en este campo en los próximos años prometen ser espectaculares.
+"""
+
+# ╔═╡ d534d906-f2b4-45e2-9071-58b693bed2a4
+md"""
+# Recursos
+
+[The loss landscape.](https://losslandscape.com/explorer)
+
+[Neural network playgroun.](https://playground.tensorflow.org)
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -2595,5 +2684,11 @@ version = "1.4.1+2"
 # ╠═1fa7817d-dbd1-42ff-af84-d72aa18c981a
 # ╠═16e100d9-145a-4d50-9f95-acb4e8ab8a3f
 # ╠═b424f4c0-3a65-45b2-aa95-326eb00180c8
+# ╠═53eaee3b-d022-4cae-acc6-d982b83c2d2d
+# ╠═d72df279-51b9-4df0-bf36-6c610c91e0a1
+# ╠═8026d340-a5c3-4b7d-954f-d36fe2f5dbd5
+# ╠═06801c1f-e27c-4abd-910f-9055159f3716
+# ╠═23c6e0f5-dd40-42de-8861-5b3627832a71
+# ╠═d534d906-f2b4-45e2-9071-58b693bed2a4
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
