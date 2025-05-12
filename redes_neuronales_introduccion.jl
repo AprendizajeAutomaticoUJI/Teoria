@@ -4,53 +4,53 @@
 using Markdown
 using InteractiveUtils
 
-# ╔═╡ b9df5cb5-cc3c-400e-9834-875e23b659ed
+# ╔═╡ c23ebe0f-016e-4a0a-aa7d-b0308bf5d99a
 using CSV
 
-# ╔═╡ 57948b1c-2937-475a-977f-cff1f5a45ebe
-using HTTP
-
-# ╔═╡ 9420c5df-1b5c-4185-b7c1-f4c1de794b39
+# ╔═╡ aa6d92eb-7a97-4084-bfc7-8474b34a2c71
 using DataFrames
 
-# ╔═╡ 87613936-7ddb-452e-8389-09f5f6e2eaee
-using Plots
+# ╔═╡ 8bf751cf-2510-4748-8697-2e3177013785
+using HTTP
 
-# ╔═╡ a23524a7-b4a4-4bd7-aec8-e15800823dfe
-using MLJ
-
-# ╔═╡ 319a328e-96fa-4852-a766-1de322033450
+# ╔═╡ ee78d551-2259-4955-b934-c60d3453706c
 using PlutoUI
 
-# ╔═╡ 507dba8d-bb19-4551-9c34-333a729936bf
-using LinearAlgebra: norm
+# ╔═╡ a7c9f0c1-e76a-460c-a31a-3d2b42ca3118
+using MLJ: partition, ConfusionMatrix
 
-# ╔═╡ 50449444-1f95-11f0-3642-89804cc4dc84
+# ╔═╡ 5e06e76f-68de-4e65-9fe9-66040dca0932
+using Flux
+
+# ╔═╡ 6020693f-5639-4408-ab53-9845658eadba
+using Logging
+
+# ╔═╡ 6aa62fa1-f7e1-4bd2-8e4c-f6ab51c05490
+using Plots
+
+# ╔═╡ a3d7c6fd-07a4-4280-9170-167c17299e91
+using Random
+
+# ╔═╡ b844f3ab-c048-4df9-9f01-0b8748ebbb1e
+using MLJ
+
+# ╔═╡ 0a3d364a-af50-435f-b094-ff392acfa922
+using Normalization
+
+# ╔═╡ d5fd2304-0353-11f0-29d8-3158c4dbe8dd
 # html"""
 # <link rel="stylesheet" type="text/css" href="https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/mi_estilo.css" media="screen" />
 # """
 
-# ╔═╡ e83b5f25-3fd0-4b85-8295-f1b4eafa8770
-import PlotlyBase
+# ╔═╡ 785309b6-ddfc-4e99-9699-63f60e73a787
+TableOfContents(title = "Contenidos", depth=1)
 
-# ╔═╡ 77c442ed-f830-4f26-901a-1ed528a67d0b
-import PlotlyKaleido
+# ╔═╡ 0b5df837-5a80-43c6-b3ce-a1554d550776
+url_imagenes = "https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/RedesNeuronales/"
 
-# ╔═╡ 64a828bf-a426-417a-8994-7661b53e22ab
-import LIBSVM
-
-# ╔═╡ d2159870-7d0e-46a7-bda4-4e259e075906
-import MLJLIBSVMInterface
-
-# ╔═╡ f996441d-9968-4e5c-b814-25bfb0413d61
-plotly()
-
-# ╔═╡ 17a8e36a-0257-45b0-9ded-a43a85979709
-TableOfContents(title="Contenidos", depth=1)
-
-# ╔═╡ d2d91db2-0213-4329-9d6a-524b5602e987
+# ╔═╡ 2c54bdd7-0d73-496c-9fd1-031dcdf2c861
 md"""
-# Máquinas de Soporte Vectorial
+# Introducción a las redes neuronales
 
 Óscar Belmonte Fernández - IR2130 Aprendizaje Automático
 
@@ -59,1198 +59,870 @@ Grado en Inteligencia Robótica - Universitat Jaume I (UJI)
 ![](https://ujiapps.uji.es/ade/rest/storage/63c07717-5208-4240-b688-aa6ff558b466?guest=true)
 """
 
-# ╔═╡ 7fd1c6ad-a229-4123-bbeb-c4b55d5ffc31
+# ╔═╡ 0ebbbc1b-066d-4c2b-8ad0-2165a145d5f1
 md"""
 ## Introducción
 
-Las máquinas de soporte vectorial (Support Vector Machines) son un modelo muy potente para tareas de clasificación.
+Las redes neuronales son modelos de aprendizaje automático muy potentes, pero 
+complicados de entrenar.
 
-La idea base es encontrar un hiperplano de separación entre dos clases con margen máximo.
+Su entrenamiento se basa en el algoritmo de retro propagación, que es un una 
+combinación del algoritmo de descenso de 
+gradiente y de la regla de la cadena.
 
-La potencia de esta aproximación aumenta gracias a la introducción de lo que se conoce como el truco del kernel que consiste en utilizar un espacio de representación con más dimensiones que el número de características que inicialmente tiene el conjunto de datos.
+Las redes neuronales pueden resolver tanto problemas supervisados como no 
+supervisados. Además se pueden utilizar tanto en tareas de clasificación como 
+de regresión.
 """
 
-# ╔═╡ 782310a4-9d89-4332-9cad-b6ab46a24a2a
+# ╔═╡ 5b797826-439b-48ce-a293-03534db1f2a9
+md"""
+## Introducción
+
+El [premio Nobel de Física de 2024](https://elpais.com/ciencia/2024-10-08/premio-nobel-de-fisica.html) 
+se otorgó a John Hopfield y Geoffrey Hinton 
+por sus contribuciones dentro del campo de la redes neuronales.
+
+El [premio Nobel de Química de 2024](https://elpais.com/ciencia/2024-10-09/premio-nobel-de-quimica.html) 
+se otorgó a John Jumper, Demis Hassabis y 
+David Baker por la aplicación del aprendizaje profundo a resolver el problema 
+del plegamiento de proteínas.
+"""
+
+# ╔═╡ f65234a5-1af3-48de-be23-a6c3050b79a6
 md"""
 ## Objetivos de aprendizaje
 
-* Resumir cuál es la estrategia del algoritmo SVM.
-* Interpretar en qué consiste el truco del kernel.
-* Decidir cuándo puede ser útil el algoritmo SVM para tareas de clasificación.
-* Plantear una solución basada en SVM.
+1. Esquematizar la estructura de una neurona y un red neuronal.
+1. Resumir los pasos para crear y entrenar una red neuronal.
+1. Construir una red neuronal sencilla para problemas de regresión.
+1. Construir una red neuronal sencilla para problemas de clasificación.
+1. Interpretar la _historia_ del proceso de entrenamiento.
 """
 
-# ╔═╡ b44ddc15-a3e7-4282-ae23-18a163c3aad2
+# ╔═╡ ce3edc15-c454-4419-8619-5d800aed2d5c
 md"""
 ## Referencias
 
-
+1. [Deep Learning](http://www.deeplearningbook.org), Ian Goodfellow, Joshua Bengio and Aaron Courbille.
+1. [Dive into deep learning](https://d2l.ai/index.html), Aston Zhang et al.
+1. Pattern recognition and machine learning. Christopher M. Bishop.
 """
 
-# ╔═╡ 4b30ab11-03a3-4bde-bd55-1e8f737157b6
+# ╔═╡ 0a89e6b8-46c1-4dfc-b11e-6373dc743ec4
 md"""
-# Objetivo de las Máquinas de Soporte Vectorial
+# Bases biológicas de las NN
+## Bases biológicas de las NN
+
+Neuronas vista la microscopio dibujadas por Santiago Ramón y Cajal.
 """
 
-# ╔═╡ 1ba4957e-ef24-43ed-915d-e5fe1ef4b2aa
+# ╔═╡ 770f2494-be6f-4c6b-aa9b-687241c0f62a
+Resource(
+	"https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/RedesNeuronales/neuronas_Ramon_Cajal.jpg",
+	:alt => "Neuronas vistas al microcopio por Santiago Ramón y Cajal",
+	:width => 600
+)
+
+# ╔═╡ 20b5ac11-a251-48e7-bfe2-252d8a4b1fe9
 md"""
-## Objetivo
-
-El objetivo de las Máquinas de Soporte Vectorial es crear un modelo de clasificación que dada una muestra me prediga a cuál de entre dos clases pertenece.
-
-Clasificación binaria.
+Neuronas vista la microscopio dibujadas por Santiago Ramón y Cajal.
 """
 
-# ╔═╡ 39859999-911e-4a27-8760-e7f6a2d9b030
+# ╔═╡ fd15e146-5c83-406b-a056-fc1fba51ffc2
 md"""
-## Hiperplano de separación entre dos clases
+## Bases biológicas de las NN
 
-Vamos a empezar con un conjunto de datos sencillo, en dos dimensiones, y separable mediante una recta (un hiperplano en dos dimensiones)
+Una neurona recibe señal de otras neuronas a través de la dendrita, y envía 
+señal a otras neuronas a través del axón.
+
 """
 
-# ╔═╡ 8064744a-796c-44a7-a2ab-d60909ecbe0d
-function evalua(x, θ, θ0)
-	return -(x*θ[1] + θ0) / θ[2]
-end
+# ╔═╡ 3e361edb-a6fc-4c26-8c91-f44eec0a6a6c
+Resource(
+	"https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/RedesNeuronales/neurona_real.jpg",
+	:alt => "Neurona",
+	:width => 600
+)
 
-# ╔═╡ 40151e5b-9c13-4178-9de1-0feeb4bf31ac
-function genera_datos(θ, θ0, muestras)
-	xs = 10 * rand(2 * muestras)
-	y = [evalua(x, θ, θ0) for x in xs]
-	positivos = y[1:muestras] + rand(muestras) .+ 1
-	negativos = y[muestras+1:2*muestras] - rand(muestras)
-	y = cat(positivos, negativos, dims=1)
-	clase = cat(repeat(["positivo"], muestras), repeat(["negativo"], muestras), dims=1)
-	clase = coerce(clase, Multiclass)
-	datos = DataFrame(x=xs, y=y, clase=clase)
-	return datos
-end
-
-# ╔═╡ c55facf6-29ad-4cce-9f91-e1e053c7aa70
-datos = genera_datos([0.1,2.0], 5.0, 5)
-
-# ╔═╡ f47c2397-d8fd-48f3-89cd-51399ac2be90
-# datos = genera_datos([.26679248982037507, -0.014910417266357001], -40.58458179553991, 5)
-
-# ╔═╡ 8d94edc6-042e-4932-a7ed-57d71d6f56a2
-function plot_datos(datos)
-	scatter(datos[datos.clase.=="positivo", :x], datos[datos.clase.=="positivo", :y], label="Positivo", color=:blue)
-	scatter!(datos[datos.clase.=="negativo", :x], datos[datos.clase.=="negativo", :y], label="Negativo", color=:red)
-end
-
-# ╔═╡ 8bb58a9c-d947-4470-9348-f8dc6c4d3e11
-plot_datos(datos)
-
-# ╔═╡ 953e4a5d-1094-49cf-86df-736a4166ab00
+# ╔═╡ 0f6e55dd-d1e4-4833-8c3f-a6390daff2a5
 md"""
-## Hiperplano de separación entre dos clases
-
-¿Cuál es la mejor recta que separa las muestras dejando a un lado las positivas y al otro las negativas? En principio, tenemos muchas opciones.
+Diseñado por Freepik (https://www.freepik.es)
 """
 
-# ╔═╡ 131778f5-3927-4daf-a5f0-1e69e65bc773
-function plot_hiperplanos(datos)
-	plot_datos(datos)
-	plot!([0, 10], [-2,-2.5], showlegend=false, linewidth=2)
-	plot!([0, 10], [-2.5, -2.4], showlegend=false, linewidth=2)
-	plot!([0, 10], [-1.75, -2.75], showlegend=false, linewidth=2)
-end
-
-# ╔═╡ bf8856f1-8e20-4288-9db8-906e12088412
-plot_hiperplanos(datos)
-
-# ╔═╡ 85589b93-c3fc-417f-bfda-0d44c9d5d4c7
+# ╔═╡ 8796c632-7302-4213-be40-67e7b11f5a35
 md"""
-## Hiperplano de separación entre dos clases
-
-Vamos a definir como **mejor solución** aquella línea que deja un mayor **margen** entre los dos conjuntos de datos.
+## Bases biológicas de las NN
 """
 
-# ╔═╡ 6fbac7ed-919b-4696-be02-9c88a7e9a3a2
+# ╔═╡ b64fa92a-dfc8-4049-a069-9a1c4f61b65c
+Resource(
+	url_imagenes * "sinapsis.png",
+	:alt => "Neurona",
+	:width => 600
+)
+
+# ╔═╡ 135e5c27-0f1a-46a5-9997-254c6547ff1e
+html"""
+<font size=2>
+By The original uploader was Nrets at English Wikipedia. - Transferred from
+en.wikipedia to Commons., CC BY-SA 3.0,
+https://commons.wikimedia.org/w/index.php?curid=2006912
+</font>
+"""
+
+# ╔═╡ 4022783b-c5a4-4df3-b342-51641fc60fdc
 md"""
-## Hiperplano de separación entre dos clases
+!!! info "Título"
+	Aquí el texto.
 
-Ya tenemos definido nuestro objetivo, encontrar el hiperplano de separación que deja el mayor margen entre las muestras de los dos conjuntos de datos.
-
+	Y más texto
 """
 
-# ╔═╡ 69d6b42a-a8fb-4590-9c41-1a5885ffe42d
+# ╔═╡ 5e36d267-f394-4b53-a29e-b68a297113a1
 md"""
-# Construir la solución
+# Estructura de las NN
+## Estructura de una neurona artificial
+
+Una neurona artificial:
 """
 
-# ╔═╡ 80ab3767-3a6f-4151-8c71-95b2290e40d0
+# ╔═╡ 4d082d8e-7b85-4e94-91b4-0e550ccd9458
+Resource(
+	url_imagenes * "neurona.png",
+	:width => 600
+)
+
+# ╔═╡ cabcaec7-3fca-4ea9-929f-0d3f3e6843a2
 md"""
-## Ecuación de la recta
-Los puntos de la recta que estamos buscando cumplen la siguiente ecuación:
-
-$y(x) = \theta^T x + \theta_0 = 0$
+## Estructura de una neurona artificial
+Activación de la neurona artificial. Cada seña de entrada se multiplica por 
+un peso y se añade un **bias**.
 """
 
-# ╔═╡ 51ae1229-3bbb-46cd-8721-70b8f93e4889
+# ╔═╡ df53f204-76e8-43f7-858f-48c5f8f78eeb
+Resource(
+	url_imagenes * "activacion.png",
+	:width => 600
+)
+
+# ╔═╡ c3685572-264d-48d9-aee6-142ae90576b3
 md"""
-!!! danger "Atención"
-
-Cuidado $\theta$ no es el vector director de la recta, de hecho es un vector 
-perpendicular a la recta (*Demostración*); y $\theta_0$ no es el corte con el eje de ordenadas.
+## Estructura de una neurona artificial
+Aunque **apilemos** varias capas el resultado es siempre lineal con respecto de 
+los valores de entrada (_Demostración_).
 """
 
-# ╔═╡ c7531d9b-19b1-4940-af5a-7adec5033039
+# ╔═╡ bbbc0b92-185b-4126-b858-e94af0211a6c
+Resource(
+	url_imagenes * "sin_funcion_activacion.png",
+	:width => 600
+)
+
+# ╔═╡ d0e46bda-cd81-4717-87b1-e5ef283f6e7b
 md"""
-## Ecuación de la recta
-Sí que es interesante que veamos cómo calcular la distancia de la recta al 
-origen, que viene dada por la siguiente expresión (*Demostración*):
-
-$d = \frac{\theta^T x}{\|\theta\|} = \frac{-\theta_0}{\| \theta \|}$
-
-Dónde $x$ es cualquier punto que pertenezca a la recta.
+Es necesario introducir la **no linearidad** de otro modo.
 """
 
-# ╔═╡ 2815c0a0-c83d-4f97-9877-7e842817d6ce
+# ╔═╡ 9d41b30b-afab-4f83-ae60-9fc50dea90b9
 md"""
-!!! info "Importante"
-Si multiplicamos el vector $\theta$ y el escalar $\theta_0$ por la misma 
-constante:
+## Estructura de una neurona artificial
 
-- La dirección del vector director no cambia.
-- La distancia de la recta al origen tampoco cambia.
-
+La función de activación es el ingrediente que introduce la no-linearidad en 
+las redes neuronales.
 """
 
-# ╔═╡ 1aff9435-6ee9-4028-aea3-482a2f46c099
+# ╔═╡ 3063a028-22e6-467f-82fb-139492ed4e6b
+Resource(
+	url_imagenes * "funcion_activacion.png",
+	:width => 600
+)
+
+# ╔═╡ 359e990e-41bc-43bc-9504-d520476ea035
 md"""
-## Criterio de clasificación
-
-El siguiente paso es establecer un criterio para decidir si una muestra 
-la clasificamos como positiva o negativa.
+Función de activación sigmoide.
+$\sigma(\omega x) = \frac{1}{1+e^{-\omega x}}$
 """
 
-# ╔═╡ ef1817d9-3e3f-44b8-bb7c-65cce84898ee
+# ╔═╡ 26ffe43c-fcda-4c52-be27-ce945f1084d9
 md"""
-## Criterio de clasificación
-La primera idea brillante es, ya que podemos ajustar $\theta$ y $\theta_0$ con 
-una constante y seguir teniendo la misma recta, lo vamos a hacer de tal modo que:
+## Estructura de una NN
 
-Las muestras positivas cumplan:
-
-$y(x_{+}) = \theta^T x_+ + \theta_0 \ge 1$
-
-Y las negativas:
-
-$y(x_{-}) = \theta^T x_- + \theta_0 \le -1$
-
+El perceptron (Rosenblatt, 1958) fue la primera propuesta de algoritmo 
+inspirado en el funcionamiento de las neuronas biológicas.
 """
 
-# ╔═╡ b4825656-168a-44c6-952e-5f228ae248c6
+# ╔═╡ aba74d40-c561-4492-a7a0-f49a69f6455e
+Resource(
+	url_imagenes * "perceptron.png",
+	:fig_align => :center,
+	:height => 250
+)
+
+# ╔═╡ a46f42c1-64a2-4a07-9ee7-e8517eb56dd8
+html"""
+<font size=2>
+Fuente: https://www.deep-mind.org/2023/03/26/the-universal-approximation-theorem/
+</font>
+"""
+
+# ╔═╡ aab30f28-b671-45f8-bea1-b637351ad432
 md"""
-## Criterio de clasificación
-Vamos intentar condensar ambas expresiones en una única expresión, para ello 
-definimos:
-
-$t_n = +1 \: si \: x_n: positiva$
-$t_n = -1 \: si \: x_n: negativa$
-
-Ahora podemos escribir:
-
-$t_n(y(x_n)) = t_n(\theta^T x_n + \theta_0) \ge 1 \\$
+Aunque esta arquitectura es muy sencilla, permite hacer tareas simples de 
+clasificación.
 """
 
-# ╔═╡ 8567201c-8811-4809-b3cd-a1d6ff4ae333
+# ╔═╡ 089c0310-259c-4158-b49f-10b25969beac
 md"""
-## Criterio de clasificación
+## Estructura de una NN
 
-O lo que es lo mismo:
-
-$\boxed{t_n(\theta^T x_n + \theta_0) - 1 \ge 0}$
-
-Donde la igualdad se cumple justo para los puntos que están en las líneas de 
-margen.
+El siguiente paso fue añadir sucesivas capas para mejorar los resultados 
+de las redes. Esta arquitectura se llama **Multi Layer Perceptron** (MLP).
 """
 
-# ╔═╡ 4ab666f2-078c-4414-8c77-151e38882b1f
+# ╔═╡ b6e330c6-8285-4f5b-a933-7c5a35f1fbab
+Resource(
+	url_imagenes * "estructura_red_neuronal.png"
+)
+
+# ╔═╡ 8e144c0b-8ae4-4865-931f-a52afa55965d
+html"""
+<font size=2>
+Fuente: https://www.deep-mind.org/2023/03/26/the-universal-approximation-theorem/
+</font>
+"""
+
+# ╔═╡ 53e3d912-fb70-4501-817d-e8568bea9b81
 md"""
-## Anchura del margen
-
-La anchura del margen $a$ es (*Demostración*):
-
-$a = \frac{\theta^T}{\| \theta \|} (v_+ - v_-) = \frac{1}{\| \theta \|} 
-(\theta^T v_+ - \theta^T v_-)$
-
-
-$t_n(\theta^T x_n + \theta_0) - 1 = 0$
-
-Para un punto límete en la zona positiva:
-
-$v_+ \rightarrow 1(\theta^T v_+ + \theta_0) - 1 = 0$
-$\theta^T v_+ = 1 - \theta_0$
-
-Para un punto límite en la zona negativa:
-
-$v_- \rightarrow -1(\theta^T v_- + \theta_0) - 1 = 0$
-$\theta^T v_- = -1 - \theta_0$
+# Entrenamiento de una NN
 """
 
-# ╔═╡ 009833dd-3e5d-424c-aec0-c0a353526cc1
+# ╔═╡ b4e00721-1b78-4cda-a26e-474d4fa4230a
 md"""
-## Anchura del margen
+## Entrenamiento de una NN
 
-Finalmente:
+El problema con estas redes es:
 
-$a = \frac{1}{\| \theta \|} [1 - \theta_0 - (-\theta_0 - 1)] = \frac{2}{\| \theta \|}$
+1. Si se conocen los pesos de la red es muy sencillo calcular la salida.
+1. Calcular los pesos para que la red ajuste las salidas a partir de las entradas es muy complicado.
+
+La solución al cálculo de los pesos de la red es el algoritmo de retro **propagación (back propagation)**. El algoritmo llamado **back propagation** fue aplicado en la década de 1980 para entrenar redes neuronales, en particular MLP.
 """
 
-# ╔═╡ d1df1292-66d0-4a60-bbaf-e71c799e7f54
+# ╔═╡ 1474cc4c-b3e4-4e14-9af8-11d05f1a8584
 md"""
-## Problema de optimización
+## Entrenamiento de una NN
 
-Resumiendo, la anchura que debemos maximizar es:
+El algoritmo **back propagation** es una combinación de varios ingredientes, 
+entre ellos:
 
-$a = \frac{2}{\| \theta \|}$
-
-Pero es más interesante minimizar su inversa al cuadrado:
-
-$h = \frac{1}{2} \| \theta \|^2$
-
-Con las restricciones (una por cada elemento del conjunto):
-
-$t_n(\theta^T x_n + \theta_0) - 1 \ge 0$
-
-Que es un problema de optimización. 
+1. Descenso de gradiente.
+1. Regla de la cadena en derivadas parciales.
 """
 
-# ╔═╡ 54104ab5-6417-4e32-a89d-2e85852bf243
+# ╔═╡ e365ac10-8744-41e6-a550-861e60108782
 md"""
-## Problema de optimización
+## Entrenamiento de una NN
 
-Para solucionarlo vamos a hacer uso de los 
-multiplicadores de Lagrange (*Ver Apéndice E de libro de Bishop*) lo que 
-implica definir la siguiente Lagrangiana (*Ejemplo*):
+De un modo muy somero el algoritmo funciona del siguiente modo:
 
-$L(\theta, \theta_0, \alpha_n) = \frac{1}{2} \| \theta \|^2 - \sum_{n=1}^N \alpha_n [t_n(\theta^T x_n + \theta_0) - 1]$
-
-Con todos los parámetros de Lagrange $\alpha_n \ge 0$.
-
-Fíjate en que la Lagrangiana depende de $(\theta, \theta_0, \alpha_n)$, y lo 
-que conocemos son las $x_n$ y $t_n$. Es un problema de optimización difícil de 
-resolver.
+1. Se inicializan, de manera aleatoria, los pesos de la red.
+1. Para cada dato del conjunto de entrenamiento, se calcula su salida.
+1. Se calcula el error entre la salida calculada y la real.
+1. Se utiliza descenso de gradiente para calcular los nuevos pesos de la última capa.
 """
 
-# ╔═╡ 1d7a822d-80f8-4c19-873d-06259663ff03
+# ╔═╡ f08f7c50-0b54-4c0d-b65a-b0389d41d2a9
 md"""
-## Problema de optimización
+## Entrenamiento de una NN
 
-$L(\theta, \theta_0, \alpha_n) = \frac{1}{2} \| \theta \|^2 - \sum_{n=1}^N \alpha_n [t_n(\theta^T x_n + \theta_0) - 1]$
+5. Se propaga hacia atrás la actualización de los pesos utilizando la regla de la cadena hasta que se actualizan los pesos de todas las capas.
+1. Se repite el proceso desde el punto 2, hasta un número determinado de pasos o hasta que la actualización de los pesos no es significativa en dos pasos consecutivos.
+
 """
 
-# ╔═╡ 86588b2e-d8de-45f7-af7a-27f88a739c2b
+# ╔═╡ 1a52c360-1fb4-49df-a0f2-8a75f0f981d8
 md"""
-!!! info "Nota"
-Los signos en la Lagrangiana son opuestos porque estamos maximizando la 
-primera expresión, pero minimizando la segunda.
+## Entrenamiento de una NN
+
+Detalles a tener en cuenta:
+
+1. El problema de optimización no es cuadrático (mínimo de la función de pérdidas), luego no está garantizado que el algoritmo se detenga en el mínimo global.
+1. El resultado depende de los valores aleatorios iniciales que se asignan a los pesos.
+1. El algoritmo puede **fallar** porque al propagar el gradiente este se **desvanezca** o **explote**.
+
 """
 
-# ╔═╡ 5938fc64-d79d-4068-9967-60e695cb7d7b
+# ╔═╡ 0a978bc5-bf88-4702-90ac-821604054683
 md"""
-## Problema de optimización
+## Entrenamiento de una NN
 
-El siguiente paso es encontrar los extremos de la Lagrangiana con respecto de 
-$\theta$ y $\theta_0$. Para ello, derivamos la Lagrangiana con respecto a ellos, 
-igualamos a cero y despejamos:
+En resumen, poder aplicar el algoritmo **back propagation** para entrenar redes 
+neuronales no es el final de la historia.
 
-$\frac{\partial L}{\partial \theta} = \theta - \sum_{n=1}^N \alpha_n t_n x_n = 0 
-\rightarrow \boxed{\theta = \sum_{n=1}^N \alpha_n t_n x_n}$
-$\frac{\partial L}{\partial \theta_0} = - \sum_{n=1}^N \alpha_n t_n = 0 
-\rightarrow \boxed{\sum_{n=1}^N \alpha_n t_n = 0}$
+Para realizar el ajuste de los pesos de la red necesitamos, entre otros, los 
+siguientes ingredientes:
 
-Parece que ya tenemos parte del problema solucionado, pero aún no del todo, 
-porque no conocemos el valor de las $\alpha_n$ y, de momento, no tenemos una 
-expresión para calcular $\theta_0$.
+1. Elegir unos **buenos** pesos aleatorios iniciales.
+1. Elegir la función de activación.
+1. Elegir un optimizador adecuado.
+
+Además de la propia arquitectura de la red y otros hiperparámetros en la etapa 
+de entrenamiento.
 """
 
-# ╔═╡ c4abe55a-dc53-44db-87f8-3894d8657eb2
+# ╔═╡ e4619111-2f92-4b45-8ab8-9fb9f8157f6f
 md"""
-## Problema de optimización
-
-La segunda idea brillante es sustituir la expresión para $\theta$ de la anterior 
-expresión en la Lagrangiana, y hacer uso de la segunda expresión, con lo que 
-la Lagrangina nos queda como (*Demostrar*):
-
-$L(\alpha_n) = -\frac{1}{2} \sum_{n=1}^N \sum_{m=1}^N \alpha_n \alpha_m t_n t_m 
-x_n^T x_m + \sum_{n=1}^N \alpha_n$
+# Las NN son aproximadores universales
 """
 
-# ╔═╡ d37e739b-051c-4566-a96b-d5f480f8b0e3
+# ╔═╡ c05393f4-df33-4945-9d20-3f92d8938588
 md"""
-## Problema de optimización
+## Teorema de aproximadores universales
 
-Si comparamos las dos expresiones:
+Una red neuronal con un única capa y un número arbitrario de neuronas puede ajustar cualquier función a la salida.
 
-$L(\theta, \theta_0, \alpha_n) = \frac{1}{2} \| \theta \|^2 - \sum_{n=1}^N \alpha_n [t_n(\theta^T x_n + \theta_0) - 1]$
-
-$L(\alpha_n) = -\frac{1}{2} \sum_{n=1}^N \sum_{m=1}^N \alpha_n \alpha_m t_n t_m 
-x_n^T x_m + \sum_{n=1}^N \alpha_n$
-
-La segunda tiene menos parámetros desconocidos. De hecho, la nueva expresión de
-la Lagrangiana es un problema cuadrático de minimización que siempre tiene
-solución numérica.
+[Esta referencia](https://www.deep-mind.org/2023/03/26/the-universal-approximation-theorem/) es una muy buena presentación del teorema de aproximadores universales.
 """
 
-# ╔═╡ b76e2333-b854-414e-a293-5a3c0c12d501
+# ╔═╡ 3dd87947-6800-4529-b057-3be85f454e21
 md"""
-## Problema de optimización
-
-$L(\alpha_n) = -\frac{1}{2} \sum_{n=1}^N \sum_{m=1}^N \alpha_n \alpha_m t_n t_m 
-x_n^T x_m + \sum_{n=1}^N \alpha_n$
-
-Se puede demostrar que este problema de optimización añade una nueva 
-restricción a las dos que ya tenemos, con lo que tenemos esta serie de 
-restricciones:
-
-$\alpha_n \ge 0$
-$t_n y(x_n) - 1 \ge 0$
-$\alpha_n [t_n y(x_n) - 1] = 0$
-
-La última restricción es la clave.
+## Teorema de aproximadores universales
+Este ejemplo muestra 50 puntos de la función $f(x) = x^2$ y el ajuste realizado 
+por una red neuronal (puntos) con una única capa y 800 neuronas.
 """
 
-# ╔═╡ 6be601d9-8531-4dc3-a144-109eb3404f54
+# ╔═╡ 595a9bb4-a6f5-4862-b405-3bd7edd735ce
+Resource(
+	url_imagenes * "ajuste_cuadrado.png"
+)
+
+# ╔═╡ dccb64be-ee47-495d-ab9a-439f0eafb4b0
 md"""
-## Problema de optimización
+## Teorema de aproximadores universales
 
-$\alpha_n [t_n y(x_n) - 1] = 0$
-
-Para que se cumpla esta condición tenemos dos opciones:
-
-$\alpha_n = 0$
-$t_n y(x_n) - 1 = 0$
-
-La primera opción nos dice que el vector $x_n$ (dato de entrenamiento) no contribuye 
-a la solución para obtener el valor de $\theta$.
-
-$\theta = \sum_{n=1}^N \alpha_n t_n x_n$
+Este otro ejemplo muestra el caso de la función $f(x) = seno(x)$. De nuevo 
+los puntos representan 50 valores estimados por la red con una única 
+capa de 500 neuronas.
 """
 
-# ╔═╡ 6d1d0839-80c9-4342-8be1-160be3e13bd8
+# ╔═╡ c86d2d32-bcaa-4a7f-ae07-60d7dd777003
+Resource(
+	url_imagenes * "ajuste_seno.png"
+)
+
+# ╔═╡ a8c7d8c1-f9e1-448d-8832-82f4e6df33b7
 md"""
-## Problema de optimización
+# Crear una NN con Flux
+## Biblioteca
+[Flux](https://fluxml.ai/) es una biblioteca escrita en Julia para trabajar con redes neuronales.
 
-La segunda opción:
+Para usar Flux, debemos importarla de este modo:
 
-$t_n y(x_n) - 1 = 0$
-
-Nos dice que el vector $x_n$ (dato de entrenamiento) está sobre la recta del 
-margen, y sí contribuye a la solución de $\theta$. 
-
- $x_n$ **es un vector de soporte!!!**.
-
-Con toda esta información, ahora sí, podemos calcular el valor de $\theta_0$ 
-que lo tenemos aún pendiente.
+```julia
+using Flux
+```
 """
 
-# ╔═╡ 4827551b-e68d-4014-8337-611c9063c8a8
+# ╔═╡ 7827ecab-178e-4286-9482-b787b95e949f
 md"""
-## Problema de optimización
+## Pasos para el entrenamiento de la red
 
-Sustituyendo en la expresión de la condición que el vector esté sobre la 
-recta del margen:
+Los pasos para crear y entrenar una red son:
 
-$t_n (\theta^T x_n + \theta_0) = 1$
-
-La expresión de $\theta$ (sumatorio sólo se extiende sobre los vectores de 
-soporte):
-
-$\theta = \sum_{x_m \in S} \alpha_m t_m x_m$
+1. Definir la arquitectura de la red.
+1. **Compilar** la red para seleccionar entre otros:
+    * Función de pérdidas.
+    * Optimizador.
+    * Métrica de evaluación del entrenamiento.
+1. Entrenar la red con un conjunto de datos.
 """
 
-# ╔═╡ 072b2b88-3b59-4c07-a6db-683b167fbbd8
+# ╔═╡ 57174712-848c-4868-89f3-5f6b67953312
 md"""
-## Problema de optimización
+## Crear la red
 
-Tenemos:
-
-$t_n \left[ \left( \sum_{x_m \in S} \alpha_m t_m x_m^T x_n \right) + \theta_0 \right] = 1$
-
-Que se puede modificar para facilitar el trabajo de los algoritmos de 
-optimización (*Bishop, 2006*).
+Como ejemplo, vamos a crear una red que ajuste los datos de la función seno:
 """
 
-# ╔═╡ fc88a32b-743a-4871-b230-01a011eb525a
-md"""
-## Problema de optimización
-
-Si la anterior expresión la multiplicamos por $t_n$ y sumamos sobre todos los 
-vectores de soporte, podemos despejar $\theta_0$ (*Demostración*):
-
-$\theta_0 = \frac{1}{N_S} \left[ \sum_{x_n \in S} \left( t_n - 
-\sum_{x_m \in S} \alpha_m t_m x_m^T x_n \right) \right]$
-
-Que junto a:
-
-$\theta = \sum_{x_m \in S} \alpha_m t_m x_m$
-
-Resuelve el problema de clasificación.
-"""
-
-# ╔═╡ ea6d7c95-821e-4aac-89e3-d31cf49df971
-md"""
-## Problema de optimización
-
-En la solución sólo están implicadas las $x_n \in S$, que hemos encontrado 
-resolviendo un problema de optimización cuadrático, las que hemos llamado 
-vectores de soporte.
-
-Cuando tenemos que clasificar una nueva muestra, aplicamos:
-
-$y(x) = \theta^T x + \theta_0$
-
-Si $y(x) > 0$ la muestra la clasificamos como positiva.
-
-Si $y(x) <0$ la muestra la clasificamos como negativa.
-
-El algoritmo de clasificación es muy rápido.
-"""
-
-# ╔═╡ 6d5b3e7b-7b66-4b95-9702-cf1979d14c05
-md"""
-## Resumen
-Lo que buscamos es la recta (hiperplano) que separa las muestras y tiene mayor 
-margen.
-
-1. Hemos partido de la ecuación de la recta.
-1. Hemos definido el criterio de clasificación de muestra positiva o negativa. 
-1. Hemos construido la Lagrangiana $\rightarrow$ problema de optimización.
-1. En la solución que encontramos sólo participan algunos de los datos 
-dentro de todo el conjunto.
-"""
-
-# ╔═╡ bbbe0d1c-acb9-4f69-9e38-8d5b89280c03
-md"""
-## Resumen
-
-Las máquinas de soporte vectorial funcionan muy bien cuando nuestro conjunto 
-de entrenamiento contiene unos cuantos miles de muestras. Si tenemos muchas 
-muestras, el entrenamiento puede ser lento.
-"""
-
-# ╔═╡ 1cc522fb-bc85-412f-973c-110704feb331
-md"""
-## Show me the code
-
-Después de la teoría, veamos cómo utilizar la implementación de MLJ
-(¿Qué es eso del kernel?).
-
-Primero cargamos la estructura para crear un SVM:
-"""
-
-# ╔═╡ 643abb55-37d8-4277-a3e4-3883a85c5ee3
-SVC = @load SVC pkg=LIBSVM verbosity=0
-
-# ╔═╡ 02be1603-d7bb-44bb-a2a6-371e417c046d
-md"""
-Una vez cargada, la instanciamos indicando que queremos usar un kernell lineal:
-"""
-
-# ╔═╡ ca98f95a-f479-43e5-bbfd-f47123ebd27d
-modelo = SVC(kernel=LIBSVM.Kernel.Linear)
-
-# ╔═╡ f3a85143-8ca8-4372-8b47-4944f17be226
-md"""
-Ahora definimos los datos:
-"""
-
-# ╔═╡ cbd7ba6e-2ac2-431c-a01c-f4e8017edd33
-X = select(datos, [:x, :y])
-
-# ╔═╡ 581cf399-766e-42ca-9112-78f99128440e
-y = datos.clase
-
-# ╔═╡ 537d3854-87c8-439e-9f66-643a44a91a3b
-md"""
-Finalmente, creamos la maquina que contiene el modelo y los datos; esto es propio de MLJ, para que el trabajo con cualquier modelo de ML se construya y entrene siguiendo el mismo procedimiento.
-"""
-
-# ╔═╡ 47c61751-73d4-4954-940a-dea937e1e8d6
-maquina = machine(modelo, X, y)
-
-# ╔═╡ 139b5358-8313-4613-b095-72c6361ebc16
-md"""
-Ahora ya podemos entrenar la máquina:
-"""
-
-# ╔═╡ 6ddba88f-ab66-469f-a5dd-68dfb97b235b
-fit!(maquina)
-
-# ╔═╡ eff50047-8b7b-4170-8ff5-f6eec94e45fd
-md"""
-Una vez entrenada, podemos ver cuales son los vectores de soporte que ha encontrado, y los podemos mostrar en una gráfica:
-"""
-
-# ╔═╡ 2f645347-30ad-43e3-9439-b60ea0a33136
-vectores_soporte = maquina.fitresult[1].SVs.X
-
-# ╔═╡ edffe592-e174-41a2-b697-279d4b7eda37
-function plot_soporte(vectores_soporte)
-	scatter!(vectores_soporte[1,:], vectores_soporte[2,:], markersize=7, label="Soporte", markeralpha=0, markerstrokealpha=1, markerstrokecolor=:black)
-end
-
-# ╔═╡ e7198063-24cf-4801-b196-02683a5e4e95
-function plot_datos_soporte(datos, vectores_soporte)
-	plot_datos(datos)
-	plot_soporte(vectores_soporte)
-end
-
-# ╔═╡ ee2743f1-c6cb-4bec-935c-b70af7c28afe
-plot_datos_soporte(datos, vectores_soporte)
-
-# ╔═╡ f3bb92ad-27e8-4b58-a6dd-b4eb67c64b05
-md"""
-Los coeficientes encontrados son el producto de $\alpha_m t_m$ de la ecuación:
-
-$\theta = \sum_{x_m \in S} \alpha_m t_m x_m$
-"""
-
-# ╔═╡ edf85cdc-ff72-4560-8c29-c79184bfeadc
-coefs = maquina.fitresult[1].coefs
-
-# ╔═╡ aacb9351-7d2e-4515-9f7d-f107c461676c
-md"""
-Por lo tanto, $\theta$ la podemos calcular como el producto:
-"""
-
-# ╔═╡ aa531714-7f84-4766-8bf8-67e3105cc3f3
-θ = vectores_soporte * coefs
-
-# ╔═╡ 1fc57d4e-e3c8-4cb9-b296-a4e719841cac
-md"""
-Y $\theta_0$ la podemos calcular como:
-"""
-
-# ╔═╡ 0aeb4801-9f35-44d2-90f9-5342fbc7af8a
-θ0s = sign.(coefs) - vectores_soporte' * vectores_soporte * coefs
-
-# ╔═╡ eda3131e-5d03-45de-8530-f757af210450
-θ0 = sum(θ0s) / length(θ0s)
-
-# ╔═╡ d72b00e7-7682-4183-8b8d-49889143616d
-md"""
-Ya tenemos todos los ingredientes para visualizarlos:
-"""
-
-# ╔═╡ 9f54f451-63b8-4399-b219-4170c260e50d
-function plot_limites(datos, vectores_soporte, θ, θ0)
-	min = minimum(datos.x)
-	max = maximum(datos.x)
-	d = 1.0 / norm(θ) # La mitad de la anchura del margen
-	plot!([min, max], [evalua(min, [θ[1],θ[2]], θ0), evalua(max, [θ[1],θ[2]], θ0)], color=:black, showlegend=false)
-	plot!([min, max], [evalua(min, [θ[1],θ[2]], θ0)+d, evalua(max, [θ[1],θ[2]], θ0)+d], color=:black, linestyle=:dash, showlegend=false)
-	plot!([min, max], [evalua(min, [θ[1],θ[2]], θ0)-d, evalua(max, [θ[1],θ[2]], θ0)-d], color=:black, linestyle=:dash, showlegend=false)
-end
-
-# ╔═╡ 3916ea5b-c11e-416e-b95f-760684f0f7ad
-function plot_datos_soporte_limites(datos, vectores_soporte, θ, θ0)
-	plot_datos(datos)
-	plot_soporte(vectores_soporte)
-	plot_limites(datos, vectores_soporte, θ, θ0)
-end
-
-# ╔═╡ e72c0f9c-7233-42da-af5c-0da3348e63fd
-plot_datos_soporte_limites(datos, vectores_soporte, θ, θ0)
-
-# ╔═╡ e9bb1b66-90b7-4d2a-bd08-eeccd5b89d58
-function G(datos, vectores_soporte, θ, θ0)
-	min = minimum(datos.x)
-	max = maximum(datos.x)
-	d = 1 / norm(θ) # La mitad de la anchura del margen
-	plot!([min, max], [evalua(min, [θ[1],θ[2]], θ0), evalua(max, [θ[1],θ[2]], θ0)], color=:black, showlegend=false)
-	plot!([min, max], [evalua(min, [θ[1],θ[2]], θ0)+d, evalua(max, [θ[1],θ[2]], θ0)+d], color=:black, linestyle=:dash, showlegend=false)
-	plot!([min, max], [evalua(min, [θ[1],θ[2]], θ0)-d, evalua(max, [θ[1],θ[2]], θ0)-d], color=:black, linestyle=:dash, showlegend=false)
-end
-
-# ╔═╡ 71103b9c-4d79-4f0e-845b-a84e8de1d063
-function plot_datos_limites(datos, vectores_soporte)
-	plot_datos(datos)
-	# min = minimum(datos.x)
-	# max = maximum(datos.x)
-	plot_limites(datos, vectores_soporte, θ, θ0)
-end
-
-# ╔═╡ f43e4aa9-29b0-4e94-8486-17c40fc385a7
-plot_datos_limites(datos, vectores_soporte)
-
-# ╔═╡ 9b1b2fd2-d2cb-44a5-8842-be320c17b3fb
-plot_datos_limites(datos, vectores_soporte)
-
-# ╔═╡ 4c8f525a-ca10-4854-a55a-8c620a21f9e8
-md"""
-# Muestras solapadas
-"""
-
-# ╔═╡ 64859989-d320-44d2-97da-4c08f75e17c2
-md"""
-## Muestras solapadas
-
-Antes de pasar a ver qué es el kernel, vamos a analizar el caso en el que las 
-muestras están solapadas, están en la región de la clase contraria.
-"""
-
-# ╔═╡ 4fa4e2da-bdd8-4337-bcd8-568f0c546079
-function datos_solapados(datos, θ, θ0)
-	copia = copy(datos)
-	xs = 10 * rand(2)
-	y = [evalua(x, θ, θ0) for x in xs]
-	positivo = y[1] + rand() .+ 1
-	negativo = y[2] - rand()
-	push!(copia, [xs[1], positivo, "negativo"])
-	push!(copia, [xs[2], negativo, "positivo"])
-	return copia
-end
-
-# ╔═╡ 74279119-259e-4527-a6eb-bc49d7d656c9
-solapados = datos_solapados(datos, [0.1,2.0], 5.0)
-
-# ╔═╡ 18dab33a-0097-45dd-bc64-e279a2f55a9d
-plot_datos(solapados)
-
-# ╔═╡ 4949384c-5eb4-4497-82b7-d5a075613fc4
-md"""
-## Muestras solapadas
-
-No vamos a entrar en el detalle de la demostración (*Bishop 2006*).
-
-La cantidad (relacionado con la distancia) que esta vez debemos minimizar es:
-
-$C \sum_{n=1}^N \xi_n+ \frac{1}{2} \| \theta \|^2$
-
-1.  $\xi_n = 1$ si $x_n$ está sobre la recta.
-1.  $\xi_n = 0$ si $x_n$ está sobre el margen o más allá.
-1.  $\xi_n < 1$ si el punto está entre el margen y la recta, lado correcto.
-1.  $\xi_n > 1$ si el punto está entre el margen y la recta, lado incorrecto.
-1.  $C$ es un parámetro de regularización.
-"""
-
-# ╔═╡ afc5cf1a-5bd4-4b68-8b77-0b83fc53f441
-maquina_solapados = machine(SVC(kernel=LIBSVM.Kernel.Linear), select(solapados, [:x, :y]), solapados.clase)
-
-# ╔═╡ 0fb4d386-44a8-4092-bf77-a729e857609c
-fit!(maquina_solapados)
-
-# ╔═╡ 36130a1c-6fb6-4c6f-b280-87a9c2573bda
-plot_datos_soporte_limites(solapados, maquina_solapados.fitresult[1].SVs.X, θ, θ0)
-
-# ╔═╡ 75055e24-2f7c-41eb-a643-b4f8b23cc150
-md"""
-# El truco del kernel
-"""
-
-# ╔═╡ 18bfb1ef-db71-455a-ac0c-00fb6db43f59
-function datos_linealmente_no_separables()
-	x = coerce([-4,-3,-2,2,3,4,-1,0,1], Continuous)
-	y = repeat([0], 9)
-	y² = [e*e for e in x]
-	clase = cat(repeat(["positivo"], 6), repeat(["negativo"], 3), dims=1)
-	clase = coerce(clase, Multiclass)
-	return DataFrame(x = x, y = y, clase = clase), DataFrame(x = x, y = y², clase = clase)
-end
-
-# ╔═╡ 52934098-0e3e-46e2-bc3d-d927d5c71dae
-datos_no_separables, datos_separables = datos_linealmente_no_separables()
-
-# ╔═╡ 6aae73b0-9f59-422a-a7b2-9d2c97297229
-md"""
-## Problemas linealmente no separable
-
-Observa el siguiente conjunto de datos:
-"""
-
-# ╔═╡ 79d9dfc6-9f8e-4fe9-953b-b11de1232adc
-plot_datos(datos_no_separables)
-
-# ╔═╡ 263ebdd6-8461-4207-8fdd-4bca929edbd1
-md"""
-Fíjate que cada muestra sólo tiene valor para una característica y la 
-etiqueta de la clase.
-"""
-
-# ╔═╡ e1274616-d152-4b2e-9f71-c2cdc4f3cc1f
-md"""
-## Problemas linealmente no separables
-
-Ahora, vamos a hacer un truco aumentando el número de características de cada 
-muestra $(x) \rightarrow (x, x^2)$:
-"""
-
-# ╔═╡ 56c22652-b91c-4f9f-b814-5144ff3c80ec
-plot_datos(datos_separables)
-
-# ╔═╡ c28301a5-b989-4448-8c5f-96d4164c35ba
-md"""
-## Problemas linealmente no separables
-
-Ahora el problema sí que es linealmente separable:
-"""
-
-# ╔═╡ bfa971c4-5352-40a6-92fd-eb0d8a0ac766
-maquina_separable = machine(SVC(kernel=LIBSVM.Kernel.Linear), select(datos_separables, [:x, :y]), datos_separables.clase) |> fit!
-
-# ╔═╡ 9d9a7d17-e611-4405-bfc5-c1d11ef99622
-"""
-	calcula_vectores_θ(maquina)
-
-Calcula los vectores de soporte, parámetro θ y θ0 de la `maquina`
-"""
-function calcula_vectores_θ(maquina)
-	vectores_soporte = maquina.fitresult[1].SVs.X
-	coeficientes = maquina.fitresult[1].coefs
-	θ = vectores_soporte * coeficientes
-	θ0s = sign.(coeficientes) - vectores_soporte' * vectores_soporte * coeficientes
-	θ0 = sum(θ0s) / length(θ0s)
-	return vectores_soporte, θ, θ0
+# ╔═╡ 9143e7f3-ddbd-4757-a202-7c7b7f4c7468
+function crea_datos()
+	x_t = Float32.(collect(range(0, 2π, 50))')
+	y_t = sin.(x_t)
+	x_train = shuffle(x_t)
+	y_train = sin.(x_train)
+	return x_t, y_t, x_train, y_train 
 end;
 
-# ╔═╡ 8c21e423-4d94-49d4-befe-060bebd9db13
-vectores_seperable, θ_separable, θ0_separable = calcula_vectores_θ(maquina_separable)
+# ╔═╡ cce25fb8-c343-4866-80fa-d2d9714d9731
+x_t, y_t, x_train, y_train = crea_datos();
 
-# ╔═╡ 7c46edc6-cb4d-48cb-a0fc-bfa932a19b88
-plot_datos_soporte_limites(datos_separables, vectores_seperable, θ_separable, θ0_separable)
+# ╔═╡ aa6459b3-3e45-4951-8279-54a4c72bf99c
+scatter(x_train[1,:], y_train[1,:], title="Función seno", legends=false)
 
-# ╔═╡ d4c709aa-7a89-4250-bd83-4b0601428d5a
+# ╔═╡ d0a3a855-bc5f-4c84-b735-80a8ac71d94c
 md"""
-Hemos ampliado el número de características en el conjunto de datos, y ahora el conjunto es separable.
+## Crear la red
+
+La red se define encadenando una serie de capas:
 """
 
-# ╔═╡ c729f381-b810-459c-8b16-ff88852f1e8d
-md"""
-## Problemas linealmente no separables
+# ╔═╡ 4312e730-bf64-4081-bf37-6062c3c3acbd
+modelo_seno = Chain(
+	Dense(1 => 500, tanh),
+	Dense(500 => 1)
+)
 
-Vamos a ver un ejemplo más complejo:
+# ╔═╡ 8498d094-5069-4fb6-8d12-9f1721f9b4ac
+md"""
+La red tiene la siguiente estructura:
+
+1. La capa de entrada con una neurona a la entrada y qunientas salidas hacia la siguiente capa densamente conectada (cada neurona de entradas se conecta con todas las neuronas de la siguiente capa)
+1. Una capa intermedia con quinientas neuronas a la entrada y una salida hacia la siguente capa densamente conectada.
+1. Una capa de salida con una neurona.
+
+Importante, la red tiene 1501 parámetros que entrenar.
 """
 
-# ╔═╡ f1c240f7-ef5d-4296-923b-0243735112ba
-function datos_circulares(muestras, separacion)
-	ϕ = 2π * rand(2*muestras)
-	x = cos.(ϕ)
-	y = sin.(ϕ)
-
-	x_positivas = [2 * d + sign(d) * separacion * rand() for d in x[1:muestras]]
-	x_negativas = [0.5 * d + sign(d) * separacion * rand() for d in x[muestras+1:2*muestras]]
-	y_positivas = [2 * d + sign(d) * separacion *rand() for d in y[1:muestras]]
-	y_negativas = [0.5 * d + sign(d) * separacion * rand() for d in y[muestras+1:2*muestras]]
-	x = cat(x_positivas, x_negativas, dims=1)
-	y = cat(y_positivas, y_negativas, dims=1)
-	clase = cat(repeat(["positivo"], muestras), repeat(["negativo"], muestras), dims=1)
-	clase = coerce(clase, Multiclass)
-	datos = DataFrame(x=x, y=y, clase=clase)
-	
-	return datos
-end
-
-# ╔═╡ 5ac9e1ca-ddd9-40ef-bbc0-0b70c7bf00ff
-datos_complicados = datos_circulares(25, 0.5)
-
-# ╔═╡ 73e33858-0c2f-45a5-9063-be5417f860a0
-function plot_datos_complicados(datos)
-	plot_datos(datos)
-	plot!(size=(400,400))
-end
-
-# ╔═╡ 69168a15-aa7a-4951-8d47-bca2fce8b8bd
-plot_datos_complicados(datos_complicados)
-
-# ╔═╡ ac224512-fe67-44fc-bd0d-e0875a1a621e
+# ╔═╡ 3a9b314f-7181-4e1e-9b87-e41d8b3bb49e
 md"""
-Claramente, no es linealmente separable.
+## Crear la red
+
+Ahora creamos el optimizador que vamos a utilizar, la métrica que va a usar el optimizador, y preparamos los datos:
 """
 
-# ╔═╡ 92004858-7f72-41ee-affa-645f63be89c2
+# ╔═╡ 8d12a618-19cd-4777-91e5-bf36c9490c17
+optimizador = Flux.setup(Adam(0.05), modelo_seno);
+
+# ╔═╡ df3f2655-66a2-4bf4-852b-c9574c2d2748
 md"""
-## Problemas linealmente no separables
-
-Para cada punto $p = (p_1,p_2)$ vamos a realizar la siguiente transformación:
-
-$\phi: \mathbb{R^2} \rightarrow \mathbb{R^3}$
-$(p_1, p_2) \rightarrow (p_1^2, p_2^2, \sqrt{2}p_1 p_2)$
-
-Ahora sí que podemos separar las muestras con un hiperplano:
+El optimizador que usamos en Adam con una tasa de aprendizaje $η = 0.05$
 """
 
-# ╔═╡ 68cbe021-7e17-48bb-875c-d938c797ecf4
-function visualizacion3d(datos)
-	positivos = datos[datos.clase .== "positivo", :]
-	negativos = datos[datos.clase .== "negativo", :]
-	x² = positivos.x .* positivos.x
-	y² = positivos.y .* positivos.y
-	xy = sqrt(2) .* positivos.x .* positivos.y
-	scatter(x², y², xy, label="Positivos")
-	x² = negativos.x .* negativos.x
-	y² = negativos.y .* negativos.y
-	xy = sqrt(2) .* negativos.x .* negativos.y
-	scatter!(x², y², xy, label="Negativos")
-end
+# ╔═╡ 5883dec1-c9e2-4b1a-b53d-f87f85f30db2
+perdidas(modelo, X, y) = Flux.Losses.mse(modelo(X), y);
 
-# ╔═╡ dc253228-bc9b-4f3b-9e32-e425525d1f2b
-visualizacion3d(datos_complicados)
+# ╔═╡ 5da5c8fa-a0e8-4f0d-8eaf-4fd0b2c00ed4
+datos = [(x_train, y_train)];
 
-# ╔═╡ 51855f1c-4e7b-45a3-8de5-d3a6308f6984
+# ╔═╡ 0f9f1ef8-a591-45ce-8c97-507144441660
 md"""
-## De nuevo la Lagrangiana
+## Entrenar la red
 
-Por otro lado, esta es la lagrangiana que hemos minimizado:
-
-$L(\alpha_n) = -\frac{1}{2} \sum_{n=1}^N \sum_{m=1}^N \alpha_n \alpha_m t_n t_m 
-x_n^T x_m + \sum_{n=1}^N \alpha_n$
-
-El punto importante es que aparecen términos del producto escalar de dos 
-puntos del conjunto de entrenamiento $x_n^T, x_m$, con:
-
-$x_n, x_m \in \mathbb{R^D}$
-
-Donde $D$ es la dimensión del espacio.
+Finalmente ya podemos entrenar la red:
 """
 
-# ╔═╡ 4678c32a-3c64-459d-bebf-d1bfd345137b
-md"""
-## De nuevo la Lagrangiana
-
-Quizás, la lagrangiana no se pueda minimizar en un espacio de dimensión $D$, 
-pero sí se puede minimizar en un espacio de dimensión superior:
-
-$\phi: \mathbb{R^D} \rightarrow \mathbb{R^E}$
-$x \in \mathbb{R^D} \rightarrow \phi(x) \in \mathbb{R^E}$
-
-Con $E > D$.
-
-$L(\alpha_n) = -\frac{1}{2} \sum_{n=1}^N \sum_{m=1}^N \alpha_n \alpha_m t_n t_m 
-\phi(x_n^T) \phi(x_m) + \sum_{n=1}^N \alpha_n$
-"""
-
-# ╔═╡ 0e7bf41b-3935-4f0c-a27e-a8cf17ab51f6
-md"""
-## El truco del kernel
-
-El punto importe es el producto de los vectores transformados:
-
-$\phi(x_n^T) \phi(x_m)$
-
-Puede ocurrir que al transformar los vectores de partida lleguemos a un 
-espacio con muchas más dimensiones que el original, y el producto de los 
-vectores transformados sea impracticable (Ej: el kernel gaussiano transforma 
-un vector de dimensión n a un espacio de infinitas dimensiones).
-"""
-
-# ╔═╡ 101a42d9-b3cf-48e8-b6a9-a66cdcb25937
-md"""
-## El truco del kernel
-El truco consiste en elegir una transformación $\phi(\cdot)$ de tal modo que 
-cuando tenga que hacer el producto escalar $\phi(x_n^T) \phi(x_m)$ no tenga 
-que hacer las transformaciones $\phi(\cdot)$ de cada vector porque sé como 
-calcular ese producto sin tener que hacerlas.
-
-Volvamos al ejemplo inicial:
-
-$\phi: \mathbb{R^2} \rightarrow \mathbb{R^3}$
-$x = (x_1, x_2) \rightarrow \phi(x) = (x_1^2, x_2^2, \sqrt{2}x_1 x_2)$
-$x^{\prime} = (x_1^{\prime}, x_2^{\prime}) \rightarrow \phi(x^{\prime}) = 
-(x_1^{\prime 2}, x_2^{\prime 2}, \sqrt{2}x_1^{\prime} x_2^{\prime})$
-"""
-
-# ╔═╡ 3c56b4fa-1953-4487-a9d7-7217296a6aa4
-md"""
-## El truco del kernel
-
-Multiplicamos escalarmente los vectores transformados:
-
-$\phi(x) \phi(x^{\prime}) = (x_1^2, x_2^2, \sqrt{2}x_1 x_2) \cdot 
-(x_1^{\prime 2}, x_2^{\prime 2}, \sqrt{2}x_1^{\prime} x_2^{\prime}) =$
-$x_1^2 x_1^{\prime 2} + x_2^2 x_2^{\prime 2} + 2 x_1 x_1^{\prime} x_2 x_2^{\prime} =$
-$[(x_1, x_2) \cdot (x_1^{\prime}, x_2^{\prime})]^2 = k(x, x^{\prime})$
-
-El kernel $k(x, x^{\prime})$ se calcula a partir de los vectores sin transformar, 
-y el resultado es el mismo que el del producto escalar de los vectores 
-transformados.
-"""
-
-# ╔═╡ e54f0557-6fb4-47b3-babf-ad26ed84bad4
-md"""
-## El truco del kernel
-
-Luego:
-
-$L(\alpha_n) = -\frac{1}{2} \sum_{n=1}^N \sum_{m=1}^N \alpha_n \alpha_m t_n t_m 
-\phi(x_n^T) \phi(x_m) + \sum_{n=1}^N \alpha_n$
-
-$L(\alpha_n) = -\frac{1}{2} \sum_{n=1}^N \sum_{m=1}^N \alpha_n \alpha_m t_n t_m 
-k(x_n, x_m) + \sum_{n=1}^N \alpha_n$
-
-Lo complicado es encontrar los kernels.
-"""
-
-# ╔═╡ 230bdcb8-11cb-4be8-95d2-db72d46e9b2a
-md"""
-## El truco del kernel
-
-La condición (**fuerte**) que debe cumplir el kernel es que debe ser igual al 
-producto escalar de los vectores transformados.
-
-Algunos kernels:
-
-- Lineal: $k(x,x^{\prime}) = x^t x^{\prime}$
-- Polinomial: $k(x,x^{\prime}) = (\gamma x^t x^{\prime} + r)^d$
-- Gaussiano: $k(x,x^{\prime}) = exp(-\gamma \|x^t x^{\prime}\|^2$
-- Sigmoide: $k(x,x^{\prime}) = tanh(\gamma x^T x^{\prime} + r)$
-"""
-
-# ╔═╡ 1d54255b-2aa3-40e7-bc54-bcd1ca83e00b
-md"""
-## El truco del kernel
-
-Resulta más sencillo construir nuevos kernels a partir de kernels conocidos 
-usando las siguientes reglas:
-
--  $k(x,x^{\prime}) = ck_1(x,x^{\prime})$
--  $k(x,x^{\prime}) = f(x)k_1(x,x^{\prime}) f(x^{\prime})$
--  $k(x,x^{\prime}) = k_1(x,x^{\prime}) + k_2(x,x^{\prime})$
--  $k(x,x^{\prime}) = k_1(x,x^{\prime}) k_2(x,x^{\prime})$
-"""
-
-# ╔═╡ 1c0b295f-ebac-4f47-8241-da3abbc17ae7
-md"""
-## Show me the code
-
-Vamos a probar un kernel gaussiano:
-"""
-
-# ╔═╡ 5def91d4-b9ef-4aa6-b0eb-d2b7c4ef6b86
-maquina_complicada = machine(SVC(kernel=LIBSVM.Kernel.RadialBasis), select(datos_complicados, [:x, :y]), datos_complicados.clase) |> fit!
-
-# ╔═╡ f1ee699d-535a-436a-ba30-6face48018db
-md"""
-## Show me the code
-
-Hacemos las predicciones (estamos utilizando el conjunto de datos de entrenamiento!!!), y calculamos la fracción de datos mal clasificados
-"""
-
-# ╔═╡ 53b5d2f7-2cfd-4ec3-b2c9-f9d8af30718e
-ŷ = predict(maquina_complicada, select(datos_complicados, [:x, :y]))
-
-# ╔═╡ d918ad69-de3f-4009-8527-e601368e030b
-misclassification_rate(ŷ, datos_complicados.clase)
-
-# ╔═╡ 98f63cb9-2d89-466b-8217-2ad6b982c5b9
-md"""
-Todos los dato se han clasificado bien.
-"""
-
-# ╔═╡ fd82cb57-a7b4-445d-86d5-0d7aaf12f878
-md"""
-## Show me the code
-
-Veamos la frontera de clasificación para este caso:
-"""
-
-# ╔═╡ c0ded5f0-d008-416d-95db-9a6b60f24f13
-function clase(x,y, maquina=maquina_complicada)
-	ŷ = predict(maquina, Matrix([x y]))
-	if categorical(["positivo"]) == ŷ
-		return 1
-	else
-		return 2
+# ╔═╡ 5b9f4efc-8917-4a9b-bba7-5c5477bf4cbf
+with_logger(NullLogger()) do
+	for epoca in 1:1000
+		Flux.train!(perdidas, modelo_seno, datos, optimizador)
 	end
 end
 
-# ╔═╡ 2dceb906-68d8-4334-bc0e-254fa2f87872
-function plot_kernel_gaussiano(datos, maquina)
-	r = -3:0.02:3
-	plot_datos(datos_complicados)
-	plot_datos_soporte(datos_complicados, maquina_complicada.fitresult[1].SVs.X)
-	contour!(r, r, clase, f=true, nlev=2, alpha=0.0, cbar=false, size=(400,400))
-end
-
-# ╔═╡ 5a3c78c9-6cfa-4cde-8815-0260cf468c2e
-plot_kernel_gaussiano(datos_complicados, maquina_complicada)
-
-# ╔═╡ f92f1c74-5d7f-4c11-b140-5c8be0ae80e2
-md"""
-## Creatividad
-
-¿Se te ocurre alguna otra solución ad-hoc para solucionar el problema de 
-clasificación de estos datos?
-"""
-
-# ╔═╡ 0b5cd707-9937-44aa-aa9e-d02d806776e9
-plot_datos_complicados(datos_complicados)
-
-# ╔═╡ 498ef0a1-b7e1-4829-89b4-21c904a87d2d
-md"""
-# Aplicación
-"""
-
-# ╔═╡ 3e3792e8-da1c-48ef-a321-0dca7cb7da2e
-md"""
-## Aplicación a Howell
-
-Vamos a aplicar SVM al caso de los datos de Howell. Primero cargamos los datos:
-
-Vamos a utilizar,
-inicialmente un kernel lineal:
-"""
-
-# ╔═╡ cd24b8a6-bc56-49e2-a396-bc64fd4ad111
-function carga_datos_howell()
-	url = "https://raw.githubusercontent.com/AprendizajeAutomaticoUJI/DataSets/refs/heads/master/Howell1.csv"
-	data = CSV.File(HTTP.get(url).body) |> DataFrame
-	adultos = data[data.age .> 17, [:weight, :height, :male]]
-	# adultos = data[:, [:weight, :height, :male]]
-	rename!(adultos, [:x, :y, :clase])
-	adultos[!, :clase] = [if x == 1 "positivo" else "negativo" end for x in adultos.clase]
-	adultos[!, :clase] = coerce(adultos.clase, OrderedFactor)
-	return adultos
-end
-
-# ╔═╡ b1747147-a6e3-4060-8e2f-7df50bef2de0
-adultos = carga_datos_howell()
-
-# ╔═╡ b142e855-46c9-47fe-a54b-ffc10eab7419
-md"""
-Dividimos los datos en un conjunto de entrenamiento y otro de pruebas:
-"""
-
-# ╔═╡ d07c2b6f-3145-4f2a-a9e9-acaac491621b
-entrenamiento_howell, prueba_howell = partition(eachindex(adultos.clase), 0.75, shuffle=true)
-
-# ╔═╡ 34681997-7bb6-4d89-8117-02d189b0daec
-md"""
-Creamos la máquina:
-"""
-
-# ╔═╡ 371e9ae2-ee34-4b76-9f3f-836b837d0e9a
-maquina_howell = machine(SVC(kernel=LIBSVM.Kernel.Linear), select(adultos, [:x, :y]), adultos.clase)
-
-# ╔═╡ a4e1a29d-8ad5-42e0-9197-021bd20df262
-md"""
-La entrenamos:
-"""
-
-# ╔═╡ 22f06593-18e7-40e1-a638-eb64fb3776da
-fit!(maquina_howell, rows=entrenamiento_howell)
-
-# ╔═╡ 28bdecaf-7954-4329-a3c5-d48c0e42e463
-md"""
-Estimamos la clase de los datos de prueba:
-"""
-
-# ╔═╡ b1c6dd76-0e10-4361-9549-5de0d2ad3a7e
-ŷ_howell = predict(maquina_howell, rows=prueba_howell)
-
-# ╔═╡ a3014ff8-729c-46d1-aa13-0be2490e22d5
-md"""
-La ratio de muestras mal clasificadas:
-"""
-
-# ╔═╡ a3976136-6172-4283-8343-2ac5d42e71d5
-misclassification_rate(ŷ_howell, adultos[prueba_howell, :clase])
-
-# ╔═╡ 1dc1e60e-d51d-493e-8cf2-a076cb114ca1
-md"""
-La matriz de confusión:
-"""
-
-# ╔═╡ a85d5c45-90da-4a27-9a45-e154244078db
-confusion_matrix(ŷ_howell, adultos[prueba_howell, :clase])
-
-# ╔═╡ 9e783f7b-c0fd-4221-a015-45b74c76f220
-md"""
-Mostramos gráficamente el resultado:
-"""
-
-# ╔═╡ 777908f7-b3bc-430e-b94c-845b52cb3df1
-function plot_howell_svm(adultos, maquina)
-	vectores_soporte = maquina.fitresult[1].SVs.X
-	coeficientes = maquina.fitresult[1].coefs
-	θ = vectores_soporte * coeficientes
-	# print(θ, "  ", norm(θ))
-	θ0s = sign.(coeficientes) - vectores_soporte' * vectores_soporte * coeficientes
-	θ0 = sum(θ0s) / length(θ0s)
-	plot_datos_soporte_limites(adultos, vectores_soporte, θ, θ0)
-end
-
-# ╔═╡ 24470b0d-35ce-45bc-9848-40a1cf8641a5
-plot_howell_svm(adultos, maquina_howell)
-
-# ╔═╡ e8f72d35-67a8-4672-ac17-8d12dce84f49
-md"""
-Ahora vamos a probar un kernel RBF (Radial Basis Function). Es muy sencillo, sólo tenemos que indicarlo en el moento de crear la máquina, y el resto del procedimiento es el mismo:
-"""
-
-# ╔═╡ fad4ea0c-39c1-4f75-91b8-2b9a877e93f6
-maquina_howell_rbf = machine(SVC(kernel=LIBSVM.Kernel.RadialBasis), select(adultos, [:x, :y]), adultos.clase)
-
-# ╔═╡ be4c0c6c-e9c6-4f38-9e5a-41d721b7bdab
-md"""
-Entrenamos la máquina:
-"""
-
-# ╔═╡ aa89be4d-ccd1-4086-bb16-1cad7c656b0b
-fit!(maquina_howell_rbf, rows=entrenamiento_howell)
-
-# ╔═╡ 15c5b90e-f19a-4639-92b4-9ec4cdde09ec
-md"""
-Estimamos la clase de los datos de prueba:
-"""
-
-# ╔═╡ a70d2ea4-612f-4832-a55d-fe51d894631e
-ŷ_howell_rbf = predict(maquina_howell_rbf, rows=prueba_howell)
-
-# ╔═╡ 7245d4bf-9ae9-42c4-b217-45ef3ad5daf1
-md"""
-Mostramos la matriz de confusión, es muy parecida al caso lineal:
-"""
-
-# ╔═╡ 0185a95b-4e1e-432c-9241-3a7cd70e5d05
-confusion_matrix(ŷ_howell_rbf, adultos[prueba_howell, :clase])
-
-# ╔═╡ 7ec54078-3007-4ac3-b213-4c5bcf7b1176
-md"""
-La ratio de muestras mal clasificadas:
-"""
-
-# ╔═╡ ff333f42-9a30-4d38-ac92-e95e1e73f72a
-misclassification_rate(ŷ_howell_rbf, adultos[prueba_howell, :clase])
-
-# ╔═╡ 08018313-909f-4050-91aa-58af6d5a7245
-md"""
-Y finalmente mostramos la frontera de decisión:
-"""
-
-# ╔═╡ c89e1126-3b58-4acc-95b9-21105077300a
+# ╔═╡ 07bb71de-f226-40fb-b735-73863bf0688e
 begin
-	r1 = 30:0.1:70
-	r2 = 130:0.1:180
-	plot_datos(adultos)
-	plot_datos_soporte(adultos, maquina_howell_rbf.fitresult[1].SVs.X)
-	c(x, y) = clase(x, y, maquina_howell_rbf)
-	contour!(r1, r2, c, f=true, nlev=2, alpha=0.0, cbar=false, size=(400,400))
+	plot(y_t[1,:], label="Seno")
+	scatter!(modelo_seno(x_t)[1,:], label="Ajuste")
 end
 
-# ╔═╡ 0c14eae8-a69b-4b25-a226-1cc76204c6d7
+# ╔═╡ 209d3b9a-67db-4b28-804a-393aaa2e64e9
+"MSE: ", perdidas(modelo_seno, x_train, y_train)
+
+# ╔═╡ a05f8886-30fe-4a08-861a-b730709032d9
+md"""
+El ajuste es no está nada mal.
+"""
+
+# ╔═╡ 7f9436bf-06ab-41fb-a435-61f815b6787e
+md"""
+## Entrenar la red
+
+Vamos a probar con una red con dos capas densamente conectadas, pero esta vez usando sólo tres neuronas en cada capa:
+"""
+
+# ╔═╡ 2b7ee756-8187-4176-b731-7bdfbcf2ec05
+modelo_seno_profundo = Chain(
+	Dense(1 => 3, tanh),
+	Dense(3 => 3, tanh),
+	Dense(3 => 1)
+)
+
+# ╔═╡ 4487a15e-2c7c-4aad-91af-5859d65c775c
+md"""
+La red tiene la siguiente estructura:
+
+1. La capa de entrada con una neurona a la entrada y tres salidas hacia la siguiente capa densamente conectada (cada neurona de entradas se conecta con todas las neuronas de la siguiente capa)
+1. Una capa intermedia con tres neuronas a la entrada y tres salidas hacia la siguente capa densamente conectada.
+1. Una capa de salida con una neurona.
+
+Importante, en este caso la red sólo tiene 22 parámetros que entrenar.
+"""
+
+# ╔═╡ 839d9885-b6f7-4c23-ae5f-8db14145c553
+md"""
+## Entrenar la red
+
+Sólo nos queda definir el optimizador, y entrenar la red:
+"""
+
+# ╔═╡ 13f55aab-0a02-4bc7-9b9a-8765c15586b8
+optimizador_profundo = Flux.setup(Adam(0.05), modelo_seno_profundo);
+
+# ╔═╡ 398910d5-be33-49a4-a761-8bcbcd872eb8
+with_logger(NullLogger()) do
+	for epoca in 1:1000
+		Flux.train!(perdidas, modelo_seno_profundo, datos, optimizador_profundo)
+	end
+end
+
+# ╔═╡ af5c6a1f-5053-49a4-a2de-7bc7139f58bb
+begin
+	plot(y_t[1,:], label="Seno")
+	scatter!(modelo_seno_profundo(x_t)[1,:], label="Ajuste")
+end
+
+# ╔═╡ a306ffcd-5f77-4082-891d-0fbe202f8181
+perdidas(modelo_seno_profundo, x_train, y_train)
+
+# ╔═╡ fb46d3c7-e9d5-466e-b0dc-851d6da3c755
+md"""
+El ajuste es incluso un poco mejor.
+"""
+
+# ╔═╡ 28882d51-20d8-4fa8-8ebd-0dc3e3198af0
+md"""
+## Ejemplo con los datos de Howell
+
+Vamos a probar con los datos de la base de datos de Howell. Empezamos, como en el ejemplo de regresión polinomial, intentado ajustar el valor de peso a partir de la altura.
+
+Primero leemos los datos:
+"""
+
+# ╔═╡ 2468a791-2cdb-4ace-9037-c68f828e3608
+howell = CSV.File(HTTP.get("https://raw.githubusercontent.com/AprendizajeAutomaticoUJI/DataSets/refs/heads/master/Howell1.csv").body) |> DataFrame
+
+# ╔═╡ 24e3d668-c6fd-475b-8eae-afed0343123e
+md"""
+## Ejemplo con los datos de Howell
+
+Vamos a dividir el cojunto de datos inicial en un conjunto de entrenamiento y otro de validación, para ver los buena que es la red:
+"""
+
+# ╔═╡ ab5c1498-7e07-4301-9de8-b1a08b7a5482
+caracteristicas = [:weight, :age, :male]
+
+# ╔═╡ 792ae261-d6a5-4efc-b395-54538fe5c167
+entrenamiento_howell, validacion_howell = partition(howell, 0.8, rng=123)
+
+# ╔═╡ b2d8ab25-73e2-45d0-81d8-5de3b34ea2ba
+X_entrenamiento_howell = Float32.(Matrix(entrenamiento_howell[:, caracteristicas])')
+
+# ╔═╡ 4363ae8d-ecc6-41fa-aa5d-6373aa281dcb
+y_entrenamiento_howell = Float32.(entrenamiento_howell.height')
+
+# ╔═╡ 06a400a3-9ca2-4038-be73-9be58ff22d94
+X_validacion_howell = Float32.(Matrix(validacion_howell[:, caracteristicas])')
+
+# ╔═╡ 96cf537d-eaf7-4790-962d-de6eb3922ef3
+y_validacion_howell = Float32.(validacion_howell.height')
+
+# ╔═╡ 8f023a0e-94d9-4390-a048-3e815d13dd75
+md"""
+## Ejemplo con los datos de Howell
+
+Ahora creamos la red, el optimizador y definimos los datos:
+"""
+
+# ╔═╡ 6b510711-b6a5-40b6-84da-0d463bb6f6c1
+red_howell = Chain(
+	Dense(size(X_entrenamiento_howell, 1) => 3, tanh),
+	Dense(3 => 3, tanh),
+	Dense(3 => 3, tanh),
+	Dense(3 => 1)
+)
+
+# ╔═╡ d48b0309-1d28-40ea-a848-7dee2496159e
+optimizador_howell = Flux.setup(Adam(), red_howell)
+
+# ╔═╡ 17fc15fd-1eda-4dae-ae51-e0b5610f0041
+datos_howell = [(X_entrenamiento_howell, y_entrenamiento_howell)]
+
+# ╔═╡ c3d0c723-0852-4365-9e4c-b64d95a1bcb8
+md"""
+## Ejemplo con los datos de Howell
+
+Entrenamos la red:
+"""
+
+# ╔═╡ 8f400ee4-3e73-4770-b39a-317df4ae9b0e
+function entrena()
+	mse = []
+	mse_validacion = []
+	with_logger(NullLogger()) do
+		for epoca in 1:50000
+			Flux.train!(perdidas, red_howell, datos_howell, optimizador_howell)
+			push!(mse, perdidas(red_howell, X_entrenamiento_howell, y_entrenamiento_howell))
+			push!(mse_validacion, perdidas(red_howell, X_validacion_howell, y_validacion_howell))
+		end
+	end
+	@info perdidas(red_howell, X_entrenamiento_howell, y_entrenamiento_howell)
+	@info perdidas(red_howell, X_validacion_howell, y_validacion_howell)
+	(mse, mse_validacion)
+end;
+
+# ╔═╡ 855f71e1-105d-4082-9097-8587de06ce45
+md"""
+## Ejemplo con los datos de Howell
+
+Vemos los resultados:
+"""
+
+# ╔═╡ 63a26003-f633-4d93-a135-369ae8d802c5
+mse, mse_validacion = entrena()
+
+# ╔═╡ bb922155-c271-49ff-9526-3d7a228ace37
+let
+	plot(mse, label="Entrenamiento", ylims=(0, 100))
+	plot!(mse_validacion, label="Validación")
+end
+
+# ╔═╡ 7ac53bef-54ba-4a4b-9a99-de6423249572
+md"""
+## Ejemplo con los datos de Howell
+
+Este es el ajuste:
+"""
+
+# ╔═╡ ff74834b-f674-4ec9-a1d0-5422dd228915
+let
+	scatter(entrenamiento_howell.weight, entrenamiento_howell.height, title="Ajuste con MLP", xlabel="weight", ylabel="height", label="Real")
+	scatter!(entrenamiento_howell.weight, red_howell(X_entrenamiento_howell)[1,:], label="Ajuste")
+end
+
+# ╔═╡ d5ec1fbe-138d-4da1-83de-95dd1565dac7
+md"""
+## Ejemplo con los datos de Howell
+
+Si separamos por sexo:
+"""
+
+# ╔═╡ 5f28926b-f7a4-4a6f-a37d-d59fbd1c01c5
+let
+	l = @layout[
+		a{0.6w} [grid(2,1)]
+	]
+	X_howell_hombres = Float32.(Matrix(entrenamiento_howell[entrenamiento_howell.male.==1, caracteristicas])')
+	X_howell_mujeres = Float32.(Matrix(entrenamiento_howell[entrenamiento_howell.male.==0, caracteristicas])')
+	scatter(entrenamiento_howell[entrenamiento_howell.male.==1, :weight], entrenamiento_howell[entrenamiento_howell.male.==1, :height], label="Hombres", color=:blue, xlabel="Peso", ylabel="Altura")
+	scatter!(entrenamiento_howell[entrenamiento_howell.male.==0, :weight], entrenamiento_howell[entrenamiento_howell.male.==0, :height], label="Mujeres", color=:green)
+	scatter!(entrenamiento_howell[entrenamiento_howell.male.==1, :weight], red_howell(X_howell_hombres)[1,:], label="Hombres ajuste", color=:orange)
+	p = scatter!(entrenamiento_howell[entrenamiento_howell.male.==0, :weight], red_howell(X_howell_mujeres)[1,:], label="Mujeres ajuste", color=:magenta)
+	
+	scatter(entrenamiento_howell[entrenamiento_howell.male.==1, :weight], entrenamiento_howell[entrenamiento_howell.male.==1, :height], label="Hombres", color=:blue, xlabel="Peso", ylabel="Altura")
+	p1 = scatter!(entrenamiento_howell[entrenamiento_howell.male.==1, :weight], red_howell(X_howell_hombres)[1,:], label="Hombres ajuste", color=:orange)
+
+	scatter(entrenamiento_howell[entrenamiento_howell.male.==0, :weight], entrenamiento_howell[entrenamiento_howell.male.==0, :height], label="Mujeres", color=:green)
+	p2 = scatter!(entrenamiento_howell[entrenamiento_howell.male.==0, :weight], red_howell(X_howell_mujeres)[1,:], label="Mujeres ajuste", color=:magenta, xlabel="Peso", ylabel="Altura")
+	plot(p, p1, p2, layout=l, size=(1200, 600))
+end
+
+# ╔═╡ 3584250c-f199-4c27-ba22-d359b245b02c
+md"""
+# Redes neuronales como clasificadores
+"""
+
+# ╔═╡ e67aa374-2ad6-42ab-8127-5658a8236363
+md"""
+## Clasificación con NN
+
+Ahora vamos a utilizar una red neuronal, pero esta vez para tareas de 
+clasificación.
+
+Vamos a utilizar el conjunto de datos de Howell, e intentar predecir el sexo 
+de una de las muestras a partir del resto de sus características. Vamos a 
+utilizar sólo los datos de las personas adultas del conjunto de datos.
+"""
+
+# ╔═╡ ed7fc6a7-6f89-4d88-92aa-ec96e9171c6a
+md"""
+## Clasificación con NN
+
+No quedamos sólo con las personas adultas, y dividimos el conjunto inicial en un subconjunto de datos de entrenamiento y otro de pruebas:
+"""
+
+# ╔═╡ fd9766e3-4a9f-4746-b695-c2b20b192897
+adultas = howell[howell.age .> 17, :]
+
+# ╔═╡ 75a7fc03-26fc-458d-bb0e-e0ed26b0ff65
+md"""
+Para que los experimentos sean reproducibles inicializamos la semilla del generador de números aleatorios:
+"""
+
+# ╔═╡ 4320b284-f595-4408-920a-d93cbfae2116
+semilla = 2
+
+# ╔═╡ 7a08c1e0-de42-4644-ab97-5bb3e5e07805
+Random.seed!(semilla)
+
+# ╔═╡ 6e0c2dc5-0037-480f-9b47-0ef951a0af86
+entrenamiento_clasificacion_howell, prueba_clasificacion_howell = partition(adultas, 0.75, rng=semilla);
+
+# ╔═╡ 237e0af0-7abd-4d0d-82a5-be590e3a0555
+md"""
+Creamos una función de utilidad para normalizar los datos, ya que las redes funcionan mejor cuando el rango de datos es similar para todas las caracteríscias.
+"""
+
+# ╔═╡ f03bcd24-fb92-45f7-8489-0901ec8714b2
+function normaliza_matriz(M, N)
+	resultado = ones(size(M))
+	for c in 1:size(M, 2)
+		normalizador = fit(MinMax, N[:,c])
+		resultado[:,c] = normalize(M[:,c], normalizador)
+	end
+	return resultado
+end
+
+# ╔═╡ a4d9101a-99c0-4949-b8bb-e440a74c3193
+md"""
+## Clasificación con NN
+
+Seleccionamos las características de los datos de entrada:
+"""
+
+# ╔═╡ c25f9730-f107-4cc3-a517-542b17e58901
+caracteristicas_clasificacion = [:weight, :height, :age]
+
+# ╔═╡ 7b180556-ecd3-480f-bb1b-7adb84f91ccf
+X_entrenamiento_clasificacion = Float32.(Matrix(entrenamiento_clasificacion_howell[:, caracteristicas_clasificacion]))
+
+# ╔═╡ fb6b3f31-c188-4c82-bc15-996fd909bfcf
+md"""
+Normalizamos las columnas de la matriz, y la traspongo:
+"""
+
+# ╔═╡ fa68f129-609d-442f-8d9d-06e3a0bc5bb7
+X_entrenamiento_normalizada = Float32.(normaliza_matriz(X_entrenamiento_clasificacion, X_entrenamiento_clasificacion))'
+
+# ╔═╡ 7af6e33b-b9cf-4428-b457-0fbc7f0c5eb0
+y_entrenamiento_clasificacion = Float32.(Flux.onehotbatch(entrenamiento_clasificacion_howell.male, 0:1))
+
+# ╔═╡ 015c2a61-f7b4-41d9-81c7-85299de42a52
+X_prueba_clasificacion = Float32.(Matrix(prueba_clasificacion_howell[:, caracteristicas_clasificacion]))
+
+# ╔═╡ 71dd85c1-e743-4641-9522-8904da9fa04e
+md"""
+Igual que antes la normalizamos, pero los normalizadores son los de la matriz X\_entrenamiento\_classificacion, y la trasponemos:
+"""
+
+# ╔═╡ 1859f9ea-cb27-4acb-a2bf-b7dd63fa47eb
+X_prueba_normalizada = Float32.(normaliza_matriz(X_prueba_clasificacion, X_entrenamiento_clasificacion)')
+
+# ╔═╡ de7228bc-fc1c-4540-a0fb-89b80aaca8fe
+y_prueba_clasificacion = Float32.(Flux.onehotbatch(prueba_clasificacion_howell.male, 0:1))
+
+# ╔═╡ 152393b0-d3cc-461e-a1a1-c0b2050c957e
+md"""
+## Clasificación con NN
+
+Construimos la red:
+"""
+
+# ╔═╡ 03c5c00b-a013-4730-bae3-b028649c5714
+red_clasificacion = Chain(
+	Dense(3 => 3, relu),
+	Dense(3 => 3, relu),
+	Dense(3 => 2),
+	softmax
+)
+
+# ╔═╡ 21ad8727-1da3-4ee0-a93c-b874b415b3d6
+md"""
+Detalles:
+* Tres capas.
+* La función de activación de las dos primeras capas es relu.
+* La función de activación de la capa de salida es softmax.
+"""
+
+# ╔═╡ 56817bd3-041c-41a2-806d-ddca6ecce036
+md"""
+## Clasificación con NN
+
+Definimos el optimizador, la función de pérdidas y los datos:
+"""
+
+# ╔═╡ df83a14f-1c98-4e04-bf21-d922fb11cc70
+optimizador_clasificacion = Flux.setup(Adam(0.001), red_clasificacion)
+
+# ╔═╡ 014f2d31-8084-4720-bec1-aef01454dfb7
+perdidas_clasificacion(modelo, X, y) = Flux.Losses.logitbinarycrossentropy(modelo(X), y)
+
+# ╔═╡ d55aee49-7914-4a6e-a0cd-704af123c20b
+datos_clasificacion = [(X_entrenamiento_normalizada, y_entrenamiento_clasificacion)]
+
+# ╔═╡ 5dfda864-7b57-4b85-b583-24b21c7d7b70
+md"""
+Entrenamos la red:
+"""
+
+# ╔═╡ e98382a3-5a96-4d4c-8748-97231231393a
+function entrena_clasificacion!(perdidas, red, datos, optimizador)
+	with_logger(NullLogger()) do
+		for epoca in 1:5000
+			Flux.train!(perdidas, red, datos, optimizador)
+		end
+	end
+end
+
+# ╔═╡ 00719c6c-41dd-47d2-9c66-e9169bada27c
+entrena_clasificacion!(perdidas_clasificacion, red_clasificacion, datos_clasificacion, optimizador_clasificacion)
+
+# ╔═╡ c3c1cb31-fac1-4758-a60e-e5231b046d81
+md"""
+Mostramos la matriz de confusión:
+"""
+
+# ╔═╡ f15af338-b9bf-40f4-ba5c-9922550a9482
+MLJ.confusion_matrix(Flux.onecold(y_prueba_clasificacion, 0:1), Flux.onecold(red_clasificacion(X_prueba_normalizada), 0:1))
+
+# ╔═╡ 7626e1b9-e312-4e96-9ee1-925d80ae0cb3
+md"""
+Calculamos la precisión de la red creada sobre los datos de prueba:
+"""
+
+# ╔═╡ b06be04c-f11b-4a15-89f1-7e05326996fe
+MLJ.accuracy(Flux.onecold(red_clasificacion(X_prueba_normalizada), 0:1), Flux.onecold(y_prueba_clasificacion, 0:1))
+
+# ╔═╡ bb87c341-2e49-43c1-a93d-4ded2ca0a3a8
 md"""
 # Resumen
+## Resumen
+
+* Las redes neuronales (profundas) están inspiradas en el funcionamiento de las  neuronas (conexiones, funciones de activación, etc.).
+* Las redes neuronales están formadas por capas de neuronas interconectadas  entre ellas.
+* El entrenamiento de una red implica calcular los pesos entre las conexiones  de las neuronas.
 """
 
-# ╔═╡ 1fa8bfbe-a6e4-4c6e-aac0-f7041e7a56a5
+# ╔═╡ 63e06ba9-d51d-4748-81d6-06bc379c2d2e
 md"""
 ## Resumen
 
-- Las Máquinas de Soporte Vectorial fueron desarrolladas para resolver problemas de clasificación binaria.
-- El objetivo es encontrar el hiperplano que separa las muestras de las dos clases, y que tiene el máximo margen entre ellas.
-- El problema de separación por un hiperplano se puede extender a otras fronteras de separación introduciendo el truco del kernel.
+* Las redes neuronales son aproximadores universales.
+* Las redes neuronales se pueden utilizar tanto para problemas de regresión como de clasificación.
+* Las redes neuronales son susceptibles al sobreajuste de los pesos.
+* Las redes neuronales se entrenan con la técnica de retro propagación, que se puede resumir en regla de la cadena más descenso de gradiente.
 """
 
-# ╔═╡ 1558e7cb-13c2-469e-a0a6-7dd4f7085b0c
+# ╔═╡ 33873026-0946-4887-b3c7-25128377f3eb
 md"""
-## Resumen
+# Referencias
 
-- Las SVM funcionan muy bien cuando el número de muestras en nuestro conjunto de datos de unos cuantos miles, más allá, el algoritmo de entrenamiento puede ser muy lenta.
-- La contrapartida es que la clasificación de nuevas muestras es muy rápida.
+Algunas referencias interesantes
+
+1. [Herramienta para visualizar redes neuronales.](https://playground.tensorflow.org)
+1. [Las redes neuronales son aproximadores universales.](https://www.deep-mind.org/2023/03/26/the-universal-approximation-theorem/)
+1. [¿Qué es una red neuronal?](https://www.youtube.com/watch?v=jKCQsndqEGQ)
+1. [Neural networks.](https://www.youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi)
+1. [Alpha Go.](https://www.youtube.com/watch?v=WXuK6gekU1Y)
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -1258,26 +930,23 @@ PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+Flux = "587475ba-b771-5e3f-ad9e-33799f191a9c"
 HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
-LIBSVM = "b1bec4e5-fd48-53fe-b0cb-9723c09d164b"
-LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
 MLJ = "add582a8-e3ab-11e8-2d5e-e98b27df1bc7"
-MLJLIBSVMInterface = "61c7150f-6c77-4bb1-949c-13197eac2a52"
-PlotlyBase = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
-PlotlyKaleido = "f2990250-8cf9-495f-b13a-cce12b45703c"
+Normalization = "be38d6a3-8366-4a42-ad57-222272b5bbe7"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
 [compat]
 CSV = "~0.10.15"
 DataFrames = "~1.7.0"
-HTTP = "~1.10.16"
-LIBSVM = "~0.8.1"
+Flux = "~0.16.3"
+HTTP = "~1.10.15"
 MLJ = "~0.20.7"
-MLJLIBSVMInterface = "~0.2.1"
-PlotlyBase = "~0.8.19"
-PlotlyKaleido = "~2.2.6"
-Plots = "~1.40.12"
+Normalization = "~0.7.3"
+Plots = "~1.40.9"
 PlutoUI = "~0.7.61"
 """
 
@@ -1287,13 +956,24 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.5"
 manifest_format = "2.0"
-project_hash = "da02909b2a19e5b9c266f714f63a4b17fcb92241"
+project_hash = "4ef2641a704aef9cd665c3deac50da4eda3b3547"
 
 [[deps.ARFFFiles]]
 deps = ["CategoricalArrays", "Dates", "Parsers", "Tables"]
 git-tree-sha1 = "678eb18590a8bc6674363da4d5faa4ac09c40a18"
 uuid = "da404889-ca92-49ff-9e8b-0aa6b4d38dc8"
 version = "1.5.0"
+
+[[deps.AbstractFFTs]]
+deps = ["LinearAlgebra"]
+git-tree-sha1 = "d92ad398961a3ed262d8bf04a1a2b8340f915fef"
+uuid = "621f4979-c628-5d54-868e-fcf4e3e8185c"
+version = "1.5.0"
+weakdeps = ["ChainRulesCore", "Test"]
+
+    [deps.AbstractFFTs.extensions]
+    AbstractFFTsChainRulesCoreExt = "ChainRulesCore"
+    AbstractFFTsTestExt = "Test"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -1327,9 +1007,9 @@ version = "0.1.42"
 
 [[deps.Adapt]]
 deps = ["LinearAlgebra", "Requires"]
-git-tree-sha1 = "f7817e2e585aa6d924fd714df1e2a84be7896c60"
+git-tree-sha1 = "cd8b948862abee8f3d3e9b73a102a9ca924debb0"
 uuid = "79e6a3ab-5dfb-504d-930d-738a2a938a0e"
-version = "4.3.0"
+version = "4.2.0"
 weakdeps = ["SparseArrays", "StaticArrays"]
 
     [deps.Adapt.extensions]
@@ -1343,9 +1023,9 @@ uuid = "66dad0bd-aa9a-41b7-9441-69ab47430ed8"
 version = "1.1.3"
 
 [[deps.ArgCheck]]
-git-tree-sha1 = "f9e9a66c9b7be1ad7372bbd9b062d9230c30c5ce"
+git-tree-sha1 = "680b3b8759bd4c54052ada14e52355ab69e07876"
 uuid = "dce04be8-c92d-5529-be00-80e4d2c0e197"
-version = "2.5.0"
+version = "2.4.0"
 
 [[deps.ArgTools]]
 uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
@@ -1415,6 +1095,11 @@ git-tree-sha1 = "1b96ea4a01afe0ea4090c5c8039690672dd13f2e"
 uuid = "6e34b625-4abd-537c-b88f-471c36dfa7a0"
 version = "1.0.9+0"
 
+[[deps.CEnum]]
+git-tree-sha1 = "389ad5c84de1ae7cf0e28e381131c98ea87d54fc"
+uuid = "fa961155-64e5-5f13-b03f-caf6b980ea82"
+version = "0.5.0"
+
 [[deps.CSV]]
 deps = ["CodecZlib", "Dates", "FilePathsBase", "InlineStrings", "Mmap", "Parsers", "PooledArrays", "PrecompileTools", "SentinelArrays", "Tables", "Unicode", "WeakRefStrings", "WorkerUtilities"]
 git-tree-sha1 = "deddd8725e5e1cc49ee205a1964256043720a6c3"
@@ -1423,9 +1108,9 @@ version = "0.10.15"
 
 [[deps.Cairo_jll]]
 deps = ["Artifacts", "Bzip2_jll", "CompilerSupportLibraries_jll", "Fontconfig_jll", "FreeType2_jll", "Glib_jll", "JLLWrappers", "LZO_jll", "Libdl", "Pixman_jll", "Xorg_libXext_jll", "Xorg_libXrender_jll", "Zlib_jll", "libpng_jll"]
-git-tree-sha1 = "2ac646d71d0d24b44f3f8c84da8c9f4d70fb67df"
+git-tree-sha1 = "009060c9a6168704143100f36ab08f06c2af4642"
 uuid = "83423d85-b0ee-5818-9007-b63ccbeb887a"
-version = "1.18.4+0"
+version = "1.18.2+1"
 
 [[deps.CategoricalArrays]]
 deps = ["DataAPI", "Future", "Missings", "Printf", "Requires", "Statistics", "Unicode"]
@@ -1456,6 +1141,12 @@ version = "0.1.15"
 
     [deps.CategoricalDistributions.weakdeps]
     UnicodePlots = "b8865327-cd53-5732-bb35-84acbb429228"
+
+[[deps.ChainRules]]
+deps = ["Adapt", "ChainRulesCore", "Compat", "Distributed", "GPUArraysCore", "IrrationalConstants", "LinearAlgebra", "Random", "RealDot", "SparseArrays", "SparseInverseSubset", "Statistics", "StructArrays", "SuiteSparse"]
+git-tree-sha1 = "a975ae558af61a2a48720a6271661bf2621e0f4e"
+uuid = "082447d4-558c-5d27-93f4-14fc19e9eca2"
+version = "1.72.3"
 
 [[deps.ChainRulesCore]]
 deps = ["Compat", "LinearAlgebra"]
@@ -1505,6 +1196,12 @@ version = "0.13.0"
 git-tree-sha1 = "08c8b6831dc00bfea825826be0bc8336fc369860"
 uuid = "861a8166-3701-5b0c-9a16-15d98fcdc6aa"
 version = "1.0.2"
+
+[[deps.CommonSubexpressions]]
+deps = ["MacroTools"]
+git-tree-sha1 = "cda2cfaebb4be89c9084adaca7dd7333369715c5"
+uuid = "bbf7d656-a473-5ed7-a52c-81e309532950"
+version = "0.3.1"
 
 [[deps.Compat]]
 deps = ["TOML", "UUIDs"]
@@ -1585,9 +1282,9 @@ version = "1.7.0"
 
 [[deps.DataStructures]]
 deps = ["Compat", "InteractiveUtils", "OrderedCollections"]
-git-tree-sha1 = "4e1fe97fdaed23e9dc21d4d664bea76b65fc50a0"
+git-tree-sha1 = "1d0a14036acb104d9e89698bd408f63ab58cdc82"
 uuid = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
-version = "0.18.22"
+version = "0.18.20"
 
 [[deps.DataValueInterfaces]]
 git-tree-sha1 = "bfc1187b79289637fa0ef6d4436ebdfe6905cbd6"
@@ -1601,9 +1298,9 @@ version = "1.11.0"
 
 [[deps.Dbus_jll]]
 deps = ["Artifacts", "Expat_jll", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "473e9afc9cf30814eb67ffa5f2db7df82c3ad9fd"
+git-tree-sha1 = "fc173b380865f70627d7dd1190dc2fce6cc105af"
 uuid = "ee1fde0b-3d02-5ea6-8484-8dfef6360eab"
-version = "1.16.2+0"
+version = "1.14.10+0"
 
 [[deps.DefineSingletons]]
 git-tree-sha1 = "0fba8b706d0178b4dc7fd44a96a92382c9065c2c"
@@ -1615,6 +1312,18 @@ deps = ["Mmap"]
 git-tree-sha1 = "9e2f36d3c96a820c678f2f1f1782582fcf685bae"
 uuid = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 version = "1.9.1"
+
+[[deps.DiffResults]]
+deps = ["StaticArraysCore"]
+git-tree-sha1 = "782dd5f4561f5d267313f23853baaaa4c52ea621"
+uuid = "163ba53b-c6d8-5494-b064-1a9d43ac40c5"
+version = "1.1.0"
+
+[[deps.DiffRules]]
+deps = ["IrrationalConstants", "LogExpFunctions", "NaNMath", "Random", "SpecialFunctions"]
+git-tree-sha1 = "23163d55f885173722d1e4cf0f6110cdbaf7e272"
+uuid = "b552c78f-8df3-52c6-915a-8e097449b14b"
+version = "1.15.1"
 
 [[deps.Distances]]
 deps = ["LinearAlgebra", "Statistics", "StatsAPI"]
@@ -1634,9 +1343,9 @@ version = "1.11.0"
 
 [[deps.Distributions]]
 deps = ["AliasTables", "FillArrays", "LinearAlgebra", "PDMats", "Printf", "QuadGK", "Random", "SpecialFunctions", "Statistics", "StatsAPI", "StatsBase", "StatsFuns"]
-git-tree-sha1 = "0b4190661e8a4e51a842070e7dd4fae440ddb7f4"
+git-tree-sha1 = "03aa5d44647eaec98e1920635cdfed5d5560a8b9"
 uuid = "31c24e10-a181-5473-b8eb-7969acd0382f"
-version = "0.25.118"
+version = "0.25.117"
 
     [deps.Distributions.extensions]
     DistributionsChainRulesCoreExt = "ChainRulesCore"
@@ -1649,9 +1358,10 @@ version = "0.25.118"
     Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [[deps.DocStringExtensions]]
-git-tree-sha1 = "e7b7e6f178525d17c720ab9c081e4ef04429f860"
+deps = ["LibGit2"]
+git-tree-sha1 = "2fb1e02f2b635d0845df5d7c167fec4dd739b00d"
 uuid = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
-version = "0.9.4"
+version = "0.9.3"
 
 [[deps.Downloads]]
 deps = ["ArgTools", "FileWatching", "LibCURL", "NetworkOptions"]
@@ -1663,6 +1373,15 @@ deps = ["Dates", "Statistics"]
 git-tree-sha1 = "98fdf08b707aaf69f524a6cd0a67858cefe0cfb6"
 uuid = "792122b4-ca99-40de-a6bc-6742525f08b6"
 version = "0.3.0"
+
+[[deps.EnzymeCore]]
+git-tree-sha1 = "0cdb7af5c39e92d78a0ee8d0a447d32f7593137e"
+uuid = "f151be2c-9106-41f4-ab19-57ee4f262869"
+version = "0.8.8"
+weakdeps = ["Adapt"]
+
+    [deps.EnzymeCore.extensions]
+    AdaptExt = "Adapt"
 
 [[deps.EpollShim_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -1745,28 +1464,66 @@ git-tree-sha1 = "05882d6995ae5c12bb5f36dd2ed3f61c98cbb172"
 uuid = "53c48c17-4a7d-5ca2-90c5-79b7896eea93"
 version = "0.8.5"
 
+[[deps.Flux]]
+deps = ["Adapt", "ChainRulesCore", "Compat", "EnzymeCore", "Functors", "LinearAlgebra", "MLDataDevices", "MLUtils", "MacroTools", "NNlib", "OneHotArrays", "Optimisers", "Preferences", "ProgressLogging", "Random", "Reexport", "Setfield", "SparseArrays", "SpecialFunctions", "Statistics", "Zygote"]
+git-tree-sha1 = "49d213a90b159c74e9fc2b53162b5f699b6f3516"
+uuid = "587475ba-b771-5e3f-ad9e-33799f191a9c"
+version = "0.16.3"
+
+    [deps.Flux.extensions]
+    FluxAMDGPUExt = "AMDGPU"
+    FluxCUDAExt = "CUDA"
+    FluxCUDAcuDNNExt = ["CUDA", "cuDNN"]
+    FluxEnzymeExt = "Enzyme"
+    FluxMPIExt = "MPI"
+    FluxMPINCCLExt = ["CUDA", "MPI", "NCCL"]
+
+    [deps.Flux.weakdeps]
+    AMDGPU = "21141c5a-9bdb-4563-92ae-f87d6854732e"
+    CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
+    Enzyme = "7da242da-08ed-463a-9acd-ee780be4f1d9"
+    MPI = "da04e1cc-30fd-572f-bb4f-1f8673147195"
+    NCCL = "3fe64909-d7a1-4096-9b7d-7a0f12cf0f6b"
+    cuDNN = "02a925ec-e4fe-4b08-9a7e-0d78e3d38ccd"
+
 [[deps.Fontconfig_jll]]
 deps = ["Artifacts", "Bzip2_jll", "Expat_jll", "FreeType2_jll", "JLLWrappers", "Libdl", "Libuuid_jll", "Zlib_jll"]
-git-tree-sha1 = "301b5d5d731a0654825f1f2e906990f7141a106b"
+git-tree-sha1 = "21fac3c77d7b5a9fc03b0ec503aa1a6392c34d2b"
 uuid = "a3f928ae-7b40-5064-980b-68af3947d34b"
-version = "2.16.0+0"
+version = "2.15.0+0"
 
 [[deps.Format]]
 git-tree-sha1 = "9c68794ef81b08086aeb32eeaf33531668d5f5fc"
 uuid = "1fa38f19-a742-5d3f-a2b9-30dd87b9d5f8"
 version = "1.3.7"
 
+[[deps.ForwardDiff]]
+deps = ["CommonSubexpressions", "DiffResults", "DiffRules", "LinearAlgebra", "LogExpFunctions", "NaNMath", "Preferences", "Printf", "Random", "SpecialFunctions"]
+git-tree-sha1 = "a2df1b776752e3f344e5116c06d75a10436ab853"
+uuid = "f6369f11-7733-5829-9624-2563aa707210"
+version = "0.10.38"
+weakdeps = ["StaticArrays"]
+
+    [deps.ForwardDiff.extensions]
+    ForwardDiffStaticArraysExt = "StaticArrays"
+
 [[deps.FreeType2_jll]]
 deps = ["Artifacts", "Bzip2_jll", "JLLWrappers", "Libdl", "Zlib_jll"]
-git-tree-sha1 = "2c5512e11c791d1baed2049c5652441b28fc6a31"
+git-tree-sha1 = "786e968a8d2fb167f2e4880baba62e0e26bd8e4e"
 uuid = "d7e528f0-a631-5988-bf34-fe36492bcfd7"
-version = "2.13.4+0"
+version = "2.13.3+1"
 
 [[deps.FriBidi_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "7a214fdac5ed5f59a22c2d9a885a16da1c74bbc7"
+git-tree-sha1 = "846f7026a9decf3679419122b49f8a1fdb48d2d5"
 uuid = "559328eb-81f9-559d-9380-de523a88c83c"
-version = "1.0.17+0"
+version = "1.0.16+0"
+
+[[deps.Functors]]
+deps = ["Compat", "ConstructionBase", "LinearAlgebra", "Random"]
+git-tree-sha1 = "60a0339f28a233601cb74468032b5c302d5067de"
+uuid = "d9f16b24-f501-4c13-a1f2-28368ffc5196"
+version = "0.5.2"
 
 [[deps.Future]]
 deps = ["Random"]
@@ -1778,6 +1535,12 @@ deps = ["Artifacts", "JLLWrappers", "Libdl", "Libglvnd_jll", "Xorg_libXcursor_jl
 git-tree-sha1 = "fcb0584ff34e25155876418979d4c8971243bb89"
 uuid = "0656b61e-2033-5cc2-a64a-77c0f6c09b89"
 version = "3.4.0+2"
+
+[[deps.GPUArrays]]
+deps = ["Adapt", "GPUArraysCore", "KernelAbstractions", "LLVM", "LinearAlgebra", "Printf", "Random", "Reexport", "ScopedValues", "Serialization", "Statistics"]
+git-tree-sha1 = "eea7b3a1964b4de269bb380462a9da604be7fcdb"
+uuid = "0c68f7d7-f131-5f86-a1c3-88cf8149b2d7"
+version = "11.2.2"
 
 [[deps.GPUArraysCore]]
 deps = ["Adapt"]
@@ -1810,10 +1573,10 @@ uuid = "7746bdde-850d-59dc-9ae8-88ece973131d"
 version = "2.82.4+0"
 
 [[deps.Graphite2_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "8a6dbda1fd736d60cc477d99f2e7a042acfa46e8"
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "01979f9b37367603e2848ea225918a3b3861b606"
 uuid = "3b182d85-2403-5c21-9c21-1e1f0cc25472"
-version = "1.3.15+0"
+version = "1.3.14+1"
 
 [[deps.Grisu]]
 git-tree-sha1 = "53bb909d1151e57e2484c3d1b53e19552b887fb2"
@@ -1822,9 +1585,9 @@ version = "1.0.2"
 
 [[deps.HTTP]]
 deps = ["Base64", "CodecZlib", "ConcurrentUtilities", "Dates", "ExceptionUnwrapping", "Logging", "LoggingExtras", "MbedTLS", "NetworkOptions", "OpenSSL", "PrecompileTools", "Random", "SimpleBufferStream", "Sockets", "URIs", "UUIDs"]
-git-tree-sha1 = "f93655dc73d7a0b4a368e3c0bce296ae035ad76e"
+git-tree-sha1 = "c67b33b085f6e2faf8bf79a61962e7339a81129c"
 uuid = "cd3eb016-35fb-5094-929b-558a96fad6f3"
-version = "1.10.16"
+version = "1.10.15"
 
 [[deps.HarfBuzz_jll]]
 deps = ["Artifacts", "Cairo_jll", "Fontconfig_jll", "FreeType2_jll", "Glib_jll", "Graphite2_jll", "JLLWrappers", "Libdl", "Libffi_jll"]
@@ -1839,9 +1602,9 @@ version = "0.2.0"
 
 [[deps.HypergeometricFunctions]]
 deps = ["LinearAlgebra", "OpenLibm_jll", "SpecialFunctions"]
-git-tree-sha1 = "68c173f4f449de5b438ee67ed0c9c748dc31a2ec"
+git-tree-sha1 = "2bd56245074fab4015b9174f24ceba8293209053"
 uuid = "34004b35-14d8-5ef3-9330-4cdb6864b03a"
-version = "0.3.28"
+version = "0.3.27"
 
 [[deps.Hyperscript]]
 deps = ["Test"]
@@ -1860,6 +1623,12 @@ deps = ["Logging", "Random"]
 git-tree-sha1 = "b6d6bfdd7ce25b0f9b2f6b3dd56b2673a66c8770"
 uuid = "b5f81e59-6552-4d32-b1f0-c071b021bf89"
 version = "0.2.5"
+
+[[deps.IRTools]]
+deps = ["InteractiveUtils", "MacroTools"]
+git-tree-sha1 = "950c3717af761bc3ff906c2e8e52bd83390b6ec2"
+uuid = "7869d1d1-7146-5819-86e3-90919afe41df"
+version = "0.4.14"
 
 [[deps.InitialValues]]
 git-tree-sha1 = "4da0f88e9a39111c2fa3add390ab15f3a44f3ca3"
@@ -1916,10 +1685,10 @@ uuid = "82899510-4779-5014-852e-03e436cf321d"
 version = "1.0.0"
 
 [[deps.JLFzf]]
-deps = ["REPL", "Random", "fzf_jll"]
-git-tree-sha1 = "1d4015b1eb6dc3be7e6c400fbd8042fe825a6bac"
+deps = ["Pipe", "REPL", "Random", "fzf_jll"]
+git-tree-sha1 = "71b48d857e86bf7a1838c4736545699974ce79a2"
 uuid = "1019f520-868f-41f5-a6de-eb00f4b6a39c"
-version = "0.1.10"
+version = "0.1.9"
 
 [[deps.JLLWrappers]]
 deps = ["Artifacts", "Preferences"]
@@ -1945,27 +1714,17 @@ git-tree-sha1 = "49fb3cb53362ddadb4415e9b73926d6b40709e70"
 uuid = "b14d175d-62b4-44ba-8fb7-3064adc8c3ec"
 version = "0.2.4"
 
-[[deps.Kaleido_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
-git-tree-sha1 = "43032da5832754f58d14a91ffbe86d5f176acda9"
-uuid = "f7e6163d-2fa5-5f23-b69c-1db539e41963"
-version = "0.2.1+0"
-
 [[deps.KernelAbstractions]]
 deps = ["Adapt", "Atomix", "InteractiveUtils", "MacroTools", "PrecompileTools", "Requires", "StaticArrays", "UUIDs"]
 git-tree-sha1 = "80d268b2f4e396edc5ea004d1e0f569231c71e9e"
 uuid = "63c18a36-062a-441e-b654-da1e3ab1ce7c"
 version = "0.9.34"
+weakdeps = ["EnzymeCore", "LinearAlgebra", "SparseArrays"]
 
     [deps.KernelAbstractions.extensions]
     EnzymeExt = "EnzymeCore"
     LinearAlgebraExt = "LinearAlgebra"
     SparseArraysExt = "SparseArrays"
-
-    [deps.KernelAbstractions.weakdeps]
-    EnzymeCore = "f151be2c-9106-41f4-ab19-57ee4f262869"
-    LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
-    SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
 [[deps.LAME_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -1979,17 +1738,23 @@ git-tree-sha1 = "aaafe88dccbd957a8d82f7d05be9b69172e0cee3"
 uuid = "88015f11-f218-50d7-93a8-a6af411a945d"
 version = "4.0.1+0"
 
-[[deps.LIBLINEAR]]
-deps = ["Libdl", "SparseArrays", "liblinear_jll"]
-git-tree-sha1 = "2cd424d3bf9b36098009df5b1f399614c12b2ee4"
-uuid = "2d691ee1-e668-5016-a719-b2531b85e0f5"
-version = "0.7.1"
+[[deps.LLVM]]
+deps = ["CEnum", "LLVMExtra_jll", "Libdl", "Preferences", "Printf", "Unicode"]
+git-tree-sha1 = "5fcfea6df2ff3e4da708a40c969c3812162346df"
+uuid = "929cbde3-209d-540e-8aea-75f648917ca0"
+version = "9.2.0"
 
-[[deps.LIBSVM]]
-deps = ["LIBLINEAR", "LinearAlgebra", "ScikitLearnBase", "SparseArrays", "libsvm_jll"]
-git-tree-sha1 = "9016c6032aac779b13bbd1b3ce997606a6eb7a2b"
-uuid = "b1bec4e5-fd48-53fe-b0cb-9723c09d164b"
-version = "0.8.1"
+    [deps.LLVM.extensions]
+    BFloat16sExt = "BFloat16s"
+
+    [deps.LLVM.weakdeps]
+    BFloat16s = "ab4f0b2a-ad5b-11e8-123f-65d77653426b"
+
+[[deps.LLVMExtra_jll]]
+deps = ["Artifacts", "JLLWrappers", "LazyArtifacts", "Libdl", "TOML"]
+git-tree-sha1 = "4b5ad6a4ffa91a00050a964492bc4f86bb48cea0"
+uuid = "dad2f222-ce93-54a1-a47d-0025e8a3acab"
+version = "0.0.35+0"
 
 [[deps.LLVMOpenMP_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -2010,9 +1775,9 @@ version = "1.4.0"
 
 [[deps.Latexify]]
 deps = ["Format", "InteractiveUtils", "LaTeXStrings", "MacroTools", "Markdown", "OrderedCollections", "Requires"]
-git-tree-sha1 = "cd10d2cc78d34c0e2a3a36420ab607b611debfbb"
+git-tree-sha1 = "cd714447457c660382fe634710fb56eb255ee42e"
 uuid = "23fbe1c1-3f47-55db-b15f-69d7ec21a316"
-version = "0.16.7"
+version = "0.16.6"
 
     [deps.Latexify.extensions]
     DataFramesExt = "DataFrames"
@@ -2029,6 +1794,11 @@ deps = ["Random", "StableRNGs", "StatsBase", "Test"]
 git-tree-sha1 = "825289d43c753c7f1bf9bed334c253e9913997f8"
 uuid = "a5e1c1ea-c99a-51d3-a14d-a9a37257b02d"
 version = "1.9.0"
+
+[[deps.LazyArtifacts]]
+deps = ["Artifacts", "Pkg"]
+uuid = "4af54fe1-eca0-43a8-85a7-787d91b784e3"
+version = "1.11.0"
 
 [[deps.LearnAPI]]
 deps = ["InteractiveUtils", "Statistics"]
@@ -2071,11 +1841,23 @@ git-tree-sha1 = "27ecae93dd25ee0909666e6835051dd684cc035e"
 uuid = "e9f186c6-92d2-5b65-8a66-fee21dc1b490"
 version = "3.2.2+2"
 
+[[deps.Libgcrypt_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Libgpg_error_jll"]
+git-tree-sha1 = "8be878062e0ffa2c3f67bb58a595375eda5de80b"
+uuid = "d4300ac3-e22c-5743-9152-c294e39db1e4"
+version = "1.11.0+0"
+
 [[deps.Libglvnd_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libX11_jll", "Xorg_libXext_jll"]
 git-tree-sha1 = "ff3b4b9d35de638936a525ecd36e86a8bb919d11"
 uuid = "7e76a0d4-f3c7-5321-8279-8d96eeed0f29"
 version = "1.7.0+0"
+
+[[deps.Libgpg_error_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "df37206100d39f79b3376afb6b9cee4970041c61"
+uuid = "7add5ba3-2f88-524e-9cd5-f83b8a55f7b8"
+version = "1.51.1+0"
 
 [[deps.Libiconv_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -2085,9 +1867,9 @@ version = "1.18.0+0"
 
 [[deps.Libmount_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "a31572773ac1b745e0343fe5e2c8ddda7a37e997"
+git-tree-sha1 = "89211ea35d9df5831fca5d33552c02bd33878419"
 uuid = "4b2f31a3-9ecc-558c-b454-b3730dcb73e9"
-version = "2.41.0+0"
+version = "2.40.3+0"
 
 [[deps.Libtiff_jll]]
 deps = ["Artifacts", "JLLWrappers", "JpegTurbo_jll", "LERC_jll", "Libdl", "XZ_jll", "Zlib_jll", "Zstd_jll"]
@@ -2097,9 +1879,9 @@ version = "4.7.1+0"
 
 [[deps.Libuuid_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "321ccef73a96ba828cd51f2ab5b9f917fa73945a"
+git-tree-sha1 = "e888ad02ce716b319e6bdb985d2ef300e7089889"
 uuid = "38a345b3-de98-5d2b-a5d3-14cd9215e700"
-version = "2.41.0+0"
+version = "2.40.3+0"
 
 [[deps.LinearAlgebra]]
 deps = ["Libdl", "OpenBLAS_jll", "libblastrampoline_jll"]
@@ -2133,15 +1915,61 @@ uuid = "e6f89c97-d47a-5376-807f-9c37f3926c36"
 version = "1.1.0"
 
 [[deps.MIMEs]]
-git-tree-sha1 = "c64d943587f7187e751162b3b84445bbbd79f691"
+git-tree-sha1 = "1833212fd6f580c20d4291da9c1b4e8a655b128e"
 uuid = "6c6e2e6c-3030-632d-7369-2d6c69616d65"
-version = "1.1.0"
+version = "1.0.0"
 
 [[deps.MLCore]]
 deps = ["DataAPI", "SimpleTraits", "Tables"]
 git-tree-sha1 = "73907695f35bc7ffd9f11f6c4f2ee8c1302084be"
 uuid = "c2834f40-e789-41da-a90e-33b280584a8c"
 version = "1.0.0"
+
+[[deps.MLDataDevices]]
+deps = ["Adapt", "Compat", "Functors", "Preferences", "Random"]
+git-tree-sha1 = "7e8d4cc22f014e617607bd74119d02e26fef005b"
+uuid = "7e8f7934-dd98-4c1a-8fe8-92b47a384d40"
+version = "1.8.0"
+
+    [deps.MLDataDevices.extensions]
+    MLDataDevicesAMDGPUExt = "AMDGPU"
+    MLDataDevicesCUDAExt = "CUDA"
+    MLDataDevicesChainRulesCoreExt = "ChainRulesCore"
+    MLDataDevicesChainRulesExt = "ChainRules"
+    MLDataDevicesComponentArraysExt = "ComponentArrays"
+    MLDataDevicesFillArraysExt = "FillArrays"
+    MLDataDevicesGPUArraysExt = "GPUArrays"
+    MLDataDevicesMLUtilsExt = "MLUtils"
+    MLDataDevicesMetalExt = ["GPUArrays", "Metal"]
+    MLDataDevicesOneHotArraysExt = "OneHotArrays"
+    MLDataDevicesReactantExt = "Reactant"
+    MLDataDevicesRecursiveArrayToolsExt = "RecursiveArrayTools"
+    MLDataDevicesReverseDiffExt = "ReverseDiff"
+    MLDataDevicesSparseArraysExt = "SparseArrays"
+    MLDataDevicesTrackerExt = "Tracker"
+    MLDataDevicesZygoteExt = "Zygote"
+    MLDataDevicescuDNNExt = ["CUDA", "cuDNN"]
+    MLDataDevicesoneAPIExt = ["GPUArrays", "oneAPI"]
+
+    [deps.MLDataDevices.weakdeps]
+    AMDGPU = "21141c5a-9bdb-4563-92ae-f87d6854732e"
+    CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
+    ChainRules = "082447d4-558c-5d27-93f4-14fc19e9eca2"
+    ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
+    ComponentArrays = "b0b7db55-cfe3-40fc-9ded-d10e2dbeff66"
+    FillArrays = "1a297f60-69ca-5386-bcde-b61e274b549b"
+    GPUArrays = "0c68f7d7-f131-5f86-a1c3-88cf8149b2d7"
+    MLUtils = "f1d291b0-491e-4a28-83b9-f70985020b54"
+    Metal = "dde4c033-4e86-420c-a63e-0dd931031962"
+    OneHotArrays = "0b1bfda6-eb8a-41d2-88d8-f5af5cad476f"
+    Reactant = "3c362404-f566-11ee-1572-e11a4b42c853"
+    RecursiveArrayTools = "731186ca-8d62-57ce-b412-fbd966d074cd"
+    ReverseDiff = "37e2e3b7-166d-5795-8a7a-e32c996b4267"
+    SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+    Tracker = "9f7883ad-71c0-57eb-9f7f-b5c9e6d3789c"
+    Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
+    cuDNN = "02a925ec-e4fe-4b08-9a7e-0d78e3d38ccd"
+    oneAPI = "8f75cd03-7ff8-4ecb-9b8f-daf728133b1b"
 
 [[deps.MLFlowClient]]
 deps = ["Dates", "FilePathsBase", "HTTP", "JSON", "ShowCases", "URIs", "UUIDs"]
@@ -2189,12 +2017,6 @@ git-tree-sha1 = "ad16cfd261e28204847f509d1221a581286448ae"
 uuid = "614be32b-d00c-4edb-bd02-1eb411ab5e55"
 version = "0.6.3"
 
-[[deps.MLJLIBSVMInterface]]
-deps = ["CategoricalArrays", "LIBSVM", "MLJModelInterface", "Statistics"]
-git-tree-sha1 = "4a056d2384a906ac2a2d13ed25f9092107f53eb0"
-uuid = "61c7150f-6c77-4bb1-949c-13197eac2a52"
-version = "0.2.1"
-
 [[deps.MLJModelInterface]]
 deps = ["Random", "ScientificTypesBase", "StatisticalTraits"]
 git-tree-sha1 = "ceaff6618408d0e412619321ae43b33b40c1a733"
@@ -2203,9 +2025,9 @@ version = "1.11.0"
 
 [[deps.MLJModels]]
 deps = ["CategoricalArrays", "CategoricalDistributions", "Combinatorics", "Dates", "Distances", "Distributions", "InteractiveUtils", "LinearAlgebra", "MLJModelInterface", "Markdown", "OrderedCollections", "Parameters", "Pkg", "PrettyPrinting", "REPL", "Random", "RelocatableFolders", "ScientificTypes", "StatisticalTraits", "Statistics", "StatsBase", "Tables"]
-git-tree-sha1 = "09381923be5ed34416ed77badbc26e1adf295492"
+git-tree-sha1 = "dfcab2c043b169999f662fe02abf0544642c68d7"
 uuid = "d491faf4-2d78-11e9-2867-c94bc002c0b7"
-version = "0.17.9"
+version = "0.17.7"
 
 [[deps.MLJTuning]]
 deps = ["ComputationalResources", "Distributed", "Distributions", "LatinHypercubeSampling", "MLJBase", "ProgressMeter", "Random", "RecipesBase", "StatisticalMeasuresBase"]
@@ -2220,9 +2042,9 @@ version = "0.4.17"
 
 [[deps.MLUtils]]
 deps = ["ChainRulesCore", "Compat", "DataAPI", "DelimitedFiles", "FLoops", "MLCore", "NNlib", "Random", "ShowCases", "SimpleTraits", "Statistics", "StatsBase", "Tables", "Transducers"]
-git-tree-sha1 = "a772d8d1987433538a5c226f79393324b55f7846"
+git-tree-sha1 = "6963295133aaa789f5fb18a6dd276c420793cf43"
 uuid = "f1d291b0-491e-4a28-83b9-f70985020b54"
-version = "0.4.8"
+version = "0.4.7"
 
 [[deps.MacroTools]]
 git-tree-sha1 = "72aebe0b5051e5143a079a4685a46da330a40472"
@@ -2271,10 +2093,10 @@ uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
 version = "2023.12.12"
 
 [[deps.NNlib]]
-deps = ["Adapt", "Atomix", "ChainRulesCore", "GPUArraysCore", "KernelAbstractions", "LinearAlgebra", "Random", "ScopedValues", "Statistics"]
-git-tree-sha1 = "4abc63cdd8dd9dd925d8e879cda280bedc8013ca"
+deps = ["Adapt", "Atomix", "ChainRulesCore", "GPUArraysCore", "KernelAbstractions", "LinearAlgebra", "Random", "Statistics"]
+git-tree-sha1 = "e3d9a41f0e892d070d1a2a9569d73f29b3e321e3"
 uuid = "872c559c-99b0-510c-b3b7-b6c96a88d5cd"
-version = "0.9.30"
+version = "0.9.28"
 
     [deps.NNlib.extensions]
     NNlibAMDGPUExt = "AMDGPU"
@@ -2296,9 +2118,9 @@ version = "0.9.30"
 
 [[deps.NaNMath]]
 deps = ["OpenLibm_jll"]
-git-tree-sha1 = "9b8215b1ee9e78a293f99797cd31375471b2bcae"
+git-tree-sha1 = "cc0a5deefdb12ab3a096f00a6d42133af4560d71"
 uuid = "77ba4419-2d1f-58cd-9bb1-8ffee604a2e3"
-version = "1.1.3"
+version = "1.1.2"
 
 [[deps.NameResolution]]
 deps = ["PrettyPrint"]
@@ -2310,11 +2132,33 @@ version = "0.1.5"
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
 version = "1.2.0"
 
+[[deps.Normalization]]
+deps = ["Accessors", "LinearAlgebra", "Statistics", "StatsAPI"]
+git-tree-sha1 = "686a1bd494042b29142d920667564c8055bc5738"
+uuid = "be38d6a3-8366-4a42-ad57-222272b5bbe7"
+version = "0.7.3"
+
+    [deps.Normalization.extensions]
+    DataFramesExt = "DataFrames"
+    DimensionalDataExt = "DimensionalData"
+    UnitfulExt = "Unitful"
+
+    [deps.Normalization.weakdeps]
+    DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+    DimensionalData = "0703355e-b756-11e9-17c0-8b28908087d0"
+    Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
+
 [[deps.Ogg_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
 git-tree-sha1 = "887579a3eb005446d514ab7aeac5d1d027658b8f"
 uuid = "e7412a2a-1a6e-54c0-be00-318e2571c051"
 version = "1.3.5+1"
+
+[[deps.OneHotArrays]]
+deps = ["Adapt", "ChainRulesCore", "Compat", "GPUArraysCore", "LinearAlgebra", "NNlib"]
+git-tree-sha1 = "c8c7f6bfabe581dc40b580313a75f1ecce087e27"
+uuid = "0b1bfda6-eb8a-41d2-88d8-f5af5cad476f"
+version = "0.2.6"
 
 [[deps.OpenBLAS_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
@@ -2350,6 +2194,17 @@ git-tree-sha1 = "1346c9208249809840c91b26703912dff463d335"
 uuid = "efe28fd5-8261-553b-a9e1-b2916fc3738e"
 version = "0.5.6+0"
 
+[[deps.Optimisers]]
+deps = ["ChainRulesCore", "ConstructionBase", "Functors", "LinearAlgebra", "Random", "Statistics"]
+git-tree-sha1 = "c57a1a58e29a017a2b07e78d075385b981942430"
+uuid = "3bd65402-5787-11e9-1adc-39752487f4e2"
+version = "0.4.5"
+weakdeps = ["Adapt", "EnzymeCore"]
+
+    [deps.Optimisers.extensions]
+    OptimisersAdaptExt = ["Adapt"]
+    OptimisersEnzymeCoreExt = "EnzymeCore"
+
 [[deps.Opus_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
 git-tree-sha1 = "6703a85cb3781bd5909d48730a67205f3f31a575"
@@ -2368,9 +2223,9 @@ version = "10.42.0+1"
 
 [[deps.PDMats]]
 deps = ["LinearAlgebra", "SparseArrays", "SuiteSparse"]
-git-tree-sha1 = "0e1340b5d98971513bddaa6bbed470670cebbbfe"
+git-tree-sha1 = "966b85253e959ea89c53a9abebbf2e964fbf593b"
 uuid = "90014a1f-27ba-587c-ab20-58faa44d9150"
-version = "0.11.34"
+version = "0.11.32"
 
 [[deps.Pango_jll]]
 deps = ["Artifacts", "Cairo_jll", "Fontconfig_jll", "FreeType2_jll", "FriBidi_jll", "Glib_jll", "HarfBuzz_jll", "JLLWrappers", "Libdl"]
@@ -2386,15 +2241,20 @@ version = "0.12.3"
 
 [[deps.Parsers]]
 deps = ["Dates", "PrecompileTools", "UUIDs"]
-git-tree-sha1 = "44f6c1f38f77cafef9450ff93946c53bd9ca16ff"
+git-tree-sha1 = "8489905bcdbcfac64d1daa51ca07c0d8f0283821"
 uuid = "69de0a69-1ddd-5017-9359-2bf0b02dc9f0"
-version = "2.8.2"
+version = "2.8.1"
+
+[[deps.Pipe]]
+git-tree-sha1 = "6842804e7867b115ca9de748a0cf6b364523c16d"
+uuid = "b98c9c47-44ae-5843-9183-064241ee97a0"
+version = "1.3.0"
 
 [[deps.Pixman_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "LLVMOpenMP_jll", "Libdl"]
-git-tree-sha1 = "db76b1ecd5e9715f3d043cec13b2ec93ce015d53"
+git-tree-sha1 = "35621f10a7531bc8fa58f74610b1bfb70a3cfc6b"
 uuid = "30392449-352a-5448-841d-b1acce4e97dc"
-version = "0.44.2+0"
+version = "0.43.4+0"
 
 [[deps.Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "Random", "SHA", "TOML", "Tar", "UUIDs", "p7zip_jll"]
@@ -2417,23 +2277,11 @@ git-tree-sha1 = "3ca9a356cd2e113c420f2c13bea19f8d3fb1cb18"
 uuid = "995b91a9-d308-5afd-9ec6-746e21dbc043"
 version = "1.4.3"
 
-[[deps.PlotlyBase]]
-deps = ["ColorSchemes", "Dates", "DelimitedFiles", "DocStringExtensions", "JSON", "LaTeXStrings", "Logging", "Parameters", "Pkg", "REPL", "Requires", "Statistics", "UUIDs"]
-git-tree-sha1 = "56baf69781fc5e61607c3e46227ab17f7040ffa2"
-uuid = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
-version = "0.8.19"
-
-[[deps.PlotlyKaleido]]
-deps = ["Artifacts", "Base64", "JSON", "Kaleido_jll"]
-git-tree-sha1 = "ba551e47d7eac212864fdfea3bd07f30202b4a5b"
-uuid = "f2990250-8cf9-495f-b13a-cce12b45703c"
-version = "2.2.6"
-
 [[deps.Plots]]
 deps = ["Base64", "Contour", "Dates", "Downloads", "FFMPEG", "FixedPointNumbers", "GR", "JLFzf", "JSON", "LaTeXStrings", "Latexify", "LinearAlgebra", "Measures", "NaNMath", "Pkg", "PlotThemes", "PlotUtils", "PrecompileTools", "Printf", "REPL", "Random", "RecipesBase", "RecipesPipeline", "Reexport", "RelocatableFolders", "Requires", "Scratch", "Showoff", "SparseArrays", "Statistics", "StatsBase", "TOML", "UUIDs", "UnicodeFun", "UnitfulLatexify", "Unzip"]
-git-tree-sha1 = "41c9a70abc1ff7296873adc5d768bff33a481652"
+git-tree-sha1 = "dae01f8c2e069a683d3a6e17bbae5070ab94786f"
 uuid = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
-version = "1.40.12"
+version = "1.40.9"
 
     [deps.Plots.extensions]
     FileIOExt = "FileIO"
@@ -2494,11 +2342,17 @@ deps = ["Unicode"]
 uuid = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 version = "1.11.0"
 
+[[deps.ProgressLogging]]
+deps = ["Logging", "SHA", "UUIDs"]
+git-tree-sha1 = "80d919dee55b9c50e8d9e2da5eeafff3fe58b539"
+uuid = "33c8b6b6-d38a-422a-b730-caa89a2f386c"
+version = "0.1.4"
+
 [[deps.ProgressMeter]]
 deps = ["Distributed", "Printf"]
-git-tree-sha1 = "13c5103482a8ed1536a54c08d0e742ae3dca2d42"
+git-tree-sha1 = "8f6bc219586aef8baf0ff9a5fe16ee9c70cb65e4"
 uuid = "92933f4c-e287-5a05-a399-4b506db050ca"
-version = "1.10.4"
+version = "1.10.2"
 
 [[deps.PtrArrays]]
 git-tree-sha1 = "1d36ef11a9aaf1e8b74dacc6a731dd1de8fd493d"
@@ -2550,6 +2404,12 @@ version = "1.11.0"
 deps = ["SHA"]
 uuid = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 version = "1.11.0"
+
+[[deps.RealDot]]
+deps = ["LinearAlgebra"]
+git-tree-sha1 = "9f0a1b71baaf7650f4fa8a1d168c7fb6ee41f0c9"
+uuid = "c1ae055f-0cd5-4b69-90a6-9a35b1a98df9"
+version = "0.1.0"
 
 [[deps.RecipesBase]]
 deps = ["PrecompileTools"]
@@ -2606,12 +2466,6 @@ version = "3.1.0"
 git-tree-sha1 = "a8e18eb383b5ecf1b5e6fc237eb39255044fd92b"
 uuid = "30f210dd-8aff-4c5f-94ba-8e64358c1161"
 version = "3.0.0"
-
-[[deps.ScikitLearnBase]]
-deps = ["LinearAlgebra", "Random", "Statistics"]
-git-tree-sha1 = "7877e55c1523a4b336b433da39c8e8c08d2f221f"
-uuid = "6e75b9c4-186b-50bd-896f-2d2496a4843e"
-version = "0.5.0"
 
 [[deps.ScopedValues]]
 deps = ["HashArrayMappedTries", "Logging"]
@@ -2678,11 +2532,17 @@ deps = ["Libdl", "LinearAlgebra", "Random", "Serialization", "SuiteSparse_jll"]
 uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 version = "1.11.0"
 
+[[deps.SparseInverseSubset]]
+deps = ["LinearAlgebra", "SparseArrays", "SuiteSparse"]
+git-tree-sha1 = "52962839426b75b3021296f7df242e40ecfc0852"
+uuid = "dc90abb0-5640-4711-901d-7e5b23a2fada"
+version = "0.1.2"
+
 [[deps.SpecialFunctions]]
 deps = ["IrrationalConstants", "LogExpFunctions", "OpenLibm_jll", "OpenSpecFun_jll"]
-git-tree-sha1 = "41852b8679f78c8d8961eeadc8f62cef861a52e3"
+git-tree-sha1 = "64cca0c26b4f31ba18f13f6c12af7c85f478cfde"
 uuid = "276daf66-3868-5448-9aa4-cd146d93841b"
-version = "2.5.1"
+version = "2.5.0"
 weakdeps = ["ChainRulesCore"]
 
     [deps.SpecialFunctions.extensions]
@@ -2766,9 +2626,9 @@ version = "0.34.4"
 
 [[deps.StatsFuns]]
 deps = ["HypergeometricFunctions", "IrrationalConstants", "LogExpFunctions", "Reexport", "Rmath", "SpecialFunctions"]
-git-tree-sha1 = "35b09e80be285516e52c9054792c884b9216ae3c"
+git-tree-sha1 = "b423576adc27097764a90e163157bcfc9acf0f46"
 uuid = "4c63d2b9-4356-54db-8cca-17b64c39e42c"
-version = "1.4.0"
+version = "1.3.2"
 weakdeps = ["ChainRulesCore", "InverseFunctions"]
 
     [deps.StatsFuns.extensions]
@@ -2780,6 +2640,20 @@ deps = ["PrecompileTools"]
 git-tree-sha1 = "725421ae8e530ec29bcbdddbe91ff8053421d023"
 uuid = "892a3eda-7b42-436c-8928-eab12a02cf0e"
 version = "0.4.1"
+
+[[deps.StructArrays]]
+deps = ["ConstructionBase", "DataAPI", "Tables"]
+git-tree-sha1 = "5a3a31c41e15a1e042d60f2f4942adccba05d3c9"
+uuid = "09ab397b-f2b6-538f-b94a-2f83cf4a842a"
+version = "0.7.0"
+weakdeps = ["Adapt", "GPUArraysCore", "KernelAbstractions", "LinearAlgebra", "SparseArrays", "StaticArrays"]
+
+    [deps.StructArrays.extensions]
+    StructArraysAdaptExt = "Adapt"
+    StructArraysGPUArraysCoreExt = ["GPUArraysCore", "KernelAbstractions"]
+    StructArraysLinearAlgebraExt = "LinearAlgebra"
+    StructArraysSparseArraysExt = "SparseArrays"
+    StructArraysStaticArraysExt = "StaticArrays"
 
 [[deps.StyledStrings]]
 uuid = "f489334b-da3d-4c2e-b8f0-e476e12c162b"
@@ -2860,9 +2734,9 @@ uuid = "410a4b4d-49e4-4fbc-ab6d-cb71b17b3775"
 version = "0.1.10"
 
 [[deps.URIs]]
-git-tree-sha1 = "cbbebadbcc76c5ca1cc4b4f3b0614b3e603b5000"
+git-tree-sha1 = "67db6cc7b3821e19ebe75791a9dd19c9b1188f2b"
 uuid = "5c2747f8-b7ea-4ff2-ba2e-563bfd36b1d4"
-version = "1.5.2"
+version = "1.5.1"
 
 [[deps.UUIDs]]
 deps = ["Random", "SHA"]
@@ -2905,12 +2779,10 @@ version = "1.6.4"
 git-tree-sha1 = "b13c4edda90890e5b04ba24e20a310fbe6f249ff"
 uuid = "013be700-e6cd-48c3-b4a1-df204f14c38f"
 version = "0.3.0"
+weakdeps = ["LLVM"]
 
     [deps.UnsafeAtomics.extensions]
     UnsafeAtomicsLLVM = ["LLVM"]
-
-    [deps.UnsafeAtomics.weakdeps]
-    LLVM = "929cbde3-209d-540e-8aea-75f648917ca0"
 
 [[deps.Unzip]]
 git-tree-sha1 = "ca0969166a028236229f63514992fc073799bb78"
@@ -2952,35 +2824,41 @@ git-tree-sha1 = "b8b243e47228b4a3877f1dd6aee0c5d56db7fcf4"
 uuid = "02c8fc9c-b97f-50b9-bbe4-9be30ff0a78a"
 version = "2.13.6+1"
 
+[[deps.XSLT_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Libgcrypt_jll", "Libgpg_error_jll", "Libiconv_jll", "XML2_jll", "Zlib_jll"]
+git-tree-sha1 = "7d1671acbe47ac88e981868a078bd6b4e27c5191"
+uuid = "aed1982a-8fda-507f-9586-7b0439959a61"
+version = "1.1.42+0"
+
 [[deps.XZ_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "fee71455b0aaa3440dfdd54a9a36ccef829be7d4"
+git-tree-sha1 = "56c6604ec8b2d82cc4cfe01aa03b00426aac7e1f"
 uuid = "ffd25f8a-64ca-5728-b0f7-c24cf3aae800"
-version = "5.8.1+0"
+version = "5.6.4+1"
 
 [[deps.Xorg_libICE_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "a3ea76ee3f4facd7a64684f9af25310825ee3668"
+git-tree-sha1 = "326b4fea307b0b39892b3e85fa451692eda8d46c"
 uuid = "f67eecfb-183a-506d-b269-f58e52b52d7c"
-version = "1.1.2+0"
+version = "1.1.1+0"
 
 [[deps.Xorg_libSM_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libICE_jll"]
-git-tree-sha1 = "9c7ad99c629a44f81e7799eb05ec2746abb5d588"
+git-tree-sha1 = "3796722887072218eabafb494a13c963209754ce"
 uuid = "c834827a-8449-5923-a945-d239c165b7dd"
-version = "1.2.6+0"
+version = "1.2.4+0"
 
 [[deps.Xorg_libX11_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libxcb_jll", "Xorg_xtrans_jll"]
-git-tree-sha1 = "b5899b25d17bf1889d25906fb9deed5da0c15b3b"
+git-tree-sha1 = "9dafcee1d24c4f024e7edc92603cedba72118283"
 uuid = "4f6342f7-b3d2-589e-9d20-edeb45f2b2bc"
-version = "1.8.12+0"
+version = "1.8.6+3"
 
 [[deps.Xorg_libXau_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "aa1261ebbac3ccc8d16558ae6799524c450ed16b"
+git-tree-sha1 = "e9216fdcd8514b7072b43653874fd688e4c6c003"
 uuid = "0c0b7dd1-d40b-584c-a123-a41640f87eec"
-version = "1.0.13+0"
+version = "1.0.12+0"
 
 [[deps.Xorg_libXcursor_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libXfixes_jll", "Xorg_libXrender_jll"]
@@ -2990,9 +2868,9 @@ version = "1.2.3+0"
 
 [[deps.Xorg_libXdmcp_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "52858d64353db33a56e13c341d7bf44cd0d7b309"
+git-tree-sha1 = "89799ae67c17caa5b3b5a19b8469eeee474377db"
 uuid = "a3789734-cfe1-5b06-b2d0-1dd0d9d62d05"
-version = "1.1.6+0"
+version = "1.1.5+0"
 
 [[deps.Xorg_libXext_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libX11_jll"]
@@ -3030,11 +2908,17 @@ git-tree-sha1 = "a490c6212a0e90d2d55111ac956f7c4fa9c277a6"
 uuid = "ea2f1a96-1ddc-540d-b46f-429655e07cfa"
 version = "0.9.11+1"
 
+[[deps.Xorg_libpthread_stubs_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "c57201109a9e4c0585b208bb408bc41d205ac4e9"
+uuid = "14d82f49-176c-5ed1-bb49-ad3f5cbd8c74"
+version = "0.1.2+0"
+
 [[deps.Xorg_libxcb_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libXau_jll", "Xorg_libXdmcp_jll"]
-git-tree-sha1 = "bfcaf7ec088eaba362093393fe11aa141fa15422"
+deps = ["Artifacts", "JLLWrappers", "Libdl", "XSLT_jll", "Xorg_libXau_jll", "Xorg_libXdmcp_jll", "Xorg_libpthread_stubs_jll"]
+git-tree-sha1 = "1a74296303b6524a0472a8cb12d3d87a78eb3612"
 uuid = "c7cfdc94-dc32-55de-ac96-5a1b8d977c5b"
-version = "1.17.1+0"
+version = "1.17.0+3"
 
 [[deps.Xorg_libxkbfile_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libX11_jll"]
@@ -3092,9 +2976,9 @@ version = "2.39.0+0"
 
 [[deps.Xorg_xtrans_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "a63799ff68005991f9d9491b6e95bd3478d783cb"
+git-tree-sha1 = "6dba04dbfb72ae3ebe5418ba33d087ba8aa8cb00"
 uuid = "c5fb5394-a638-5e4d-96e5-b29de1b5cf10"
-version = "1.6.0+0"
+version = "1.5.1+0"
 
 [[deps.Zlib_jll]]
 deps = ["Libdl"]
@@ -3106,6 +2990,28 @@ deps = ["Artifacts", "JLLWrappers", "Libdl"]
 git-tree-sha1 = "446b23e73536f84e8037f5dce465e92275f6a308"
 uuid = "3161d3a3-bdf6-5164-811a-617609db77b4"
 version = "1.5.7+1"
+
+[[deps.Zygote]]
+deps = ["AbstractFFTs", "ChainRules", "ChainRulesCore", "DiffRules", "Distributed", "FillArrays", "ForwardDiff", "GPUArrays", "GPUArraysCore", "IRTools", "InteractiveUtils", "LinearAlgebra", "LogExpFunctions", "MacroTools", "NaNMath", "PrecompileTools", "Random", "Requires", "SparseArrays", "SpecialFunctions", "Statistics", "ZygoteRules"]
+git-tree-sha1 = "dabc8bf48149b0220010c2d3e555b0ca84400ce1"
+uuid = "e88e6eb3-aa80-5325-afca-941959d7151f"
+version = "0.7.4"
+
+    [deps.Zygote.extensions]
+    ZygoteColorsExt = "Colors"
+    ZygoteDistancesExt = "Distances"
+    ZygoteTrackerExt = "Tracker"
+
+    [deps.Zygote.weakdeps]
+    Colors = "5ae59095-9a9b-59fe-a467-6f913c188581"
+    Distances = "b4f34e82-e78d-54a5-968a-f98e89d6e8f7"
+    Tracker = "9f7883ad-71c0-57eb-9f7f-b5c9e6d3789c"
+
+[[deps.ZygoteRules]]
+deps = ["ChainRulesCore", "MacroTools"]
+git-tree-sha1 = "434b3de333c75fc446aa0d19fc394edafd07ab08"
+uuid = "700de1a5-db45-46bc-99cf-38207098b444"
+version = "0.2.7"
 
 [[deps.eudev_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg", "gperf_jll"]
@@ -3166,23 +3072,11 @@ git-tree-sha1 = "ad50e5b90f222cfe78aa3d5183a20a12de1322ce"
 uuid = "36db933b-70db-51c0-b978-0f229ee0e533"
 version = "1.18.0+0"
 
-[[deps.liblinear_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "7f5f1953394b74739eaebd345f4515515a022a5b"
-uuid = "275f1f90-abd2-5ca1-9ad8-abd4e3d66eb7"
-version = "2.47.0+0"
-
 [[deps.libpng_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Zlib_jll"]
 git-tree-sha1 = "068dfe202b0a05b8332f1e8e6b4080684b9c7700"
 uuid = "b53b4c65-9356-5827-b1ea-8c7a1a84506f"
 version = "1.6.47+0"
-
-[[deps.libsvm_jll]]
-deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "LLVMOpenMP_jll", "Libdl", "Pkg"]
-git-tree-sha1 = "7625dde5e9eab416c1cb791627f065ce55297eff"
-uuid = "08558c22-525a-5d2a-acf6-0ac6658ffce4"
-version = "3.25.0+0"
 
 [[deps.libvorbis_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Ogg_jll", "Pkg"]
@@ -3226,181 +3120,151 @@ version = "1.4.1+2"
 """
 
 # ╔═╡ Cell order:
-# ╠═50449444-1f95-11f0-3642-89804cc4dc84
-# ╠═b9df5cb5-cc3c-400e-9834-875e23b659ed
-# ╠═57948b1c-2937-475a-977f-cff1f5a45ebe
-# ╠═9420c5df-1b5c-4185-b7c1-f4c1de794b39
-# ╠═87613936-7ddb-452e-8389-09f5f6e2eaee
-# ╠═e83b5f25-3fd0-4b85-8295-f1b4eafa8770
-# ╠═77c442ed-f830-4f26-901a-1ed528a67d0b
-# ╠═a23524a7-b4a4-4bd7-aec8-e15800823dfe
-# ╠═64a828bf-a426-417a-8994-7661b53e22ab
-# ╠═d2159870-7d0e-46a7-bda4-4e259e075906
-# ╠═319a328e-96fa-4852-a766-1de322033450
-# ╠═507dba8d-bb19-4551-9c34-333a729936bf
-# ╠═f996441d-9968-4e5c-b814-25bfb0413d61
-# ╠═17a8e36a-0257-45b0-9ded-a43a85979709
-# ╠═d2d91db2-0213-4329-9d6a-524b5602e987
-# ╠═7fd1c6ad-a229-4123-bbeb-c4b55d5ffc31
-# ╠═782310a4-9d89-4332-9cad-b6ab46a24a2a
-# ╠═b44ddc15-a3e7-4282-ae23-18a163c3aad2
-# ╟─4b30ab11-03a3-4bde-bd55-1e8f737157b6
-# ╟─1ba4957e-ef24-43ed-915d-e5fe1ef4b2aa
-# ╠═39859999-911e-4a27-8760-e7f6a2d9b030
-# ╠═8064744a-796c-44a7-a2ab-d60909ecbe0d
-# ╠═40151e5b-9c13-4178-9de1-0feeb4bf31ac
-# ╠═c55facf6-29ad-4cce-9f91-e1e053c7aa70
-# ╠═f47c2397-d8fd-48f3-89cd-51399ac2be90
-# ╠═8d94edc6-042e-4932-a7ed-57d71d6f56a2
-# ╠═8bb58a9c-d947-4470-9348-f8dc6c4d3e11
-# ╠═953e4a5d-1094-49cf-86df-736a4166ab00
-# ╠═131778f5-3927-4daf-a5f0-1e69e65bc773
-# ╠═bf8856f1-8e20-4288-9db8-906e12088412
-# ╠═85589b93-c3fc-417f-bfda-0d44c9d5d4c7
-# ╠═f43e4aa9-29b0-4e94-8486-17c40fc385a7
-# ╠═6fbac7ed-919b-4696-be02-9c88a7e9a3a2
-# ╠═69d6b42a-a8fb-4590-9c41-1a5885ffe42d
-# ╠═80ab3767-3a6f-4151-8c71-95b2290e40d0
-# ╠═51ae1229-3bbb-46cd-8721-70b8f93e4889
-# ╠═c7531d9b-19b1-4940-af5a-7adec5033039
-# ╠═2815c0a0-c83d-4f97-9877-7e842817d6ce
-# ╠═1aff9435-6ee9-4028-aea3-482a2f46c099
-# ╠═9b1b2fd2-d2cb-44a5-8842-be320c17b3fb
-# ╠═ef1817d9-3e3f-44b8-bb7c-65cce84898ee
-# ╠═b4825656-168a-44c6-952e-5f228ae248c6
-# ╠═8567201c-8811-4809-b3cd-a1d6ff4ae333
-# ╠═4ab666f2-078c-4414-8c77-151e38882b1f
-# ╠═009833dd-3e5d-424c-aec0-c0a353526cc1
-# ╠═d1df1292-66d0-4a60-bbaf-e71c799e7f54
-# ╠═54104ab5-6417-4e32-a89d-2e85852bf243
-# ╠═1d7a822d-80f8-4c19-873d-06259663ff03
-# ╠═86588b2e-d8de-45f7-af7a-27f88a739c2b
-# ╠═5938fc64-d79d-4068-9967-60e695cb7d7b
-# ╠═c4abe55a-dc53-44db-87f8-3894d8657eb2
-# ╠═d37e739b-051c-4566-a96b-d5f480f8b0e3
-# ╠═b76e2333-b854-414e-a293-5a3c0c12d501
-# ╠═6be601d9-8531-4dc3-a144-109eb3404f54
-# ╠═6d1d0839-80c9-4342-8be1-160be3e13bd8
-# ╠═4827551b-e68d-4014-8337-611c9063c8a8
-# ╠═072b2b88-3b59-4c07-a6db-683b167fbbd8
-# ╠═fc88a32b-743a-4871-b230-01a011eb525a
-# ╠═ea6d7c95-821e-4aac-89e3-d31cf49df971
-# ╠═6d5b3e7b-7b66-4b95-9702-cf1979d14c05
-# ╠═bbbe0d1c-acb9-4f69-9e38-8d5b89280c03
-# ╠═1cc522fb-bc85-412f-973c-110704feb331
-# ╠═643abb55-37d8-4277-a3e4-3883a85c5ee3
-# ╠═02be1603-d7bb-44bb-a2a6-371e417c046d
-# ╠═ca98f95a-f479-43e5-bbfd-f47123ebd27d
-# ╠═f3a85143-8ca8-4372-8b47-4944f17be226
-# ╠═cbd7ba6e-2ac2-431c-a01c-f4e8017edd33
-# ╠═581cf399-766e-42ca-9112-78f99128440e
-# ╠═537d3854-87c8-439e-9f66-643a44a91a3b
-# ╠═47c61751-73d4-4954-940a-dea937e1e8d6
-# ╠═139b5358-8313-4613-b095-72c6361ebc16
-# ╠═6ddba88f-ab66-469f-a5dd-68dfb97b235b
-# ╠═eff50047-8b7b-4170-8ff5-f6eec94e45fd
-# ╠═2f645347-30ad-43e3-9439-b60ea0a33136
-# ╠═edffe592-e174-41a2-b697-279d4b7eda37
-# ╠═e7198063-24cf-4801-b196-02683a5e4e95
-# ╠═ee2743f1-c6cb-4bec-935c-b70af7c28afe
-# ╠═f3bb92ad-27e8-4b58-a6dd-b4eb67c64b05
-# ╠═edf85cdc-ff72-4560-8c29-c79184bfeadc
-# ╠═aacb9351-7d2e-4515-9f7d-f107c461676c
-# ╠═aa531714-7f84-4766-8bf8-67e3105cc3f3
-# ╠═1fc57d4e-e3c8-4cb9-b296-a4e719841cac
-# ╠═0aeb4801-9f35-44d2-90f9-5342fbc7af8a
-# ╠═eda3131e-5d03-45de-8530-f757af210450
-# ╠═3916ea5b-c11e-416e-b95f-760684f0f7ad
-# ╠═d72b00e7-7682-4183-8b8d-49889143616d
-# ╠═9f54f451-63b8-4399-b219-4170c260e50d
-# ╠═e72c0f9c-7233-42da-af5c-0da3348e63fd
-# ╠═e9bb1b66-90b7-4d2a-bd08-eeccd5b89d58
-# ╠═71103b9c-4d79-4f0e-845b-a84e8de1d063
-# ╠═4c8f525a-ca10-4854-a55a-8c620a21f9e8
-# ╠═64859989-d320-44d2-97da-4c08f75e17c2
-# ╠═4fa4e2da-bdd8-4337-bcd8-568f0c546079
-# ╠═74279119-259e-4527-a6eb-bc49d7d656c9
-# ╠═18dab33a-0097-45dd-bc64-e279a2f55a9d
-# ╠═4949384c-5eb4-4497-82b7-d5a075613fc4
-# ╠═afc5cf1a-5bd4-4b68-8b77-0b83fc53f441
-# ╠═0fb4d386-44a8-4092-bf77-a729e857609c
-# ╠═36130a1c-6fb6-4c6f-b280-87a9c2573bda
-# ╠═75055e24-2f7c-41eb-a643-b4f8b23cc150
-# ╠═18bfb1ef-db71-455a-ac0c-00fb6db43f59
-# ╠═52934098-0e3e-46e2-bc3d-d927d5c71dae
-# ╠═6aae73b0-9f59-422a-a7b2-9d2c97297229
-# ╠═79d9dfc6-9f8e-4fe9-953b-b11de1232adc
-# ╠═263ebdd6-8461-4207-8fdd-4bca929edbd1
-# ╠═e1274616-d152-4b2e-9f71-c2cdc4f3cc1f
-# ╠═56c22652-b91c-4f9f-b814-5144ff3c80ec
-# ╠═c28301a5-b989-4448-8c5f-96d4164c35ba
-# ╠═bfa971c4-5352-40a6-92fd-eb0d8a0ac766
-# ╠═9d9a7d17-e611-4405-bfc5-c1d11ef99622
-# ╠═8c21e423-4d94-49d4-befe-060bebd9db13
-# ╠═7c46edc6-cb4d-48cb-a0fc-bfa932a19b88
-# ╠═d4c709aa-7a89-4250-bd83-4b0601428d5a
-# ╠═c729f381-b810-459c-8b16-ff88852f1e8d
-# ╠═f1c240f7-ef5d-4296-923b-0243735112ba
-# ╠═5ac9e1ca-ddd9-40ef-bbc0-0b70c7bf00ff
-# ╠═73e33858-0c2f-45a5-9063-be5417f860a0
-# ╠═69168a15-aa7a-4951-8d47-bca2fce8b8bd
-# ╠═ac224512-fe67-44fc-bd0d-e0875a1a621e
-# ╠═92004858-7f72-41ee-affa-645f63be89c2
-# ╠═68cbe021-7e17-48bb-875c-d938c797ecf4
-# ╠═dc253228-bc9b-4f3b-9e32-e425525d1f2b
-# ╠═51855f1c-4e7b-45a3-8de5-d3a6308f6984
-# ╠═4678c32a-3c64-459d-bebf-d1bfd345137b
-# ╠═0e7bf41b-3935-4f0c-a27e-a8cf17ab51f6
-# ╠═101a42d9-b3cf-48e8-b6a9-a66cdcb25937
-# ╠═3c56b4fa-1953-4487-a9d7-7217296a6aa4
-# ╠═e54f0557-6fb4-47b3-babf-ad26ed84bad4
-# ╠═230bdcb8-11cb-4be8-95d2-db72d46e9b2a
-# ╠═1d54255b-2aa3-40e7-bc54-bcd1ca83e00b
-# ╠═1c0b295f-ebac-4f47-8241-da3abbc17ae7
-# ╠═5def91d4-b9ef-4aa6-b0eb-d2b7c4ef6b86
-# ╠═f1ee699d-535a-436a-ba30-6face48018db
-# ╠═53b5d2f7-2cfd-4ec3-b2c9-f9d8af30718e
-# ╠═d918ad69-de3f-4009-8527-e601368e030b
-# ╠═98f63cb9-2d89-466b-8217-2ad6b982c5b9
-# ╠═fd82cb57-a7b4-445d-86d5-0d7aaf12f878
-# ╠═c0ded5f0-d008-416d-95db-9a6b60f24f13
-# ╠═2dceb906-68d8-4334-bc0e-254fa2f87872
-# ╠═5a3c78c9-6cfa-4cde-8815-0260cf468c2e
-# ╠═f92f1c74-5d7f-4c11-b140-5c8be0ae80e2
-# ╠═0b5cd707-9937-44aa-aa9e-d02d806776e9
-# ╠═498ef0a1-b7e1-4829-89b4-21c904a87d2d
-# ╠═3e3792e8-da1c-48ef-a321-0dca7cb7da2e
-# ╠═cd24b8a6-bc56-49e2-a396-bc64fd4ad111
-# ╠═b1747147-a6e3-4060-8e2f-7df50bef2de0
-# ╠═b142e855-46c9-47fe-a54b-ffc10eab7419
-# ╠═d07c2b6f-3145-4f2a-a9e9-acaac491621b
-# ╠═34681997-7bb6-4d89-8117-02d189b0daec
-# ╠═371e9ae2-ee34-4b76-9f3f-836b837d0e9a
-# ╠═a4e1a29d-8ad5-42e0-9197-021bd20df262
-# ╠═22f06593-18e7-40e1-a638-eb64fb3776da
-# ╠═28bdecaf-7954-4329-a3c5-d48c0e42e463
-# ╠═b1c6dd76-0e10-4361-9549-5de0d2ad3a7e
-# ╠═a3014ff8-729c-46d1-aa13-0be2490e22d5
-# ╠═a3976136-6172-4283-8343-2ac5d42e71d5
-# ╠═1dc1e60e-d51d-493e-8cf2-a076cb114ca1
-# ╠═a85d5c45-90da-4a27-9a45-e154244078db
-# ╠═9e783f7b-c0fd-4221-a015-45b74c76f220
-# ╠═777908f7-b3bc-430e-b94c-845b52cb3df1
-# ╠═24470b0d-35ce-45bc-9848-40a1cf8641a5
-# ╠═e8f72d35-67a8-4672-ac17-8d12dce84f49
-# ╠═fad4ea0c-39c1-4f75-91b8-2b9a877e93f6
-# ╠═be4c0c6c-e9c6-4f38-9e5a-41d721b7bdab
-# ╠═aa89be4d-ccd1-4086-bb16-1cad7c656b0b
-# ╠═15c5b90e-f19a-4639-92b4-9ec4cdde09ec
-# ╠═a70d2ea4-612f-4832-a55d-fe51d894631e
-# ╠═7245d4bf-9ae9-42c4-b217-45ef3ad5daf1
-# ╠═0185a95b-4e1e-432c-9241-3a7cd70e5d05
-# ╠═7ec54078-3007-4ac3-b213-4c5bcf7b1176
-# ╠═ff333f42-9a30-4d38-ac92-e95e1e73f72a
-# ╠═08018313-909f-4050-91aa-58af6d5a7245
-# ╠═c89e1126-3b58-4acc-95b9-21105077300a
-# ╠═0c14eae8-a69b-4b25-a226-1cc76204c6d7
-# ╠═1fa8bfbe-a6e4-4c6e-aac0-f7041e7a56a5
-# ╠═1558e7cb-13c2-469e-a0a6-7dd4f7085b0c
+# ╠═d5fd2304-0353-11f0-29d8-3158c4dbe8dd
+# ╠═c23ebe0f-016e-4a0a-aa7d-b0308bf5d99a
+# ╠═aa6d92eb-7a97-4084-bfc7-8474b34a2c71
+# ╠═8bf751cf-2510-4748-8697-2e3177013785
+# ╠═ee78d551-2259-4955-b934-c60d3453706c
+# ╠═a7c9f0c1-e76a-460c-a31a-3d2b42ca3118
+# ╠═5e06e76f-68de-4e65-9fe9-66040dca0932
+# ╠═6020693f-5639-4408-ab53-9845658eadba
+# ╠═6aa62fa1-f7e1-4bd2-8e4c-f6ab51c05490
+# ╠═a3d7c6fd-07a4-4280-9170-167c17299e91
+# ╠═b844f3ab-c048-4df9-9f01-0b8748ebbb1e
+# ╠═0a3d364a-af50-435f-b094-ff392acfa922
+# ╠═785309b6-ddfc-4e99-9699-63f60e73a787
+# ╠═0b5df837-5a80-43c6-b3ce-a1554d550776
+# ╠═2c54bdd7-0d73-496c-9fd1-031dcdf2c861
+# ╠═0ebbbc1b-066d-4c2b-8ad0-2165a145d5f1
+# ╠═5b797826-439b-48ce-a293-03534db1f2a9
+# ╠═f65234a5-1af3-48de-be23-a6c3050b79a6
+# ╠═ce3edc15-c454-4419-8619-5d800aed2d5c
+# ╠═0a89e6b8-46c1-4dfc-b11e-6373dc743ec4
+# ╠═770f2494-be6f-4c6b-aa9b-687241c0f62a
+# ╠═20b5ac11-a251-48e7-bfe2-252d8a4b1fe9
+# ╠═fd15e146-5c83-406b-a056-fc1fba51ffc2
+# ╠═3e361edb-a6fc-4c26-8c91-f44eec0a6a6c
+# ╠═0f6e55dd-d1e4-4833-8c3f-a6390daff2a5
+# ╠═8796c632-7302-4213-be40-67e7b11f5a35
+# ╠═b64fa92a-dfc8-4049-a069-9a1c4f61b65c
+# ╠═135e5c27-0f1a-46a5-9997-254c6547ff1e
+# ╠═4022783b-c5a4-4df3-b342-51641fc60fdc
+# ╠═5e36d267-f394-4b53-a29e-b68a297113a1
+# ╠═4d082d8e-7b85-4e94-91b4-0e550ccd9458
+# ╠═cabcaec7-3fca-4ea9-929f-0d3f3e6843a2
+# ╠═df53f204-76e8-43f7-858f-48c5f8f78eeb
+# ╠═c3685572-264d-48d9-aee6-142ae90576b3
+# ╠═bbbc0b92-185b-4126-b858-e94af0211a6c
+# ╠═d0e46bda-cd81-4717-87b1-e5ef283f6e7b
+# ╠═9d41b30b-afab-4f83-ae60-9fc50dea90b9
+# ╠═3063a028-22e6-467f-82fb-139492ed4e6b
+# ╠═359e990e-41bc-43bc-9504-d520476ea035
+# ╠═26ffe43c-fcda-4c52-be27-ce945f1084d9
+# ╠═aba74d40-c561-4492-a7a0-f49a69f6455e
+# ╠═a46f42c1-64a2-4a07-9ee7-e8517eb56dd8
+# ╠═aab30f28-b671-45f8-bea1-b637351ad432
+# ╠═089c0310-259c-4158-b49f-10b25969beac
+# ╠═b6e330c6-8285-4f5b-a933-7c5a35f1fbab
+# ╠═8e144c0b-8ae4-4865-931f-a52afa55965d
+# ╠═53e3d912-fb70-4501-817d-e8568bea9b81
+# ╠═b4e00721-1b78-4cda-a26e-474d4fa4230a
+# ╠═1474cc4c-b3e4-4e14-9af8-11d05f1a8584
+# ╠═e365ac10-8744-41e6-a550-861e60108782
+# ╠═f08f7c50-0b54-4c0d-b65a-b0389d41d2a9
+# ╠═1a52c360-1fb4-49df-a0f2-8a75f0f981d8
+# ╠═0a978bc5-bf88-4702-90ac-821604054683
+# ╠═e4619111-2f92-4b45-8ab8-9fb9f8157f6f
+# ╠═c05393f4-df33-4945-9d20-3f92d8938588
+# ╠═3dd87947-6800-4529-b057-3be85f454e21
+# ╠═595a9bb4-a6f5-4862-b405-3bd7edd735ce
+# ╠═dccb64be-ee47-495d-ab9a-439f0eafb4b0
+# ╠═c86d2d32-bcaa-4a7f-ae07-60d7dd777003
+# ╠═a8c7d8c1-f9e1-448d-8832-82f4e6df33b7
+# ╠═7827ecab-178e-4286-9482-b787b95e949f
+# ╠═57174712-848c-4868-89f3-5f6b67953312
+# ╠═9143e7f3-ddbd-4757-a202-7c7b7f4c7468
+# ╠═cce25fb8-c343-4866-80fa-d2d9714d9731
+# ╠═aa6459b3-3e45-4951-8279-54a4c72bf99c
+# ╠═d0a3a855-bc5f-4c84-b735-80a8ac71d94c
+# ╠═4312e730-bf64-4081-bf37-6062c3c3acbd
+# ╠═8498d094-5069-4fb6-8d12-9f1721f9b4ac
+# ╠═3a9b314f-7181-4e1e-9b87-e41d8b3bb49e
+# ╠═8d12a618-19cd-4777-91e5-bf36c9490c17
+# ╠═df3f2655-66a2-4bf4-852b-c9574c2d2748
+# ╠═5883dec1-c9e2-4b1a-b53d-f87f85f30db2
+# ╠═5da5c8fa-a0e8-4f0d-8eaf-4fd0b2c00ed4
+# ╠═0f9f1ef8-a591-45ce-8c97-507144441660
+# ╠═5b9f4efc-8917-4a9b-bba7-5c5477bf4cbf
+# ╠═07bb71de-f226-40fb-b735-73863bf0688e
+# ╠═209d3b9a-67db-4b28-804a-393aaa2e64e9
+# ╠═a05f8886-30fe-4a08-861a-b730709032d9
+# ╠═7f9436bf-06ab-41fb-a435-61f815b6787e
+# ╠═2b7ee756-8187-4176-b731-7bdfbcf2ec05
+# ╠═4487a15e-2c7c-4aad-91af-5859d65c775c
+# ╠═839d9885-b6f7-4c23-ae5f-8db14145c553
+# ╠═13f55aab-0a02-4bc7-9b9a-8765c15586b8
+# ╠═398910d5-be33-49a4-a761-8bcbcd872eb8
+# ╠═af5c6a1f-5053-49a4-a2de-7bc7139f58bb
+# ╠═a306ffcd-5f77-4082-891d-0fbe202f8181
+# ╠═fb46d3c7-e9d5-466e-b0dc-851d6da3c755
+# ╠═28882d51-20d8-4fa8-8ebd-0dc3e3198af0
+# ╠═2468a791-2cdb-4ace-9037-c68f828e3608
+# ╠═24e3d668-c6fd-475b-8eae-afed0343123e
+# ╠═ab5c1498-7e07-4301-9de8-b1a08b7a5482
+# ╠═792ae261-d6a5-4efc-b395-54538fe5c167
+# ╠═b2d8ab25-73e2-45d0-81d8-5de3b34ea2ba
+# ╠═4363ae8d-ecc6-41fa-aa5d-6373aa281dcb
+# ╠═06a400a3-9ca2-4038-be73-9be58ff22d94
+# ╠═96cf537d-eaf7-4790-962d-de6eb3922ef3
+# ╠═8f023a0e-94d9-4390-a048-3e815d13dd75
+# ╠═6b510711-b6a5-40b6-84da-0d463bb6f6c1
+# ╠═d48b0309-1d28-40ea-a848-7dee2496159e
+# ╠═17fc15fd-1eda-4dae-ae51-e0b5610f0041
+# ╠═c3d0c723-0852-4365-9e4c-b64d95a1bcb8
+# ╠═8f400ee4-3e73-4770-b39a-317df4ae9b0e
+# ╠═855f71e1-105d-4082-9097-8587de06ce45
+# ╠═63a26003-f633-4d93-a135-369ae8d802c5
+# ╠═bb922155-c271-49ff-9526-3d7a228ace37
+# ╠═7ac53bef-54ba-4a4b-9a99-de6423249572
+# ╠═ff74834b-f674-4ec9-a1d0-5422dd228915
+# ╠═d5ec1fbe-138d-4da1-83de-95dd1565dac7
+# ╠═5f28926b-f7a4-4a6f-a37d-d59fbd1c01c5
+# ╠═3584250c-f199-4c27-ba22-d359b245b02c
+# ╠═e67aa374-2ad6-42ab-8127-5658a8236363
+# ╠═ed7fc6a7-6f89-4d88-92aa-ec96e9171c6a
+# ╠═fd9766e3-4a9f-4746-b695-c2b20b192897
+# ╠═75a7fc03-26fc-458d-bb0e-e0ed26b0ff65
+# ╠═4320b284-f595-4408-920a-d93cbfae2116
+# ╠═7a08c1e0-de42-4644-ab97-5bb3e5e07805
+# ╠═6e0c2dc5-0037-480f-9b47-0ef951a0af86
+# ╠═237e0af0-7abd-4d0d-82a5-be590e3a0555
+# ╠═f03bcd24-fb92-45f7-8489-0901ec8714b2
+# ╠═a4d9101a-99c0-4949-b8bb-e440a74c3193
+# ╠═c25f9730-f107-4cc3-a517-542b17e58901
+# ╠═7b180556-ecd3-480f-bb1b-7adb84f91ccf
+# ╠═fb6b3f31-c188-4c82-bc15-996fd909bfcf
+# ╠═fa68f129-609d-442f-8d9d-06e3a0bc5bb7
+# ╠═7af6e33b-b9cf-4428-b457-0fbc7f0c5eb0
+# ╠═015c2a61-f7b4-41d9-81c7-85299de42a52
+# ╠═71dd85c1-e743-4641-9522-8904da9fa04e
+# ╠═1859f9ea-cb27-4acb-a2bf-b7dd63fa47eb
+# ╠═de7228bc-fc1c-4540-a0fb-89b80aaca8fe
+# ╠═152393b0-d3cc-461e-a1a1-c0b2050c957e
+# ╠═03c5c00b-a013-4730-bae3-b028649c5714
+# ╠═21ad8727-1da3-4ee0-a93c-b874b415b3d6
+# ╠═56817bd3-041c-41a2-806d-ddca6ecce036
+# ╠═df83a14f-1c98-4e04-bf21-d922fb11cc70
+# ╠═014f2d31-8084-4720-bec1-aef01454dfb7
+# ╠═d55aee49-7914-4a6e-a0cd-704af123c20b
+# ╠═5dfda864-7b57-4b85-b583-24b21c7d7b70
+# ╠═e98382a3-5a96-4d4c-8748-97231231393a
+# ╠═00719c6c-41dd-47d2-9c66-e9169bada27c
+# ╠═c3c1cb31-fac1-4758-a60e-e5231b046d81
+# ╠═f15af338-b9bf-40f4-ba5c-9922550a9482
+# ╠═7626e1b9-e312-4e96-9ee1-925d80ae0cb3
+# ╠═b06be04c-f11b-4a15-89f1-7e05326996fe
+# ╠═bb87c341-2e49-43c1-a93d-4ded2ca0a3a8
+# ╠═63e06ba9-d51d-4748-81d6-06bc379c2d2e
+# ╠═33873026-0946-4887-b3c7-25128377f3eb
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

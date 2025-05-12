@@ -1,56 +1,41 @@
 ### A Pluto.jl notebook ###
-# v0.20.6
+# v0.20.8
 
 using Markdown
 using InteractiveUtils
 
-# ╔═╡ c23ebe0f-016e-4a0a-aa7d-b0308bf5d99a
-using CSV
-
-# ╔═╡ aa6d92eb-7a97-4084-bfc7-8474b34a2c71
-using DataFrames
-
-# ╔═╡ 8bf751cf-2510-4748-8697-2e3177013785
-using HTTP
-
-# ╔═╡ ee78d551-2259-4955-b934-c60d3453706c
-using PlutoUI
-
-# ╔═╡ a7c9f0c1-e76a-460c-a31a-3d2b42ca3118
-using MLJ: partition, ConfusionMatrix
-
-# ╔═╡ 5e06e76f-68de-4e65-9fe9-66040dca0932
+# ╔═╡ 791aa17b-6568-4482-a873-059bcb5ae495
 using Flux
 
-# ╔═╡ 6020693f-5639-4408-ab53-9845658eadba
-using Logging
+# ╔═╡ e2047545-ec0a-4a45-804d-d288ccbb6821
+using ParameterSchedulers # Estrategias para la actualización de la tasa de aprendizaje
 
-# ╔═╡ 6aa62fa1-f7e1-4bd2-8e4c-f6ab51c05490
+# ╔═╡ d23ddd1e-462c-4729-b981-1c9a0cd0c51a
 using Plots
 
-# ╔═╡ a3d7c6fd-07a4-4280-9170-167c17299e91
-using Random
+# ╔═╡ ef0e2a6e-61df-449a-86aa-6c87f63012b3
+using PlotlyBase
 
-# ╔═╡ b844f3ab-c048-4df9-9f01-0b8748ebbb1e
-using MLJ
+# ╔═╡ 81e2d1e0-6828-4b27-84a5-db17b530af4e
+using PlotlyKaleido
 
-# ╔═╡ 0a3d364a-af50-435f-b094-ff392acfa922
-using Normalization
+# ╔═╡ 29a782b7-174d-453a-8aa3-81fe5f507dc2
+using PlutoUI
 
-# ╔═╡ d5fd2304-0353-11f0-29d8-3158c4dbe8dd
+# ╔═╡ df43ffce-2be1-11f0-1bda-8d3f50a5cd86
 # html"""
 # <link rel="stylesheet" type="text/css" href="https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/mi_estilo.css" media="screen" />
 # """
 
-# ╔═╡ 785309b6-ddfc-4e99-9699-63f60e73a787
-TableOfContents(title = "Contenidos", depth=1)
+# ╔═╡ 8f9e676c-76c8-474b-ab0a-60424d8cb889
+plotly()
 
-# ╔═╡ 0b5df837-5a80-43c6-b3ce-a1554d550776
-url_imagenes = "https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/RedesNeuronales/"
+# ╔═╡ d696f0f6-e1ea-4b74-b877-0df4cd6b6e80
+TableOfContents(title="Contenidos", depth=1)
 
-# ╔═╡ 2c54bdd7-0d73-496c-9fd1-031dcdf2c861
+# ╔═╡ fb1079c3-9b84-4465-ac1a-8d2b5c97a737
 md"""
-# Introducción a las redes neuronales
+# Entrenamiento de redes neuronales
 
 Óscar Belmonte Fernández - IR2130 Aprendizaje Automático
 
@@ -59,894 +44,663 @@ Grado en Inteligencia Robótica - Universitat Jaume I (UJI)
 ![](https://ujiapps.uji.es/ade/rest/storage/63c07717-5208-4240-b688-aa6ff558b466?guest=true)
 """
 
-# ╔═╡ 0ebbbc1b-066d-4c2b-8ad0-2165a145d5f1
+# ╔═╡ 79f24aba-6558-4c1b-9a49-ec0aac882b7f
 md"""
 ## Introducción
 
-Las redes neuronales son modelos de aprendizaje automático muy potentes, pero 
-complicados de entrenar.
+Aunque la redes neuronales parecen una estructura sencilla, se tardó tiempo 
+hasta que se encontró el algoritmo que ajusta los pesos de la red para un 
+conjunto de datos de entrenamiento.
 
-Su entrenamiento se basa en el algoritmo de retro propagación, que es un una 
-combinación del algoritmo de descenso de 
-gradiente y de la regla de la cadena.
+De hecho, el resurgir de las redes neuronales vino de la mano del
+descubrimiento de cómo entrenarlas.
 
-Las redes neuronales pueden resolver tanto problemas supervisados como no 
-supervisados. Además se pueden utilizar tanto en tareas de clasificación como 
-de regresión.
+Sin embargo, incluso después de descubrir el algoritmo que permite entrenar 
+redes neuronales, en la práctica, surgieron un buen número de problemas que 
+dificultaban un entrenamiento eficiente.
 """
 
-# ╔═╡ 5b797826-439b-48ce-a293-03534db1f2a9
+# ╔═╡ 5e97581b-9ad9-4fa4-a3da-edd39a12b33c
 md"""
 ## Introducción
 
-El [premio Nobel de Física de 2024](https://elpais.com/ciencia/2024-10-08/premio-nobel-de-fisica.html) 
-se otorgó a John Hopfield y Geoffrey Hinton 
-por sus contribuciones dentro del campo de la redes neuronales.
+El entrenamiento de las redes neuronales es muy delicado, sobre todo, cuando 
+tienen muchas capas.
 
-El [premio Nobel de Química de 2024](https://elpais.com/ciencia/2024-10-09/premio-nobel-de-quimica.html) 
-se otorgó a John Jumper, Demis Hassabis y 
-David Baker por la aplicación del aprendizaje profundo a resolver el problema 
-del plegamiento de proteínas.
+Poco a poco se ha encontrado un serie de técnicas que hacen posible que se 
+puedan entrenar las redes neuronales.
+
+En esta presentación se muestran algunos de los problemas más comunes 
+durante la fase de entrenamiento de una red neuronal profunda, y algunas de 
+las técnicas más utilizadas para soslayar estos problemas.
 """
 
-# ╔═╡ f65234a5-1af3-48de-be23-a6c3050b79a6
+# ╔═╡ ac626f1a-9734-4411-b53d-d9fd1e052107
 md"""
 ## Objetivos de aprendizaje
 
-1. Esquematizar la estructura de una neurona y un red neuronal.
-1. Resumir los pasos para crear y entrenar una red neuronal.
-1. Construir una red neuronal sencilla para problemas de regresión.
-1. Construir una red neuronal sencilla para problemas de clasificación.
-1. Interpretar la _historia_ del proceso de entrenamiento.
+1. Razonar el problema de la inicialización de los parámetros de una red neuronal.
+1. Decidir qué función de activación utilizar en función de sus características.
+1. Decidir qué optimizador utilizar basándose en las características de cada uno de ellos.
+1. Decidir si es necesario utilizar una estrategia de actualización de la tasa de aprendizaje y elegir la más adecuada.
 """
 
-# ╔═╡ ce3edc15-c454-4419-8619-5d800aed2d5c
+# ╔═╡ 8c42a26d-d559-4db9-9032-3669d0735870
+md"""
+## Objetivos de aprendizaje
+
+5. Decidir si es necesario utilizar regularización.
+1. Elegir el tipo de capa más adecuada en cada caso.
+"""
+
+# ╔═╡ 45377114-9651-434f-bdd3-d4e55fa687b0
 md"""
 ## Referencias
 
 1. [Deep Learning](http://www.deeplearningbook.org), Ian Goodfellow, Joshua Bengio and Aaron Courbille.
 1. [Dive into deep learning](https://d2l.ai/index.html), Aston Zhang et al.
-1. Pattern recognition and machine learning. Christopher M. Bishop.
+1. [Alice’s adventures in a differentiable wonderland : a primer on designing neural networks](https://www.sscardapane.it/alice-book/). Simone Scardapane. 2024.
+1. Christopher M. Bishop and Hugh Bishop. Deep learning : foundations and concepts. Springer. 2024.
 """
 
-# ╔═╡ 0a89e6b8-46c1-4dfc-b11e-6373dc743ec4
+# ╔═╡ 80dff863-f6fd-4387-8b6a-dc070fded37d
 md"""
-# Bases biológicas de las NN
-## Bases biológicas de las NN
-
-Neuronas vista la microscopio dibujadas por Santiago Ramón y Cajal.
+# Inicialización de parámetros
 """
 
-# ╔═╡ 770f2494-be6f-4c6b-aa9b-687241c0f62a
+# ╔═╡ 5250cf91-68f1-4798-a021-cc6cee8b77bd
 Resource(
-	"https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/RedesNeuronales/neuronas_Ramon_Cajal.jpg",
-	:alt => "Neuronas vistas al microcopio por Santiago Ramón y Cajal",
+	"https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/RedesNeuronales/funcion_perdidas_3d.png",
+	:alt => "Función de pérdidas",
 	:width => 600
 )
 
-# ╔═╡ 20b5ac11-a251-48e7-bfe2-252d8a4b1fe9
+# ╔═╡ 7cbbb35f-40c9-498f-b729-fc084fc123b1
 md"""
-Neuronas vista la microscopio dibujadas por Santiago Ramón y Cajal.
+La función de pérdidas de una red neuronal, en general, presenta múltiples 
+extremos (mínimos y máximos).
+[The loss landscape](https://losslandscape.com/explorer).
 """
 
-# ╔═╡ fd15e146-5c83-406b-a056-fc1fba51ffc2
+# ╔═╡ 811d9d9f-597e-4124-8f34-39db388ad3ca
 md"""
-## Bases biológicas de las NN
+## La importancia de la inicialización
 
-Una neurona recibe señal de otras neuronas a través de la dendrita, y envía 
-señal a otras neuronas a través del axón.
+Como ya sabemos, para encontrar un mínimo utilizamos la técnica de descenso de gradiente, que depende del punto desde el que se inicie la búsqueda.
 
+Además, la técnicas de retro propagación del gradiente es muy sensible a los valores de los pesos.
+
+Todo ellos hace que sea complicado entrenar una red neuronal.
+
+Afortunadamente, la investigación en redes neuronales ha permitido ir soslayando muchos de los problemas que presenta el entrenamiento.
 """
 
-# ╔═╡ 3e361edb-a6fc-4c26-8c91-f44eec0a6a6c
-Resource(
-	"https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/RedesNeuronales/neurona_real.jpg",
-	:alt => "Neurona",
-	:width => 600
-)
-
-# ╔═╡ 0f6e55dd-d1e4-4833-8c3f-a6390daff2a5
+# ╔═╡ d004b013-c9e7-46ee-9401-a71640195c8e
 md"""
-Diseñado por Freepik (https://www.freepik.es)
+## Inizialización de Xavier Glorot y Yoshua Bengio
+
+Xavier Glorot y Yoshua Bengio publicaron un [trabajo](https://proceedings.mlr.press/v9/glorot10a/glorot10a.pdf) donde presentaban sus conclusiones sobre la influencia de la inicialización de los pesos de una red neuronal.
+
+Llegaron a la conclusión de que una buena estrategia es inicializar los pesos de cada capa de tal modo que sigan una distribución normal centrada en el origen y con desviación estándar: 
+
+$\sigma^2 = \frac{1}{(input+output)/2}$
+
+Donde _input_ es el número de conexiones de entrada en la capa, y _out_ el número de conexiones de salida en la capa.
+
 """
 
-# ╔═╡ 8796c632-7302-4213-be40-67e7b11f5a35
+# ╔═╡ 651dd381-f11c-47c7-b570-ecdaaea02736
 md"""
-## Bases biológicas de las NN
+## Inizialización de Xavier Glorot y Yoshua Bengio
+
+Además, presentaron otra estrategia, una distribución uniforme entre 
+
+$-\sqrt{3/(input+ountput)}, \sqrt{3/(input+ountput)}$
+
+Estas estrategias funcionan bien con las funciones de activación:
+
+* tanh.
+* sigmoide.
+* softmax
 """
 
-# ╔═╡ b64fa92a-dfc8-4049-a069-9a1c4f61b65c
-Resource(
-	url_imagenes * "sinapsis.png",
-	:alt => "Neurona",
-	:width => 600
-)
-
-# ╔═╡ 135e5c27-0f1a-46a5-9997-254c6547ff1e
-html"""
-<font size=2>
-By The original uploader was Nrets at English Wikipedia. - Transferred from
-en.wikipedia to Commons., CC BY-SA 3.0,
-https://commons.wikimedia.org/w/index.php?curid=2006912
-</font>
-"""
-
-# ╔═╡ 4022783b-c5a4-4df3-b342-51641fc60fdc
+# ╔═╡ 8f3ffd98-aaf4-4913-b168-a53af6e26fae
 md"""
-!!! info "Título"
-	Aquí el texto.
+## Inizialización de Kaiming He
 
-	Y más texto
+Kaiming He, por su parte, [mostró](https://arxiv.org/pdf/1502.01852) que inicializar los pesos de la red con una distribución normal con 
+
+$\sigma^2 = \frac{2}{(input+output)/2}$
+
+funciona bien cuando las funciones de activación son:
+
+* ReLU.
+* LeakyReLU.
+* ELU, GELU, Swish, Mish.
+
+Algunas de estas funciones de activación se presentan en la siguiente sección.
 """
 
-# ╔═╡ 5e36d267-f394-4b53-a29e-b68a297113a1
+# ╔═╡ 82ce513b-1e2a-45e0-8d1e-255d9e33d5b9
 md"""
-# Estructura de las NN
-## Estructura de una neurona artificial
+!!! warning
 
-Una neurona artificial:
+Para tenerlo en cuenta más adelante:
+
+Flux initialises convolutional layers and recurrent cells with **glorot_uniform** by default. Most layers accept a function as an **init** keyword, which replaces this default. For example:
 """
 
-# ╔═╡ 4d082d8e-7b85-4e94-91b4-0e550ccd9458
-Resource(
-	url_imagenes * "neurona.png",
-	:width => 600
-)
-
-# ╔═╡ cabcaec7-3fca-4ea9-929f-0d3f3e6843a2
+# ╔═╡ fd2f4ccc-651f-4450-b209-5b24bdb0a77c
 md"""
-## Estructura de una neurona artificial
-Activación de la neurona artificial. Cada seña de entrada se multiplica por 
-un peso y se añade un **bias**.
+# Funciones de activación
 """
 
-# ╔═╡ df53f204-76e8-43f7-858f-48c5f8f78eeb
-Resource(
-	url_imagenes * "activacion.png",
-	:width => 600
-)
-
-# ╔═╡ c3685572-264d-48d9-aee6-142ae90576b3
+# ╔═╡ 6f4c4720-fc74-401f-a0f3-8adc75b8864e
 md"""
-## Estructura de una neurona artificial
-Aunque **apilemos** varias capas el resultado es siempre lineal con respecto de 
-los valores de entrada (_Demostración_).
+## Introducción
+
+Como ya sabemos, si sólo sumamos las entradas de una red neuronal multiplicadas 
+por un peso, la función que obtenemos a la salida sigue siendo lineal.
+
+Las funciones de activación permiten tener salidas no lineales.
+
+La función sigmoide fue muy utilizada al inicio de la investigación en redes 
+neuronales profundas, pero, paulatinamente ha cedido el puesto a otras 
+funciones de activación que han demostrado mejor comportamiento en la práctica.
 """
 
-# ╔═╡ bbbc0b92-185b-4126-b858-e94af0211a6c
-Resource(
-	url_imagenes * "sin_funcion_activacion.png",
-	:width => 600
-)
-
-# ╔═╡ d0e46bda-cd81-4717-87b1-e5ef283f6e7b
+# ╔═╡ 5295ef71-d786-4fcd-bb31-17ce45e9ef66
 md"""
-Es necesario introducir la **no linearidad** de otro modo.
+## Sigmoide
+
+La función sigmoide ya la utilizamos cuando vimos regresión logística:
+
+$σ(x) = \frac{1}{1 + e^{-x}}$
 """
 
-# ╔═╡ 9d41b30b-afab-4f83-ae60-9fc50dea90b9
+# ╔═╡ ab963580-9df7-4b1f-aa51-1b1daf4c0f35
+plot(σ, xlabel="x", ylabel="σ", legend=false)
+
+# ╔═╡ 9b86bf39-44f3-4d68-ba2a-43172a6042b7
 md"""
-## Estructura de una neurona artificial
-
-La función de activación es el ingrediente que introduce la no-linearidad en 
-las redes neuronales.
+Es una función _suave_ y derivable en todo $\mathbb{R}$.
 """
 
-# ╔═╡ 3063a028-22e6-467f-82fb-139492ed4e6b
-Resource(
-	url_imagenes * "funcion_activacion.png",
-	:width => 600
-)
-
-# ╔═╡ 359e990e-41bc-43bc-9504-d520476ea035
+# ╔═╡ c6828162-a386-41c8-be5b-6e07500f9165
 md"""
-Función de activación sigmoide.
-$\sigma(\omega x) = \frac{1}{1+e^{-\omega x}}$
+## Tangente hiperbólica
+
+La tangente hiperbólica es otra función comúnmente utilizada como función de 
+activación:
+
+$tanh(x) = \frac{e^x - e^{-x}}{e^x + e^{-x}}$
 """
 
-# ╔═╡ 26ffe43c-fcda-4c52-be27-ce945f1084d9
+# ╔═╡ 55f16b63-6975-47fd-a302-4b6328ea64b3
+plot(tanh, xlabel="x", ylabel="Tangente hiperbólica", legend=false)
+
+# ╔═╡ f2508f3e-3385-40e2-9946-37ef2b38d24b
 md"""
-## Estructura de una NN
-
-El perceptron (Rosenblatt, 1958) fue la primera propuesta de algoritmo 
-inspirado en el funcionamiento de las neuronas biológicas.
+También es una función continua y derivable en todo $\mathbb{R}$.
 """
 
-# ╔═╡ aba74d40-c561-4492-a7a0-f49a69f6455e
-Resource(
-	url_imagenes * "perceptron.png",
-	:fig_align => :center,
-	:height => 250
-)
-
-# ╔═╡ a46f42c1-64a2-4a07-9ee7-e8517eb56dd8
-html"""
-<font size=2>
-Fuente: https://www.deep-mind.org/2023/03/26/the-universal-approximation-theorem/
-</font>
-"""
-
-# ╔═╡ aab30f28-b671-45f8-bea1-b637351ad432
+# ╔═╡ ff84dc4f-b7b8-4f88-aae3-560f804b4d53
 md"""
-Aunque esta arquitectura es muy sencilla, permite hacer tareas simples de 
-clasificación.
+## ReLU
+
+ReLU es el acrónimo de _Rectified linear unit_, con la siguiente definición:
+
+$ReLU(x) = max(0, x) = \frac{x + |x|}{2}$
 """
 
-# ╔═╡ 089c0310-259c-4158-b49f-10b25969beac
+# ╔═╡ 02be6027-17bd-41b2-bbc4-0fb1ef63a3f2
+plot(Flux.relu, xlabel="x", ylabel="ReLU", legend=false)
+
+# ╔═╡ beafdc22-eaa0-41ca-ac81-5eb8ee015185
 md"""
-## Estructura de una NN
-
-El siguiente paso fue añadir sucesivas capas para mejorar los resultados 
-de las redes. Esta arquitectura se llama **Multi Layer Perceptron** (MLP).
+La función ReLU es continua, y derivable en todos los puntos excepto en el cero.
 """
 
-# ╔═╡ b6e330c6-8285-4f5b-a933-7c5a35f1fbab
-Resource(
-	url_imagenes * "estructura_red_neuronal.png"
-)
-
-# ╔═╡ 8e144c0b-8ae4-4865-931f-a52afa55965d
-html"""
-<font size=2>
-Fuente: https://www.deep-mind.org/2023/03/26/the-universal-approximation-theorem/
-</font>
-"""
-
-# ╔═╡ 53e3d912-fb70-4501-817d-e8568bea9b81
+# ╔═╡ 06248358-ab2e-4d67-a4ca-86581b53163e
 md"""
-# Entrenamiento de una NN
+## Leaky ReLU
+
+Es una variante de ReLU:
+
+$\begin{equation}
+Leaky ReLU(x) = \\
+\begin{cases}
+x \quad \qquad if \quad x > 0, \\
+0.01x \quad if \quad x \leq 0
+\end{cases}
+\end{equation}$
 """
 
-# ╔═╡ b4e00721-1b78-4cda-a26e-474d4fa4230a
+# ╔═╡ 029c67cc-4bd8-4219-95db-ea348f2d1c1f
+plot(Flux.leakyrelu, xlabel="x", ylabel="LeakyReLU", legend=false)
+
+# ╔═╡ dfa9d7a2-beda-4482-9710-8913dfb44134
 md"""
-## Entrenamiento de una NN
-
-El problema con estas redes es:
-
-1. Si se conocen los pesos de la red es muy sencillo calcular la salida.
-1. Calcular los pesos para que la red ajuste las salidas a partir de las entradas es muy complicado.
-
-La solución al cálculo de los pesos de la red es el algoritmo de retro **propagación (back propagation)**. El algoritmo llamado **back propagation** fue aplicado en la década de 1980 para entrenar redes neuronales, en particular MLP.
+Evita que el gradiente decaiga rápidamente en la retro propagación.
 """
 
-# ╔═╡ 1474cc4c-b3e4-4e14-9af8-11d05f1a8584
+# ╔═╡ a12cab4d-37b5-442c-8362-58f3aa09e003
 md"""
-## Entrenamiento de una NN
+## Otras funciones de activación
 
-El algoritmo **back propagation** es una combinación de varios ingredientes, 
-entre ellos:
+Aún hay otras funciones de activación:
 
-1. Descenso de gradiente.
-1. Regla de la cadena en derivadas parciales.
+Swish $= x \cdot sigmoide(x)$
+
+Softplus $= ln(1 + e^x)$
+
+Mish $= x \cdot tanh(softplus(x))$
+
+Y algunas más.
+
+La función de activación **tanh** suele ser un buen principio. La función 
+**ReLU** funciona muy bien en la mayoría de los casos.
+
+Puedes encontrar todas la funciones de activación que hay implementadas en Flux en la [documentación](https://fluxml.ai/Flux.jl/stable/reference/models/activation/)
 """
 
-# ╔═╡ e365ac10-8744-41e6-a550-861e60108782
+# ╔═╡ 85b3566b-4760-430d-9643-950ed7d772c5
 md"""
-## Entrenamiento de una NN
-
-De un modo muy somero el algoritmo funciona del siguiente modo:
-
-1. Se inicializan, de manera aleatoria, los pesos de la red.
-1. Para cada dato del conjunto de entrenamiento, se calcula su salida.
-1. Se calcula el error entre la salida calculada y la real.
-1. Se utiliza descenso de gradiente para calcular los nuevos pesos de la última capa.
+# Optimizadores
 """
 
-# ╔═╡ f08f7c50-0b54-4c0d-b65a-b0389d41d2a9
+# ╔═╡ 5604ad1a-fcc4-4d07-977d-334577badf12
 md"""
-## Entrenamiento de una NN
+## Introducción
 
-5. Se propaga hacia atrás la actualización de los pesos utilizando la regla de la cadena hasta que se actualizan los pesos de todas las capas.
-1. Se repite el proceso desde el punto 2, hasta un número determinado de pasos o hasta que la actualización de los pesos no es significativa en dos pasos consecutivos.
+En la presentación sobre regresión lineal vimos cómo utilizar la técnica de 
+descenso de gradiente para encontrar el mínimo de la función de pérdidas:
+
+
+$\theta^{i+1} = \theta^i - \eta \nabla_\theta \mathcal{L}$
+
+Esta técnica siempre funciona, pero a veces puede ser _lenta_ es decir, se 
+pueden necesitar muchos pasos para acercarnos al mínimo.
+"""
+
+# ╔═╡ e82394c8-5549-4f0b-8148-aceabcd6e01f
+md"""
+## Introducción
+
+Hay dos características que debemos tener en cuenta al seleccionar un 
+optimizador:
+
+* Rapidez de convergencia.
+* Comportamiento de la convergencia.
+
+Estas dos características son _antagónicas_ los optimizadores con un buen 
+comportamiento en la convergencia son, en general, lentos. Mientras que, 
+por el contrario, los algoritmos rápidos no se suelen comportan tan bien 
+en la convergencia.
+"""
+
+# ╔═╡ f652d0a5-b914-49e0-a1ab-3ad0a0963e1e
+md"""
+## Momentum
+
+Han aparecido variación del descenso del gradiente 
+[(Boris Polyak)](https://www.researchgate.net/publication/243648538_Some_methods_of_speeding_up_the_convergence_of_iteration_methods)
+que necesitan un menor 
+número de pasos para alcanzar el mínimo de la función de pérdidas.
+
+$m^i = \beta m^{i-1} - \eta \nabla_\theta \mathcal{L}$
+$\theta^{i+1} = \theta^i + m^{i}$
+
+El incremento tiene en cuenta el gradiente el gradiente en el paso anterior.
+
+Un valor _típico_ para $\beta = 0.9$.
+"""
+
+# ╔═╡ b8909385-43d3-45cb-8ea0-12f51a5fb0be
+md"""
+## Nesterov Accelerated Gradient
+
+La [propuesta de Nesterov](https://hengshuaiyao.github.io/papers/nesterov83.pdf)
+es calcular el gradiente no en el punto actual sino 
+en un punto avanzado en la dirección del gradiente:
+
+$m^i = \beta m^{i-1} - \eta \nabla_\theta \mathcal{L(\theta + \beta m^{i-1})}$
+$\theta^{i+1} = \theta^i + m^{i}$
+
+Para que las expresiones sean más claras, a partir de este momento no voy a 
+mostrar el índice de paso de actualización $i$, en vez de ello, utilizaré 
+el símbolo $\leftarrow$ en vez de $=$.
+"""
+
+# ╔═╡ 0cc06ba9-501b-48ef-b216-dca5f67414c0
+md"""
+## AdaGrad
+
+Otro optimizador es
+[AdaGrad](https://jmlr.org/papers/volume12/duchi11a/duchi11a.pdf)
+que propone la siguiente actualización para los parámetros:
+
+$s \leftarrow s + \nabla_\theta \mathcal{L(\theta)} \otimes \mathcal{L(\theta)}$
+$\theta \leftarrow \theta - \eta \nabla_\theta \mathcal{L(\theta)} \oslash \sqrt{s + \epsilon}$
+
+Donde $\otimes$ es el producto componente a componente de dos vectores, y 
+$\oslash$ es la división componente a componente.
+"""
+
+# ╔═╡ f48329e3-28e7-436a-b9da-3bdc83ea10e4
+md"""
+## Adam
+
+[Adaptative Moment Estimation (Adam)](https://arxiv.org/abs/1412.6980) es otro 
+optimizador ampliamente utilizado por sus buenos resultados.
+
+$m \leftarrow \beta_1 m - (1 - \beta_1)\nabla_\theta \mathcal{L(\theta)}$
+$s \leftarrow \beta_2 s + (1 - \beta_2) \nabla_\theta \mathcal{L(\theta)} \otimes 
+$\nabla_\theta \mathcal{L(\theta)}$
+$\hat{m} \leftarrow \frac{m}{1 - \beta_1^t}$
+$\hat{s} \leftarrow \frac{s}{1 - \beta_2^t}$
+$\theta \leftarrow \theta + \eta \hat{m} \otimes \sqrt{\hat{s} + \epsilon}$
+"""
+
+# ╔═╡ e64c9c5b-5238-4eab-8078-08c54bd62a19
+md"""
+Puedes encontrar todos los optimizadores que hay implementados en Flux en la [documentación](https://fluxml.ai/Flux.jl/stable/reference/training/optimisers/).
+"""
+
+# ╔═╡ 1988fba8-e08f-4ac8-977a-d822b22fb899
+md"""
+## Optimizadores
+
+Una tabla orientativa para selección el optimizador:
+
+| Optimizador | Velocidad | Calidad convergencia |
+|-------------|:---------:|:--------------------:|
+|Descent      |Lenta      |Muy buena             |
+|Momentum     |Media      |Muy buena             |
+|Nesterov     |Media      |Muy buena             |
+|AdaGrad      |Alta       |Para anticipadamente  |
+|RMSProp      |Alta       |Buena                 |
+|Adam         |Alta       |Buena                 |
+|AdaMax       |Alta       |Buena                 |
+|NAdam        |Alta       |Buena                 |
+|AdamW        |Alta       |Buena                 |
+
+Extraído de _Hands-on machine learning with TensorFlow and Keras_
 
 """
 
-# ╔═╡ 1a52c360-1fb4-49df-a0f2-8a75f0f981d8
+# ╔═╡ 3044eeb0-5a72-475f-ab53-40113c3d3449
 md"""
-## Entrenamiento de una NN
+## Normalización por lotes
 
-Detalles a tener en cuenta:
+La [normalización por lotes (_Batch normalization_)](https://arxiv.org/pdf/1502.03167) 
+es otra técnica que intenta evitar el desvanecimiento/explosión del gradiente.
 
-1. El problema de optimización no es cuadrático (mínimo de la función de pérdidas), luego no está garantizado que el algoritmo se detenga en el mínimo global.
-1. El resultado depende de los valores aleatorios iniciales que se asignan a los pesos.
-1. El algoritmo puede **fallar** porque al propagar el gradiente este se **desvanezca** o **explote**.
+La idea es que antes (o después, según se mire) de una capa de la red neuronal,
+se añade otra capa que normaliza la entrada (o salida) de la capa para que
+estén centradas en cero y con $\sigma^2 = 1$.
 
-"""
+Para que durante el proceso de entrenamiento cada una de las capas de 
+normalización calculen los estadísticos $\mu$ y $\sigma$, es necesario que lo 
+haga sobre un subconjunto (batch) de los datos, de ahí el nombre de este 
+tipo de capa.
 
-# ╔═╡ 0a978bc5-bf88-4702-90ac-821604054683
-md"""
-## Entrenamiento de una NN
-
-En resumen, poder aplicar el algoritmo **back propagation** para entrenar redes 
-neuronales no es el final de la historia.
-
-Para realizar el ajuste de los pesos de la red necesitamos, entre otros, los 
-siguientes ingredientes:
-
-1. Elegir unos **buenos** pesos aleatorios iniciales.
-1. Elegir la función de activación.
-1. Elegir un optimizador adecuado.
-
-Además de la propia arquitectura de la red y otros hiperparámetros en la etapa 
-de entrenamiento.
-"""
-
-# ╔═╡ e4619111-2f92-4b45-8ab8-9fb9f8157f6f
-md"""
-# Las NN son aproximadores universales
-"""
-
-# ╔═╡ c05393f4-df33-4945-9d20-3f92d8938588
-md"""
-## Teorema de aproximadores universales
-
-Una red neuronal con un única capa y un número arbitrario de neuronas puede ajustar cualquier función a la salida.
-
-[Esta referencia](https://www.deep-mind.org/2023/03/26/the-universal-approximation-theorem/) es una muy buena presentación del teorema de aproximadores universales.
-"""
-
-# ╔═╡ 3dd87947-6800-4529-b057-3be85f454e21
-md"""
-## Teorema de aproximadores universales
-Este ejemplo muestra 50 puntos de la función $f(x) = x^2$ y el ajuste realizado 
-por una red neuronal (puntos) con una única capa y 800 neuronas.
-"""
-
-# ╔═╡ 595a9bb4-a6f5-4862-b405-3bd7edd735ce
-Resource(
-	url_imagenes * "ajuste_cuadrado.png"
-)
-
-# ╔═╡ dccb64be-ee47-495d-ab9a-439f0eafb4b0
-md"""
-## Teorema de aproximadores universales
-
-Este otro ejemplo muestra el caso de la función $f(x) = seno(x)$. De nuevo 
-los puntos representan 50 valores estimados por la red con una única 
-capa de 500 neuronas.
-"""
-
-# ╔═╡ c86d2d32-bcaa-4a7f-ae07-60d7dd777003
-Resource(
-	url_imagenes * "ajuste_seno.png"
-)
-
-# ╔═╡ a8c7d8c1-f9e1-448d-8832-82f4e6df33b7
-md"""
-# Crear una NN con Flux
-## Biblioteca
-[Flux](https://fluxml.ai/) es una biblioteca escrita en Julia para trabajar con redes neuronales.
-
-Para usar Flux, debemos importarla de este modo:
-
-```julia
-using Flux
+```.{julia}
+BatchNorm(neuronas, activacion)
 ```
+
+Utilizaremos este tipo de capas cuando estudiemos las redes convolucionales.
 """
 
-# ╔═╡ 7827ecab-178e-4286-9482-b787b95e949f
+# ╔═╡ c8c1e960-08a5-47ea-90ee-322c7703f4df
 md"""
-## Pasos para el entrenamiento de la red
+## Recorte del gradiente
 
-Los pasos para crear y entrenar una red son:
+Otra técnica comúnmente utilizada para evitar la explosión del gradiente es, 
+simplemente, limitarlo para que no sobrepase un cierto umbral (_gradient 
+clipping_). 
 
-1. Definir la arquitectura de la red.
-1. **Compilar** la red para seleccionar entre otros:
-    * Función de pérdidas.
-    * Optimizador.
-    * Métrica de evaluación del entrenamiento.
-1. Entrenar la red con un conjunto de datos.
+El recorte se activa al instanciar el optimizador, por ejemplo:
+
+```{.julia}
+clip = ClipGrad(1e-3)
+```
+
+que se suele utilizar en combinación con un optimizador utilizando un **OptimiserChain**:
+
+```{.julia}
+opt = OptimiserChain(ClipGrad(1e-3), Adam(1e-3))
+```
+
+En este caso, después de calcular los gradiente de una capa, si alguno de ellos 
+supera el umbral $1e-3$ se le asignará a ese gradiente en particular el valor 
+este umbral.
 """
 
-# ╔═╡ 57174712-848c-4868-89f3-5f6b67953312
+# ╔═╡ 4d4a1c19-a4df-43c6-af65-53dbf21a5bf5
 md"""
-## Crear la red
-
-Como ejemplo, vamos a crear una red que ajuste los datos de la función seno:
+# Estrategias de actualización de la tasa de aprendizaje
 """
 
-# ╔═╡ 9143e7f3-ddbd-4757-a202-7c7b7f4c7468
-function crea_datos()
-	x_t = Float32.(collect(range(0, 2π, 50))')
-	y_t = sin.(x_t)
-	x_train = shuffle(x_t)
-	y_train = sin.(x_train)
-	return x_t, y_t, x_train, y_train 
-end;
-
-# ╔═╡ cce25fb8-c343-4866-80fa-d2d9714d9731
-x_t, y_t, x_train, y_train = crea_datos();
-
-# ╔═╡ aa6459b3-3e45-4951-8279-54a4c72bf99c
-scatter(x_train[1,:], y_train[1,:], title="Función seno", legends=false)
-
-# ╔═╡ d0a3a855-bc5f-4c84-b735-80a8ac71d94c
+# ╔═╡ fb2d1666-1100-43c9-9550-2978f150235d
 md"""
-## Crear la red
+## Introducción
 
-La red se define encadenando una serie de capas:
+En la presentación de regresión lineal se presentó la técnica de descenso de 
+gradiente. Recuerda que el término de la segunda derivada de la función de 
+pérdidas lo sustituimos por un valor constante: la **tasa de aprendizaje**.
+
+También vimos lo delicado que es la elección de su valor, si la tasa de 
+aprendizaje es demasiado elevada puede que el algoritmo de descenso de 
+gradiente nunca converja; o si la tasa de aprendizaje es demasiado pequeña 
+puede que el descenso de gradiente necesite muchas iteraciones para alcanzar 
+el mínimo.
 """
 
-# ╔═╡ 4312e730-bf64-4081-bf37-6062c3c3acbd
+# ╔═╡ 28aafcb6-9294-433c-8bee-e634b0ee58ec
+md"""
+## Introducción
+
+Muchas veces es más interesante definir una estrategia para ir adaptando el 
+valor de la tasa de aprendizaje al avance del aprendizaje de manera que, si 
+se puede avanzar rápidamente porque nos encontramos lejos de la solución, 
+le asignamos un valor alto, y conforme nos acercamos al mínimo vamos
+disminuyendo la tasa para que el descenso de gradiente converja.
+
+Y esta estrategia la podemos añadir de modo combinado con el optimizador.
+
+Veamos algunos ejemplos.
+"""
+
+# ╔═╡ b936e349-2b69-4e86-a7c2-5faa709052ab
+md"""
+## Decaimiento en potencia
+La actualización de la tasa de aprendizaje se hace según la siguiente
+expresión (donde $\eta_0$ y d son hiperparámetros):
+
+$\eta(t) = \eta_0 d^{t-1}$
+"""
+
+# ╔═╡ 3eebe1a5-250e-45b9-855d-e743c8e0abf6
+function plot_decay(start, decay)
+	t = 1:0.1:10
+	s = Exp(start = start, decay = decay)
+	plot(t, s.(t), xlabel="t", ylabel="Decamiento", xlim=(0,10), legend=false)
+end
+
+# ╔═╡ 35fa4c15-70a4-455b-8dbb-4535bf934721
+plot_decay(1e-6, 0.5)
+
+# ╔═╡ 5b04ee1f-f136-4c29-a44f-a075bbb1376b
+md"""
+## Decaimiento en potencia
+
+En julia lo utilizamos del siguiente modo:
+
+```{.julia}
+optimizador = Scheduler(Descent, Exp(start = 1e-2, decay = 0.8))
+```
+
+donde estamos utilizando SGD (Descent) como optimizador, y cambiando la tasa de aprendizaje con Exp().
+"""
+
+# ╔═╡ 1132a848-a855-4c8b-bf41-1ec22a216012
+md"""
+# Regularización
+"""
+
+# ╔═╡ a3e2f24b-9275-4e18-918e-18fc7d2b23e0
+md"""
+## Introducción
+
+Como ya sabemos, durante la fase de entrenamiento el modelo creado puede 
+ajustar excesivamente los datos de entrenamiento (**overftting**), pero no 
+trabajar tan bien con nuevos datos.
+
+Para evitarlo, como ya hicimos en el caso de la regresión polinómica, 
+empleamos la regularización.
+"""
+
+# ╔═╡ 8aef99fc-fe2b-4f3c-81ab-fcf2d62a3d26
+md"""
+## Regularización $L_1$ y $L_2$
+
+En julia es muy sencillo:
+
+```{.julia}
+optimizador = OptimiserChain(SignDecay(0.011), Descent())
+```
+
+estamos aplicando regularización $L_1$ con SGD.
+
+```{.julia}
+optimizador = OptimiserChain(WeightDecay(0.01), Descent())
+```
+
+estamos aplicando regularización $L_2$ con SGD.
+
+```{.julia}
+optimizador = OptimiserChain(SignDecay(0.01), WeightDecay(0.01), Descent())
+```
+
+estamos aplicando ambas regularizaciones con SGD.
+"""
+
+# ╔═╡ c87c39d7-fbc7-43dc-9eaa-55bc37bc3be1
+md"""
+## Dropout
+
+Es [una idea](https://arxiv.org/pdf/1207.0580) muy sencilla que suele mejorar 
+el rendimiento de las redes neuronales y evitar el sobreajuste.
+
+La idea es **desactivar** algunas neuronas, en toda la red. 
+
+En cada paso del 
+entrenamiento, se selecciona un porcentaje de neuronas de la rede y se 
+desactivan, es decir, se actúa como si no existiensen.
+
+En el siguiente paso, se elige otro conjunto, se desactiva y se sigue adelante 
+de este modo durante todo el entrenamiento de la red.
+"""
+
+# ╔═╡ f5bc89bb-68f6-46b2-99ca-2ea045407be5
+md"""
+## Dropout
+
+En julia es muy sencillo:
+
+```{.julia}
+Dropout(0.4)
+```
+
+0.4 es la probabilidad de que la neurona quede desactivada.
+"""
+
+# ╔═╡ e04486c9-b22e-496c-8ea2-e737bdfb3a5e
+md"""
+# Tipos de capas
+"""
+
+# ╔═╡ c6b3c409-8aab-4748-9f24-c00719c494de
+md"""
+## Introducción
+
+Como ya hemos visto, Flux implementa muchas de las capas más utilizadas al 
+construir redes neuronales.
+
+En las siguientes presentaciones veremos algunas otras capas que también tenemos 
+disponibles en Flux.
+
+Vamos a revisar las que hemos visto hasta ahora, y ejemplos de cómo utilizarlas.
+"""
+
+# ╔═╡ 1fa7817d-dbd1-42ff-af84-d72aa18c981a
+md"""
+## Capas densas
+
+Una capa densa conecta la salida de una de sus neuronas con todas las neuronas 
+de la siguiente capa.
+
+```{.julia}
+Dense(in => out, σ=identity; bias=true, init=glorot_uniform)
+```
+
+Los parámetros comúnmente utilizados al instanciar este tipo de capa son:
+
+* **in**: número de conexiones a la entrada.
+* **out**: número de conexiones a la salida.
+* **σ**: función de activación.
+* **bias**: si utilizamos bias o no.
+* **init**: política de incialización de los pesos de la capa.
+"""
+
+# ╔═╡ 16e100d9-145a-4d50-9f95-acb4e8ab8a3f
+md"""
+## Capas densas
+
+Este fue el ejemplo que utilizamos para ajustar la función seno con un Perceptrón de una única capa:
+
+```{.julia}
 modelo_seno = Chain(
 	Dense(1 => 500, tanh),
 	Dense(500 => 1)
 )
+```
 
-# ╔═╡ 8498d094-5069-4fb6-8d12-9f1721f9b4ac
-md"""
-La red tiene la siguiente estructura:
+y este es el ejemplo que utilizamos de un Perceptrón Multicapa:
 
-1. La capa de entrada con una neurona a la entrada y qunientas salidas hacia la siguiente capa densamente conectada (cada neurona de entradas se conecta con todas las neuronas de la siguiente capa)
-1. Una capa intermedia con quinientas neuronas a la entrada y una salida hacia la siguente capa densamente conectada.
-1. Una capa de salida con una neurona.
-
-Importante, la red tiene 1501 parámetros que entrenar.
-"""
-
-# ╔═╡ 3a9b314f-7181-4e1e-9b87-e41d8b3bb49e
-md"""
-## Crear la red
-
-Ahora creamos el optimizador que vamos a utilizar, la métrica que va a usar el optimizador, y preparamos los datos:
-"""
-
-# ╔═╡ 8d12a618-19cd-4777-91e5-bf36c9490c17
-optimizador = Flux.setup(Adam(0.05), modelo_seno);
-
-# ╔═╡ df3f2655-66a2-4bf4-852b-c9574c2d2748
-md"""
-El optimizador que usamos en Adam con una tasa de aprendizaje $η = 0.05$
-"""
-
-# ╔═╡ 5883dec1-c9e2-4b1a-b53d-f87f85f30db2
-perdidas(modelo, X, y) = Flux.Losses.mse(modelo(X), y);
-
-# ╔═╡ 5da5c8fa-a0e8-4f0d-8eaf-4fd0b2c00ed4
-datos = [(x_train, y_train)];
-
-# ╔═╡ 0f9f1ef8-a591-45ce-8c97-507144441660
-md"""
-## Entrenar la red
-
-Finalmente ya podemos entrenar la red:
-"""
-
-# ╔═╡ 5b9f4efc-8917-4a9b-bba7-5c5477bf4cbf
-with_logger(NullLogger()) do
-	for epoca in 1:1000
-		Flux.train!(perdidas, modelo_seno, datos, optimizador)
-	end
-end
-
-# ╔═╡ 07bb71de-f226-40fb-b735-73863bf0688e
-begin
-	plot(y_t[1,:], label="Seno")
-	scatter!(modelo_seno(x_t)[1,:], label="Ajuste")
-end
-
-# ╔═╡ 209d3b9a-67db-4b28-804a-393aaa2e64e9
-"MSE: ", perdidas(modelo_seno, x_train, y_train)
-
-# ╔═╡ a05f8886-30fe-4a08-861a-b730709032d9
-md"""
-El ajuste es no está nada mal.
-"""
-
-# ╔═╡ 7f9436bf-06ab-41fb-a435-61f815b6787e
-md"""
-## Entrenar la red
-
-Vamos a probar con una red con dos capas densamente conectadas, pero esta vez usando sólo tres neuronas en cada capa:
-"""
-
-# ╔═╡ 2b7ee756-8187-4176-b731-7bdfbcf2ec05
-modelo_seno_profundo = Chain(
+```{.julia}
+modelo_seno = Chain(
 	Dense(1 => 3, tanh),
 	Dense(3 => 3, tanh),
 	Dense(3 => 1)
 )
-
-# ╔═╡ 4487a15e-2c7c-4aad-91af-5859d65c775c
-md"""
-La red tiene la siguiente estructura:
-
-1. La capa de entrada con una neurona a la entrada y tres salidas hacia la siguiente capa densamente conectada (cada neurona de entradas se conecta con todas las neuronas de la siguiente capa)
-1. Una capa intermedia con tres neuronas a la entrada y tres salidas hacia la siguente capa densamente conectada.
-1. Una capa de salida con una neurona.
-
-Importante, en este caso la red sólo tiene 22 parámetros que entrenar.
+```
 """
 
-# ╔═╡ 839d9885-b6f7-4c23-ae5f-8db14145c553
+# ╔═╡ b424f4c0-3a65-45b2-aa95-326eb00180c8
 md"""
-## Entrenar la red
+## Capas de normalización por lotes
 
-Sólo nos queda definir el optimizador, y entrenar la red:
-"""
 
-# ╔═╡ 13f55aab-0a02-4bc7-9b9a-8765c15586b8
-optimizador_profundo = Flux.setup(Adam(0.05), modelo_seno_profundo);
-
-# ╔═╡ 398910d5-be33-49a4-a761-8bcbcd872eb8
-with_logger(NullLogger()) do
-	for epoca in 1:1000
-		Flux.train!(perdidas, modelo_seno_profundo, datos, optimizador_profundo)
-	end
-end
-
-# ╔═╡ af5c6a1f-5053-49a4-a2de-7bc7139f58bb
-begin
-	plot(y_t[1,:], label="Seno")
-	scatter!(modelo_seno_profundo(x_t)[1,:], label="Ajuste")
-end
-
-# ╔═╡ a306ffcd-5f77-4082-891d-0fbe202f8181
-perdidas(modelo_seno_profundo, x_train, y_train)
-
-# ╔═╡ fb46d3c7-e9d5-466e-b0dc-851d6da3c755
-md"""
-El ajuste es incluso un poco mejor.
-"""
-
-# ╔═╡ 28882d51-20d8-4fa8-8ebd-0dc3e3198af0
-md"""
-## Ejemplo con los datos de Howell
-
-Vamos a probar con los datos de la base de datos de Howell. Empezamos, como en el ejemplo de regresión polinomial, intentado ajustar el valor de peso a partir de la altura.
-
-Primero leemos los datos:
-"""
-
-# ╔═╡ 2468a791-2cdb-4ace-9037-c68f828e3608
-howell = CSV.File(HTTP.get("https://raw.githubusercontent.com/AprendizajeAutomaticoUJI/DataSets/refs/heads/master/Howell1.csv").body) |> DataFrame
-
-# ╔═╡ 24e3d668-c6fd-475b-8eae-afed0343123e
-md"""
-## Ejemplo con los datos de Howell
-
-Vamos a dividir el cojunto de datos inicial en un conjunto de entrenamiento y otro de validación, para ver los buena que es la red:
-"""
-
-# ╔═╡ ab5c1498-7e07-4301-9de8-b1a08b7a5482
-caracteristicas = [:weight, :age, :male]
-
-# ╔═╡ 792ae261-d6a5-4efc-b395-54538fe5c167
-entrenamiento_howell, validacion_howell = partition(howell, 0.8, rng=123)
-
-# ╔═╡ b2d8ab25-73e2-45d0-81d8-5de3b34ea2ba
-X_entrenamiento_howell = Float32.(Matrix(entrenamiento_howell[:, caracteristicas])')
-
-# ╔═╡ 4363ae8d-ecc6-41fa-aa5d-6373aa281dcb
-y_entrenamiento_howell = Float32.(entrenamiento_howell.height')
-
-# ╔═╡ 06a400a3-9ca2-4038-be73-9be58ff22d94
-X_validacion_howell = Float32.(Matrix(validacion_howell[:, caracteristicas])')
-
-# ╔═╡ 96cf537d-eaf7-4790-962d-de6eb3922ef3
-y_validacion_howell = Float32.(validacion_howell.height')
-
-# ╔═╡ 8f023a0e-94d9-4390-a048-3e815d13dd75
-md"""
-## Ejemplo con los datos de Howell
-
-Ahora creamos la red, el optimizador y definimos los datos:
-"""
-
-# ╔═╡ 6b510711-b6a5-40b6-84da-0d463bb6f6c1
-red_howell = Chain(
-	Dense(size(X_entrenamiento_howell, 1) => 3, tanh),
-	Dense(3 => 3, tanh),
-	Dense(3 => 3, tanh),
-	Dense(3 => 1)
-)
-
-# ╔═╡ d48b0309-1d28-40ea-a848-7dee2496159e
-optimizador_howell = Flux.setup(Adam(), red_howell)
-
-# ╔═╡ 17fc15fd-1eda-4dae-ae51-e0b5610f0041
-datos_howell = [(X_entrenamiento_howell, y_entrenamiento_howell)]
-
-# ╔═╡ c3d0c723-0852-4365-9e4c-b64d95a1bcb8
-md"""
-## Ejemplo con los datos de Howell
-
-Entrenamos la red:
-"""
-
-# ╔═╡ 8f400ee4-3e73-4770-b39a-317df4ae9b0e
-function entrena()
-	mse = []
-	mse_validacion = []
-	with_logger(NullLogger()) do
-		for epoca in 1:50000
-			Flux.train!(perdidas, red_howell, datos_howell, optimizador_howell)
-			push!(mse, perdidas(red_howell, X_entrenamiento_howell, y_entrenamiento_howell))
-			push!(mse_validacion, perdidas(red_howell, X_validacion_howell, y_validacion_howell))
-		end
-	end
-	@info perdidas(red_howell, X_entrenamiento_howell, y_entrenamiento_howell)
-	@info perdidas(red_howell, X_validacion_howell, y_validacion_howell)
-	(mse, mse_validacion)
-end;
-
-# ╔═╡ 855f71e1-105d-4082-9097-8587de06ce45
-md"""
-## Ejemplo con los datos de Howell
-
-Vemos los resultados:
-"""
-
-# ╔═╡ 63a26003-f633-4d93-a135-369ae8d802c5
-mse, mse_validacion = entrena()
-
-# ╔═╡ bb922155-c271-49ff-9526-3d7a228ace37
-let
-	plot(mse, label="Entrenamiento", ylims=(0, 100))
-	plot!(mse_validacion, label="Validación")
-end
-
-# ╔═╡ 7ac53bef-54ba-4a4b-9a99-de6423249572
-md"""
-## Ejemplo con los datos de Howell
-
-Este es el ajuste:
-"""
-
-# ╔═╡ ff74834b-f674-4ec9-a1d0-5422dd228915
-let
-	scatter(entrenamiento_howell.weight, entrenamiento_howell.height, title="Ajuste con MLP", xlabel="weight", ylabel="height", label="Real")
-	scatter!(entrenamiento_howell.weight, red_howell(X_entrenamiento_howell)[1,:], label="Ajuste")
-end
-
-# ╔═╡ d5ec1fbe-138d-4da1-83de-95dd1565dac7
-md"""
-## Ejemplo con los datos de Howell
-
-Si separamos por sexo:
-"""
-
-# ╔═╡ 5f28926b-f7a4-4a6f-a37d-d59fbd1c01c5
-let
-	l = @layout[
-		a{0.6w} [grid(2,1)]
-	]
-	X_howell_hombres = Float32.(Matrix(entrenamiento_howell[entrenamiento_howell.male.==1, caracteristicas])')
-	X_howell_mujeres = Float32.(Matrix(entrenamiento_howell[entrenamiento_howell.male.==0, caracteristicas])')
-	scatter(entrenamiento_howell[entrenamiento_howell.male.==1, :weight], entrenamiento_howell[entrenamiento_howell.male.==1, :height], label="Hombres", color=:blue, xlabel="Peso", ylabel="Altura")
-	scatter!(entrenamiento_howell[entrenamiento_howell.male.==0, :weight], entrenamiento_howell[entrenamiento_howell.male.==0, :height], label="Mujeres", color=:green)
-	scatter!(entrenamiento_howell[entrenamiento_howell.male.==1, :weight], red_howell(X_howell_hombres)[1,:], label="Hombres ajuste", color=:orange)
-	p = scatter!(entrenamiento_howell[entrenamiento_howell.male.==0, :weight], red_howell(X_howell_mujeres)[1,:], label="Mujeres ajuste", color=:magenta)
-	
-	scatter(entrenamiento_howell[entrenamiento_howell.male.==1, :weight], entrenamiento_howell[entrenamiento_howell.male.==1, :height], label="Hombres", color=:blue, xlabel="Peso", ylabel="Altura")
-	p1 = scatter!(entrenamiento_howell[entrenamiento_howell.male.==1, :weight], red_howell(X_howell_hombres)[1,:], label="Hombres ajuste", color=:orange)
-
-	scatter(entrenamiento_howell[entrenamiento_howell.male.==0, :weight], entrenamiento_howell[entrenamiento_howell.male.==0, :height], label="Mujeres", color=:green)
-	p2 = scatter!(entrenamiento_howell[entrenamiento_howell.male.==0, :weight], red_howell(X_howell_mujeres)[1,:], label="Mujeres ajuste", color=:magenta, xlabel="Peso", ylabel="Altura")
-	plot(p, p1, p2, layout=l, size=(1200, 600))
-end
-
-# ╔═╡ 3584250c-f199-4c27-ba22-d359b245b02c
-md"""
-# Redes neuronales como clasificadores
-"""
-
-# ╔═╡ e67aa374-2ad6-42ab-8127-5658a8236363
-md"""
-## Clasificación con NN
-
-Ahora vamos a utilizar una red neuronal, pero esta vez para tareas de 
-clasificación.
-
-Vamos a utilizar el conjunto de datos de Howell, e intentar predecir el sexo 
-de una de las muestras a partir del resto de sus características. Vamos a 
-utilizar sólo los datos de las personas adultas del conjunto de datos.
-"""
-
-# ╔═╡ ed7fc6a7-6f89-4d88-92aa-ec96e9171c6a
-md"""
-## Clasificación con NN
-
-No quedamos sólo con las personas adultas, y dividimos el conjunto inicial en un subconjunto de datos de entrenamiento y otro de pruebas:
-"""
-
-# ╔═╡ fd9766e3-4a9f-4746-b695-c2b20b192897
-adultas = howell[howell.age .> 17, :]
-
-# ╔═╡ 75a7fc03-26fc-458d-bb0e-e0ed26b0ff65
-md"""
-Para que los experimentos sean reproducibles inicializamos la semilla del generador de números aleatorios:
-"""
-
-# ╔═╡ 4320b284-f595-4408-920a-d93cbfae2116
-semilla = 2
-
-# ╔═╡ 7a08c1e0-de42-4644-ab97-5bb3e5e07805
-Random.seed!(semilla)
-
-# ╔═╡ 6e0c2dc5-0037-480f-9b47-0ef951a0af86
-entrenamiento_clasificacion_howell, prueba_clasificacion_howell = partition(adultas, 0.75, rng=semilla);
-
-# ╔═╡ 237e0af0-7abd-4d0d-82a5-be590e3a0555
-md"""
-Creamos una función de utilidad para normalizar los datos, ya que las redes funcionan mejor cuando el rango de datos es similar para todas las caracteríscias.
-"""
-
-# ╔═╡ f03bcd24-fb92-45f7-8489-0901ec8714b2
-function normaliza_matriz(M, N)
-	resultado = ones(size(M))
-	for c in 1:size(M, 2)
-		normalizador = fit(MinMax, N[:,c])
-		resultado[:,c] = normalize(M[:,c], normalizador)
-	end
-	return resultado
-end
-
-# ╔═╡ a4d9101a-99c0-4949-b8bb-e440a74c3193
-md"""
-## Clasificación con NN
-
-Seleccionamos las características de los datos de entrada:
-"""
-
-# ╔═╡ c25f9730-f107-4cc3-a517-542b17e58901
-caracteristicas_clasificacion = [:weight, :height, :age]
-
-# ╔═╡ 7b180556-ecd3-480f-bb1b-7adb84f91ccf
-X_entrenamiento_clasificacion = Float32.(Matrix(entrenamiento_clasificacion_howell[:, caracteristicas_clasificacion]))
-
-# ╔═╡ fb6b3f31-c188-4c82-bc15-996fd909bfcf
-md"""
-Normalizamos las columnas de la matriz, y la traspongo:
-"""
-
-# ╔═╡ fa68f129-609d-442f-8d9d-06e3a0bc5bb7
-X_entrenamiento_normalizada = Float32.(normaliza_matriz(X_entrenamiento_clasificacion, X_entrenamiento_clasificacion))'
-
-# ╔═╡ 7af6e33b-b9cf-4428-b457-0fbc7f0c5eb0
-y_entrenamiento_clasificacion = Float32.(Flux.onehotbatch(entrenamiento_clasificacion_howell.male, 0:1))
-
-# ╔═╡ 015c2a61-f7b4-41d9-81c7-85299de42a52
-X_prueba_clasificacion = Float32.(Matrix(prueba_clasificacion_howell[:, caracteristicas_clasificacion]))
-
-# ╔═╡ 71dd85c1-e743-4641-9522-8904da9fa04e
-md"""
-Igual que antes la normalizamos, pero los normalizadores son los de la matriz X\_entrenamiento\_classificacion, y la trasponemos:
-"""
-
-# ╔═╡ 1859f9ea-cb27-4acb-a2bf-b7dd63fa47eb
-X_prueba_normalizada = Float32.(normaliza_matriz(X_prueba_clasificacion, X_entrenamiento_clasificacion)')
-
-# ╔═╡ de7228bc-fc1c-4540-a0fb-89b80aaca8fe
-y_prueba_clasificacion = Float32.(Flux.onehotbatch(prueba_clasificacion_howell.male, 0:1))
-
-# ╔═╡ 152393b0-d3cc-461e-a1a1-c0b2050c957e
-md"""
-## Clasificación con NN
-
-Construimos la red:
-"""
-
-# ╔═╡ 03c5c00b-a013-4730-bae3-b028649c5714
-red_clasificacion = Chain(
-	Dense(3 => 3, relu),
-	Dense(3 => 3, relu),
-	Dense(3 => 2),
-	softmax
-)
-
-# ╔═╡ 21ad8727-1da3-4ee0-a93c-b874b415b3d6
-md"""
-Detalles:
-* Tres capas.
-* La función de activación de las dos primeras capas es relu.
-* La función de activación de la capa de salida es softmax.
-"""
-
-# ╔═╡ 56817bd3-041c-41a2-806d-ddca6ecce036
-md"""
-## Clasificación con NN
-
-Definimos el optimizador, la función de pérdidas y los datos:
-"""
-
-# ╔═╡ df83a14f-1c98-4e04-bf21-d922fb11cc70
-optimizador_clasificacion = Flux.setup(Adam(0.001), red_clasificacion)
-
-# ╔═╡ 014f2d31-8084-4720-bec1-aef01454dfb7
-perdidas_clasificacion(modelo, X, y) = Flux.Losses.logitbinarycrossentropy(modelo(X), y)
-
-# ╔═╡ d55aee49-7914-4a6e-a0cd-704af123c20b
-datos_clasificacion = [(X_entrenamiento_normalizada, y_entrenamiento_clasificacion)]
-
-# ╔═╡ 5dfda864-7b57-4b85-b583-24b21c7d7b70
-md"""
-Entrenamos la red:
-"""
-
-# ╔═╡ e98382a3-5a96-4d4c-8748-97231231393a
-function entrena_clasificacion!(perdidas, red, datos, optimizador)
-	with_logger(NullLogger()) do
-		for epoca in 1:5000
-			Flux.train!(perdidas, red, datos, optimizador)
-		end
-	end
-end
-
-# ╔═╡ 00719c6c-41dd-47d2-9c66-e9169bada27c
-entrena_clasificacion!(perdidas_clasificacion, red_clasificacion, datos_clasificacion, optimizador_clasificacion)
-
-# ╔═╡ c3c1cb31-fac1-4758-a60e-e5231b046d81
-md"""
-Mostramos la matriz de confusión:
-"""
-
-# ╔═╡ f15af338-b9bf-40f4-ba5c-9922550a9482
-MLJ.confusion_matrix(Flux.onecold(y_prueba_clasificacion, 0:1), Flux.onecold(red_clasificacion(X_prueba_normalizada), 0:1))
-
-# ╔═╡ 7626e1b9-e312-4e96-9ee1-925d80ae0cb3
-md"""
-Calculamos la precisión de la red creada sobre los datos de prueba:
-"""
-
-# ╔═╡ b06be04c-f11b-4a15-89f1-7e05326996fe
-MLJ.accuracy(Flux.onecold(red_clasificacion(X_prueba_normalizada), 0:1), Flux.onecold(y_prueba_clasificacion, 0:1))
-
-# ╔═╡ bb87c341-2e49-43c1-a93d-4ded2ca0a3a8
-md"""
-# Resumen
-## Resumen
-
-* Las redes neuronales (profundas) están inspiradas en el funcionamiento de las  neuronas (conexiones, funciones de activación, etc.).
-* Las redes neuronales están formadas por capas de neuronas interconectadas  entre ellas.
-* El entrenamiento de una red implica calcular los pesos entre las conexiones  de las neuronas.
-"""
-
-# ╔═╡ 63e06ba9-d51d-4748-81d6-06bc379c2d2e
-md"""
-## Resumen
-
-* Las redes neuronales son aproximadores universales.
-* Las redes neuronales se pueden utilizar tanto para problemas de regresión como de clasificación.
-* Las redes neuronales son susceptibles al sobreajuste de los pesos.
-* Las redes neuronales se entrenan con la técnica de retro propagación, que se puede resumir en regla de la cadena más descenso de gradiente.
-"""
-
-# ╔═╡ 33873026-0946-4887-b3c7-25128377f3eb
-md"""
-# Referencias
-
-Algunas referencias interesantes
-
-1. [Herramienta para visualizar redes neuronales.](https://playground.tensorflow.org)
-1. [Las redes neuronales son aproximadores universales.](https://www.deep-mind.org/2023/03/26/the-universal-approximation-theorem/)
-1. [¿Qué es una red neuronal?](https://www.youtube.com/watch?v=jKCQsndqEGQ)
-1. [Neural networks.](https://www.youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi)
-1. [Alpha Go.](https://www.youtube.com/watch?v=WXuK6gekU1Y)
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
-CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
-DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Flux = "587475ba-b771-5e3f-ad9e-33799f191a9c"
-HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
-Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
-MLJ = "add582a8-e3ab-11e8-2d5e-e98b27df1bc7"
-Normalization = "be38d6a3-8366-4a42-ad57-222272b5bbe7"
+ParameterSchedulers = "d7d3b36b-41b8-4d0d-a2bf-768c6151755e"
+PlotlyBase = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
+PlotlyKaleido = "f2990250-8cf9-495f-b13a-cce12b45703c"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
-Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
 [compat]
-CSV = "~0.10.15"
-DataFrames = "~1.7.0"
 Flux = "~0.16.3"
-HTTP = "~1.10.15"
-MLJ = "~0.20.7"
-Normalization = "~0.7.3"
-Plots = "~1.40.9"
+ParameterSchedulers = "~0.4.3"
+PlotlyBase = "~0.8.19"
+PlotlyKaleido = "~2.2.6"
+Plots = "~1.40.12"
 PlutoUI = "~0.7.61"
 """
 
@@ -956,13 +710,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.5"
 manifest_format = "2.0"
-project_hash = "4ef2641a704aef9cd665c3deac50da4eda3b3547"
-
-[[deps.ARFFFiles]]
-deps = ["CategoricalArrays", "Dates", "Parsers", "Tables"]
-git-tree-sha1 = "678eb18590a8bc6674363da4d5faa4ac09c40a18"
-uuid = "da404889-ca92-49ff-9e8b-0aa6b4d38dc8"
-version = "1.5.0"
+project_hash = "6232d113ac6f21f619fe0e38e0cee80475be7053"
 
 [[deps.AbstractFFTs]]
 deps = ["LinearAlgebra"]
@@ -1007,9 +755,9 @@ version = "0.1.42"
 
 [[deps.Adapt]]
 deps = ["LinearAlgebra", "Requires"]
-git-tree-sha1 = "cd8b948862abee8f3d3e9b73a102a9ca924debb0"
+git-tree-sha1 = "f7817e2e585aa6d924fd714df1e2a84be7896c60"
 uuid = "79e6a3ab-5dfb-504d-930d-738a2a938a0e"
-version = "4.2.0"
+version = "4.3.0"
 weakdeps = ["SparseArrays", "StaticArrays"]
 
     [deps.Adapt.extensions]
@@ -1023,13 +771,23 @@ uuid = "66dad0bd-aa9a-41b7-9441-69ab47430ed8"
 version = "1.1.3"
 
 [[deps.ArgCheck]]
-git-tree-sha1 = "680b3b8759bd4c54052ada14e52355ab69e07876"
+git-tree-sha1 = "f9e9a66c9b7be1ad7372bbd9b062d9230c30c5ce"
 uuid = "dce04be8-c92d-5529-be00-80e4d2c0e197"
-version = "2.4.0"
+version = "2.5.0"
 
 [[deps.ArgTools]]
 uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
 version = "1.1.2"
+
+[[deps.ArrayLayouts]]
+deps = ["FillArrays", "LinearAlgebra"]
+git-tree-sha1 = "4e25216b8fea1908a0ce0f5d87368587899f75be"
+uuid = "4c555306-a7a7-4459-81d9-ec55ddd5c99a"
+version = "1.11.1"
+weakdeps = ["SparseArrays"]
+
+    [deps.ArrayLayouts.extensions]
+    ArrayLayoutsSparseArraysExt = "SparseArrays"
 
 [[deps.Artifacts]]
 uuid = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
@@ -1095,52 +853,11 @@ git-tree-sha1 = "1b96ea4a01afe0ea4090c5c8039690672dd13f2e"
 uuid = "6e34b625-4abd-537c-b88f-471c36dfa7a0"
 version = "1.0.9+0"
 
-[[deps.CEnum]]
-git-tree-sha1 = "389ad5c84de1ae7cf0e28e381131c98ea87d54fc"
-uuid = "fa961155-64e5-5f13-b03f-caf6b980ea82"
-version = "0.5.0"
-
-[[deps.CSV]]
-deps = ["CodecZlib", "Dates", "FilePathsBase", "InlineStrings", "Mmap", "Parsers", "PooledArrays", "PrecompileTools", "SentinelArrays", "Tables", "Unicode", "WeakRefStrings", "WorkerUtilities"]
-git-tree-sha1 = "deddd8725e5e1cc49ee205a1964256043720a6c3"
-uuid = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
-version = "0.10.15"
-
 [[deps.Cairo_jll]]
 deps = ["Artifacts", "Bzip2_jll", "CompilerSupportLibraries_jll", "Fontconfig_jll", "FreeType2_jll", "Glib_jll", "JLLWrappers", "LZO_jll", "Libdl", "Pixman_jll", "Xorg_libXext_jll", "Xorg_libXrender_jll", "Zlib_jll", "libpng_jll"]
-git-tree-sha1 = "009060c9a6168704143100f36ab08f06c2af4642"
+git-tree-sha1 = "2ac646d71d0d24b44f3f8c84da8c9f4d70fb67df"
 uuid = "83423d85-b0ee-5818-9007-b63ccbeb887a"
-version = "1.18.2+1"
-
-[[deps.CategoricalArrays]]
-deps = ["DataAPI", "Future", "Missings", "Printf", "Requires", "Statistics", "Unicode"]
-git-tree-sha1 = "1568b28f91293458345dabba6a5ea3f183250a61"
-uuid = "324d7699-5711-5eae-9e2f-1d82baa6b597"
-version = "0.10.8"
-
-    [deps.CategoricalArrays.extensions]
-    CategoricalArraysJSONExt = "JSON"
-    CategoricalArraysRecipesBaseExt = "RecipesBase"
-    CategoricalArraysSentinelArraysExt = "SentinelArrays"
-    CategoricalArraysStructTypesExt = "StructTypes"
-
-    [deps.CategoricalArrays.weakdeps]
-    JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
-    RecipesBase = "3cdcf5f2-1ef4-517c-9805-6587b60abb01"
-    SentinelArrays = "91c51154-3ec4-41a3-a24f-3f23e20d615c"
-    StructTypes = "856f2bd8-1eba-4b0a-8007-ebc267875bd4"
-
-[[deps.CategoricalDistributions]]
-deps = ["CategoricalArrays", "Distributions", "Missings", "OrderedCollections", "Random", "ScientificTypes"]
-git-tree-sha1 = "926862f549a82d6c3a7145bc7f1adff2a91a39f0"
-uuid = "af321ab8-2d2e-40a6-b165-3d674595d28e"
-version = "0.1.15"
-
-    [deps.CategoricalDistributions.extensions]
-    UnivariateFiniteDisplayExt = "UnicodePlots"
-
-    [deps.CategoricalDistributions.weakdeps]
-    UnicodePlots = "b8865327-cd53-5732-bb35-84acbb429228"
+version = "1.18.4+0"
 
 [[deps.ChainRules]]
 deps = ["Adapt", "ChainRulesCore", "Compat", "Distributed", "GPUArraysCore", "IrrationalConstants", "LinearAlgebra", "Random", "RealDot", "SparseArrays", "SparseInverseSubset", "Statistics", "StructArrays", "SuiteSparse"]
@@ -1192,11 +909,6 @@ git-tree-sha1 = "64e15186f0aa277e174aa81798f7eb8598e0157e"
 uuid = "5ae59095-9a9b-59fe-a467-6f913c188581"
 version = "0.13.0"
 
-[[deps.Combinatorics]]
-git-tree-sha1 = "08c8b6831dc00bfea825826be0bc8336fc369860"
-uuid = "861a8166-3701-5b0c-9a16-15d98fcdc6aa"
-version = "1.0.2"
-
 [[deps.CommonSubexpressions]]
 deps = ["MacroTools"]
 git-tree-sha1 = "cda2cfaebb4be89c9084adaca7dd7333369715c5"
@@ -1226,11 +938,6 @@ weakdeps = ["InverseFunctions"]
 
     [deps.CompositionsBase.extensions]
     CompositionsBaseInverseFunctionsExt = "InverseFunctions"
-
-[[deps.ComputationalResources]]
-git-tree-sha1 = "52cb3ec90e8a8bea0e62e275ba577ad0f74821f7"
-uuid = "ed09eef8-17a6-5b46-8889-db040fac31e3"
-version = "0.3.2"
 
 [[deps.ConcurrentUtilities]]
 deps = ["Serialization", "Sockets"]
@@ -1264,27 +971,16 @@ git-tree-sha1 = "439e35b0b36e2e5881738abc8857bd92ad6ff9a8"
 uuid = "d38c429a-6771-53c6-b99e-75d170b6e991"
 version = "0.6.3"
 
-[[deps.Crayons]]
-git-tree-sha1 = "249fe38abf76d48563e2f4556bebd215aa317e15"
-uuid = "a8cc5b0e-0ffa-5ad4-8c14-923d3ee1735f"
-version = "4.1.1"
-
 [[deps.DataAPI]]
 git-tree-sha1 = "abe83f3a2f1b857aac70ef8b269080af17764bbe"
 uuid = "9a962f9c-6df0-11e9-0e5d-c546b8b5ee8a"
 version = "1.16.0"
 
-[[deps.DataFrames]]
-deps = ["Compat", "DataAPI", "DataStructures", "Future", "InlineStrings", "InvertedIndices", "IteratorInterfaceExtensions", "LinearAlgebra", "Markdown", "Missings", "PooledArrays", "PrecompileTools", "PrettyTables", "Printf", "Random", "Reexport", "SentinelArrays", "SortingAlgorithms", "Statistics", "TableTraits", "Tables", "Unicode"]
-git-tree-sha1 = "fb61b4812c49343d7ef0b533ba982c46021938a6"
-uuid = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
-version = "1.7.0"
-
 [[deps.DataStructures]]
 deps = ["Compat", "InteractiveUtils", "OrderedCollections"]
-git-tree-sha1 = "1d0a14036acb104d9e89698bd408f63ab58cdc82"
+git-tree-sha1 = "4e1fe97fdaed23e9dc21d4d664bea76b65fc50a0"
 uuid = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
-version = "0.18.20"
+version = "0.18.22"
 
 [[deps.DataValueInterfaces]]
 git-tree-sha1 = "bfc1187b79289637fa0ef6d4436ebdfe6905cbd6"
@@ -1298,9 +994,9 @@ version = "1.11.0"
 
 [[deps.Dbus_jll]]
 deps = ["Artifacts", "Expat_jll", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "fc173b380865f70627d7dd1190dc2fce6cc105af"
+git-tree-sha1 = "473e9afc9cf30814eb67ffa5f2db7df82c3ad9fd"
 uuid = "ee1fde0b-3d02-5ea6-8484-8dfef6360eab"
-version = "1.14.10+0"
+version = "1.16.2+0"
 
 [[deps.DefineSingletons]]
 git-tree-sha1 = "0fba8b706d0178b4dc7fd44a96a92382c9065c2c"
@@ -1325,54 +1021,20 @@ git-tree-sha1 = "23163d55f885173722d1e4cf0f6110cdbaf7e272"
 uuid = "b552c78f-8df3-52c6-915a-8e097449b14b"
 version = "1.15.1"
 
-[[deps.Distances]]
-deps = ["LinearAlgebra", "Statistics", "StatsAPI"]
-git-tree-sha1 = "c7e3a542b999843086e2f29dac96a618c105be1d"
-uuid = "b4f34e82-e78d-54a5-968a-f98e89d6e8f7"
-version = "0.10.12"
-weakdeps = ["ChainRulesCore", "SparseArrays"]
-
-    [deps.Distances.extensions]
-    DistancesChainRulesCoreExt = "ChainRulesCore"
-    DistancesSparseArraysExt = "SparseArrays"
-
 [[deps.Distributed]]
 deps = ["Random", "Serialization", "Sockets"]
 uuid = "8ba89e20-285c-5b6f-9357-94700520ee1b"
 version = "1.11.0"
 
-[[deps.Distributions]]
-deps = ["AliasTables", "FillArrays", "LinearAlgebra", "PDMats", "Printf", "QuadGK", "Random", "SpecialFunctions", "Statistics", "StatsAPI", "StatsBase", "StatsFuns"]
-git-tree-sha1 = "03aa5d44647eaec98e1920635cdfed5d5560a8b9"
-uuid = "31c24e10-a181-5473-b8eb-7969acd0382f"
-version = "0.25.117"
-
-    [deps.Distributions.extensions]
-    DistributionsChainRulesCoreExt = "ChainRulesCore"
-    DistributionsDensityInterfaceExt = "DensityInterface"
-    DistributionsTestExt = "Test"
-
-    [deps.Distributions.weakdeps]
-    ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
-    DensityInterface = "b429d917-457f-4dbc-8f4c-0cc954292b1d"
-    Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
-
 [[deps.DocStringExtensions]]
-deps = ["LibGit2"]
-git-tree-sha1 = "2fb1e02f2b635d0845df5d7c167fec4dd739b00d"
+git-tree-sha1 = "e7b7e6f178525d17c720ab9c081e4ef04429f860"
 uuid = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
-version = "0.9.3"
+version = "0.9.4"
 
 [[deps.Downloads]]
 deps = ["ArgTools", "FileWatching", "LibCURL", "NetworkOptions"]
 uuid = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
 version = "1.6.0"
-
-[[deps.EarlyStopping]]
-deps = ["Dates", "Statistics"]
-git-tree-sha1 = "98fdf08b707aaf69f524a6cd0a67858cefe0cfb6"
-uuid = "792122b4-ca99-40de-a6bc-6742525f08b6"
-version = "0.3.0"
 
 [[deps.EnzymeCore]]
 git-tree-sha1 = "0cdb7af5c39e92d78a0ee8d0a447d32f7593137e"
@@ -1425,23 +1087,6 @@ git-tree-sha1 = "656f7a6859be8673bf1f35da5670246b923964f7"
 uuid = "b9860ae5-e623-471e-878b-f6a53c775ea6"
 version = "0.1.1"
 
-[[deps.FeatureSelection]]
-deps = ["MLJModelInterface", "ScientificTypesBase", "Tables"]
-git-tree-sha1 = "d78c565b6296e161193eb0f053bbcb3f1a82091d"
-uuid = "33837fe5-dbff-4c9e-8c2f-c5612fe2b8b6"
-version = "0.2.2"
-
-[[deps.FilePathsBase]]
-deps = ["Compat", "Dates"]
-git-tree-sha1 = "3bab2c5aa25e7840a4b065805c0cdfc01f3068d2"
-uuid = "48062228-2e41-5def-b9a4-89aafe57970f"
-version = "0.9.24"
-weakdeps = ["Mmap", "Test"]
-
-    [deps.FilePathsBase.extensions]
-    FilePathsBaseMmapExt = "Mmap"
-    FilePathsBaseTestExt = "Test"
-
 [[deps.FileWatching]]
 uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
 version = "1.11.0"
@@ -1451,12 +1096,16 @@ deps = ["LinearAlgebra"]
 git-tree-sha1 = "6a70198746448456524cb442b8af316927ff3e1a"
 uuid = "1a297f60-69ca-5386-bcde-b61e274b549b"
 version = "1.13.0"
-weakdeps = ["PDMats", "SparseArrays", "Statistics"]
 
     [deps.FillArrays.extensions]
     FillArraysPDMatsExt = "PDMats"
     FillArraysSparseArraysExt = "SparseArrays"
     FillArraysStatisticsExt = "Statistics"
+
+    [deps.FillArrays.weakdeps]
+    PDMats = "90014a1f-27ba-587c-ab20-58faa44d9150"
+    SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+    Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 
 [[deps.FixedPointNumbers]]
 deps = ["Statistics"]
@@ -1488,9 +1137,9 @@ version = "0.16.3"
 
 [[deps.Fontconfig_jll]]
 deps = ["Artifacts", "Bzip2_jll", "Expat_jll", "FreeType2_jll", "JLLWrappers", "Libdl", "Libuuid_jll", "Zlib_jll"]
-git-tree-sha1 = "21fac3c77d7b5a9fc03b0ec503aa1a6392c34d2b"
+git-tree-sha1 = "301b5d5d731a0654825f1f2e906990f7141a106b"
 uuid = "a3f928ae-7b40-5064-980b-68af3947d34b"
-version = "2.15.0+0"
+version = "2.16.0+0"
 
 [[deps.Format]]
 git-tree-sha1 = "9c68794ef81b08086aeb32eeaf33531668d5f5fc"
@@ -1499,9 +1148,9 @@ version = "1.3.7"
 
 [[deps.ForwardDiff]]
 deps = ["CommonSubexpressions", "DiffResults", "DiffRules", "LinearAlgebra", "LogExpFunctions", "NaNMath", "Preferences", "Printf", "Random", "SpecialFunctions"]
-git-tree-sha1 = "a2df1b776752e3f344e5116c06d75a10436ab853"
+git-tree-sha1 = "910febccb28d493032495b7009dce7d7f7aee554"
 uuid = "f6369f11-7733-5829-9624-2563aa707210"
-version = "0.10.38"
+version = "1.0.1"
 weakdeps = ["StaticArrays"]
 
     [deps.ForwardDiff.extensions]
@@ -1509,15 +1158,15 @@ weakdeps = ["StaticArrays"]
 
 [[deps.FreeType2_jll]]
 deps = ["Artifacts", "Bzip2_jll", "JLLWrappers", "Libdl", "Zlib_jll"]
-git-tree-sha1 = "786e968a8d2fb167f2e4880baba62e0e26bd8e4e"
+git-tree-sha1 = "2c5512e11c791d1baed2049c5652441b28fc6a31"
 uuid = "d7e528f0-a631-5988-bf34-fe36492bcfd7"
-version = "2.13.3+1"
+version = "2.13.4+0"
 
 [[deps.FriBidi_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "846f7026a9decf3679419122b49f8a1fdb48d2d5"
+git-tree-sha1 = "7a214fdac5ed5f59a22c2d9a885a16da1c74bbc7"
 uuid = "559328eb-81f9-559d-9380-de523a88c83c"
-version = "1.0.16+0"
+version = "1.0.17+0"
 
 [[deps.Functors]]
 deps = ["Compat", "ConstructionBase", "LinearAlgebra", "Random"]
@@ -1535,12 +1184,6 @@ deps = ["Artifacts", "JLLWrappers", "Libdl", "Libglvnd_jll", "Xorg_libXcursor_jl
 git-tree-sha1 = "fcb0584ff34e25155876418979d4c8971243bb89"
 uuid = "0656b61e-2033-5cc2-a64a-77c0f6c09b89"
 version = "3.4.0+2"
-
-[[deps.GPUArrays]]
-deps = ["Adapt", "GPUArraysCore", "KernelAbstractions", "LLVM", "LinearAlgebra", "Printf", "Random", "Reexport", "ScopedValues", "Serialization", "Statistics"]
-git-tree-sha1 = "eea7b3a1964b4de269bb380462a9da604be7fcdb"
-uuid = "0c68f7d7-f131-5f86-a1c3-88cf8149b2d7"
-version = "11.2.2"
 
 [[deps.GPUArraysCore]]
 deps = ["Adapt"]
@@ -1573,10 +1216,10 @@ uuid = "7746bdde-850d-59dc-9ae8-88ece973131d"
 version = "2.82.4+0"
 
 [[deps.Graphite2_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
-git-tree-sha1 = "01979f9b37367603e2848ea225918a3b3861b606"
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "8a6dbda1fd736d60cc477d99f2e7a042acfa46e8"
 uuid = "3b182d85-2403-5c21-9c21-1e1f0cc25472"
-version = "1.3.14+1"
+version = "1.3.15+0"
 
 [[deps.Grisu]]
 git-tree-sha1 = "53bb909d1151e57e2484c3d1b53e19552b887fb2"
@@ -1585,9 +1228,9 @@ version = "1.0.2"
 
 [[deps.HTTP]]
 deps = ["Base64", "CodecZlib", "ConcurrentUtilities", "Dates", "ExceptionUnwrapping", "Logging", "LoggingExtras", "MbedTLS", "NetworkOptions", "OpenSSL", "PrecompileTools", "Random", "SimpleBufferStream", "Sockets", "URIs", "UUIDs"]
-git-tree-sha1 = "c67b33b085f6e2faf8bf79a61962e7339a81129c"
+git-tree-sha1 = "f93655dc73d7a0b4a368e3c0bce296ae035ad76e"
 uuid = "cd3eb016-35fb-5094-929b-558a96fad6f3"
-version = "1.10.15"
+version = "1.10.16"
 
 [[deps.HarfBuzz_jll]]
 deps = ["Artifacts", "Cairo_jll", "Fontconfig_jll", "FreeType2_jll", "Glib_jll", "Graphite2_jll", "JLLWrappers", "Libdl", "Libffi_jll"]
@@ -1599,12 +1242,6 @@ version = "8.5.0+0"
 git-tree-sha1 = "2eaa69a7cab70a52b9687c8bf950a5a93ec895ae"
 uuid = "076d061b-32b6-4027-95e0-9a2c6f6d7e74"
 version = "0.2.0"
-
-[[deps.HypergeometricFunctions]]
-deps = ["LinearAlgebra", "OpenLibm_jll", "SpecialFunctions"]
-git-tree-sha1 = "2bd56245074fab4015b9174f24ceba8293209053"
-uuid = "34004b35-14d8-5ef3-9330-4cdb6864b03a"
-version = "0.3.27"
 
 [[deps.Hyperscript]]
 deps = ["Test"]
@@ -1630,23 +1267,29 @@ git-tree-sha1 = "950c3717af761bc3ff906c2e8e52bd83390b6ec2"
 uuid = "7869d1d1-7146-5819-86e3-90919afe41df"
 version = "0.4.14"
 
+[[deps.InfiniteArrays]]
+deps = ["ArrayLayouts", "FillArrays", "Infinities", "LazyArrays", "LinearAlgebra"]
+git-tree-sha1 = "10faeb745d3b22170113dbc0561b68b44bcc0363"
+uuid = "4858937d-0d70-526a-a4dd-2d5cb5dd786c"
+version = "0.14.4"
+
+    [deps.InfiniteArrays.extensions]
+    InfiniteArraysDSPExt = "DSP"
+    InfiniteArraysStatisticsExt = "Statistics"
+
+    [deps.InfiniteArrays.weakdeps]
+    DSP = "717857b8-e6f2-59f4-9121-6e50c889abd2"
+    Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
+
+[[deps.Infinities]]
+git-tree-sha1 = "437cd9b81b649574582507d8b9ca3ffc981f2fc2"
+uuid = "e1ba4f0e-776d-440f-acd9-e1d2e9742647"
+version = "0.1.11"
+
 [[deps.InitialValues]]
 git-tree-sha1 = "4da0f88e9a39111c2fa3add390ab15f3a44f3ca3"
 uuid = "22cec73e-a1b8-11e9-2c92-598750a2cf9c"
 version = "0.3.1"
-
-[[deps.InlineStrings]]
-git-tree-sha1 = "6a9fde685a7ac1eb3495f8e812c5a7c3711c2d5e"
-uuid = "842dd82b-1e85-43dc-bf29-5d0ee9dffc48"
-version = "1.4.3"
-
-    [deps.InlineStrings.extensions]
-    ArrowTypesExt = "ArrowTypes"
-    ParsersExt = "Parsers"
-
-    [deps.InlineStrings.weakdeps]
-    ArrowTypes = "31f734f8-188a-4ce0-8406-c8a06bd891cd"
-    Parsers = "69de0a69-1ddd-5017-9359-2bf0b02dc9f0"
 
 [[deps.InteractiveUtils]]
 deps = ["Markdown"]
@@ -1663,21 +1306,10 @@ weakdeps = ["Dates", "Test"]
     InverseFunctionsDatesExt = "Dates"
     InverseFunctionsTestExt = "Test"
 
-[[deps.InvertedIndices]]
-git-tree-sha1 = "6da3c4316095de0f5ee2ebd875df8721e7e0bdbe"
-uuid = "41ab1584-1d38-5bbf-9106-f11c6c58b48f"
-version = "1.3.1"
-
 [[deps.IrrationalConstants]]
 git-tree-sha1 = "e2222959fbc6c19554dc15174c81bf7bf3aa691c"
 uuid = "92d709cd-6900-40b7-9082-c6be49f344b6"
 version = "0.2.4"
-
-[[deps.IterationControl]]
-deps = ["EarlyStopping", "InteractiveUtils"]
-git-tree-sha1 = "e663925ebc3d93c1150a7570d114f9ea2f664726"
-uuid = "b3c1a2ee-3fec-4384-bf48-272ea71de57c"
-version = "0.5.4"
 
 [[deps.IteratorInterfaceExtensions]]
 git-tree-sha1 = "a3f24677c21f5bbe9d2a714f95dcd58337fb2856"
@@ -1685,10 +1317,10 @@ uuid = "82899510-4779-5014-852e-03e436cf321d"
 version = "1.0.0"
 
 [[deps.JLFzf]]
-deps = ["Pipe", "REPL", "Random", "fzf_jll"]
-git-tree-sha1 = "71b48d857e86bf7a1838c4736545699974ce79a2"
+deps = ["REPL", "Random", "fzf_jll"]
+git-tree-sha1 = "1d4015b1eb6dc3be7e6c400fbd8042fe825a6bac"
 uuid = "1019f520-868f-41f5-a6de-eb00f4b6a39c"
-version = "0.1.9"
+version = "0.1.10"
 
 [[deps.JLLWrappers]]
 deps = ["Artifacts", "Preferences"]
@@ -1714,6 +1346,12 @@ git-tree-sha1 = "49fb3cb53362ddadb4415e9b73926d6b40709e70"
 uuid = "b14d175d-62b4-44ba-8fb7-3064adc8c3ec"
 version = "0.2.4"
 
+[[deps.Kaleido_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "43032da5832754f58d14a91ffbe86d5f176acda9"
+uuid = "f7e6163d-2fa5-5f23-b69c-1db539e41963"
+version = "0.2.1+0"
+
 [[deps.KernelAbstractions]]
 deps = ["Adapt", "Atomix", "InteractiveUtils", "MacroTools", "PrecompileTools", "Requires", "StaticArrays", "UUIDs"]
 git-tree-sha1 = "80d268b2f4e396edc5ea004d1e0f569231c71e9e"
@@ -1738,24 +1376,6 @@ git-tree-sha1 = "aaafe88dccbd957a8d82f7d05be9b69172e0cee3"
 uuid = "88015f11-f218-50d7-93a8-a6af411a945d"
 version = "4.0.1+0"
 
-[[deps.LLVM]]
-deps = ["CEnum", "LLVMExtra_jll", "Libdl", "Preferences", "Printf", "Unicode"]
-git-tree-sha1 = "5fcfea6df2ff3e4da708a40c969c3812162346df"
-uuid = "929cbde3-209d-540e-8aea-75f648917ca0"
-version = "9.2.0"
-
-    [deps.LLVM.extensions]
-    BFloat16sExt = "BFloat16s"
-
-    [deps.LLVM.weakdeps]
-    BFloat16s = "ab4f0b2a-ad5b-11e8-123f-65d77653426b"
-
-[[deps.LLVMExtra_jll]]
-deps = ["Artifacts", "JLLWrappers", "LazyArtifacts", "Libdl", "TOML"]
-git-tree-sha1 = "4b5ad6a4ffa91a00050a964492bc4f86bb48cea0"
-uuid = "dad2f222-ce93-54a1-a47d-0025e8a3acab"
-version = "0.0.35+0"
-
 [[deps.LLVMOpenMP_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
 git-tree-sha1 = "78211fb6cbc872f77cad3fc0b6cf647d923f4929"
@@ -1775,9 +1395,9 @@ version = "1.4.0"
 
 [[deps.Latexify]]
 deps = ["Format", "InteractiveUtils", "LaTeXStrings", "MacroTools", "Markdown", "OrderedCollections", "Requires"]
-git-tree-sha1 = "cd714447457c660382fe634710fb56eb255ee42e"
+git-tree-sha1 = "cd10d2cc78d34c0e2a3a36420ab607b611debfbb"
 uuid = "23fbe1c1-3f47-55db-b15f-69d7ec21a316"
-version = "0.16.6"
+version = "0.16.7"
 
     [deps.Latexify.extensions]
     DataFramesExt = "DataFrames"
@@ -1789,22 +1409,23 @@ version = "0.16.6"
     SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
     SymEngine = "123dc426-2d89-5057-bbad-38513e3affd8"
 
-[[deps.LatinHypercubeSampling]]
-deps = ["Random", "StableRNGs", "StatsBase", "Test"]
-git-tree-sha1 = "825289d43c753c7f1bf9bed334c253e9913997f8"
-uuid = "a5e1c1ea-c99a-51d3-a14d-a9a37257b02d"
-version = "1.9.0"
+[[deps.LazyArrays]]
+deps = ["ArrayLayouts", "FillArrays", "LinearAlgebra", "MacroTools", "SparseArrays"]
+git-tree-sha1 = "866ce84b15e54d758c11946aacd4e5df0e60b7a3"
+uuid = "5078a376-72f3-5289-bfd5-ec5146d43c02"
+version = "2.6.1"
 
-[[deps.LazyArtifacts]]
-deps = ["Artifacts", "Pkg"]
-uuid = "4af54fe1-eca0-43a8-85a7-787d91b784e3"
-version = "1.11.0"
+    [deps.LazyArrays.extensions]
+    LazyArraysBandedMatricesExt = "BandedMatrices"
+    LazyArraysBlockArraysExt = "BlockArrays"
+    LazyArraysBlockBandedMatricesExt = "BlockBandedMatrices"
+    LazyArraysStaticArraysExt = "StaticArrays"
 
-[[deps.LearnAPI]]
-deps = ["InteractiveUtils", "Statistics"]
-git-tree-sha1 = "ec695822c1faaaa64cee32d0b21505e1977b4809"
-uuid = "92ad9a40-7767-427a-9ee6-6e577f1266cb"
-version = "0.1.0"
+    [deps.LazyArrays.weakdeps]
+    BandedMatrices = "aae01518-5342-5314-be14-df237901396f"
+    BlockArrays = "8e7c35d0-a365-5155-bbbb-fb81a777f24e"
+    BlockBandedMatrices = "ffab5731-97b5-5995-9138-79e8c1846df0"
+    StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 
 [[deps.LibCURL]]
 deps = ["LibCURL_jll", "MozillaCACerts_jll"]
@@ -1841,23 +1462,11 @@ git-tree-sha1 = "27ecae93dd25ee0909666e6835051dd684cc035e"
 uuid = "e9f186c6-92d2-5b65-8a66-fee21dc1b490"
 version = "3.2.2+2"
 
-[[deps.Libgcrypt_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl", "Libgpg_error_jll"]
-git-tree-sha1 = "8be878062e0ffa2c3f67bb58a595375eda5de80b"
-uuid = "d4300ac3-e22c-5743-9152-c294e39db1e4"
-version = "1.11.0+0"
-
 [[deps.Libglvnd_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libX11_jll", "Xorg_libXext_jll"]
 git-tree-sha1 = "ff3b4b9d35de638936a525ecd36e86a8bb919d11"
 uuid = "7e76a0d4-f3c7-5321-8279-8d96eeed0f29"
 version = "1.7.0+0"
-
-[[deps.Libgpg_error_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "df37206100d39f79b3376afb6b9cee4970041c61"
-uuid = "7add5ba3-2f88-524e-9cd5-f83b8a55f7b8"
-version = "1.51.1+0"
 
 [[deps.Libiconv_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -1867,9 +1476,9 @@ version = "1.18.0+0"
 
 [[deps.Libmount_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "89211ea35d9df5831fca5d33552c02bd33878419"
+git-tree-sha1 = "a31572773ac1b745e0343fe5e2c8ddda7a37e997"
 uuid = "4b2f31a3-9ecc-558c-b454-b3730dcb73e9"
-version = "2.40.3+0"
+version = "2.41.0+0"
 
 [[deps.Libtiff_jll]]
 deps = ["Artifacts", "JLLWrappers", "JpegTurbo_jll", "LERC_jll", "Libdl", "XZ_jll", "Zlib_jll", "Zstd_jll"]
@@ -1879,9 +1488,9 @@ version = "4.7.1+0"
 
 [[deps.Libuuid_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "e888ad02ce716b319e6bdb985d2ef300e7089889"
+git-tree-sha1 = "321ccef73a96ba828cd51f2ab5b9f917fa73945a"
 uuid = "38a345b3-de98-5d2b-a5d3-14cd9215e700"
-version = "2.40.3+0"
+version = "2.41.0+0"
 
 [[deps.LinearAlgebra]]
 deps = ["Libdl", "OpenBLAS_jll", "libblastrampoline_jll"]
@@ -1915,9 +1524,9 @@ uuid = "e6f89c97-d47a-5376-807f-9c37f3926c36"
 version = "1.1.0"
 
 [[deps.MIMEs]]
-git-tree-sha1 = "1833212fd6f580c20d4291da9c1b4e8a655b128e"
+git-tree-sha1 = "c64d943587f7187e751162b3b84445bbbd79f691"
 uuid = "6c6e2e6c-3030-632d-7369-2d6c69616d65"
-version = "1.0.0"
+version = "1.1.0"
 
 [[deps.MLCore]]
 deps = ["DataAPI", "SimpleTraits", "Tables"]
@@ -1927,9 +1536,9 @@ version = "1.0.0"
 
 [[deps.MLDataDevices]]
 deps = ["Adapt", "Compat", "Functors", "Preferences", "Random"]
-git-tree-sha1 = "7e8d4cc22f014e617607bd74119d02e26fef005b"
+git-tree-sha1 = "1326836c4c845cfabc542b658c8686f0c31a9911"
 uuid = "7e8f7934-dd98-4c1a-8fe8-92b47a384d40"
-version = "1.8.0"
+version = "1.9.1"
 
     [deps.MLDataDevices.extensions]
     MLDataDevicesAMDGPUExt = "AMDGPU"
@@ -1971,70 +1580,6 @@ version = "1.8.0"
     cuDNN = "02a925ec-e4fe-4b08-9a7e-0d78e3d38ccd"
     oneAPI = "8f75cd03-7ff8-4ecb-9b8f-daf728133b1b"
 
-[[deps.MLFlowClient]]
-deps = ["Dates", "FilePathsBase", "HTTP", "JSON", "ShowCases", "URIs", "UUIDs"]
-git-tree-sha1 = "9abb12b62debc27261c008daa13627255bf79967"
-uuid = "64a0f543-368b-4a9a-827a-e71edb2a0b83"
-version = "0.5.1"
-
-[[deps.MLJ]]
-deps = ["CategoricalArrays", "ComputationalResources", "Distributed", "Distributions", "FeatureSelection", "LinearAlgebra", "MLJBalancing", "MLJBase", "MLJEnsembles", "MLJFlow", "MLJIteration", "MLJModels", "MLJTuning", "OpenML", "Pkg", "ProgressMeter", "Random", "Reexport", "ScientificTypes", "StatisticalMeasures", "Statistics", "StatsBase", "Tables"]
-git-tree-sha1 = "521eec7a22417d54fdc66f5dc0b7dc9628931c54"
-uuid = "add582a8-e3ab-11e8-2d5e-e98b27df1bc7"
-version = "0.20.7"
-
-[[deps.MLJBalancing]]
-deps = ["MLJBase", "MLJModelInterface", "MLUtils", "OrderedCollections", "Random", "StatsBase"]
-git-tree-sha1 = "f707a01a92d664479522313907c07afa5d81df19"
-uuid = "45f359ea-796d-4f51-95a5-deb1a414c586"
-version = "0.1.5"
-
-[[deps.MLJBase]]
-deps = ["CategoricalArrays", "CategoricalDistributions", "ComputationalResources", "Dates", "DelimitedFiles", "Distributed", "Distributions", "InteractiveUtils", "InvertedIndices", "LearnAPI", "LinearAlgebra", "MLJModelInterface", "Missings", "OrderedCollections", "Parameters", "PrettyTables", "ProgressMeter", "Random", "RecipesBase", "Reexport", "ScientificTypes", "Serialization", "StatisticalMeasuresBase", "StatisticalTraits", "Statistics", "StatsBase", "Tables"]
-git-tree-sha1 = "6f45e12073bc2f2e73ed0473391db38c31e879c9"
-uuid = "a7f614a8-145f-11e9-1d2a-a57a1082229d"
-version = "1.7.0"
-weakdeps = ["StatisticalMeasures"]
-
-    [deps.MLJBase.extensions]
-    DefaultMeasuresExt = "StatisticalMeasures"
-
-[[deps.MLJEnsembles]]
-deps = ["CategoricalArrays", "CategoricalDistributions", "ComputationalResources", "Distributed", "Distributions", "MLJModelInterface", "ProgressMeter", "Random", "ScientificTypesBase", "StatisticalMeasuresBase", "StatsBase"]
-git-tree-sha1 = "84a5be55a364bb6b6dc7780bbd64317ebdd3ad1e"
-uuid = "50ed68f4-41fd-4504-931a-ed422449fee0"
-version = "0.4.3"
-
-[[deps.MLJFlow]]
-deps = ["MLFlowClient", "MLJBase", "MLJModelInterface"]
-git-tree-sha1 = "508bff8071d7d1902d6f1b9d1e868d58821f1cfe"
-uuid = "7b7b8358-b45c-48ea-a8ef-7ca328ad328f"
-version = "0.5.0"
-
-[[deps.MLJIteration]]
-deps = ["IterationControl", "MLJBase", "Random", "Serialization"]
-git-tree-sha1 = "ad16cfd261e28204847f509d1221a581286448ae"
-uuid = "614be32b-d00c-4edb-bd02-1eb411ab5e55"
-version = "0.6.3"
-
-[[deps.MLJModelInterface]]
-deps = ["Random", "ScientificTypesBase", "StatisticalTraits"]
-git-tree-sha1 = "ceaff6618408d0e412619321ae43b33b40c1a733"
-uuid = "e80e1ace-859a-464e-9ed9-23947d8ae3ea"
-version = "1.11.0"
-
-[[deps.MLJModels]]
-deps = ["CategoricalArrays", "CategoricalDistributions", "Combinatorics", "Dates", "Distances", "Distributions", "InteractiveUtils", "LinearAlgebra", "MLJModelInterface", "Markdown", "OrderedCollections", "Parameters", "Pkg", "PrettyPrinting", "REPL", "Random", "RelocatableFolders", "ScientificTypes", "StatisticalTraits", "Statistics", "StatsBase", "Tables"]
-git-tree-sha1 = "dfcab2c043b169999f662fe02abf0544642c68d7"
-uuid = "d491faf4-2d78-11e9-2867-c94bc002c0b7"
-version = "0.17.7"
-
-[[deps.MLJTuning]]
-deps = ["ComputationalResources", "Distributed", "Distributions", "LatinHypercubeSampling", "MLJBase", "ProgressMeter", "Random", "RecipesBase", "StatisticalMeasuresBase"]
-git-tree-sha1 = "38aab60b1274ce7d6da784808e3be69e585dbbf6"
-uuid = "03970b2e-30c4-11ea-3135-d1576263f10f"
-version = "0.8.8"
-
 [[deps.MLStyle]]
 git-tree-sha1 = "bc38dff0548128765760c79eb7388a4b37fae2c8"
 uuid = "d8e11817-5142-5d16-987a-aa16d5891078"
@@ -2042,9 +1587,9 @@ version = "0.4.17"
 
 [[deps.MLUtils]]
 deps = ["ChainRulesCore", "Compat", "DataAPI", "DelimitedFiles", "FLoops", "MLCore", "NNlib", "Random", "ShowCases", "SimpleTraits", "Statistics", "StatsBase", "Tables", "Transducers"]
-git-tree-sha1 = "6963295133aaa789f5fb18a6dd276c420793cf43"
+git-tree-sha1 = "a772d8d1987433538a5c226f79393324b55f7846"
 uuid = "f1d291b0-491e-4a28-83b9-f70985020b54"
-version = "0.4.7"
+version = "0.4.8"
 
 [[deps.MacroTools]]
 git-tree-sha1 = "72aebe0b5051e5143a079a4685a46da330a40472"
@@ -2093,10 +1638,10 @@ uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
 version = "2023.12.12"
 
 [[deps.NNlib]]
-deps = ["Adapt", "Atomix", "ChainRulesCore", "GPUArraysCore", "KernelAbstractions", "LinearAlgebra", "Random", "Statistics"]
-git-tree-sha1 = "e3d9a41f0e892d070d1a2a9569d73f29b3e321e3"
+deps = ["Adapt", "Atomix", "ChainRulesCore", "GPUArraysCore", "KernelAbstractions", "LinearAlgebra", "Random", "ScopedValues", "Statistics"]
+git-tree-sha1 = "4abc63cdd8dd9dd925d8e879cda280bedc8013ca"
 uuid = "872c559c-99b0-510c-b3b7-b6c96a88d5cd"
-version = "0.9.28"
+version = "0.9.30"
 
     [deps.NNlib.extensions]
     NNlibAMDGPUExt = "AMDGPU"
@@ -2118,9 +1663,9 @@ version = "0.9.28"
 
 [[deps.NaNMath]]
 deps = ["OpenLibm_jll"]
-git-tree-sha1 = "cc0a5deefdb12ab3a096f00a6d42133af4560d71"
+git-tree-sha1 = "9b8215b1ee9e78a293f99797cd31375471b2bcae"
 uuid = "77ba4419-2d1f-58cd-9bb1-8ffee604a2e3"
-version = "1.1.2"
+version = "1.1.3"
 
 [[deps.NameResolution]]
 deps = ["PrettyPrint"]
@@ -2132,22 +1677,6 @@ version = "0.1.5"
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
 version = "1.2.0"
 
-[[deps.Normalization]]
-deps = ["Accessors", "LinearAlgebra", "Statistics", "StatsAPI"]
-git-tree-sha1 = "686a1bd494042b29142d920667564c8055bc5738"
-uuid = "be38d6a3-8366-4a42-ad57-222272b5bbe7"
-version = "0.7.3"
-
-    [deps.Normalization.extensions]
-    DataFramesExt = "DataFrames"
-    DimensionalDataExt = "DimensionalData"
-    UnitfulExt = "Unitful"
-
-    [deps.Normalization.weakdeps]
-    DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
-    DimensionalData = "0703355e-b756-11e9-17c0-8b28908087d0"
-    Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
-
 [[deps.Ogg_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
 git-tree-sha1 = "887579a3eb005446d514ab7aeac5d1d027658b8f"
@@ -2156,9 +1685,9 @@ version = "1.3.5+1"
 
 [[deps.OneHotArrays]]
 deps = ["Adapt", "ChainRulesCore", "Compat", "GPUArraysCore", "LinearAlgebra", "NNlib"]
-git-tree-sha1 = "c8c7f6bfabe581dc40b580313a75f1ecce087e27"
+git-tree-sha1 = "3685584454b04cd52169c787ba4d196da8a04d10"
 uuid = "0b1bfda6-eb8a-41d2-88d8-f5af5cad476f"
-version = "0.2.6"
+version = "0.2.9"
 
 [[deps.OpenBLAS_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
@@ -2170,12 +1699,6 @@ deps = ["Artifacts", "Libdl"]
 uuid = "05823500-19ac-5b8b-9628-191a04bc5112"
 version = "0.8.5+0"
 
-[[deps.OpenML]]
-deps = ["ARFFFiles", "HTTP", "JSON", "Markdown", "Pkg", "Scratch"]
-git-tree-sha1 = "63603b2b367107e87dbceda4e33c67aed17e50e0"
-uuid = "8b6db2d4-7670-4922-a472-f9537c81ab66"
-version = "0.3.2"
-
 [[deps.OpenSSL]]
 deps = ["BitFlags", "Dates", "MozillaCACerts_jll", "OpenSSL_jll", "Sockets"]
 git-tree-sha1 = "38cb508d080d21dc1128f7fb04f20387ed4c0af4"
@@ -2184,9 +1707,9 @@ version = "1.4.3"
 
 [[deps.OpenSSL_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "a9697f1d06cc3eb3fb3ad49cc67f2cfabaac31ea"
+git-tree-sha1 = "9216a80ff3682833ac4b733caa8c00390620ba5d"
 uuid = "458c3c95-2e84-50aa-8efc-19380b2a3a95"
-version = "3.0.16+0"
+version = "3.5.0+0"
 
 [[deps.OpenSpecFun_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl"]
@@ -2196,14 +1719,19 @@ version = "0.5.6+0"
 
 [[deps.Optimisers]]
 deps = ["ChainRulesCore", "ConstructionBase", "Functors", "LinearAlgebra", "Random", "Statistics"]
-git-tree-sha1 = "c57a1a58e29a017a2b07e78d075385b981942430"
+git-tree-sha1 = "131dc319e7c58317e8c6d5170440f6bdaee0a959"
 uuid = "3bd65402-5787-11e9-1adc-39752487f4e2"
-version = "0.4.5"
-weakdeps = ["Adapt", "EnzymeCore"]
+version = "0.4.6"
 
     [deps.Optimisers.extensions]
     OptimisersAdaptExt = ["Adapt"]
     OptimisersEnzymeCoreExt = "EnzymeCore"
+    OptimisersReactantExt = "Reactant"
+
+    [deps.Optimisers.weakdeps]
+    Adapt = "79e6a3ab-5dfb-504d-930d-738a2a938a0e"
+    EnzymeCore = "f151be2c-9106-41f4-ab19-57ee4f262869"
+    Reactant = "3c362404-f566-11ee-1572-e11a4b42c853"
 
 [[deps.Opus_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -2221,17 +1749,17 @@ deps = ["Artifacts", "Libdl"]
 uuid = "efcefdf7-47ab-520b-bdef-62a2eaa19f15"
 version = "10.42.0+1"
 
-[[deps.PDMats]]
-deps = ["LinearAlgebra", "SparseArrays", "SuiteSparse"]
-git-tree-sha1 = "966b85253e959ea89c53a9abebbf2e964fbf593b"
-uuid = "90014a1f-27ba-587c-ab20-58faa44d9150"
-version = "0.11.32"
-
 [[deps.Pango_jll]]
 deps = ["Artifacts", "Cairo_jll", "Fontconfig_jll", "FreeType2_jll", "FriBidi_jll", "Glib_jll", "HarfBuzz_jll", "JLLWrappers", "Libdl"]
 git-tree-sha1 = "3b31172c032a1def20c98dae3f2cdc9d10e3b561"
 uuid = "36c8627f-9965-5494-a995-c6b170f724f3"
 version = "1.56.1+0"
+
+[[deps.ParameterSchedulers]]
+deps = ["InfiniteArrays", "Optimisers"]
+git-tree-sha1 = "c62f0da0663704d0472ae578c9bb802c44e70a4c"
+uuid = "d7d3b36b-41b8-4d0d-a2bf-768c6151755e"
+version = "0.4.3"
 
 [[deps.Parameters]]
 deps = ["OrderedCollections", "UnPack"]
@@ -2241,20 +1769,15 @@ version = "0.12.3"
 
 [[deps.Parsers]]
 deps = ["Dates", "PrecompileTools", "UUIDs"]
-git-tree-sha1 = "8489905bcdbcfac64d1daa51ca07c0d8f0283821"
+git-tree-sha1 = "7d2f8f21da5db6a806faf7b9b292296da42b2810"
 uuid = "69de0a69-1ddd-5017-9359-2bf0b02dc9f0"
-version = "2.8.1"
-
-[[deps.Pipe]]
-git-tree-sha1 = "6842804e7867b115ca9de748a0cf6b364523c16d"
-uuid = "b98c9c47-44ae-5843-9183-064241ee97a0"
-version = "1.3.0"
+version = "2.8.3"
 
 [[deps.Pixman_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "LLVMOpenMP_jll", "Libdl"]
-git-tree-sha1 = "35621f10a7531bc8fa58f74610b1bfb70a3cfc6b"
+git-tree-sha1 = "db76b1ecd5e9715f3d043cec13b2ec93ce015d53"
 uuid = "30392449-352a-5448-841d-b1acce4e97dc"
-version = "0.43.4+0"
+version = "0.44.2+0"
 
 [[deps.Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "Random", "SHA", "TOML", "Tar", "UUIDs", "p7zip_jll"]
@@ -2277,11 +1800,23 @@ git-tree-sha1 = "3ca9a356cd2e113c420f2c13bea19f8d3fb1cb18"
 uuid = "995b91a9-d308-5afd-9ec6-746e21dbc043"
 version = "1.4.3"
 
+[[deps.PlotlyBase]]
+deps = ["ColorSchemes", "Dates", "DelimitedFiles", "DocStringExtensions", "JSON", "LaTeXStrings", "Logging", "Parameters", "Pkg", "REPL", "Requires", "Statistics", "UUIDs"]
+git-tree-sha1 = "56baf69781fc5e61607c3e46227ab17f7040ffa2"
+uuid = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
+version = "0.8.19"
+
+[[deps.PlotlyKaleido]]
+deps = ["Artifacts", "Base64", "JSON", "Kaleido_jll"]
+git-tree-sha1 = "ba551e47d7eac212864fdfea3bd07f30202b4a5b"
+uuid = "f2990250-8cf9-495f-b13a-cce12b45703c"
+version = "2.2.6"
+
 [[deps.Plots]]
 deps = ["Base64", "Contour", "Dates", "Downloads", "FFMPEG", "FixedPointNumbers", "GR", "JLFzf", "JSON", "LaTeXStrings", "Latexify", "LinearAlgebra", "Measures", "NaNMath", "Pkg", "PlotThemes", "PlotUtils", "PrecompileTools", "Printf", "REPL", "Random", "RecipesBase", "RecipesPipeline", "Reexport", "RelocatableFolders", "Requires", "Scratch", "Showoff", "SparseArrays", "Statistics", "StatsBase", "TOML", "UUIDs", "UnicodeFun", "UnitfulLatexify", "Unzip"]
-git-tree-sha1 = "dae01f8c2e069a683d3a6e17bbae5070ab94786f"
+git-tree-sha1 = "41c9a70abc1ff7296873adc5d768bff33a481652"
 uuid = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
-version = "1.40.9"
+version = "1.40.12"
 
     [deps.Plots.extensions]
     FileIOExt = "FileIO"
@@ -2303,12 +1838,6 @@ git-tree-sha1 = "7e71a55b87222942f0f9337be62e26b1f103d3e4"
 uuid = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 version = "0.7.61"
 
-[[deps.PooledArrays]]
-deps = ["DataAPI", "Future"]
-git-tree-sha1 = "36d8b4b899628fb92c2749eb488d884a926614d3"
-uuid = "2dfb63ee-cc39-5dd5-95bd-886bf059d720"
-version = "1.4.3"
-
 [[deps.PrecompileTools]]
 deps = ["Preferences"]
 git-tree-sha1 = "5aa36f7049a63a1528fe8f7c3f2113413ffd4e1f"
@@ -2326,17 +1855,6 @@ git-tree-sha1 = "632eb4abab3449ab30c5e1afaa874f0b98b586e4"
 uuid = "8162dcfd-2161-5ef2-ae6c-7681170c5f98"
 version = "0.2.0"
 
-[[deps.PrettyPrinting]]
-git-tree-sha1 = "142ee93724a9c5d04d78df7006670a93ed1b244e"
-uuid = "54e16d92-306c-5ea0-a30b-337be88ac337"
-version = "0.4.2"
-
-[[deps.PrettyTables]]
-deps = ["Crayons", "LaTeXStrings", "Markdown", "PrecompileTools", "Printf", "Reexport", "StringManipulation", "Tables"]
-git-tree-sha1 = "1101cd475833706e4d0e7b122218257178f48f34"
-uuid = "08abe8d2-0d0c-5749-adfa-8a2ac140af0d"
-version = "2.4.0"
-
 [[deps.Printf]]
 deps = ["Unicode"]
 uuid = "de0858da-6303-5e67-8744-51eddeeeb8d7"
@@ -2347,12 +1865,6 @@ deps = ["Logging", "SHA", "UUIDs"]
 git-tree-sha1 = "80d919dee55b9c50e8d9e2da5eeafff3fe58b539"
 uuid = "33c8b6b6-d38a-422a-b730-caa89a2f386c"
 version = "0.1.4"
-
-[[deps.ProgressMeter]]
-deps = ["Distributed", "Printf"]
-git-tree-sha1 = "8f6bc219586aef8baf0ff9a5fe16ee9c70cb65e4"
-uuid = "92933f4c-e287-5a05-a399-4b506db050ca"
-version = "1.10.2"
 
 [[deps.PtrArrays]]
 git-tree-sha1 = "1d36ef11a9aaf1e8b74dacc6a731dd1de8fd493d"
@@ -2382,18 +1894,6 @@ deps = ["Artifacts", "JLLWrappers", "Libdl", "Qt6Base_jll", "Qt6Declarative_jll"
 git-tree-sha1 = "729927532d48cf79f49070341e1d918a65aba6b0"
 uuid = "e99dba38-086e-5de3-a5b1-6e4c66e897c3"
 version = "6.7.1+1"
-
-[[deps.QuadGK]]
-deps = ["DataStructures", "LinearAlgebra"]
-git-tree-sha1 = "9da16da70037ba9d701192e27befedefb91ec284"
-uuid = "1fd47b50-473d-5c70-9696-f719f8f3bcdc"
-version = "2.11.2"
-
-    [deps.QuadGK.extensions]
-    QuadGKEnzymeExt = "Enzyme"
-
-    [deps.QuadGK.weakdeps]
-    Enzyme = "7da242da-08ed-463a-9acd-ee780be4f1d9"
 
 [[deps.REPL]]
 deps = ["InteractiveUtils", "Markdown", "Sockets", "StyledStrings", "Unicode"]
@@ -2440,32 +1940,9 @@ git-tree-sha1 = "62389eeff14780bfe55195b7204c0d8738436d64"
 uuid = "ae029012-a4dd-5104-9daa-d747884805df"
 version = "1.3.1"
 
-[[deps.Rmath]]
-deps = ["Random", "Rmath_jll"]
-git-tree-sha1 = "852bd0f55565a9e973fcfee83a84413270224dc4"
-uuid = "79098fc4-a85e-5d69-aa6a-4863f24498fa"
-version = "0.8.0"
-
-[[deps.Rmath_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "58cdd8fb2201a6267e1db87ff148dd6c1dbd8ad8"
-uuid = "f50d1b31-88e8-58de-be2c-1cc44531875f"
-version = "0.5.1+0"
-
 [[deps.SHA]]
 uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
 version = "0.7.0"
-
-[[deps.ScientificTypes]]
-deps = ["CategoricalArrays", "ColorTypes", "Dates", "Distributions", "PrettyTables", "Reexport", "ScientificTypesBase", "StatisticalTraits", "Tables"]
-git-tree-sha1 = "4d083ffec53dbd5097a6723b0699b175be2b61fb"
-uuid = "321657f4-b219-11e9-178b-2701a2544e81"
-version = "3.1.0"
-
-[[deps.ScientificTypesBase]]
-git-tree-sha1 = "a8e18eb383b5ecf1b5e6fc237eb39255044fd92b"
-uuid = "30f210dd-8aff-4c5f-94ba-8e64358c1161"
-version = "3.0.0"
 
 [[deps.ScopedValues]]
 deps = ["HashArrayMappedTries", "Logging"]
@@ -2478,12 +1955,6 @@ deps = ["Dates"]
 git-tree-sha1 = "3bac05bc7e74a75fd9cba4295cde4045d9fe2386"
 uuid = "6c6a2e73-6563-6170-7368-637461726353"
 version = "1.2.1"
-
-[[deps.SentinelArrays]]
-deps = ["Dates", "Random"]
-git-tree-sha1 = "712fb0231ee6f9120e005ccd56297abbc053e7e0"
-uuid = "91c51154-3ec4-41a3-a24f-3f23e20d615c"
-version = "1.4.8"
 
 [[deps.Serialization]]
 uuid = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
@@ -2540,9 +2011,9 @@ version = "0.1.2"
 
 [[deps.SpecialFunctions]]
 deps = ["IrrationalConstants", "LogExpFunctions", "OpenLibm_jll", "OpenSpecFun_jll"]
-git-tree-sha1 = "64cca0c26b4f31ba18f13f6c12af7c85f478cfde"
+git-tree-sha1 = "41852b8679f78c8d8961eeadc8f62cef861a52e3"
 uuid = "276daf66-3868-5448-9aa4-cd146d93841b"
-version = "2.5.0"
+version = "2.5.1"
 weakdeps = ["ChainRulesCore"]
 
     [deps.SpecialFunctions.extensions]
@@ -2576,32 +2047,6 @@ git-tree-sha1 = "192954ef1208c7019899fbf8049e717f92959682"
 uuid = "1e83bf80-4336-4d27-bf5d-d5a4f845583c"
 version = "1.4.3"
 
-[[deps.StatisticalMeasures]]
-deps = ["CategoricalArrays", "CategoricalDistributions", "Distributions", "LearnAPI", "LinearAlgebra", "MacroTools", "OrderedCollections", "PrecompileTools", "ScientificTypesBase", "StatisticalMeasuresBase", "Statistics", "StatsBase"]
-git-tree-sha1 = "c1d4318fa41056b839dfbb3ee841f011fa6e8518"
-uuid = "a19d573c-0a75-4610-95b3-7071388c7541"
-version = "0.1.7"
-
-    [deps.StatisticalMeasures.extensions]
-    LossFunctionsExt = "LossFunctions"
-    ScientificTypesExt = "ScientificTypes"
-
-    [deps.StatisticalMeasures.weakdeps]
-    LossFunctions = "30fc2ffe-d236-52d8-8643-a9d8f7c094a7"
-    ScientificTypes = "321657f4-b219-11e9-178b-2701a2544e81"
-
-[[deps.StatisticalMeasuresBase]]
-deps = ["CategoricalArrays", "InteractiveUtils", "MLUtils", "MacroTools", "OrderedCollections", "PrecompileTools", "ScientificTypesBase", "Statistics"]
-git-tree-sha1 = "e4f508cf3b3253f3eb357274fe36fb3332ca9896"
-uuid = "c062fc1d-0d66-479b-b6ac-8b44719de4cc"
-version = "0.1.2"
-
-[[deps.StatisticalTraits]]
-deps = ["ScientificTypesBase"]
-git-tree-sha1 = "542d979f6e756f13f862aa00b224f04f9e445f11"
-uuid = "64bff920-2084-43da-a3e6-9bb72801c0c9"
-version = "3.4.0"
-
 [[deps.Statistics]]
 deps = ["LinearAlgebra"]
 git-tree-sha1 = "ae3bb1eb3bba077cd276bc5cfc337cc65c3075c0"
@@ -2624,28 +2069,11 @@ git-tree-sha1 = "29321314c920c26684834965ec2ce0dacc9cf8e5"
 uuid = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 version = "0.34.4"
 
-[[deps.StatsFuns]]
-deps = ["HypergeometricFunctions", "IrrationalConstants", "LogExpFunctions", "Reexport", "Rmath", "SpecialFunctions"]
-git-tree-sha1 = "b423576adc27097764a90e163157bcfc9acf0f46"
-uuid = "4c63d2b9-4356-54db-8cca-17b64c39e42c"
-version = "1.3.2"
-weakdeps = ["ChainRulesCore", "InverseFunctions"]
-
-    [deps.StatsFuns.extensions]
-    StatsFunsChainRulesCoreExt = "ChainRulesCore"
-    StatsFunsInverseFunctionsExt = "InverseFunctions"
-
-[[deps.StringManipulation]]
-deps = ["PrecompileTools"]
-git-tree-sha1 = "725421ae8e530ec29bcbdddbe91ff8053421d023"
-uuid = "892a3eda-7b42-436c-8928-eab12a02cf0e"
-version = "0.4.1"
-
 [[deps.StructArrays]]
 deps = ["ConstructionBase", "DataAPI", "Tables"]
-git-tree-sha1 = "5a3a31c41e15a1e042d60f2f4942adccba05d3c9"
+git-tree-sha1 = "8ad2e38cbb812e29348719cc63580ec1dfeb9de4"
 uuid = "09ab397b-f2b6-538f-b94a-2f83cf4a842a"
-version = "0.7.0"
+version = "0.7.1"
 weakdeps = ["Adapt", "GPUArraysCore", "KernelAbstractions", "LinearAlgebra", "SparseArrays", "StaticArrays"]
 
     [deps.StructArrays.extensions]
@@ -2734,9 +2162,9 @@ uuid = "410a4b4d-49e4-4fbc-ab6d-cb71b17b3775"
 version = "0.1.10"
 
 [[deps.URIs]]
-git-tree-sha1 = "67db6cc7b3821e19ebe75791a9dd19c9b1188f2b"
+git-tree-sha1 = "cbbebadbcc76c5ca1cc4b4f3b0614b3e603b5000"
 uuid = "5c2747f8-b7ea-4ff2-ba2e-563bfd36b1d4"
-version = "1.5.1"
+version = "1.5.2"
 
 [[deps.UUIDs]]
 deps = ["Random", "SHA"]
@@ -2779,10 +2207,12 @@ version = "1.6.4"
 git-tree-sha1 = "b13c4edda90890e5b04ba24e20a310fbe6f249ff"
 uuid = "013be700-e6cd-48c3-b4a1-df204f14c38f"
 version = "0.3.0"
-weakdeps = ["LLVM"]
 
     [deps.UnsafeAtomics.extensions]
     UnsafeAtomicsLLVM = ["LLVM"]
+
+    [deps.UnsafeAtomics.weakdeps]
+    LLVM = "929cbde3-209d-540e-8aea-75f648917ca0"
 
 [[deps.Unzip]]
 git-tree-sha1 = "ca0969166a028236229f63514992fc073799bb78"
@@ -2807,58 +2237,41 @@ git-tree-sha1 = "5db3e9d307d32baba7067b13fc7b5aa6edd4a19a"
 uuid = "2381bf8a-dfd0-557d-9999-79630e7b1b91"
 version = "1.36.0+0"
 
-[[deps.WeakRefStrings]]
-deps = ["DataAPI", "InlineStrings", "Parsers"]
-git-tree-sha1 = "b1be2855ed9ed8eac54e5caff2afcdb442d52c23"
-uuid = "ea10d353-3f73-51f8-a26c-33c1cb351aa5"
-version = "1.4.2"
-
-[[deps.WorkerUtilities]]
-git-tree-sha1 = "cd1659ba0d57b71a464a29e64dbc67cfe83d54e7"
-uuid = "76eceee3-57b5-4d4a-8e66-0e911cebbf60"
-version = "1.6.1"
-
 [[deps.XML2_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Libiconv_jll", "Zlib_jll"]
 git-tree-sha1 = "b8b243e47228b4a3877f1dd6aee0c5d56db7fcf4"
 uuid = "02c8fc9c-b97f-50b9-bbe4-9be30ff0a78a"
 version = "2.13.6+1"
 
-[[deps.XSLT_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl", "Libgcrypt_jll", "Libgpg_error_jll", "Libiconv_jll", "XML2_jll", "Zlib_jll"]
-git-tree-sha1 = "7d1671acbe47ac88e981868a078bd6b4e27c5191"
-uuid = "aed1982a-8fda-507f-9586-7b0439959a61"
-version = "1.1.42+0"
-
 [[deps.XZ_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "56c6604ec8b2d82cc4cfe01aa03b00426aac7e1f"
+git-tree-sha1 = "fee71455b0aaa3440dfdd54a9a36ccef829be7d4"
 uuid = "ffd25f8a-64ca-5728-b0f7-c24cf3aae800"
-version = "5.6.4+1"
+version = "5.8.1+0"
 
 [[deps.Xorg_libICE_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "326b4fea307b0b39892b3e85fa451692eda8d46c"
+git-tree-sha1 = "a3ea76ee3f4facd7a64684f9af25310825ee3668"
 uuid = "f67eecfb-183a-506d-b269-f58e52b52d7c"
-version = "1.1.1+0"
+version = "1.1.2+0"
 
 [[deps.Xorg_libSM_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libICE_jll"]
-git-tree-sha1 = "3796722887072218eabafb494a13c963209754ce"
+git-tree-sha1 = "9c7ad99c629a44f81e7799eb05ec2746abb5d588"
 uuid = "c834827a-8449-5923-a945-d239c165b7dd"
-version = "1.2.4+0"
+version = "1.2.6+0"
 
 [[deps.Xorg_libX11_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libxcb_jll", "Xorg_xtrans_jll"]
-git-tree-sha1 = "9dafcee1d24c4f024e7edc92603cedba72118283"
+git-tree-sha1 = "b5899b25d17bf1889d25906fb9deed5da0c15b3b"
 uuid = "4f6342f7-b3d2-589e-9d20-edeb45f2b2bc"
-version = "1.8.6+3"
+version = "1.8.12+0"
 
 [[deps.Xorg_libXau_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "e9216fdcd8514b7072b43653874fd688e4c6c003"
+git-tree-sha1 = "aa1261ebbac3ccc8d16558ae6799524c450ed16b"
 uuid = "0c0b7dd1-d40b-584c-a123-a41640f87eec"
-version = "1.0.12+0"
+version = "1.0.13+0"
 
 [[deps.Xorg_libXcursor_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libXfixes_jll", "Xorg_libXrender_jll"]
@@ -2868,9 +2281,9 @@ version = "1.2.3+0"
 
 [[deps.Xorg_libXdmcp_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "89799ae67c17caa5b3b5a19b8469eeee474377db"
+git-tree-sha1 = "52858d64353db33a56e13c341d7bf44cd0d7b309"
 uuid = "a3789734-cfe1-5b06-b2d0-1dd0d9d62d05"
-version = "1.1.5+0"
+version = "1.1.6+0"
 
 [[deps.Xorg_libXext_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libX11_jll"]
@@ -2908,17 +2321,11 @@ git-tree-sha1 = "a490c6212a0e90d2d55111ac956f7c4fa9c277a6"
 uuid = "ea2f1a96-1ddc-540d-b46f-429655e07cfa"
 version = "0.9.11+1"
 
-[[deps.Xorg_libpthread_stubs_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "c57201109a9e4c0585b208bb408bc41d205ac4e9"
-uuid = "14d82f49-176c-5ed1-bb49-ad3f5cbd8c74"
-version = "0.1.2+0"
-
 [[deps.Xorg_libxcb_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl", "XSLT_jll", "Xorg_libXau_jll", "Xorg_libXdmcp_jll", "Xorg_libpthread_stubs_jll"]
-git-tree-sha1 = "1a74296303b6524a0472a8cb12d3d87a78eb3612"
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libXau_jll", "Xorg_libXdmcp_jll"]
+git-tree-sha1 = "bfcaf7ec088eaba362093393fe11aa141fa15422"
 uuid = "c7cfdc94-dc32-55de-ac96-5a1b8d977c5b"
-version = "1.17.0+3"
+version = "1.17.1+0"
 
 [[deps.Xorg_libxkbfile_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libX11_jll"]
@@ -2976,9 +2383,9 @@ version = "2.39.0+0"
 
 [[deps.Xorg_xtrans_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "6dba04dbfb72ae3ebe5418ba33d087ba8aa8cb00"
+git-tree-sha1 = "a63799ff68005991f9d9491b6e95bd3478d783cb"
 uuid = "c5fb5394-a638-5e4d-96e5-b29de1b5cf10"
-version = "1.5.1+0"
+version = "1.6.0+0"
 
 [[deps.Zlib_jll]]
 deps = ["Libdl"]
@@ -2992,17 +2399,19 @@ uuid = "3161d3a3-bdf6-5164-811a-617609db77b4"
 version = "1.5.7+1"
 
 [[deps.Zygote]]
-deps = ["AbstractFFTs", "ChainRules", "ChainRulesCore", "DiffRules", "Distributed", "FillArrays", "ForwardDiff", "GPUArrays", "GPUArraysCore", "IRTools", "InteractiveUtils", "LinearAlgebra", "LogExpFunctions", "MacroTools", "NaNMath", "PrecompileTools", "Random", "Requires", "SparseArrays", "SpecialFunctions", "Statistics", "ZygoteRules"]
-git-tree-sha1 = "dabc8bf48149b0220010c2d3e555b0ca84400ce1"
+deps = ["AbstractFFTs", "ChainRules", "ChainRulesCore", "DiffRules", "Distributed", "FillArrays", "ForwardDiff", "GPUArraysCore", "IRTools", "InteractiveUtils", "LinearAlgebra", "LogExpFunctions", "MacroTools", "NaNMath", "PrecompileTools", "Random", "SparseArrays", "SpecialFunctions", "Statistics", "ZygoteRules"]
+git-tree-sha1 = "d1db6ee766b1b200594a22714c80d6678dee3c81"
 uuid = "e88e6eb3-aa80-5325-afca-941959d7151f"
-version = "0.7.4"
+version = "0.7.7"
 
     [deps.Zygote.extensions]
+    ZygoteAtomExt = "Atom"
     ZygoteColorsExt = "Colors"
     ZygoteDistancesExt = "Distances"
     ZygoteTrackerExt = "Tracker"
 
     [deps.Zygote.weakdeps]
+    Atom = "c52e3926-4ff0-5f6e-af25-54175e0327b1"
     Colors = "5ae59095-9a9b-59fe-a467-6f913c188581"
     Distances = "b4f34e82-e78d-54a5-968a-f98e89d6e8f7"
     Tracker = "9f7883ad-71c0-57eb-9f7f-b5c9e6d3789c"
@@ -3120,151 +2529,71 @@ version = "1.4.1+2"
 """
 
 # ╔═╡ Cell order:
-# ╠═d5fd2304-0353-11f0-29d8-3158c4dbe8dd
-# ╠═c23ebe0f-016e-4a0a-aa7d-b0308bf5d99a
-# ╠═aa6d92eb-7a97-4084-bfc7-8474b34a2c71
-# ╠═8bf751cf-2510-4748-8697-2e3177013785
-# ╠═ee78d551-2259-4955-b934-c60d3453706c
-# ╠═a7c9f0c1-e76a-460c-a31a-3d2b42ca3118
-# ╠═5e06e76f-68de-4e65-9fe9-66040dca0932
-# ╠═6020693f-5639-4408-ab53-9845658eadba
-# ╠═6aa62fa1-f7e1-4bd2-8e4c-f6ab51c05490
-# ╠═a3d7c6fd-07a4-4280-9170-167c17299e91
-# ╠═b844f3ab-c048-4df9-9f01-0b8748ebbb1e
-# ╠═0a3d364a-af50-435f-b094-ff392acfa922
-# ╠═785309b6-ddfc-4e99-9699-63f60e73a787
-# ╠═0b5df837-5a80-43c6-b3ce-a1554d550776
-# ╠═2c54bdd7-0d73-496c-9fd1-031dcdf2c861
-# ╠═0ebbbc1b-066d-4c2b-8ad0-2165a145d5f1
-# ╠═5b797826-439b-48ce-a293-03534db1f2a9
-# ╠═f65234a5-1af3-48de-be23-a6c3050b79a6
-# ╠═ce3edc15-c454-4419-8619-5d800aed2d5c
-# ╠═0a89e6b8-46c1-4dfc-b11e-6373dc743ec4
-# ╠═770f2494-be6f-4c6b-aa9b-687241c0f62a
-# ╠═20b5ac11-a251-48e7-bfe2-252d8a4b1fe9
-# ╠═fd15e146-5c83-406b-a056-fc1fba51ffc2
-# ╠═3e361edb-a6fc-4c26-8c91-f44eec0a6a6c
-# ╠═0f6e55dd-d1e4-4833-8c3f-a6390daff2a5
-# ╠═8796c632-7302-4213-be40-67e7b11f5a35
-# ╠═b64fa92a-dfc8-4049-a069-9a1c4f61b65c
-# ╠═135e5c27-0f1a-46a5-9997-254c6547ff1e
-# ╠═4022783b-c5a4-4df3-b342-51641fc60fdc
-# ╠═5e36d267-f394-4b53-a29e-b68a297113a1
-# ╠═4d082d8e-7b85-4e94-91b4-0e550ccd9458
-# ╠═cabcaec7-3fca-4ea9-929f-0d3f3e6843a2
-# ╠═df53f204-76e8-43f7-858f-48c5f8f78eeb
-# ╠═c3685572-264d-48d9-aee6-142ae90576b3
-# ╠═bbbc0b92-185b-4126-b858-e94af0211a6c
-# ╠═d0e46bda-cd81-4717-87b1-e5ef283f6e7b
-# ╠═9d41b30b-afab-4f83-ae60-9fc50dea90b9
-# ╠═3063a028-22e6-467f-82fb-139492ed4e6b
-# ╠═359e990e-41bc-43bc-9504-d520476ea035
-# ╠═26ffe43c-fcda-4c52-be27-ce945f1084d9
-# ╠═aba74d40-c561-4492-a7a0-f49a69f6455e
-# ╠═a46f42c1-64a2-4a07-9ee7-e8517eb56dd8
-# ╠═aab30f28-b671-45f8-bea1-b637351ad432
-# ╠═089c0310-259c-4158-b49f-10b25969beac
-# ╠═b6e330c6-8285-4f5b-a933-7c5a35f1fbab
-# ╠═8e144c0b-8ae4-4865-931f-a52afa55965d
-# ╠═53e3d912-fb70-4501-817d-e8568bea9b81
-# ╠═b4e00721-1b78-4cda-a26e-474d4fa4230a
-# ╠═1474cc4c-b3e4-4e14-9af8-11d05f1a8584
-# ╠═e365ac10-8744-41e6-a550-861e60108782
-# ╠═f08f7c50-0b54-4c0d-b65a-b0389d41d2a9
-# ╠═1a52c360-1fb4-49df-a0f2-8a75f0f981d8
-# ╠═0a978bc5-bf88-4702-90ac-821604054683
-# ╠═e4619111-2f92-4b45-8ab8-9fb9f8157f6f
-# ╠═c05393f4-df33-4945-9d20-3f92d8938588
-# ╠═3dd87947-6800-4529-b057-3be85f454e21
-# ╠═595a9bb4-a6f5-4862-b405-3bd7edd735ce
-# ╠═dccb64be-ee47-495d-ab9a-439f0eafb4b0
-# ╠═c86d2d32-bcaa-4a7f-ae07-60d7dd777003
-# ╠═a8c7d8c1-f9e1-448d-8832-82f4e6df33b7
-# ╠═7827ecab-178e-4286-9482-b787b95e949f
-# ╠═57174712-848c-4868-89f3-5f6b67953312
-# ╠═9143e7f3-ddbd-4757-a202-7c7b7f4c7468
-# ╠═cce25fb8-c343-4866-80fa-d2d9714d9731
-# ╠═aa6459b3-3e45-4951-8279-54a4c72bf99c
-# ╠═d0a3a855-bc5f-4c84-b735-80a8ac71d94c
-# ╠═4312e730-bf64-4081-bf37-6062c3c3acbd
-# ╠═8498d094-5069-4fb6-8d12-9f1721f9b4ac
-# ╠═3a9b314f-7181-4e1e-9b87-e41d8b3bb49e
-# ╠═8d12a618-19cd-4777-91e5-bf36c9490c17
-# ╠═df3f2655-66a2-4bf4-852b-c9574c2d2748
-# ╠═5883dec1-c9e2-4b1a-b53d-f87f85f30db2
-# ╠═5da5c8fa-a0e8-4f0d-8eaf-4fd0b2c00ed4
-# ╠═0f9f1ef8-a591-45ce-8c97-507144441660
-# ╠═5b9f4efc-8917-4a9b-bba7-5c5477bf4cbf
-# ╠═07bb71de-f226-40fb-b735-73863bf0688e
-# ╠═209d3b9a-67db-4b28-804a-393aaa2e64e9
-# ╠═a05f8886-30fe-4a08-861a-b730709032d9
-# ╠═7f9436bf-06ab-41fb-a435-61f815b6787e
-# ╠═2b7ee756-8187-4176-b731-7bdfbcf2ec05
-# ╠═4487a15e-2c7c-4aad-91af-5859d65c775c
-# ╠═839d9885-b6f7-4c23-ae5f-8db14145c553
-# ╠═13f55aab-0a02-4bc7-9b9a-8765c15586b8
-# ╠═398910d5-be33-49a4-a761-8bcbcd872eb8
-# ╠═af5c6a1f-5053-49a4-a2de-7bc7139f58bb
-# ╠═a306ffcd-5f77-4082-891d-0fbe202f8181
-# ╠═fb46d3c7-e9d5-466e-b0dc-851d6da3c755
-# ╠═28882d51-20d8-4fa8-8ebd-0dc3e3198af0
-# ╠═2468a791-2cdb-4ace-9037-c68f828e3608
-# ╠═24e3d668-c6fd-475b-8eae-afed0343123e
-# ╠═ab5c1498-7e07-4301-9de8-b1a08b7a5482
-# ╠═792ae261-d6a5-4efc-b395-54538fe5c167
-# ╠═b2d8ab25-73e2-45d0-81d8-5de3b34ea2ba
-# ╠═4363ae8d-ecc6-41fa-aa5d-6373aa281dcb
-# ╠═06a400a3-9ca2-4038-be73-9be58ff22d94
-# ╠═96cf537d-eaf7-4790-962d-de6eb3922ef3
-# ╠═8f023a0e-94d9-4390-a048-3e815d13dd75
-# ╠═6b510711-b6a5-40b6-84da-0d463bb6f6c1
-# ╠═d48b0309-1d28-40ea-a848-7dee2496159e
-# ╠═17fc15fd-1eda-4dae-ae51-e0b5610f0041
-# ╠═c3d0c723-0852-4365-9e4c-b64d95a1bcb8
-# ╠═8f400ee4-3e73-4770-b39a-317df4ae9b0e
-# ╠═855f71e1-105d-4082-9097-8587de06ce45
-# ╠═63a26003-f633-4d93-a135-369ae8d802c5
-# ╠═bb922155-c271-49ff-9526-3d7a228ace37
-# ╠═7ac53bef-54ba-4a4b-9a99-de6423249572
-# ╠═ff74834b-f674-4ec9-a1d0-5422dd228915
-# ╠═d5ec1fbe-138d-4da1-83de-95dd1565dac7
-# ╠═5f28926b-f7a4-4a6f-a37d-d59fbd1c01c5
-# ╠═3584250c-f199-4c27-ba22-d359b245b02c
-# ╠═e67aa374-2ad6-42ab-8127-5658a8236363
-# ╠═ed7fc6a7-6f89-4d88-92aa-ec96e9171c6a
-# ╠═fd9766e3-4a9f-4746-b695-c2b20b192897
-# ╠═75a7fc03-26fc-458d-bb0e-e0ed26b0ff65
-# ╠═4320b284-f595-4408-920a-d93cbfae2116
-# ╠═7a08c1e0-de42-4644-ab97-5bb3e5e07805
-# ╠═6e0c2dc5-0037-480f-9b47-0ef951a0af86
-# ╠═237e0af0-7abd-4d0d-82a5-be590e3a0555
-# ╠═f03bcd24-fb92-45f7-8489-0901ec8714b2
-# ╠═a4d9101a-99c0-4949-b8bb-e440a74c3193
-# ╠═c25f9730-f107-4cc3-a517-542b17e58901
-# ╠═7b180556-ecd3-480f-bb1b-7adb84f91ccf
-# ╠═fb6b3f31-c188-4c82-bc15-996fd909bfcf
-# ╠═fa68f129-609d-442f-8d9d-06e3a0bc5bb7
-# ╠═7af6e33b-b9cf-4428-b457-0fbc7f0c5eb0
-# ╠═015c2a61-f7b4-41d9-81c7-85299de42a52
-# ╠═71dd85c1-e743-4641-9522-8904da9fa04e
-# ╠═1859f9ea-cb27-4acb-a2bf-b7dd63fa47eb
-# ╠═de7228bc-fc1c-4540-a0fb-89b80aaca8fe
-# ╠═152393b0-d3cc-461e-a1a1-c0b2050c957e
-# ╠═03c5c00b-a013-4730-bae3-b028649c5714
-# ╠═21ad8727-1da3-4ee0-a93c-b874b415b3d6
-# ╠═56817bd3-041c-41a2-806d-ddca6ecce036
-# ╠═df83a14f-1c98-4e04-bf21-d922fb11cc70
-# ╠═014f2d31-8084-4720-bec1-aef01454dfb7
-# ╠═d55aee49-7914-4a6e-a0cd-704af123c20b
-# ╠═5dfda864-7b57-4b85-b583-24b21c7d7b70
-# ╠═e98382a3-5a96-4d4c-8748-97231231393a
-# ╠═00719c6c-41dd-47d2-9c66-e9169bada27c
-# ╠═c3c1cb31-fac1-4758-a60e-e5231b046d81
-# ╠═f15af338-b9bf-40f4-ba5c-9922550a9482
-# ╠═7626e1b9-e312-4e96-9ee1-925d80ae0cb3
-# ╠═b06be04c-f11b-4a15-89f1-7e05326996fe
-# ╠═bb87c341-2e49-43c1-a93d-4ded2ca0a3a8
-# ╠═63e06ba9-d51d-4748-81d6-06bc379c2d2e
-# ╠═33873026-0946-4887-b3c7-25128377f3eb
+# ╠═df43ffce-2be1-11f0-1bda-8d3f50a5cd86
+# ╠═791aa17b-6568-4482-a873-059bcb5ae495
+# ╠═e2047545-ec0a-4a45-804d-d288ccbb6821
+# ╠═d23ddd1e-462c-4729-b981-1c9a0cd0c51a
+# ╠═ef0e2a6e-61df-449a-86aa-6c87f63012b3
+# ╠═81e2d1e0-6828-4b27-84a5-db17b530af4e
+# ╠═29a782b7-174d-453a-8aa3-81fe5f507dc2
+# ╠═8f9e676c-76c8-474b-ab0a-60424d8cb889
+# ╠═d696f0f6-e1ea-4b74-b877-0df4cd6b6e80
+# ╠═fb1079c3-9b84-4465-ac1a-8d2b5c97a737
+# ╠═79f24aba-6558-4c1b-9a49-ec0aac882b7f
+# ╠═5e97581b-9ad9-4fa4-a3da-edd39a12b33c
+# ╠═ac626f1a-9734-4411-b53d-d9fd1e052107
+# ╠═8c42a26d-d559-4db9-9032-3669d0735870
+# ╠═45377114-9651-434f-bdd3-d4e55fa687b0
+# ╠═80dff863-f6fd-4387-8b6a-dc070fded37d
+# ╠═5250cf91-68f1-4798-a021-cc6cee8b77bd
+# ╠═7cbbb35f-40c9-498f-b729-fc084fc123b1
+# ╠═811d9d9f-597e-4124-8f34-39db388ad3ca
+# ╠═d004b013-c9e7-46ee-9401-a71640195c8e
+# ╠═651dd381-f11c-47c7-b570-ecdaaea02736
+# ╠═8f3ffd98-aaf4-4913-b168-a53af6e26fae
+# ╠═82ce513b-1e2a-45e0-8d1e-255d9e33d5b9
+# ╠═fd2f4ccc-651f-4450-b209-5b24bdb0a77c
+# ╠═6f4c4720-fc74-401f-a0f3-8adc75b8864e
+# ╠═5295ef71-d786-4fcd-bb31-17ce45e9ef66
+# ╠═ab963580-9df7-4b1f-aa51-1b1daf4c0f35
+# ╠═9b86bf39-44f3-4d68-ba2a-43172a6042b7
+# ╠═c6828162-a386-41c8-be5b-6e07500f9165
+# ╠═55f16b63-6975-47fd-a302-4b6328ea64b3
+# ╠═f2508f3e-3385-40e2-9946-37ef2b38d24b
+# ╠═ff84dc4f-b7b8-4f88-aae3-560f804b4d53
+# ╠═02be6027-17bd-41b2-bbc4-0fb1ef63a3f2
+# ╠═beafdc22-eaa0-41ca-ac81-5eb8ee015185
+# ╠═06248358-ab2e-4d67-a4ca-86581b53163e
+# ╠═029c67cc-4bd8-4219-95db-ea348f2d1c1f
+# ╠═dfa9d7a2-beda-4482-9710-8913dfb44134
+# ╠═a12cab4d-37b5-442c-8362-58f3aa09e003
+# ╠═85b3566b-4760-430d-9643-950ed7d772c5
+# ╠═5604ad1a-fcc4-4d07-977d-334577badf12
+# ╠═e82394c8-5549-4f0b-8148-aceabcd6e01f
+# ╠═f652d0a5-b914-49e0-a1ab-3ad0a0963e1e
+# ╠═b8909385-43d3-45cb-8ea0-12f51a5fb0be
+# ╠═0cc06ba9-501b-48ef-b216-dca5f67414c0
+# ╠═f48329e3-28e7-436a-b9da-3bdc83ea10e4
+# ╠═e64c9c5b-5238-4eab-8078-08c54bd62a19
+# ╠═1988fba8-e08f-4ac8-977a-d822b22fb899
+# ╠═3044eeb0-5a72-475f-ab53-40113c3d3449
+# ╠═c8c1e960-08a5-47ea-90ee-322c7703f4df
+# ╠═4d4a1c19-a4df-43c6-af65-53dbf21a5bf5
+# ╠═fb2d1666-1100-43c9-9550-2978f150235d
+# ╠═28aafcb6-9294-433c-8bee-e634b0ee58ec
+# ╠═b936e349-2b69-4e86-a7c2-5faa709052ab
+# ╠═3eebe1a5-250e-45b9-855d-e743c8e0abf6
+# ╠═35fa4c15-70a4-455b-8dbb-4535bf934721
+# ╠═5b04ee1f-f136-4c29-a44f-a075bbb1376b
+# ╠═1132a848-a855-4c8b-bf41-1ec22a216012
+# ╠═a3e2f24b-9275-4e18-918e-18fc7d2b23e0
+# ╠═8aef99fc-fe2b-4f3c-81ab-fcf2d62a3d26
+# ╠═c87c39d7-fbc7-43dc-9eaa-55bc37bc3be1
+# ╠═f5bc89bb-68f6-46b2-99ca-2ea045407be5
+# ╠═e04486c9-b22e-496c-8ea2-e737bdfb3a5e
+# ╠═c6b3c409-8aab-4748-9f24-c00719c494de
+# ╠═1fa7817d-dbd1-42ff-af84-d72aa18c981a
+# ╠═16e100d9-145a-4d50-9f95-acb4e8ab8a3f
+# ╠═b424f4c0-3a65-45b2-aa95-326eb00180c8
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

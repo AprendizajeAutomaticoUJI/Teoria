@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.6
+# v0.20.8
 
 #> [frontmatter]
 #> title = "Introducción al aprendizaje automático"
