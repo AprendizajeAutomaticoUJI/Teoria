@@ -66,9 +66,11 @@ activacion = relu
 # ╔═╡ 46a04633-82c6-4b1d-8e0d-0fd2c24b754d
 lenet5 = Chain(
 	Conv((5, 5), 1=>6, activacion),
-    MaxPool((2, 2)),
+    # MaxPool((2, 2)),
+	MeanPool((2, 2)),
     Conv((5, 5), 6=>16, activacion),
-    MaxPool((2, 2)),
+    # MaxPool((2, 2)),
+	MeanPool((2, 2)),
     Flux.flatten,
     Dense(256 => 120, activacion),
     Dense(120 => 84, activacion), 
@@ -191,8 +193,17 @@ Flux.onecold(ptest[:,i], 0:9)
 # ╔═╡ 7c52ac56-e8a3-4ab2-ae3f-87b690e6091d
 train_log
 
+# ╔═╡ f7421d9e-c35c-440c-9b98-51a14c2dffc8
+begin
+	plot([x.acc for x in train_log], label="Accuracy")
+	plot!([x.test_acc for x in train_log], label="Test accuracy")
+end
+
 # ╔═╡ dde93b0e-6c4a-4641-ba2c-827bb22c8143
-plot([x.acc for x in train_log])
+begin
+	plot([x.loss for x in train_log], label="Loss")
+	plot!([x.test_loss for x in train_log], label="Test loss")
+end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -2507,6 +2518,7 @@ version = "1.8.1+0"
 # ╠═49daa7d3-f23c-43aa-aa73-c090a40c3517
 # ╠═39c0aba8-6181-4aae-88a8-8ac64b3c4a00
 # ╠═7c52ac56-e8a3-4ab2-ae3f-87b690e6091d
+# ╠═f7421d9e-c35c-440c-9b98-51a14c2dffc8
 # ╠═dde93b0e-6c4a-4641-ba2c-827bb22c8143
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

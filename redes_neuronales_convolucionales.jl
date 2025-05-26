@@ -380,6 +380,78 @@ de pooling:
 ![](https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/RedesNeuronales/pooling.png)
 """
 
+# ╔═╡ 5e47956e-2e46-44c0-bf55-74e030139565
+md"""
+## Show me the code
+
+Flux nos proporciona distintas capas de Pooling. Para utilizar polling máximo:
+
+```{julia}
+MaxPool((n,m))
+```
+
+Para utilizar pooling promedio:
+
+```{julia}
+MeanPool((n,m))
+```
+
+donde (n,m) es el tamaño de la región sobre la que se hace el pooling.
+"""
+
+# ╔═╡ 8aea4bec-4f53-406b-8880-ce00746d08ec
+md"""
+# Arquitecturas
+"""
+
+# ╔═╡ 574816f0-f6d9-4208-a1fd-12cabf07df40
+md"""
+## Arquitectura básica de una CNN
+
+Esta es la arquitectura básica de una CNN. Observa cómo se van alternando las 
+capas convolucionales con las capas de pooling.
+
+![](https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/RedesNeuronales/arquitectura_cnn.png)
+
+Al final hay una estructura de capas totalmente conectadas.
+
+Fuente: Hands-on machine learning, Aurélien Géron
+"""
+
+# ╔═╡ 410abb9f-56d4-4252-a353-4c1d550f36cd
+md"""
+## LeNet5
+
+Esta es la arquitectura original presentada por 
+[Yann Le-Cunn et al](https://yann.lecun.com/exdb/publis/pdf/lecun-01a.pdf).
+
+![](https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/RedesNeuronales/lenet5.png)
+
+Las **Gaussian connections** del final son la activación **softmax**.
+
+Fuente: Yann LeCunn et al.
+"""
+
+# ╔═╡ 8692bcdf-059e-45d6-baab-1af4705a72d4
+md"""
+## LeNet5
+
+La implementación de la red:
+
+```{julia}
+lenet5 = Chain(
+	Conv((5, 5), 1=>6, activacion),
+	MeanPool((2, 2)),
+    Conv((5, 5), 6=>16, activacion),
+	MeanPool((2, 2)),
+    Flux.flatten,
+    Dense(256 => 120, activacion),
+    Dense(120 => 84, activacion), 
+    Dense(84 => 10),
+)
+```
+"""
+
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
@@ -766,5 +838,10 @@ version = "17.4.0+2"
 # ╠═80727712-f9a7-44c4-9996-bd6d15f6819c
 # ╠═0da704ef-90ea-43ff-ac22-7c84d84c0ed0
 # ╠═b8d7a851-babb-4faf-b7a5-a3150b13a516
+# ╠═5e47956e-2e46-44c0-bf55-74e030139565
+# ╠═8aea4bec-4f53-406b-8880-ce00746d08ec
+# ╠═574816f0-f6d9-4208-a1fd-12cabf07df40
+# ╠═410abb9f-56d4-4252-a353-4c1d550f36cd
+# ╠═8692bcdf-059e-45d6-baab-1af4705a72d4
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
