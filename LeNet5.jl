@@ -28,8 +28,20 @@ using Plots
 # ╔═╡ 5af59b61-be01-4fd5-a6e3-b79a1bf28388
 using PlutoUI
 
+# ╔═╡ 56c63eeb-bf0c-4bb0-a064-9302b6482b1a
+using Logging
+
+# ╔═╡ 00bdc0f9-4c43-4da0-b8b1-e0d582199bb2
+import PlotlyBase
+
+# ╔═╡ df5024e0-3a0d-406a-9d98-911aa82382e1
+import PlotlyKaleido
+
 # ╔═╡ ae1e7b22-c727-4968-9dbf-fcbb4b40067c
 import MLJ: confusion_matrix
+
+# ╔═╡ f5de956d-0ca9-4f54-bd2c-32e5a99f200c
+plotly()
 
 # ╔═╡ 90a2e854-671a-4530-a61c-fc961b37e573
 TableOfContents(title="Contenidos", depth=1)
@@ -107,7 +119,7 @@ hiperparametros = (;
     eta = 3e-4,     # learning rate
     lambda = 1e-2,  # for weight decay
     batchsize = 128,
-    epochs = 10,
+    epochs = 20,
 )
 
 # ╔═╡ 1aa6b23c-e469-49f9-b4b5-87b984309c43
@@ -138,11 +150,31 @@ function entrena(settings)
 	return train_log
 end
 
+# ╔═╡ 39ceee61-c41a-492f-b2f7-83c3e7007b09
+function entrena2(settings)
+	optimizador = Flux.setup(Adam(0.00005), lenet5)
+	perdidas(lenet5, X, y) = Flux.Losses.logitcrossentropy(lenet5(X), y);
+	train_log = []
+	with_logger(NullLogger()) do
+		for epoca in 1:settings.epochs
+			@time for (x, y) in carga_datos(batchsize=settings.batchsize)
+				Flux.train!(perdidas, lenet5, [(x,y)], optimizador);
+			end
+			loss, acc, _ = loss_and_accuracy(lenet5)
+			test_loss, test_acc, _ = loss_and_accuracy(lenet5, datos_prueba)
+			@info "logging:" epoca acc test_acc
+			nt = (; epoca, loss, acc, test_loss, test_acc)
+			push!(train_log, nt)
+		end
+	end
+	return train_log
+end
+
+# ╔═╡ 8ca1094b-dc4f-44e7-a4dc-7719ae36cad8
+@show train_log2 = entrena2(hiperparametros)
+
 # ╔═╡ 275450ec-5558-4f5e-9f58-5d0cdf123e73
 # @show train_log = entrena(hiperparametros)
-
-# ╔═╡ efbad2a5-ac50-4738-87a0-5c7f2219c2d6
-
 
 # ╔═╡ 47af78e3-51a2-4302-a600-c57561e5bf34
 xtest, ytest = only(carga_datos(datos_prueba, batchsize=length(datos_prueba)));
@@ -214,18 +246,18 @@ La predicción que hace la red:
 Flux.onecold(ptest[:,i], 0:9)
 
 # ╔═╡ 7c52ac56-e8a3-4ab2-ae3f-87b690e6091d
-train_log
+# train_log
 
 # ╔═╡ f7421d9e-c35c-440c-9b98-51a14c2dffc8
 begin
-	plot([x.acc for x in train_log], label="Accuracy")
-	plot!([x.test_acc for x in train_log], label="Test accuracy")
+	plot([x.acc for x in train_log2], label="Accuracy")
+	plot!([x.test_acc for x in train_log2], label="Test accuracy")
 end
 
 # ╔═╡ dde93b0e-6c4a-4641-ba2c-827bb22c8143
 begin
-	plot([x.loss for x in train_log], label="Loss")
-	plot!([x.test_loss for x in train_log], label="Test loss")
+	plot([x.loss for x in train_log2], label="Loss")
+	plot!([x.test_loss for x in train_log2], label="Test loss")
 end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -234,8 +266,11 @@ PLUTO_PROJECT_TOML_CONTENTS = """
 CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
 Flux = "587475ba-b771-5e3f-ad9e-33799f191a9c"
 ImageCore = "a09fc81d-aa75-5fe9-8630-4744c3626534"
+Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
 MLDatasets = "eb30cadb-4394-5ae3-aed4-317e484a6458"
 MLJ = "add582a8-e3ab-11e8-2d5e-e98b27df1bc7"
+PlotlyBase = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
+PlotlyKaleido = "f2990250-8cf9-495f-b13a-cce12b45703c"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
@@ -247,6 +282,8 @@ Flux = "~0.16.3"
 ImageCore = "~0.10.5"
 MLDatasets = "~0.7.18"
 MLJ = "~0.20.7"
+PlotlyBase = "~0.8.19"
+PlotlyKaleido = "~2.2.6"
 Plots = "~1.40.13"
 PlutoUI = "~0.7.23"
 cuDNN = "~1.4.2"
@@ -258,7 +295,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.5"
 manifest_format = "2.0"
-project_hash = "d9a2fd65f4d43c508fb972b10a6893478e44e4e8"
+project_hash = "91404ad78d0024ae67e99e454cd736b6f872ece6"
 
 [[deps.ARFFFiles]]
 deps = ["CategoricalArrays", "Dates", "Parsers", "Tables"]
@@ -1204,6 +1241,12 @@ git-tree-sha1 = "49fb3cb53362ddadb4415e9b73926d6b40709e70"
 uuid = "b14d175d-62b4-44ba-8fb7-3064adc8c3ec"
 version = "0.2.4"
 
+[[deps.Kaleido_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "43032da5832754f58d14a91ffbe86d5f176acda9"
+uuid = "f7e6163d-2fa5-5f23-b69c-1db539e41963"
+version = "0.2.1+0"
+
 [[deps.KernelAbstractions]]
 deps = ["Adapt", "Atomix", "InteractiveUtils", "MacroTools", "PrecompileTools", "Requires", "StaticArrays", "UUIDs"]
 git-tree-sha1 = "80d268b2f4e396edc5ea004d1e0f569231c71e9e"
@@ -1851,6 +1894,18 @@ deps = ["ColorSchemes", "Colors", "Dates", "PrecompileTools", "Printf", "Random"
 git-tree-sha1 = "3ca9a356cd2e113c420f2c13bea19f8d3fb1cb18"
 uuid = "995b91a9-d308-5afd-9ec6-746e21dbc043"
 version = "1.4.3"
+
+[[deps.PlotlyBase]]
+deps = ["ColorSchemes", "Dates", "DelimitedFiles", "DocStringExtensions", "JSON", "LaTeXStrings", "Logging", "Parameters", "Pkg", "REPL", "Requires", "Statistics", "UUIDs"]
+git-tree-sha1 = "56baf69781fc5e61607c3e46227ab17f7040ffa2"
+uuid = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
+version = "0.8.19"
+
+[[deps.PlotlyKaleido]]
+deps = ["Artifacts", "Base64", "JSON", "Kaleido_jll"]
+git-tree-sha1 = "ba551e47d7eac212864fdfea3bd07f30202b4a5b"
+uuid = "f2990250-8cf9-495f-b13a-cce12b45703c"
+version = "2.2.6"
 
 [[deps.Plots]]
 deps = ["Base64", "Contour", "Dates", "Downloads", "FFMPEG", "FixedPointNumbers", "GR", "JLFzf", "JSON", "LaTeXStrings", "Latexify", "LinearAlgebra", "Measures", "NaNMath", "Pkg", "PlotThemes", "PlotUtils", "PrecompileTools", "Printf", "REPL", "Random", "RecipesBase", "RecipesPipeline", "Reexport", "RelocatableFolders", "Requires", "Scratch", "Showoff", "SparseArrays", "Statistics", "StatsBase", "TOML", "UUIDs", "UnicodeFun", "UnitfulLatexify", "Unzip"]
@@ -2774,8 +2829,12 @@ version = "1.8.1+0"
 # ╠═ea4d19f3-819f-4775-bd72-f8041a37a916
 # ╠═1c6d6692-ee91-44e8-b81b-8985f0eac65a
 # ╠═d116716e-2e8f-4e0a-ba67-46c0b75fdc7a
+# ╠═00bdc0f9-4c43-4da0-b8b1-e0d582199bb2
+# ╠═df5024e0-3a0d-406a-9d98-911aa82382e1
 # ╠═5af59b61-be01-4fd5-a6e3-b79a1bf28388
 # ╠═ae1e7b22-c727-4968-9dbf-fcbb4b40067c
+# ╠═56c63eeb-bf0c-4bb0-a064-9302b6482b1a
+# ╠═f5de956d-0ca9-4f54-bd2c-32e5a99f200c
 # ╠═90a2e854-671a-4530-a61c-fc961b37e573
 # ╠═64d32aff-37c9-4f6a-b742-9672062fd378
 # ╠═15f9b4be-7e6d-44c7-8580-cf347f246551
@@ -2796,8 +2855,9 @@ version = "1.8.1+0"
 # ╠═1aa6b23c-e469-49f9-b4b5-87b984309c43
 # ╠═72443a62-1368-422f-b29b-55ac25658ca8
 # ╠═066a5553-82f0-4a46-9dd2-b6d1d9bcf38d
+# ╠═39ceee61-c41a-492f-b2f7-83c3e7007b09
+# ╠═8ca1094b-dc4f-44e7-a4dc-7719ae36cad8
 # ╠═275450ec-5558-4f5e-9f58-5d0cdf123e73
-# ╠═efbad2a5-ac50-4738-87a0-5c7f2219c2d6
 # ╠═47af78e3-51a2-4302-a600-c57561e5bf34
 # ╠═c02162e2-3091-465d-87a6-42e39b3a5b8e
 # ╠═b2016e3d-8605-46ff-b711-f9765b3c250e

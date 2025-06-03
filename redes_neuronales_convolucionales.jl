@@ -452,6 +452,16 @@ lenet5 = Chain(
 ```
 """
 
+# ╔═╡ 85382e11-cb0f-4e85-bb48-ec21714a230c
+md"""
+## LeNet5
+MINIST es el conjunto con el que se entrenó LeNet5:
+
+![](https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/RedesNeuronales/mnist.png)
+
+Fuente: Wikipedia
+"""
+
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
@@ -843,5 +853,6 @@ version = "17.4.0+2"
 # ╠═574816f0-f6d9-4208-a1fd-12cabf07df40
 # ╠═410abb9f-56d4-4252-a353-4c1d550f36cd
 # ╠═8692bcdf-059e-45d6-baab-1af4705a72d4
+# ╠═85382e11-cb0f-4e85-bb48-ec21714a230c
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
