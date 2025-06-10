@@ -19,14 +19,8 @@ using CUDA # Para utilizar la GPU
 # ╔═╡ ea4d19f3-819f-4775-bd72-f8041a37a916
 using Statistics: mean
 
-# ╔═╡ 1c6d6692-ee91-44e8-b81b-8985f0eac65a
-using ImageCore
-
 # ╔═╡ d116716e-2e8f-4e0a-ba67-46c0b75fdc7a
 using Plots
-
-# ╔═╡ 5af59b61-be01-4fd5-a6e3-b79a1bf28388
-using PlutoUI
 
 # ╔═╡ 56c63eeb-bf0c-4bb0-a064-9302b6482b1a
 using Logging
@@ -41,10 +35,7 @@ import PlotlyKaleido
 import MLJ: confusion_matrix
 
 # ╔═╡ f5de956d-0ca9-4f54-bd2c-32e5a99f200c
-plotly()
-
-# ╔═╡ 90a2e854-671a-4530-a61c-fc961b37e573
-TableOfContents(title="Contenidos", depth=1)
+plotly();
 
 # ╔═╡ 64d32aff-37c9-4f6a-b742-9672062fd378
 md"""
@@ -72,9 +63,6 @@ end
 # ╔═╡ d633035b-fff0-48bb-8c64-200e0fbcd3d2
 carga_datos()
 
-# ╔═╡ 7a972973-6855-4c3e-9c32-2d72599e5abe
-x1, y1 = first(carga_datos())
-
 # ╔═╡ aae8e1e9-b3fe-4b93-9313-289d255ffd09
 activacion = relu
 
@@ -90,79 +78,36 @@ lenet5 = Chain(
     Dense(84 => 10),
 )
 
-# ╔═╡ 320cee7a-283b-4e53-80aa-5d0ba872f41a
-ŷ1 = lenet5(x1)
-
-# ╔═╡ 01016704-06cb-4b9f-a0a4-6047a7c71ff8
-sum(softmax(ŷ1); dims=1)
-
-# ╔═╡ 45c40395-bfc1-4e69-be97-528d9e0af0be
-sum(ŷ1)
-
-# ╔═╡ 1e272033-3cf3-4aca-a852-3acd35592326
-@show hcat(Flux.onecold(ŷ1, 0:9), Flux.onecold(y1, 0:9))
-
 # ╔═╡ bd96d57a-6add-476f-b1d0-545c79b951fc
 function loss_and_accuracy(model, data::MNIST=datos_entrenamiento)
     (x,y) = only(carga_datos(data; batchsize=length(data)))  # make one big batch
     ŷ = model(x)
-    loss = Flux.logitcrossentropy(ŷ, y)  # did not include softmax in the model
+    loss = Flux.logitcrossentropy(ŷ, y)
     acc = round(100 * mean(Flux.onecold(ŷ) .== Flux.onecold(y)); digits=2)
-    (; loss, acc, split=data.split)  # return a NamedTuple
+    (; loss, acc)
 end
-
-# ╔═╡ e67b3149-48e5-4321-a16e-f114134deca3
-@show loss_and_accuracy(lenet5);
 
 # ╔═╡ 8c0ce8fc-a7e9-49d9-9e14-3baae8e821f5
 hiperparametros = (;
-    eta = 3e-4,     # learning rate
-    lambda = 1e-2,  # for weight decay
+    η = 3e-4,  # learning rate
+    λ = 1e-2,  # weight decay
     batchsize = 128,
-    epochs = 20,
+    epochs = 10,
 )
 
-# ╔═╡ 1aa6b23c-e469-49f9-b4b5-87b984309c43
-opt_rule = OptimiserChain(WeightDecay(hiperparametros.lambda), Adam(hiperparametros.eta))
-
-# ╔═╡ 72443a62-1368-422f-b29b-55ac25658ca8
-opt_state = Flux.setup(opt_rule, lenet5);
-
-# ╔═╡ 066a5553-82f0-4a46-9dd2-b6d1d9bcf38d
-function entrena(settings)
-	train_log = []
-	for epoch in 1:settings.epochs
-	    # @time will show a much longer time for the first epoch, due to compilation
-	    @time for (x,y) in carga_datos(batchsize=settings.batchsize)
-	        grads = Flux.gradient(m -> Flux.logitcrossentropy(m(x), y), lenet5)
-	        Flux.update!(opt_state, lenet5, grads[1])
-	    end
-	
-	    # Logging & saving, but not on every epoch
-	    # if epoch % 2 == 1
-	        loss, acc, _ = loss_and_accuracy(lenet5)
-	        test_loss, test_acc, _ = loss_and_accuracy(lenet5, datos_prueba)
-	        @info "logging:" epoch acc test_acc
-	        nt = (; epoch, loss, acc, test_loss, test_acc)  # make a NamedTuple
-	        push!(train_log, nt)
-	    # end
-	end
-	return train_log
-end
-
 # ╔═╡ 39ceee61-c41a-492f-b2f7-83c3e7007b09
-function entrena2(settings)
-	optimizador = Flux.setup(Adam(0.00005), lenet5)
+function entrena(settings)
+	regla_optimizacion = OptimiserChain(WeightDecay(hiperparametros.λ), Adam(hiperparametros.η))
+	optimizador = Flux.setup(regla_optimizacion, lenet5)
 	perdidas(lenet5, X, y) = Flux.Losses.logitcrossentropy(lenet5(X), y);
 	train_log = []
 	with_logger(NullLogger()) do
 		for epoca in 1:settings.epochs
-			@time for (x, y) in carga_datos(batchsize=settings.batchsize)
+			for (x, y) in carga_datos(batchsize=settings.batchsize)
 				Flux.train!(perdidas, lenet5, [(x,y)], optimizador);
 			end
-			loss, acc, _ = loss_and_accuracy(lenet5)
-			test_loss, test_acc, _ = loss_and_accuracy(lenet5, datos_prueba)
-			@info "logging:" epoca acc test_acc
+			loss, acc = loss_and_accuracy(lenet5)
+			test_loss, test_acc = loss_and_accuracy(lenet5, datos_prueba)
 			nt = (; epoca, loss, acc, test_loss, test_acc)
 			push!(train_log, nt)
 		end
@@ -171,93 +116,30 @@ function entrena2(settings)
 end
 
 # ╔═╡ 8ca1094b-dc4f-44e7-a4dc-7719ae36cad8
-@show train_log2 = entrena2(hiperparametros)
-
-# ╔═╡ 275450ec-5558-4f5e-9f58-5d0cdf123e73
-# @show train_log = entrena(hiperparametros)
+log_entrenamiento = entrena(hiperparametros);
 
 # ╔═╡ 47af78e3-51a2-4302-a600-c57561e5bf34
 xtest, ytest = only(carga_datos(datos_prueba, batchsize=length(datos_prueba)));
 
-# ╔═╡ c02162e2-3091-465d-87a6-42e39b3a5b8e
-xtest[:,:,1,5] .|> Gray |> transpose
-
-# ╔═╡ b2016e3d-8605-46ff-b711-f9765b3c250e
-Flux.onecold(ytest, 0:9)[5]
-
-# ╔═╡ f0459ee7-2864-4330-bad5-337c0d2537a6
-md"""
-Meto aquí código mío
-"""
-
 # ╔═╡ 9bffad2f-4932-4ef8-9df0-1bb53db56bc5
-ypredict = Flux.onecold(softmax(lenet5(xtest)), 0:9)
+ŷ = Flux.onecold(softmax(lenet5(xtest)), 0:9)
 
 # ╔═╡ 0c9e2380-d564-4fe3-b0ae-929a3f9e72e0
-yreal = Flux.onecold(ytest, 0:9)
+y = Flux.onecold(ytest, 0:9)
 
 # ╔═╡ 3ddf40ab-e64b-41c9-8049-b938329c4266
-confusion_matrix(ypredict, yreal)
-
-# ╔═╡ 6714f7b2-f006-4382-81f6-69d8366e28ed
-md"""
-Hasta aquí
-"""
-
-# ╔═╡ 48113b21-5f65-4418-b0ce-cbe15a874279
-md"""
-Veamos ahora alguna de las imágenes difíciles de clasificar
-"""
-
-# ╔═╡ 4596d98e-fee7-49c7-98da-0adbf2c5e006
-ptest = softmax(lenet5(xtest))
-
-# ╔═╡ db06f541-aa6d-4845-8efb-affdae538d26
-max_p = maximum(ptest; dims=1)
-
-# ╔═╡ 872f460e-e98a-40b9-ad1e-9d084ce8b8da
-_, i = findmin(vec(max_p))
-
-# ╔═╡ acf31dae-e6d0-47ae-a66a-b8ac66992e9e
-xtest[:,:,1,i] .|> Gray |> transpose
-
-# ╔═╡ d495835d-2102-46c0-a0b0-5f07386e3e98
-md"""
-La verdadera etiqueta de este número:
-"""
-
-# ╔═╡ b1e40173-67d2-468e-8d8c-7e4087768aa0
-Flux.onecold(ytest, 0:9)[i]
-
-# ╔═╡ b196c7f0-5f19-4a27-a72e-72b899e17609
-md"""
-Las probabilidades de ser cada uno de los dígitos:
-"""
-
-# ╔═╡ 6c112021-4018-40a1-9976-840e9cefad33
-ptest[:,i]
-
-# ╔═╡ 49daa7d3-f23c-43aa-aa73-c090a40c3517
-md"""
-La predicción que hace la red:
-"""
-
-# ╔═╡ 39c0aba8-6181-4aae-88a8-8ac64b3c4a00
-Flux.onecold(ptest[:,i], 0:9)
-
-# ╔═╡ 7c52ac56-e8a3-4ab2-ae3f-87b690e6091d
-# train_log
+confusion_matrix(ŷ, y)
 
 # ╔═╡ f7421d9e-c35c-440c-9b98-51a14c2dffc8
 begin
-	plot([x.acc for x in train_log2], label="Accuracy")
-	plot!([x.test_acc for x in train_log2], label="Test accuracy")
+	plot([x.acc for x in log_entrenamiento], label="Accuracy", legend=:bottomright, title="Preción durante el entrenamiento")
+	plot!([x.test_acc for x in log_entrenamiento], label="Test accuracy")
 end
 
 # ╔═╡ dde93b0e-6c4a-4641-ba2c-827bb22c8143
 begin
-	plot([x.loss for x in train_log2], label="Loss")
-	plot!([x.test_loss for x in train_log2], label="Test loss")
+	plot([x.loss for x in log_entrenamiento], label="Loss", title="Perdidas durante el entrenamiento")
+	plot!([x.test_loss for x in log_entrenamiento], label="Test loss")
 end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -265,27 +147,23 @@ PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
 Flux = "587475ba-b771-5e3f-ad9e-33799f191a9c"
-ImageCore = "a09fc81d-aa75-5fe9-8630-4744c3626534"
 Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
 MLDatasets = "eb30cadb-4394-5ae3-aed4-317e484a6458"
 MLJ = "add582a8-e3ab-11e8-2d5e-e98b27df1bc7"
 PlotlyBase = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
 PlotlyKaleido = "f2990250-8cf9-495f-b13a-cce12b45703c"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
-PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 cuDNN = "02a925ec-e4fe-4b08-9a7e-0d78e3d38ccd"
 
 [compat]
 CUDA = "~5.7.3"
 Flux = "~0.16.3"
-ImageCore = "~0.10.5"
 MLDatasets = "~0.7.18"
 MLJ = "~0.20.7"
 PlotlyBase = "~0.8.19"
 PlotlyKaleido = "~2.2.6"
 Plots = "~1.40.13"
-PlutoUI = "~0.7.23"
 cuDNN = "~1.4.2"
 """
 
@@ -295,7 +173,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.5"
 manifest_format = "2.0"
-project_hash = "91404ad78d0024ae67e99e454cd736b6f872ece6"
+project_hash = "c85737695f9d779ffc7d6aad87a8cb96f081dfc0"
 
 [[deps.ARFFFiles]]
 deps = ["CategoricalArrays", "Dates", "Parsers", "Tables"]
@@ -313,12 +191,6 @@ weakdeps = ["ChainRulesCore", "Test"]
     [deps.AbstractFFTs.extensions]
     AbstractFFTsChainRulesCoreExt = "ChainRulesCore"
     AbstractFFTsTestExt = "Test"
-
-[[deps.AbstractPlutoDingetjes]]
-deps = ["Pkg"]
-git-tree-sha1 = "6e1d2a35f2f90a4bc7c2ed98079b2ba09c35b83a"
-uuid = "6e696c72-6542-2067-7265-42206c756150"
-version = "1.3.2"
 
 [[deps.Accessors]]
 deps = ["CompositionsBase", "ConstructionBase", "Dates", "InverseFunctions", "MacroTools"]
@@ -1080,24 +952,6 @@ deps = ["LinearAlgebra", "OpenLibm_jll", "SpecialFunctions"]
 git-tree-sha1 = "68c173f4f449de5b438ee67ed0c9c748dc31a2ec"
 uuid = "34004b35-14d8-5ef3-9330-4cdb6864b03a"
 version = "0.3.28"
-
-[[deps.Hyperscript]]
-deps = ["Test"]
-git-tree-sha1 = "8d511d5b81240fc8e6802386302675bdf47737b9"
-uuid = "47d2ed2b-36de-50cf-bf87-49c2cf4b8b91"
-version = "0.0.4"
-
-[[deps.HypertextLiteral]]
-deps = ["Tricks"]
-git-tree-sha1 = "7134810b1afce04bbc1045ca1985fbe81ce17653"
-uuid = "ac1192a8-f4b3-4bfe-ba22-af5b92cd3ab2"
-version = "0.9.5"
-
-[[deps.IOCapture]]
-deps = ["Logging", "Random"]
-git-tree-sha1 = "b6d6bfdd7ce25b0f9b2f6b3dd56b2673a66c8770"
-uuid = "b5f81e59-6552-4d32-b1f0-c071b021bf89"
-version = "0.2.5"
 
 [[deps.IRTools]]
 deps = ["InteractiveUtils", "MacroTools"]
@@ -1927,12 +1781,6 @@ version = "1.40.13"
     ImageInTerminal = "d8c32880-2388-543b-8c61-d9f865259254"
     Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
-[[deps.PlutoUI]]
-deps = ["AbstractPlutoDingetjes", "Base64", "Dates", "Hyperscript", "HypertextLiteral", "IOCapture", "InteractiveUtils", "JSON", "Logging", "Markdown", "Random", "Reexport", "UUIDs"]
-git-tree-sha1 = "5152abbdab6488d5eec6a01029ca6697dff4ec8f"
-uuid = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
-version = "0.7.23"
-
 [[deps.PooledArrays]]
 deps = ["DataAPI", "Future"]
 git-tree-sha1 = "36d8b4b899628fb92c2749eb488d884a926614d3"
@@ -2410,11 +2258,6 @@ version = "0.4.84"
     OnlineStatsBase = "925886fa-5bf2-5e8e-b522-a9147a512338"
     Referenceables = "42d2dcc6-99eb-4e98-b66c-637b7d73030e"
 
-[[deps.Tricks]]
-git-tree-sha1 = "6cae795a5a9313bbb4f60683f7263318fc7d1505"
-uuid = "410a4b4d-49e4-4fbc-ab6d-cb71b17b3775"
-version = "0.1.10"
-
 [[deps.URIs]]
 git-tree-sha1 = "cbbebadbcc76c5ca1cc4b4f3b0614b3e603b5000"
 uuid = "5c2747f8-b7ea-4ff2-ba2e-563bfd36b1d4"
@@ -2827,57 +2670,28 @@ version = "1.8.1+0"
 # ╠═e34cd9c5-9905-4e95-9c3e-b3d3575cdb48
 # ╠═f640a710-4552-4db2-8fb5-22b779e71a8c
 # ╠═ea4d19f3-819f-4775-bd72-f8041a37a916
-# ╠═1c6d6692-ee91-44e8-b81b-8985f0eac65a
 # ╠═d116716e-2e8f-4e0a-ba67-46c0b75fdc7a
 # ╠═00bdc0f9-4c43-4da0-b8b1-e0d582199bb2
 # ╠═df5024e0-3a0d-406a-9d98-911aa82382e1
-# ╠═5af59b61-be01-4fd5-a6e3-b79a1bf28388
 # ╠═ae1e7b22-c727-4968-9dbf-fcbb4b40067c
 # ╠═56c63eeb-bf0c-4bb0-a064-9302b6482b1a
 # ╠═f5de956d-0ca9-4f54-bd2c-32e5a99f200c
-# ╠═90a2e854-671a-4530-a61c-fc961b37e573
 # ╠═64d32aff-37c9-4f6a-b742-9672062fd378
 # ╠═15f9b4be-7e6d-44c7-8580-cf347f246551
 # ╠═45320f53-f35d-4e0d-b661-aeeea3a83b0d
 # ╠═41685363-aa44-4400-acfc-8a1772427220
 # ╠═c3b88b28-722e-40b3-afee-d8363895af35
 # ╠═d633035b-fff0-48bb-8c64-200e0fbcd3d2
-# ╠═7a972973-6855-4c3e-9c32-2d72599e5abe
 # ╠═aae8e1e9-b3fe-4b93-9313-289d255ffd09
 # ╠═46a04633-82c6-4b1d-8e0d-0fd2c24b754d
-# ╠═320cee7a-283b-4e53-80aa-5d0ba872f41a
-# ╠═01016704-06cb-4b9f-a0a4-6047a7c71ff8
-# ╠═45c40395-bfc1-4e69-be97-528d9e0af0be
-# ╠═1e272033-3cf3-4aca-a852-3acd35592326
 # ╠═bd96d57a-6add-476f-b1d0-545c79b951fc
-# ╠═e67b3149-48e5-4321-a16e-f114134deca3
 # ╠═8c0ce8fc-a7e9-49d9-9e14-3baae8e821f5
-# ╠═1aa6b23c-e469-49f9-b4b5-87b984309c43
-# ╠═72443a62-1368-422f-b29b-55ac25658ca8
-# ╠═066a5553-82f0-4a46-9dd2-b6d1d9bcf38d
 # ╠═39ceee61-c41a-492f-b2f7-83c3e7007b09
 # ╠═8ca1094b-dc4f-44e7-a4dc-7719ae36cad8
-# ╠═275450ec-5558-4f5e-9f58-5d0cdf123e73
 # ╠═47af78e3-51a2-4302-a600-c57561e5bf34
-# ╠═c02162e2-3091-465d-87a6-42e39b3a5b8e
-# ╠═b2016e3d-8605-46ff-b711-f9765b3c250e
-# ╠═f0459ee7-2864-4330-bad5-337c0d2537a6
 # ╠═9bffad2f-4932-4ef8-9df0-1bb53db56bc5
 # ╠═0c9e2380-d564-4fe3-b0ae-929a3f9e72e0
 # ╠═3ddf40ab-e64b-41c9-8049-b938329c4266
-# ╠═6714f7b2-f006-4382-81f6-69d8366e28ed
-# ╠═48113b21-5f65-4418-b0ce-cbe15a874279
-# ╠═4596d98e-fee7-49c7-98da-0adbf2c5e006
-# ╠═db06f541-aa6d-4845-8efb-affdae538d26
-# ╠═872f460e-e98a-40b9-ad1e-9d084ce8b8da
-# ╠═acf31dae-e6d0-47ae-a66a-b8ac66992e9e
-# ╠═d495835d-2102-46c0-a0b0-5f07386e3e98
-# ╠═b1e40173-67d2-468e-8d8c-7e4087768aa0
-# ╠═b196c7f0-5f19-4a27-a72e-72b899e17609
-# ╠═6c112021-4018-40a1-9976-840e9cefad33
-# ╠═49daa7d3-f23c-43aa-aa73-c090a40c3517
-# ╠═39c0aba8-6181-4aae-88a8-8ac64b3c4a00
-# ╠═7c52ac56-e8a3-4ab2-ae3f-87b690e6091d
 # ╠═f7421d9e-c35c-440c-9b98-51a14c2dffc8
 # ╠═dde93b0e-6c4a-4641-ba2c-827bb22c8143
 # ╟─00000000-0000-0000-0000-000000000001
