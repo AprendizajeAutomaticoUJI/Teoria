@@ -462,6 +462,57 @@ MINIST es el conjunto con el que se entrenó LeNet5:
 Fuente: Wikipedia
 """
 
+# ╔═╡ 40c74193-c730-4e27-a782-8859eff23fd8
+md"""
+## LeNet5
+
+Si entrenamos LeNet5 con el conjunto MNIST, utilizando como función de activación la función tanh y como optimizador Stocastic Gradient Descent (SGD), durante 20 épocas, obtenemos una precisión sobre el conjunto de pruebas del XX%!!!.
+"""
+
+# ╔═╡ 38a0aa0c-3c56-4ea7-a3d9-f78f116d2919
+md"""
+## LeNet5
+
+Si utilizamos como función de activación 
+la función _relu_ y como optimizador Adam, durante 
+20 épocas, obtenemos una precisión sobre el conjunto de pruebas de casi el XX%. 
+"""
+
+# ╔═╡ 528c23a5-3a0a-4fcc-99eb-90d9a01ff3df
+YouTube("https://www.youtube.com/watch?v=FwFduRA_L6Q")
+
+# ╔═╡ e35e23ec-fb8a-480b-9904-c0fd95e5fe73
+md"""
+## ResNet
+
+[ResNet](https://arxiv.org/pdf/1512.03385) introdujo una novedad en su diseño 
+para reducir el problema del desvanecimiento del gradiente. La novedad es 
+en _saltar_ capas:
+
+![](https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/RedesNeuronales/resnet.png)
+
+$H(x) = F(x) + x \rightarrow F(x) = H(x) - x$
+
+"""
+
+# ╔═╡ d2f9757f-68eb-4c4c-8589-4df4bafa830e
+md"""
+## ResNet
+Lo que aprenden las dos capas intermedias de la figura (representadas por la 
+función $F(x)$) es a ajustar la diferencia entre la entrada real a la capa y 
+el resultado de la aplicación de la capa.
+
+![](https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/RedesNeuronales/resnet.png)
+
+"""
+
+# ╔═╡ 9b38cde2-1c0a-4871-ab3a-874fca8ac403
+md"""
+### Metalhead
+
+[Metalhead](https://fluxml.ai/Metalhead.jl/stable/) es una biblioteca en Julia que implementa algunos de los más conocidos algoritmos en visión por computador.
+"""
+
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
@@ -854,5 +905,11 @@ version = "17.4.0+2"
 # ╠═410abb9f-56d4-4252-a353-4c1d550f36cd
 # ╠═8692bcdf-059e-45d6-baab-1af4705a72d4
 # ╠═85382e11-cb0f-4e85-bb48-ec21714a230c
+# ╠═40c74193-c730-4e27-a782-8859eff23fd8
+# ╠═38a0aa0c-3c56-4ea7-a3d9-f78f116d2919
+# ╠═528c23a5-3a0a-4fcc-99eb-90d9a01ff3df
+# ╠═e35e23ec-fb8a-480b-9904-c0fd95e5fe73
+# ╠═d2f9757f-68eb-4c4c-8589-4df4bafa830e
+# ╠═9b38cde2-1c0a-4871-ab3a-874fca8ac403
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

@@ -25,6 +25,9 @@ using Plots
 # ╔═╡ 56c63eeb-bf0c-4bb0-a064-9302b6482b1a
 using Logging
 
+# ╔═╡ 5d138ca8-d691-494a-b328-e80c5fd1ecaa
+using JLD2
+
 # ╔═╡ 00bdc0f9-4c43-4da0-b8b1-e0d582199bb2
 import PlotlyBase
 
@@ -64,7 +67,7 @@ end
 carga_datos()
 
 # ╔═╡ aae8e1e9-b3fe-4b93-9313-289d255ffd09
-activacion = relu
+activacion = tanh
 
 # ╔═╡ 46a04633-82c6-4b1d-8e0d-0fd2c24b754d
 lenet5 = Chain(
@@ -92,12 +95,13 @@ hiperparametros = (;
     η = 3e-4,  # learning rate
     λ = 1e-2,  # weight decay
     batchsize = 128,
-    epochs = 10,
+    epochs = 20,
 )
 
 # ╔═╡ 39ceee61-c41a-492f-b2f7-83c3e7007b09
 function entrena(settings)
 	regla_optimizacion = OptimiserChain(WeightDecay(hiperparametros.λ), Adam(hiperparametros.η))
+	# regla_optimizacion = Descent()
 	optimizador = Flux.setup(regla_optimizacion, lenet5)
 	perdidas(lenet5, X, y) = Flux.Losses.logitcrossentropy(lenet5(X), y);
 	train_log = []
@@ -142,11 +146,34 @@ begin
 	plot!([x.test_loss for x in log_entrenamiento], label="Test loss")
 end
 
+# ╔═╡ bdaea513-f855-4c4d-81bd-e1f7d51ddd55
+md"""
+Guardamos en fichero el modelo:
+"""
+
+# ╔═╡ 17b736f7-07b9-4998-9965-32fc79733b28
+struct MiModelo
+	red
+end
+
+# ╔═╡ 009cd86e-f990-424d-b036-1e901a9839c9
+Flux.@layer MiModelo
+
+# ╔═╡ 242a5d6c-d6e6-4f96-9f70-b2fdcd884f7c
+mimodelo = MiModelo(lenet5)
+
+# ╔═╡ 94a4b225-3fa6-4bde-83d9-729f726cf5f7
+model_state = Flux.state(mimodelo)
+
+# ╔═╡ a2d05176-410f-4726-855d-16a585232a3c
+jldsave("lenet5_adam_20.jld2"; model_state)
+
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
 Flux = "587475ba-b771-5e3f-ad9e-33799f191a9c"
+JLD2 = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
 Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
 MLDatasets = "eb30cadb-4394-5ae3-aed4-317e484a6458"
 MLJ = "add582a8-e3ab-11e8-2d5e-e98b27df1bc7"
@@ -159,6 +186,7 @@ cuDNN = "02a925ec-e4fe-4b08-9a7e-0d78e3d38ccd"
 [compat]
 CUDA = "~5.7.3"
 Flux = "~0.16.3"
+JLD2 = "~0.5.13"
 MLDatasets = "~0.7.18"
 MLJ = "~0.20.7"
 PlotlyBase = "~0.8.19"
@@ -173,7 +201,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.5"
 manifest_format = "2.0"
-project_hash = "c85737695f9d779ffc7d6aad87a8cb96f081dfc0"
+project_hash = "4f1b8666fca7145640630a796bcc715610873ea2"
 
 [[deps.ARFFFiles]]
 deps = ["CategoricalArrays", "Dates", "Parsers", "Tables"]
@@ -2675,6 +2703,7 @@ version = "1.8.1+0"
 # ╠═df5024e0-3a0d-406a-9d98-911aa82382e1
 # ╠═ae1e7b22-c727-4968-9dbf-fcbb4b40067c
 # ╠═56c63eeb-bf0c-4bb0-a064-9302b6482b1a
+# ╠═5d138ca8-d691-494a-b328-e80c5fd1ecaa
 # ╠═f5de956d-0ca9-4f54-bd2c-32e5a99f200c
 # ╠═64d32aff-37c9-4f6a-b742-9672062fd378
 # ╠═15f9b4be-7e6d-44c7-8580-cf347f246551
@@ -2694,5 +2723,11 @@ version = "1.8.1+0"
 # ╠═3ddf40ab-e64b-41c9-8049-b938329c4266
 # ╠═f7421d9e-c35c-440c-9b98-51a14c2dffc8
 # ╠═dde93b0e-6c4a-4641-ba2c-827bb22c8143
+# ╠═bdaea513-f855-4c4d-81bd-e1f7d51ddd55
+# ╠═17b736f7-07b9-4998-9965-32fc79733b28
+# ╠═009cd86e-f990-424d-b036-1e901a9839c9
+# ╠═242a5d6c-d6e6-4f96-9f70-b2fdcd884f7c
+# ╠═94a4b225-3fa6-4bde-83d9-729f726cf5f7
+# ╠═a2d05176-410f-4726-855d-16a585232a3c
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
