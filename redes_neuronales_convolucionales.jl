@@ -462,21 +462,63 @@ MINIST es el conjunto con el que se entrenó LeNet5:
 Fuente: Wikipedia
 """
 
-# ╔═╡ 40c74193-c730-4e27-a782-8859eff23fd8
+# ╔═╡ d23085f7-1f1e-4abf-8c96-a64a08988328
 md"""
 ## LeNet5
 
-Si entrenamos LeNet5 con el conjunto MNIST, utilizando como función de activación la función tanh y como optimizador Stocastic Gradient Descent (SGD), durante 20 épocas, obtenemos una precisión sobre el conjunto de pruebas del XX%!!!.
+Si entrenamos LeNet5 con el conjunto MNIST, utilizando como función de activación la función tanh y como optimizador Stocastic Gradient Descent (SGD), durante 20 épocas, obtenemos una precisión sobre el conjunto de pruebas del 97,01%!!!.
 """
 
-# ╔═╡ 38a0aa0c-3c56-4ea7-a3d9-f78f116d2919
+# ╔═╡ 619cde75-694d-4a37-92be-a6793aa9f2d6
+Resource(
+	"https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/RedesNeuronales/entrenamiento_lenet5_tanh_sgd.svg",
+	:alt => "Entrenamiento LeNet5",
+	:width => 600
+)
+
+# ╔═╡ 72ec224f-54ca-4acb-a4d1-c3f9881cf299
+md"""
+## LeNet5
+
+La matriz de confusión:
+"""
+
+# ╔═╡ ed9d8902-ddd6-4099-9861-ca8a242e2d4b
+Resource(
+	"https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/RedesNeuronales/matriz_confusion_lenet5_tanh_sgd.png",
+	:alt => "Matriz de confusión LeNet5 sobre MNIST tanh, sgd, 20 épocas",
+	:width => 500
+)
+
+# ╔═╡ 793035a9-f596-491d-bfd9-ed418c171b7d
 md"""
 ## LeNet5
 
 Si utilizamos como función de activación 
 la función _relu_ y como optimizador Adam, durante 
-20 épocas, obtenemos una precisión sobre el conjunto de pruebas de casi el XX%. 
+20 épocas, obtenemos una precisión sobre el conjunto de pruebas de casi el 98,74%. 
 """
+
+# ╔═╡ c93848ac-1597-4212-82d8-e9c3bf935c04
+Resource(
+	"https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/RedesNeuronales/entrenamiento_lenet5_relu_adam.svg",
+	:alt => "Entrenamiento LeNet5",
+	:width => 600
+)
+
+# ╔═╡ d91c36f5-5aaa-4086-8bfb-384ec9a1a200
+md"""
+## LeNet5
+
+La matriz de confusión:
+"""
+
+# ╔═╡ cca48072-8bd6-4993-aba2-d4e8861cb3a1
+Resource(
+	"https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/RedesNeuronales/matriz_confusion_lenet5_relu_adam.png",
+	:alt => "Matriz de confusión LeNet5 sobre MNIST relu, adam, 20 épocas",
+	:width => 500
+)
 
 # ╔═╡ 528c23a5-3a0a-4fcc-99eb-90d9a01ff3df
 YouTube("https://www.youtube.com/watch?v=FwFduRA_L6Q")
@@ -511,6 +553,83 @@ md"""
 ### Metalhead
 
 [Metalhead](https://fluxml.ai/Metalhead.jl/stable/) es una biblioteca en Julia que implementa algunos de los más conocidos algoritmos en visión por computador.
+
+Los modelos de Metalhead se han entrenado con la base de datos [ImageNet](https://www.image-net.org/) que es un conjunto de datos con
+1.000 clases , 1.281.167 imágenes de entrenamiento, 50.000
+imágenes de validación y 100.000 imágenes de prueba.
+
+"""
+
+# ╔═╡ 0c1094af-ddf9-4206-bb79-0a5146f792e1
+md"""
+## Show me the code
+
+```{julia}
+# Cargamos el modelo con los parámetros pre-entrenados
+model = ResNet(18; pretrain=true)
+
+# Clasificamos el modelo
+output = model(img_data)
+
+# Obtenemos el vector de probabilidades con softmax
+probabilities = softmax(vec(output))
+
+# Seleccionamos el índice con máxima probabilidad
+top_class_idx = argmax(probabilities)
+
+# Motramos resultados
+println("Predicted class: $(labels[top_class_idx]) with probability $(probabilities[top_class_idx])")
+```
+"""
+
+# ╔═╡ 9bbd7f5a-7279-42c4-977f-753cee52be32
+md"""
+# YOLO - You Only Look Once
+"""
+
+# ╔═╡ bea79739-21ec-4ccf-9f55-af442c1dba7f
+md"""
+## YOLO
+
+You Only Look Once (YOLO) es una red convolucional con un gran desempeño en 
+muchas de la tareas típicas en visión por computador.
+
+YOLO es mantenida por la empresa [Ultralytics](https://www.ultralytics.com/es).
+
+Este es el [artículo](https://arxiv.org/abs/1506.02640) donde se presentó esta 
+arquitectura de red neuronal.
+"""
+
+# ╔═╡ 85c037d0-c584-4cfe-a3af-726810a9660e
+md"""
+## YOLO
+Y esta es la arquitectura tal y como se presenta en el artículo:
+
+![](Imagenes/yolo.png)
+
+"""
+
+# ╔═╡ 5db3fc14-31c7-40f6-abe3-f2ee3f4f0bf7
+Resource(
+	"https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/RedesNeuronales/yolo.png",
+	:alt => "Arquitectura de YOLO",
+	:width => 700
+)
+
+# ╔═╡ 6915ef51-2ea5-4705-bc52-42c89205b48a
+md"""
+## YOLO
+Una de la novedades de YOLO es que a la salida propociona la caja envolvente 
+de los objetos detectados, así como la probabilidad de su clasificación, y 
+también es capaz de realizar segmentación semántica.
+
+YOLO se presenta en varias versiones, basándose en el número de parámetros 
+presente en la red (tamaño). Las versiones más pequeñas tienen en desempeño 
+más bajo que las versiones grandes, pero, como contrapartida, se pueden 
+ejecutar en dispositivos con hardware más modesto.
+
+Todas las versiones están entrenadas con el conjunto de datos 
+[COCO](https://cocodataset.org/#home).
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -905,11 +1024,23 @@ version = "17.4.0+2"
 # ╠═410abb9f-56d4-4252-a353-4c1d550f36cd
 # ╠═8692bcdf-059e-45d6-baab-1af4705a72d4
 # ╠═85382e11-cb0f-4e85-bb48-ec21714a230c
-# ╠═40c74193-c730-4e27-a782-8859eff23fd8
-# ╠═38a0aa0c-3c56-4ea7-a3d9-f78f116d2919
+# ╠═d23085f7-1f1e-4abf-8c96-a64a08988328
+# ╠═619cde75-694d-4a37-92be-a6793aa9f2d6
+# ╠═72ec224f-54ca-4acb-a4d1-c3f9881cf299
+# ╠═ed9d8902-ddd6-4099-9861-ca8a242e2d4b
+# ╠═793035a9-f596-491d-bfd9-ed418c171b7d
+# ╠═c93848ac-1597-4212-82d8-e9c3bf935c04
+# ╠═d91c36f5-5aaa-4086-8bfb-384ec9a1a200
+# ╠═cca48072-8bd6-4993-aba2-d4e8861cb3a1
 # ╠═528c23a5-3a0a-4fcc-99eb-90d9a01ff3df
 # ╠═e35e23ec-fb8a-480b-9904-c0fd95e5fe73
 # ╠═d2f9757f-68eb-4c4c-8589-4df4bafa830e
 # ╠═9b38cde2-1c0a-4871-ab3a-874fca8ac403
+# ╠═0c1094af-ddf9-4206-bb79-0a5146f792e1
+# ╠═9bbd7f5a-7279-42c4-977f-753cee52be32
+# ╠═bea79739-21ec-4ccf-9f55-af442c1dba7f
+# ╠═85c037d0-c584-4cfe-a3af-726810a9660e
+# ╠═5db3fc14-31c7-40f6-abe3-f2ee3f4f0bf7
+# ╠═6915ef51-2ea5-4705-bc52-42c89205b48a
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
