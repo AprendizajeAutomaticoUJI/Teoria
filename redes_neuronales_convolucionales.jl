@@ -632,6 +632,63 @@ Todas las versiones están entrenadas con el conjunto de datos
 [COCO](https://cocodataset.org/#home).
 """
 
+# ╔═╡ a5882dd9-f4d3-46c9-9096-743671bf13fb
+md"""
+## Show me the code
+
+Primero, cargamos el modelo YOLO que vamos a utilizar:
+
+```julia
+function prepara_yolo()
+    yolomod = YOLO.v7_416_COCO(batch=1, silent=true)
+    batch = emptybatch(yolomod)
+
+    return yolomod, batch
+end
+```
+
+Después preparamos la imagen:
+
+```julia
+function prepara_imagen(path, yolomod, batch)
+    img = load(path)
+    batch[:,:,:,1], padding = prepare_image(img, yolomod)
+
+    return img, batch, padding
+end
+```
+"""
+
+# ╔═╡ 63b7fefa-729a-45b0-9ebf-754769d77e08
+md"""
+## Show me the code
+
+Finalmente, hacemos la detección:
+
+```julia
+res = yolomod(batch, detect_thresh=0.5, overlap_thresh=0.8) 
+```
+
+La estructura **res** tiene toda la información de la información detectada.
+"""
+
+# ╔═╡ 0c1fb2c7-987f-4a2f-8b63-488e6c177de6
+md"""
+## Show me the code
+"""
+
+# ╔═╡ 035068e5-3257-4d09-b063-dcfc836d214f
+Resource(
+	"https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/RedesNeuronales/familia2_yolo.jpg",
+	:alt => "Ejemplo detección YOLO",
+	:width => 600
+)
+
+# ╔═╡ 350e7132-8200-4a1d-8d4e-98316373dc53
+md"""
+El tiempo de inferencia en mi portátil es de 12.3 ms.
+"""
+
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
@@ -1042,5 +1099,10 @@ version = "17.4.0+2"
 # ╠═85c037d0-c584-4cfe-a3af-726810a9660e
 # ╠═5db3fc14-31c7-40f6-abe3-f2ee3f4f0bf7
 # ╠═6915ef51-2ea5-4705-bc52-42c89205b48a
+# ╠═a5882dd9-f4d3-46c9-9096-743671bf13fb
+# ╠═63b7fefa-729a-45b0-9ebf-754769d77e08
+# ╠═0c1fb2c7-987f-4a2f-8b63-488e6c177de6
+# ╠═035068e5-3257-4d09-b063-dcfc836d214f
+# ╠═350e7132-8200-4a1d-8d4e-98316373dc53
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
