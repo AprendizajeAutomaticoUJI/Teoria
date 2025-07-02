@@ -630,6 +630,8 @@ ejecutar en dispositivos con hardware más modesto.
 
 Todas las versiones están entrenadas con el conjunto de datos 
 [COCO](https://cocodataset.org/#home).
+
+Afortunadamente, existe una implementación de YOLO en Julia, llamada [ObjectDetector.jl](https://github.com/r3tex/ObjectDetector.jl).
 """
 
 # ╔═╡ a5882dd9-f4d3-46c9-9096-743671bf13fb
@@ -675,18 +677,160 @@ La estructura **res** tiene toda la información de la información detectada.
 # ╔═╡ 0c1fb2c7-987f-4a2f-8b63-488e6c177de6
 md"""
 ## Show me the code
+
+En este caso ha detectado tres personas y una mochila en la imagen.
 """
 
 # ╔═╡ 035068e5-3257-4d09-b063-dcfc836d214f
 Resource(
 	"https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/RedesNeuronales/familia2_yolo.jpg",
 	:alt => "Ejemplo detección YOLO",
-	:width => 600
+	:width => 900
 )
 
 # ╔═╡ 350e7132-8200-4a1d-8d4e-98316373dc53
 md"""
 El tiempo de inferencia en mi portátil es de 12.3 ms.
+"""
+
+# ╔═╡ e9cfe0c6-9a57-49b5-953f-448e3d4ee0db
+md"""
+# Transferencia de aprendizaje
+"""
+
+# ╔═╡ ff881d8c-81f8-4a1f-afae-308d7289b601
+md"""
+## Transferencia de aprendizaje
+
+Entrenar una red neuronal desde cero es una tarea muy costosa. Estos son algunos de los motivos:
+
+* Se necesita un conjunto de datos etiquetado muy grande (cientos de miles de imágenes).
+* Se necesitan recursos hardware que no son comunes.
+* Se necesita tiempo de entrenamiento.
+* Se necesita energía para alimentar el hardware.
+
+Sin embargo, existe un _atajo_ para poder (re)entrenar redes convolucionales ya existentes sobre nuevos conjuntos de datos para tareas  específicas.
+
+"""
+
+# ╔═╡ 8bbbf78b-7dfd-4bff-a95b-5a95052d6786
+md"""
+## Transferencia de aprendizaje
+
+El atajo consiste en lo siguiente:
+
+1. Utilizar una arquitectura inicial ya entrenada.
+1. Eliminar las capas más cercanas a la salida y sustituirlas por nuevas capas adaptadas a nuestro problema.
+1. Durante la fase de entrenamiento:
+    1. _Congelar_ los pesos de las capas preexistentes.
+    1. Entrenar durante unas épocas hasta que la precisión sobre el conjunto de validación se estabilice.
+    1. _Descongelar_ todas las capas y entrenar hasta conseguir una buena precisión.
+
+"""
+
+# ╔═╡ 18b3310a-2571-4a4b-91f1-38a1fa047d56
+md"""
+## Show me the code
+
+1. Cargar un modelo ya entrenado:
+
+```julia
+base_model = ResNet(18; pretrain=true)
+```
+
+2. Extraer la parte de la red que se encarga de la extracción de características:
+
+```julia
+feature_extractor = base_model.layers[1]
+```
+
+3. Congelar la parte de extracción de características, es la parte de la red que reaprovechamos:
+
+```julia
+Flux.freeze!(feature_extractor)
+```
+
+4. Crear una nueva capa con el número de clases que nos interesa:
+
+```julia
+num_new_classes = 10
+new_classifier_head = Chain(
+    AdaptiveMeanPool((1,1)), 
+    Flux.flatten,            
+    Dense(512, num_new_classes) # La última capa de extracción de características de ResNet tiene 512 neuronas.
+)
+```
+
+5. Unir la nueva capa a la capa de extracción de características:
+
+```julia
+transfer_model = Chain(feature_extractor, new_classifier_head)
+```
+
+6. Entrenar la red con nuestro conjunto de imágenes.
+"""
+
+# ╔═╡ 599634bc-09a5-4815-ae58-432211ea053d
+md"""
+## Show me the code
+
+Exise otra opción, llamada **fine tunning**, en la que se ajusta no sólo la capa de clasificación, sino algunas capas cercanas a la de clasfificación. La idea es re-entrenar algunas de las capas de extracción de características para que se ajusten a nuestro nuevo conjunto de datos.
+
+La aplicación de la técnica de **fine tunning** es l siguiente:
+
+1. Cargar un modelo ya entrenado:
+
+```julia
+base_model = ResNet(18; pretrain=true)
+```
+
+2. Extraer la parte de la red que se encarga de la extracción de características:
+
+```julia
+feature_extractor = base_model.layers[1]
+```
+
+3. Crear una nueva capa con el número de clases que nos interesa:
+
+```julia
+num_new_classes = 10
+new_classifier_head = Chain(
+    AdaptiveMeanPool((1,1)), 
+    Flux.flatten,            
+    Dense(512, num_new_classes) # La última capa de extracción de características de ResNet tiene 512 neuronas.
+)
+```
+
+5. Entrenar la red con nuestro conjunto de imágenes para que haga un ajuste inicial de la nueva capa de clasificación.
+
+6. **Descongelar** algunas capas de extracción de características, típicamente la última o los dos últimas antes de la capa de clasificación.
+
+```julia
+Flux.unfreeze!(finetune_model.layers[1][end]) # Descongelamos la última capa.
+```
+
+7. Entrenar de nuevo con una tasa de aprendizaje pequeña $η = 10^{-4}$ ó $η = 10^{-5}$.
+"""
+
+# ╔═╡ 6f25ccbb-039e-421a-88a0-0a5396b7987a
+md"""
+# Resumen
+
+* Las redes convolucionales introducen dos técnicas para trabajar con imágenes: 
+    * Convoluciones.
+    * Pooling.
+* Hemos revisado algunas de las arquitecturas más interesantes.
+* Hemos visto con detalle el trabajo con YOLO.
+* La transferencia de aprendizaje nos permite _adaptar_ redes existentes para 
+trabajar en problemas específicos.
+"""
+
+# ╔═╡ ff26ee4a-8624-45d9-8bff-4f2b49c10c40
+md"""
+# Recursos
+
+* [A Comprehensive Guide to Convolutional Neural Networks](https://towardsdatascience.com/a-comprehensive-guide-to-convolutional-neural-networks-the-eli5-way-3bd2b1164a53).
+* [You Only Look Once - YOLO](https://www.ultralytics.com/).
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -1104,5 +1248,12 @@ version = "17.4.0+2"
 # ╠═0c1fb2c7-987f-4a2f-8b63-488e6c177de6
 # ╠═035068e5-3257-4d09-b063-dcfc836d214f
 # ╠═350e7132-8200-4a1d-8d4e-98316373dc53
+# ╠═e9cfe0c6-9a57-49b5-953f-448e3d4ee0db
+# ╠═ff881d8c-81f8-4a1f-afae-308d7289b601
+# ╠═8bbbf78b-7dfd-4bff-a95b-5a95052d6786
+# ╠═18b3310a-2571-4a4b-91f1-38a1fa047d56
+# ╠═599634bc-09a5-4815-ae58-432211ea053d
+# ╠═6f25ccbb-039e-421a-88a0-0a5396b7987a
+# ╠═ff26ee4a-8624-45d9-8bff-4f2b49c10c40
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
