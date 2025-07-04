@@ -349,7 +349,7 @@ En este caso se le pasa una secuencia a la red y esta debe proporcionar un únic
 
 # ╔═╡ f761cc35-2b19-4c87-b492-e3b9cf88aec2
 md"""
-## Secuencias a vectores
+## Secuencias y vectores
 """
 
 # ╔═╡ 5791ca1d-e3fa-43cb-94fd-bc6bd44e5615
@@ -434,7 +434,7 @@ oculto anterior $h_{t-1}$:
 
 $h_t = f(W_{hh} h_{t-1} + W_{hx} x_t + b_h)$
 
-El estado oculto es la _memoria_ de la neurona.
+El estado oculto es la **memoria** de la neurona.
 """
 
 # ╔═╡ ede5cec8-4238-4953-9323-a2094dcb0058
@@ -460,7 +460,7 @@ La primera tarea es decidir qué tipo de red recurrente vamos a implementar:
 * Many to one.
 * Many to Many.
 
-En nuestro caso, a partir de una serie temporal de datos, queremos predecir cuál es el siguiente dato. Por lo tanto tenemos una estructura _many to one_.
+En nuestro caso, a partir de una serie temporal de datos, queremos predecir cuál es el siguiente dato. Por lo tanto tenemos una estructura **many to one**.
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
