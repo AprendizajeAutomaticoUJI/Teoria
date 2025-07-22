@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.8
+# v0.20.13
 
 using Markdown
 using InteractiveUtils
@@ -463,6 +463,68 @@ La primera tarea es decidir qué tipo de red recurrente vamos a implementar:
 En nuestro caso, a partir de una serie temporal de datos, queremos predecir cuál es el siguiente dato. Por lo tanto tenemos una estructura **many to one**.
 """
 
+# ╔═╡ 44736b6f-76c8-46bf-b85c-3f1ca9bfcfbf
+md"""
+## Show me the code
+
+El objetivo es, a partir de una serie de 10 datos, predecir el siguiente valor 
+en la serie.
+
+Vamos a empezar escalando los datos:
+
+```{.julia}
+scaler = MinMaxScaler()
+df = scaler.fit_transform(df)
+```
+
+Cada entrada de entrenamiento es una serie de 10 elementos de la serie temporal, 
+la salida es el siguiente dato en la serie:
+
+```{.text}
+[[0.03046482 0.05354899 0.05841709 0.06092965 0.07333543 0.09422111
+  0.1048995  0.09170854 0.06171482 0.01303392]]  -->  0.0
+[[0.05354899 0.05841709 0.06092965 0.07333543 0.09422111 0.1048995
+  0.09170854 0.06171482 0.01303392 0.        ]]  -->  0.018844221105527303
+[[0.05841709 0.06092965 0.07333543 0.09422111 0.1048995  0.09170854
+  0.06171482 0.01303392 0.         0.01884422]]  -->  0.03643216080402034
+```
+"""
+
+# ╔═╡ f3de6610-6a40-493b-95cc-b8a44236d42d
+md"""
+# Redes Long Short Term Memory - LSTM
+"""
+
+# ╔═╡ b00fc178-e092-4961-9a90-fab2961f8db6
+md"""
+## El problema del desvanecimiento
+
+Si las secuencias que utilizamos en el entrenamiento son largas, la
+contribución de los primeros términos se _desvanece_:
+
+$y_t = g(\_,h_t,\_)$
+$h_t = f(\_,h_{t-1},\_) \rightarrow y_t = g(f(\_,h_{t-1},\_))$
+$h_{t-1} = f(\_,h_{t-2},\_) \rightarrow y_t = g(f(f(\_,h_{t-2},\_)))$
+$h_{t-2} = f(\_,h_{t-3},\_) \rightarrow y_t = g(f(f(f(\_,h_{t-3},\_))))$
+
+El término $g(f(f(f(\_,h_{t-3},\_))))$ se va haciendo pequeño. La contribución 
+de los primeros valores de la serie tienen una contribución baja.
+
+"""
+
+# ╔═╡ 4c459fa3-50b5-4a14-952d-a21afd0841b9
+md"""
+## Arquitectura de la redes LSTM
+
+La solución de las redes LSTM es añadir, dentro de cada neurona, un conjunto 
+de puertas lógicas que añaden memoria a largo plazo.
+
+![](Imagenes/lstm.png){fig-align="center"}
+
+Fuente: Hands-on machine learning... Aurélien Géron.
+
+"""
+
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
@@ -490,7 +552,7 @@ StatsBase = "~0.34.5"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.11.5"
+julia_version = "1.11.6"
 manifest_format = "2.0"
 project_hash = "f23a59351075c6a9666c26f4fed262b57aa88f3a"
 
@@ -1877,5 +1939,9 @@ version = "1.8.1+0"
 # ╠═6be6dbcc-b169-4184-8116-7444aaefc92a
 # ╠═ede5cec8-4238-4953-9323-a2094dcb0058
 # ╠═3838c8de-686c-4da9-9698-fbe36b1dd69b
+# ╠═44736b6f-76c8-46bf-b85c-3f1ca9bfcfbf
+# ╠═f3de6610-6a40-493b-95cc-b8a44236d42d
+# ╠═b00fc178-e092-4961-9a90-fab2961f8db6
+# ╠═4c459fa3-50b5-4a14-952d-a21afd0841b9
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

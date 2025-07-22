@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.6
+# v0.20.13
 
 using Markdown
 using InteractiveUtils
@@ -9,7 +9,7 @@ using PlutoUI
 
 # ╔═╡ ec9e6662-2bde-11f0-3655-15ea6ea13bd3
 # html"""
-# <link rel="stylesheet" type="text/css" href="https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/mi_estilo.css" media="screen" />
+# <link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
 # """
 
 # ╔═╡ f35234c3-e5eb-41b3-ba3d-57dc44613f29
@@ -187,7 +187,7 @@ PlutoUI = "~0.7.61"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.11.5"
+julia_version = "1.11.6"
 manifest_format = "2.0"
 project_hash = "6d1b77f27e79835fc27b2d7e99ab8fcaf37aa976"
 
