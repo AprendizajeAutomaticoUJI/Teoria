@@ -13,6 +13,9 @@ using CSV
 # ╔═╡ 8bdf2d83-face-4264-a4b7-e3a63a032089
 using DataFrames
 
+# ╔═╡ 9c879d33-96c0-4ade-8ffe-8b8ec18fc1e3
+using Downloads
+
 # ╔═╡ c7754369-3be9-4a13-91cc-981f5127992b
 using Plots
 
@@ -30,7 +33,7 @@ using ShortCodes
 
 # ╔═╡ 37b0af04-57d9-11f0-1110-37aa5650cd3f
 # html"""
-# <link rel="stylesheet" type="text/css" href="https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/mi_estilo.css" media="screen" />
+# <link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
 # """
 
 # ╔═╡ 7b73278e-bb13-44c8-9bcd-45ec39f679a1
@@ -38,6 +41,9 @@ plotly()
 
 # ╔═╡ 2108a2d1-4d9f-4b16-ae3b-e1938c9ae606
 TableOfContents(title="Contenidos", depth=1)
+
+# ╔═╡ b14098b5-65a1-471b-becf-017c5c07d8b4
+imagenes = "https://belmonte.uji.es/Docencia/IR2130/Teoria/RedesNeuronales/Imagenes/"
 
 # ╔═╡ 0a6c0ac8-4555-46b8-864b-6b6e42dce9de
 md"""
@@ -47,7 +53,7 @@ md"""
 
 Grado en Inteligencia Robótica - Universitat Jaume I (UJI)
 
-![](https://ujiapps.uji.es/ade/rest/storage/63c07717-5208-4240-b688-aa6ff558b466?guest=true)
+![](https://belmonte.uji.es/imgs/uji.jpg)
 """
 
 # ╔═╡ 11ea5ad6-9c55-47ca-a65e-8342bef0d637
@@ -75,8 +81,15 @@ La dependencia entre los elementos de una secuencia es una característica que p
 Algunos ejemplo son:
 """
 
+# ╔═╡ f9e9e887-d961-490e-9f7a-ce1c177bf56b
+function descargaDatos()
+	url = "https://raw.githubusercontent.com/AprendizajeAutomaticoUJI/DataSets/refs/heads/master/co2.csv"
+	descarga = Downloads.download(url)
+	return CSV.File(descarga) |> DataFrame
+end
+
 # ╔═╡ ce3083be-6fca-428d-bc52-b0a7c2c4b81e
-co2 = CSV.File("../DataSets/co2.csv") |> DataFrame;
+co2 = descargaDatos();
 
 # ╔═╡ bee2feec-b95a-4931-9b6e-a069841f5115
 plot_co2 = plot(co2.CO2,
@@ -301,9 +314,9 @@ En este gráfico se muestran todas las combinaciones posible a la entrada y
 a la salida:
 """
 
-# ╔═╡ 6ee163d0-c514-4eb7-aa11-b440215699f0
+# ╔═╡ 5f6ed735-ce31-4f4f-ba6f-3cfda53d6bb4
 Resource(
-	"https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/RedesNeuronales/rnn_entrada_salida.png",
+	imagenes * "rnn_entrada_salida.png",
 	:alt => "Estructuras redes neuronales recurrentes",
 	:width => 900
 )
@@ -320,7 +333,7 @@ md"""
 
 # ╔═╡ e5947a34-4d6d-4b9a-9527-94c0fda52057
 Resource(
-	"https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/RedesNeuronales/one_to_many.png",
+	imagenes * "one_to_many.png",
 	:alt => "Red recurrente uno a muchos",
 	:height => 300
 )
@@ -337,7 +350,7 @@ md"""
 
 # ╔═╡ 5fb81d16-20da-4951-b840-f263bb1fea8e
 Resource(
-	"https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/RedesNeuronales/many_to_one.png",
+	imagenes * "many_to_one.png",
 	:alt => "Red recurrente muchos a uno",
 	:height => 300
 )
@@ -352,9 +365,9 @@ md"""
 ## Secuencias y vectores
 """
 
-# ╔═╡ 5791ca1d-e3fa-43cb-94fd-bc6bd44e5615
+# ╔═╡ d6627b70-5a8c-4c95-bd60-0475e63da31e
 Resource(
-	"https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/RedesNeuronales/many_to_many.png",
+	imagenes * "many_to_many.png",
 	:alt => "Red recurrente muchos a muchos",
 	:height => 300
 )
@@ -371,7 +384,7 @@ md"""
 
 # ╔═╡ 443f09d1-4c69-4d21-b402-8a7c8fd9d537
 Resource(
-	"https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/RedesNeuronales/many_to_many_2.png",
+	imagenes * "many_to_many_2.png",
 	:alt => "Red recurrente muchos a muchos",
 	:height => 300
 )
@@ -392,7 +405,7 @@ $h_{t-1}$
 
 # ╔═╡ b2a54c24-afba-4318-bdfc-581a48ac89e8
 Resource(
-	"https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/RedesNeuronales/rnn_wikipedia.png",
+	imagenes * "rnn_wikipedia.png",
 	:alt => "Red recurrente muchos a muchos",
 )
 
@@ -412,7 +425,7 @@ del tiempo.
 
 # ╔═╡ aff9b74b-3867-4286-b866-982ef20c6886
 Resource(
-	"https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/RedesNeuronales/rnn.gif",
+	imagenes * "rnn.gif",
 	:alt => "Despliegue de una red recurrente",
 )
 
@@ -518,11 +531,271 @@ md"""
 
 La solución de las redes LSTM es añadir, dentro de cada neurona, un conjunto 
 de puertas lógicas que añaden memoria a largo plazo.
+"""
 
-![](Imagenes/lstm.png){fig-align="center"}
+# ╔═╡ a751b25c-69ff-4263-a72b-f53994a2f688
+Resource(
+	imagenes * "lstm.png",
+	:alt => "Red recurrente muchos a muchos",
+	:width => 900
+)
 
+# ╔═╡ 722073ad-065d-4ee8-bae0-4475a03f402c
+md"""
 Fuente: Hands-on machine learning... Aurélien Géron.
+"""
 
+# ╔═╡ 21ef5c35-084f-45f9-b9dc-31e5794821fe
+md"""
+* **forget gate**: controla qué parte de memoria se borra.
+* **input gate**: controla qué parte de $g(x)$ debe añadirse a la memoria.
+* **output gate**: controla la parte de la memoria que se utiliza para calcular la salida y el estado oculto.
+"""
+
+# ╔═╡ 6111cb71-2f89-4185-9842-9fd690f7b875
+md"""
+## Arquitectura de la redes LSTM
+
+Las funciones $f,g,i,o$ dependen tanto del estado oculto $h_t$ como de la 
+entrada $x_t$.
+
+$i_t = \sigma(W_{ih} h_{t-1} + W_{ix} x_t + b_i)$
+$f_t = \sigma(W_{fh} h_{t-1} + W_{fx} x_t + b_f)$
+$o_t = \sigma(W_{oh} h_{t-1} + W_{ox} x_t + b_o)$
+$g_t = tanh(W_{gh} h_{t-1} + W_{gx} x_t + b_g)$
+
+Las puertas combinan estos resultados para guardar el estado a largo plazo.
+"""
+
+# ╔═╡ a665581b-afd5-4846-8af2-e80a5aa2b044
+md"""
+## Show me the code
+Desde el punto de vista de la programación con Tensorflow sólo tenemos que 
+cambiar el nombre de la capa:
+
+```{.julia}
+modelo = Sequential([
+    Input(shape=(1, steps)),
+    LSTM(64),
+    Dense(1)
+])
+```
+
+Hemos sustituido la capa recurrente por la LSTM.
+"""
+
+# ╔═╡ 50c8ba61-48e7-4e02-a839-4421963f0d19
+md"""
+# Alternativas al estudio de series temporales
+"""
+
+# ╔═╡ 04ed7aa3-6e72-4a9f-9c3e-98a9403a24df
+md"""
+## ARMA y sus derivadas
+
+El modelo *Autoregresive Moving Average (ARMA)* predice el próximo valor en una serie temporal a partir de los valores actuales y las diferencias entre los valores reales y los predichos anteriormente:
+
+$\hat y_t = \sum_{i=1}^p \alpha_i y_{t-i} + \sum_{i=1}^q \theta_i \epsilon_{t-i}$
+$\epsilon_{t-1} = y_{t-1} - \hat y_{t-1}$
+"""
+
+# ╔═╡ 7ba3ff0e-5f2d-47da-a4fd-24c85b783746
+md"""
+## ARMA y sus derivadas
+
+En este caso, el _entrenamiento_ consiste en encontrar los mejores valores para los parámetros $\alpha_i$ y $\theta_i$ para una secuencia temporal dada, y unos  hiperparámetros $p$ y $q$.
+
+Es importante notar que este modelo asume la estacionalidad de la serie. No podríamos aplicar este modelo a la serie de datos de CO2, pero sí a su componente estacional.
+"""
+
+# ╔═╡ 226e75e4-27c1-4fb9-aa26-4bce7b904fe4
+md"""
+## ARMA y sus derivadas
+
+El modelo *Autoregresive Integrated Moving Averange (ARIMA)* permite trabajar con series no estacionarias.
+
+La idea básica de este modelo es que en el cálculo de la predicción también se introduce una media deslizante sobre los datos de la serie para eliminar la posible componente de tendencia de la serie.
+
+Algo parecido a lo que hemos hecho ad-hoc con la serie de datos de concentración de CO2
+
+Existen otras versiones que intentan introducir mejoras sobre los modelos anteriores, como es el caso de SARIMA.
+"""
+
+# ╔═╡ d5d4f807-7e47-48eb-b828-27b43491a2c8
+md"""
+## Cadenas de Markov
+
+Las cadenas de Markov son un modelo que predice el siguiente valor en una secuencia temporal. No es necesario que los valores sean numéricos, pueden ser de cualquier tipo.
+"""
+
+# ╔═╡ d262a18f-1482-44a1-821b-d5a7b5370f44
+Resource(
+	imagenes * "cadena_markov.png",
+	:alt => "Cadena de Markov",
+	:width => 300
+)
+
+# ╔═╡ 222754d0-2196-4b8f-a3f2-f261aee492e6
+md"""
+**A** y **E** son los dos estados. Las flechas indican la probabilidad de las transiciones entre estados.
+
+Joxemai4, CC BY-SA 3.0 <https://creativecommons.org/licenses/by-sa/3.0>, via Wikimedia Commons
+"""
+
+# ╔═╡ 8bcc469e-d96c-4bab-a8de-fa5977d768f6
+md"""
+## Cadenas de Markov
+
+Las transiciones se pueden representar como una matriz:
+
+$\begin{matrix}
+ & A & E \\
+A & 0.6 & 0.7 \\
+E & 0.4 & 0.3 \\
+\end{matrix}$
+"""
+
+# ╔═╡ 8e78cb8a-0d5d-4a91-b426-4e1058796a41
+md"""
+## Cadenas de Markov
+
+Las probabilidades de los estados finales se calculan multiplicando la matriz de transición por el vector de estado:
+
+$\begin{bmatrix}
+0.6 & 0.7 \\
+0.4 & 0.3 \\
+\end{bmatrix}
+\begin{bmatrix}
+1 \\ 
+0 \\
+\end{bmatrix}
+=
+\begin{bmatrix}
+0.6 \\ 
+0.4 \\
+\end{bmatrix}$
+
+Es decir, si partimos del estado **A**, el siguiente estado será **A** con un 60% de probabilidad y **B** con un 40% de probabilidad.
+
+Si queremos la probabilidad en el segundo instante, hacemos:
+
+$\begin{bmatrix}
+0.6 & 0.7 \\
+0.4 & 0.3 \\
+\end{bmatrix}
+\begin{bmatrix}
+0.6 & 0.7 \\
+0.4 & 0.3 \\
+\end{bmatrix}
+\begin{bmatrix}
+1 \\ 
+0 \\
+\end{bmatrix}
+=
+\begin{bmatrix}
+0.639 \\ 
+0.361 \\
+\end{bmatrix}$
+"""
+
+# ╔═╡ 4a1845cd-e71a-4dbb-a5fc-c9b8d6df289a
+md"""
+## Cadenas de Markov
+
+Este tipo de matrices, cada una de sus columnas suman 1, tienen algunas propiedades interesantes, una de ellas es la de tener un estado estacionario. 
+
+Si multiplicamos infinitas veces a matriz por cualquier estado inicial de partida, llegamos a un estado que no varia, el estado estacionario.
+
+$\begin{bmatrix}
+0.6 & 0.7 \\
+0.4 & 0.3 \\
+\end{bmatrix}^\infty
+\begin{bmatrix}
+1 \\ 
+0 \\
+\end{bmatrix}
+=
+\begin{bmatrix}
+0.\widehat{63} \\ 
+0.\widehat{36} \\
+\end{bmatrix}$
+"""
+
+# ╔═╡ d18d17da-ad30-45fd-8ea8-e2c965609e48
+md"""
+## Cadenas de Markov
+
+Dicho de otro modo, el vector 
+$\begin{bmatrix}
+0.\widehat{63} \\ 
+0.\widehat{36} \\
+\end{bmatrix}$ 
+es autovector de la matriz con autovalor $\lambda=1$.
+
+Entrenar un modelo de cadena de Markov implica estimar la matriz de transición dada una cadena.
+"""
+
+# ╔═╡ 50a25851-1f8b-48eb-8c04-410128ec5dae
+md"""
+## Modelos ocultos de Markov
+
+En los modelo ocultos de Markov, no se conoce el estado en el que se encuentra el sistema, de ahí lo de ocultos, sólo se _ven_ las observaciones que se emiten en cada uno de los estados.
+"""
+
+# ╔═╡ ba09c453-fcea-406f-bc1b-a6b5b2decfe3
+Resource(
+	imagenes * "hmm.png",
+	:alt => "Modelo oculto de Markov",
+	:width => 900
+)
+
+# ╔═╡ 8ace3ee2-f67a-4196-882a-d452dd22a69a
+md"""
+## Modelos ocultos de Markov
+
+Dentro de cada estado podemos tener un proceso aleatorio que genera el dato que se va a emitir. El proceso aleatorio es una hipótesis, por ejemplo, suponemos que el proceso aleatoria sigue una distribución de Gauss.
+
+Fíjate en que si no existe proceso aleatorio, es decir, si en cada estado se emite siempre el mismo valor, lo que tenemos es una cadena de Markov.
+"""
+
+# ╔═╡ 00ce16c1-73fd-4e2b-abb2-4dd40a499d75
+md"""
+## Modelos ocultos de Markov
+
+En este caso el entrenamiento consiste en encontrar la matriz de transiciones, y los parámetros que definen el proceso aleatorio de cada estado a partir de una secuencia de observaciones.
+
+Antes de la irrupción de las redes neuronales, los mejores modelos de reconocimiento del lenguaje natural estaban basados en modelos ocultos de Markov.
+"""
+
+# ╔═╡ b5cedc4f-6010-4908-a022-546d639afe6c
+md"""
+# Resumen
+"""
+
+# ╔═╡ 07f16946-5cc0-4731-92bb-eaec2e4c04ba
+md"""
+## Resumen
+
+* La ventaja de las redes recurrentes es que pueden trabajar con vectores de entrada de cualquier tamaño.
+* Las redes recurrentes tienen múltiples aplicaciones, desde predecir el siguiente valor en una secuencia, hasta generar imágenes a partir de una descripción.
+* La novedad de las redes recurrentes es que añaden _estado_ a cada una de las neuronas. El estado se calcula en función de la entrada actual y el anterior estado.
+"""
+
+# ╔═╡ 05410453-8140-4c52-809a-c2775784b97c
+md"""
+## Resumen
+
+* Sin embargo, para secuencias _largas_ la contribución de los primeros valores de la secuencia se desvanece.
+* Las redes LSTM tratan de evitar este desvanecimiento añadiendo una memoria a largo plazo, que se calcula en cada estado y se propaga a las siguientes estados.
+"""
+
+# ╔═╡ 223b0452-e58d-49f5-a14b-268ddb166369
+md"""
+# Referencias
+
+[Evolución CO2](https://www.epdata.es/datos/cambio-climatico-datos-graficos/447?accion=2)
+
+[The Unreasonable Effectiveness of Recurrent Neural Networks](http://karpathy.github.io/2015/05/21/rnn-effectiveness/)
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -530,6 +803,7 @@ PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+Downloads = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
 PlotlyBase = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
 PlotlyKaleido = "f2990250-8cf9-495f-b13a-cce12b45703c"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
@@ -554,7 +828,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.6"
 manifest_format = "2.0"
-project_hash = "f23a59351075c6a9666c26f4fed262b57aa88f3a"
+project_hash = "bea67467e1ac0739cc6d6b4d8362f345be0be706"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -1877,6 +2151,7 @@ version = "1.8.1+0"
 # ╠═7688d442-926f-451d-9ef6-50423287dfbe
 # ╠═9f1e3004-7721-4cfe-b55b-0e0ca6c2ed59
 # ╠═8bdf2d83-face-4264-a4b7-e3a63a032089
+# ╠═9c879d33-96c0-4ade-8ffe-8b8ec18fc1e3
 # ╠═c7754369-3be9-4a13-91cc-981f5127992b
 # ╠═63d96af8-7399-4c26-9221-9aa36731c239
 # ╠═ebd9c668-f9f5-48c7-8e9b-859f169ced79
@@ -1884,10 +2159,12 @@ version = "1.8.1+0"
 # ╠═4fb47936-5f5b-42cb-99a0-1db519f34584
 # ╠═7b73278e-bb13-44c8-9bcd-45ec39f679a1
 # ╠═2108a2d1-4d9f-4b16-ae3b-e1938c9ae606
+# ╠═b14098b5-65a1-471b-becf-017c5c07d8b4
 # ╠═0a6c0ac8-4555-46b8-864b-6b6e42dce9de
 # ╠═11ea5ad6-9c55-47ca-a65e-8342bef0d637
 # ╠═13a8cbd0-21e1-4ac7-ba10-383197bb6e0a
 # ╠═689dfd81-45d2-4371-80b8-ac5177bcc99a
+# ╠═f9e9e887-d961-490e-9f7a-ce1c177bf56b
 # ╠═ce3083be-6fca-428d-bc52-b0a7c2c4b81e
 # ╠═bee2feec-b95a-4931-9b6e-a069841f5115
 # ╟─f72ebe9c-3c40-4753-bef3-4e6bbf129164
@@ -1916,7 +2193,7 @@ version = "1.8.1+0"
 # ╠═977f84a3-4186-454b-bdf2-0bf7ceac826a
 # ╠═0bfa3c33-7cf5-4279-8c8e-0a5052de7b49
 # ╠═61bdb024-5186-4188-9af0-0a8b3bb09b86
-# ╠═6ee163d0-c514-4eb7-aa11-b440215699f0
+# ╠═5f6ed735-ce31-4f4f-ba6f-3cfda53d6bb4
 # ╠═e252d6e8-4bd6-4bce-8b44-9876ef1279c9
 # ╠═30a5900f-9125-453e-bc18-d38ff81e036c
 # ╠═e5947a34-4d6d-4b9a-9527-94c0fda52057
@@ -1925,7 +2202,7 @@ version = "1.8.1+0"
 # ╠═5fb81d16-20da-4951-b840-f263bb1fea8e
 # ╠═6a6a866b-35e0-46c3-942e-eb8fdb098c7d
 # ╠═f761cc35-2b19-4c87-b492-e3b9cf88aec2
-# ╠═5791ca1d-e3fa-43cb-94fd-bc6bd44e5615
+# ╠═d6627b70-5a8c-4c95-bd60-0475e63da31e
 # ╠═b64a78c7-e1e4-4e9d-ac78-c8639e150e73
 # ╠═a200a753-9cad-439f-b243-a2640528d4d1
 # ╠═443f09d1-4c69-4d21-b402-8a7c8fd9d537
@@ -1943,5 +2220,29 @@ version = "1.8.1+0"
 # ╠═f3de6610-6a40-493b-95cc-b8a44236d42d
 # ╠═b00fc178-e092-4961-9a90-fab2961f8db6
 # ╠═4c459fa3-50b5-4a14-952d-a21afd0841b9
+# ╠═a751b25c-69ff-4263-a72b-f53994a2f688
+# ╠═722073ad-065d-4ee8-bae0-4475a03f402c
+# ╠═21ef5c35-084f-45f9-b9dc-31e5794821fe
+# ╠═6111cb71-2f89-4185-9842-9fd690f7b875
+# ╠═a665581b-afd5-4846-8af2-e80a5aa2b044
+# ╠═50c8ba61-48e7-4e02-a839-4421963f0d19
+# ╠═04ed7aa3-6e72-4a9f-9c3e-98a9403a24df
+# ╠═7ba3ff0e-5f2d-47da-a4fd-24c85b783746
+# ╠═226e75e4-27c1-4fb9-aa26-4bce7b904fe4
+# ╠═d5d4f807-7e47-48eb-b828-27b43491a2c8
+# ╠═d262a18f-1482-44a1-821b-d5a7b5370f44
+# ╠═222754d0-2196-4b8f-a3f2-f261aee492e6
+# ╠═8bcc469e-d96c-4bab-a8de-fa5977d768f6
+# ╠═8e78cb8a-0d5d-4a91-b426-4e1058796a41
+# ╠═4a1845cd-e71a-4dbb-a5fc-c9b8d6df289a
+# ╠═d18d17da-ad30-45fd-8ea8-e2c965609e48
+# ╠═50a25851-1f8b-48eb-8c04-410128ec5dae
+# ╠═ba09c453-fcea-406f-bc1b-a6b5b2decfe3
+# ╠═8ace3ee2-f67a-4196-882a-d452dd22a69a
+# ╠═00ce16c1-73fd-4e2b-abb2-4dd40a499d75
+# ╠═b5cedc4f-6010-4908-a022-546d639afe6c
+# ╠═07f16946-5cc0-4731-92bb-eaec2e4c04ba
+# ╠═05410453-8140-4c52-809a-c2775784b97c
+# ╠═223b0452-e58d-49f5-a14b-268ddb166369
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

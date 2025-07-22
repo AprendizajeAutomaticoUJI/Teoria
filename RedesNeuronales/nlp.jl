@@ -1,0 +1,1323 @@
+### A Pluto.jl notebook ###
+# v0.20.13
+
+using Markdown
+using InteractiveUtils
+
+# ╔═╡ efc09298-51f8-4013-9677-497b6de474be
+using PlutoUI
+
+# ╔═╡ 367d5f39-3928-4709-8de9-2f4b1f046acd
+using ShortCodes
+
+# ╔═╡ c2fd34b8-66db-11f0-3efd-21960f239f79
+# html"""
+# <link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
+# """
+
+# ╔═╡ 2a803c80-dece-4f52-9898-1cc3ba15ebbc
+TableOfContents(title="Contenidos", depth=1)
+
+# ╔═╡ e05614d4-5762-4839-b657-1c98b2054de4
+imagenes = "https://belmonte.uji.es/Docencia/IR2130/Teoria/RedesNeuronales/Imagenes/"
+
+# ╔═╡ 9e00079f-b241-4c7a-9c24-b229e08428df
+md"""
+# Procesamiento del lenguaje natural
+
+Óscar Belmonte Fernández - IR2130 Aprendizaje Automático
+
+Grado en Inteligencia Robótica - Universitat Jaume I (UJI)
+
+![](https://belmonte.uji.es/imgs/uji.jpg)
+"""
+
+# ╔═╡ b72590de-c5d6-422d-8a7d-572cc3b1c3c3
+md"""
+## Objetivos de aprendizaje
+
+* Resumir las tareas principales del Procesamiento del Lenguaje Natural.
+* Interpretar el fundamento de los Autoencoders.
+* Argumentar cómo se construye un Embedding con la técnica de los Autoencoders.
+* Construir o adaptar un Embedding.
+* Razonar cómo funcionan las redes recurrentes en la tarea de generación de texto.
+* Construir o adaptar una red recurrente para la generación de texto.
+"""
+
+# ╔═╡ 7128e86b-bdb9-4e7a-84ba-ee8682f8ae4f
+md"""
+## Objetivos de aprendizaje
+
+* Razonar cómo funciona una red neuronal recurrente para la tarea de clasificación de texto.
+* Construir o adaptar una red recurrente para la clasificación de texto.
+* Razonar cómo funciona una red neuronal recurrente para la tarea de traducción automática.
+* Construir o adaptar una red recurrente para traducción automática.
+* Razonar cómo funciona la arquitectura Transformer.
+
+"""
+
+# ╔═╡ 1be76676-2de5-4df0-9e51-e95ce80c4ece
+md"""
+# Introducción
+"""
+
+# ╔═╡ 9476c68a-19fb-4855-9c6e-3d2cf1e9e403
+md"""
+## Procesamiento del Lenguaje Natural 
+El Procesamiento del Lenguaje Natural (PLN, NLP - Natural Language Processing) es un campo de la inteligencia artificial que se ocupa del estudio y desarrollo de algoritmos y modelos capaces de analizar, generar y transformar el lenguaje humano en forma escrita o hablada. 
+
+Su objetivo principal es permitir que las máquinas procesen el lenguaje natural de manera que sea útil y efectiva para interactuar con las personas o extraer conocimiento a partir de textos.
+"""
+
+# ╔═╡ 7aa6b29c-3e43-4b2a-9323-655f90835e66
+md"""
+## Tareas en NLP
+
+Algunas de las tareas básicas en NLP que vamos a ver en esta presentación son:
+
+* Generación de texto.
+* Clasificación de texto.
+* Traducción automática.
+
+Antes de entrar con NLP, vamos a ver algunas técnicas relacionadas.
+"""
+
+# ╔═╡ 0679cc8f-5779-41ad-ac5d-13f1a303b0dc
+md"""
+## Bibliografía
+
+1. Hands-on machine learning, Aurélien Géron.
+1. [Deep Learning](http://www.deeplearningbook.org), Ian Goodfellow, Joshua Bengio and Aaron Courbille.
+"""
+
+# ╔═╡ 70676122-eb80-4b6d-9c78-e489292c3f5c
+md"""
+# Autoencoders
+"""
+
+# ╔═╡ 2ea8cba5-3286-4d26-8bbe-76b7e1ba868f
+md"""
+## Introducción
+El objetivo de un autoencoder es replicar la entrada en la salida pasando por 
+un espacio de menor dimensión que el espacio de partida:
+"""
+
+# ╔═╡ 813ecbd6-74b8-4d26-a92d-c6098044e64c
+Resource(
+	imagenes * "autoencoder2.png",
+	:alt => "Estructuras redes neuronales recurrentes",
+	:width => 900
+)
+
+# ╔═╡ 116bf570-3a18-4789-b37c-18755c401f5d
+md"""
+Fuente: https://lilianweng.github.io/posts/2018-08-12-vae/
+"""
+
+# ╔═╡ 15e631ed-dcbd-4a09-a020-474671543c26
+md"""
+## Introducción
+
+Lo que obtenemos en el espacio intermedio es una representación compacta de la información en el espacio original.
+
+Fíjate en que el entrenamiento es no supervisado, sólo necesitamos muestras de entrenamiento, no es necesario que estén etiquetadas.
+
+Teóricamente, las funciones de entre las capas podrían ser tan potentes que conun espacio intermedio de dimensión 1 pudiésemos reconstruir la imagen original.Seria como si el autoencoder asignase un _índice_ que le permitiese recuperarla imagen inicial.
+
+Afortunadamente, en la práctica, este caso no se da.
+"""
+
+# ╔═╡ c0a6ed84-c2e1-4778-9698-3c1a346cc6bf
+md"""
+## Introducción
+El trabajo de un autoencoder parece una tarea sencilla, pero tienen muchas aplicaciones:
+
+* Detectar anomalías.
+* Reconstruir imágenes.
+* Limpiar imágenes.
+
+"""
+
+# ╔═╡ e2c82807-91c9-422f-8c68-e9550d25f239
+md"""
+## Detectar anomalías
+Entrenamos con un conjunto de muestras sin anomalías. Si al autoencoder llega un dato anómalo la codificación intermedia será incapaz de reconstruir el dato a la salida (gran diferencia entre entrada y salida), y es dato lo podemos considerar anómalo.
+"""
+
+# ╔═╡ bfbe0854-0fc8-4f8f-9286-977e734cab12
+Resource(
+	imagenes * "cern.png",
+	:alt => "CERN",
+	:width => 900
+)
+
+# ╔═╡ 1c8635e9-5f6e-4005-95d3-a3811498a179
+md"""
+Fuente: CERN
+"""
+
+# ╔═╡ 9c9997ea-e050-4960-b656-3048091b0035
+md"""
+## Reconstruir imágenes
+
+A partir de una imagen donde falta información, reconstruirla.
+"""
+
+# ╔═╡ ac9ef535-5f67-4d49-a56d-fe2bd44993f6
+Resource(
+	imagenes * "autoencoder_reconstruccion.png",
+	:alt => "Reconstruir imágenes",
+	:width => 900
+)
+
+# ╔═╡ 4d9883fe-1ead-4d07-ad35-5c8d935412b5
+md"""
+Fuente: Hands-on machine learning - Aurélien Géron
+"""
+
+# ╔═╡ 5c217c15-be06-464e-a1fc-577d6059205c
+md"""
+## Limpiar imágenes
+
+Limpiar imágenes con ruido.
+"""
+
+# ╔═╡ bc49d4cb-ab79-4fa0-809f-fb3ba82e5adc
+Resource(
+	imagenes * "denoising_autoencoder.png",
+	:alt => "Limpiar imágenes",
+	:width => 900
+)
+
+# ╔═╡ d2c96070-c07f-49c4-84f5-bebf7498b314
+md"""
+Fuente: By neerajkrbansal1996 - https://github.com/neerajkrbansal1996/Denoising-autoencoder, CC0, https://commons.wikimedia.org/w/index.php?curid=128249938
+"""
+
+# ╔═╡ a1ff9ae5-a131-40c2-833a-4f17fb765d1b
+md"""
+# Embeddings
+"""
+
+# ╔═╡ 22ec98af-c189-46ab-99a1-5cd8d51a77a2
+md"""
+## Introducción
+
+La representación de palabras en un ordenador para realizar cálculos no es trivial.
+
+Usualmente, el primer paso suele ser trabajar con un vocabulario restringido en vez de con todas las palabras posible. La codificación de una palabra que no existe en el vocabulario se sustituye por un código **UNKNOWN**.
+
+_Puso cara de pasmo al oír la noticia_
+
+_Puso cara de **UNKNOWN** al oír la noticia_
+"""
+
+# ╔═╡ 28b7e493-acf2-49ce-a156-ce2b1bab2489
+md"""
+## Vectorización de texto
+
+Para la creación del vocabulario a partir de un corpus:
+
+```{.python}
+corpus = ["En esta asignatura", "La asignatura que se ha presentado"]
+vectorizador = tf.keras.layers.TextVectorization()
+vectorizador.adapt(corpus)
+print(vectorizador.get_vocabulary())
+
+['', '[UNK]', 'asignatura', 'se', 'que', 'presentado', 'la', 'ha', 'esta', 'en']
+
+
+vectorizador(["La asignatura que estamos viendo", "Esta asignatura"])
+
+<tf.Tensor: shape=(2, 5), dtype=int64, numpy=
+array([[6, 2, 4, 1, 1],
+       [8, 2, 0, 0, 0]])>
+```
+
+Hay dos códigos especiales: (1) indica que la palabra no pertenece al vocabulario, 
+(0) indica _no hay palabra_.
+
+"""
+
+# ╔═╡ c31ee640-cdba-4469-b755-a6406e101015
+md"""
+## One-hot encoding
+
+Cada palabra se representa por un vector de dimensión igual al número de palabras del vocabulario. Se activa el bit correspondiente a su índice.
+"""
+
+# ╔═╡ 8c5cd066-9fa7-4c62-beed-e858d0f3a311
+Resource(
+	imagenes * "one_hot_encoding.webp",
+	:alt => "One hot encoding",
+	:width => 900
+)
+
+# ╔═╡ 87d0f2f2-eaea-4a7c-bca9-ceabab0da099
+md"""
+Fuente: Medium
+"""
+
+# ╔═╡ 1ebf121c-e8c1-45f8-954f-a7ad10157228
+md"""
+## Embeddings
+
+Los embeddings son una aplicación de los autoencoders cuando la información con la que estamos trabajando es texto.
+
+La idea base es intentar reducir la dimensionalidad del espacio de partida (número de palabras en el vocabulario), a un espacio que mantenga la información y se más fácil de manejar.
+
+El espacio de partida en esta caso en utilizar codificación _one-hot encoding_.
+"""
+
+# ╔═╡ f4db6144-ef66-414c-9854-c05d0dad8ef3
+md"""
+## Embeddings
+"""
+
+# ╔═╡ ac928fe1-5926-44d7-912e-be19f5128b84
+Resource(
+	imagenes * "one_hot_encoding2.png",
+	:alt => "One hot encoding",
+	:width => 900
+)
+
+# ╔═╡ bafdc086-0b06-4f33-8fbe-a8933c82ee47
+md"""
+Cada uno de los vectores de nuestro espacio _one-hot encoding_ es _disperso_, muchas de sus componentes están vacías, no aportan información.
+
+Es deseable reducir la dimensión del espacio sin perder información.
+"""
+
+# ╔═╡ 7bd2726c-6c8a-48d9-b1ae-eed8bcc88156
+md"""
+## Embeddings
+"""
+
+# ╔═╡ 4c9944c1-60bf-4e57-a0c9-6219baeb2313
+Resource(
+	imagenes * "autoencoder.png",
+	:alt => "Autoencoder",
+	:width => 500
+)
+
+# ╔═╡ 92c5efbe-6148-4813-8e28-ddd73808b6e1
+md"""
+En **h** vamos a tener una representación _densa_ de la información en el espacio _one-hot encoding_.
+"""
+
+# ╔═╡ 1c7fc9ef-5259-498b-80ea-b8a21d4b2fc5
+md"""
+## Embeddings
+
+En **Tensorflow** existe una capa para crear embeddings:
+
+```{.python}
+tf.keras.layers.Embedding(tam_vocabulario, tam_embedding)
+```
+
+Donde **tam_vocabulario** indica el número de palabras en nuestro vocabulario, y **tam_embedding** las dimensiones del embedding.
+
+Esta capa se puede entrenar de manera aislada o puede formar parte de una red neuronal.
+"""
+
+# ╔═╡ 7f1ebe1e-7e9c-480a-aad5-23e6d70607cc
+md"""
+## Word2vec
+
+[Word2vec](https://arxiv.org/pdf/1301.3781) es un embedding muy utilizado, desarrollado por Tomas Mikolov. Se puede entrenar de dos modos:
+"""
+
+# ╔═╡ f7129b01-7d93-41f9-a5f2-526ed80311af
+Resource(
+	imagenes * "cbow.png",
+	:alt => "Continuous bag of words",
+	:width => 500
+)
+
+# ╔═╡ 732ca76c-97ee-4762-9cd5-cd76752391f5
+md"""
+Continuous Bag of Words 
+
+Pineapples are **spikey** and yellow
+
+Fuente: https://community.alteryx.com/t5/Data-Science/Word2vec-for-the-Alteryx-Community/ba-p/305285
+"""
+
+# ╔═╡ 9c9247a8-fb07-4924-8fa3-445d3f4ade54
+md"""
+## Word2vec
+
+[Word2vec](https://arxiv.org/pdf/1301.3781) es un embedding muy utilizado, desarrollado por Tomas Mikolov. Se puede entrenar de dos modos:
+"""
+
+# ╔═╡ 7f09d56e-77b3-45e5-ac5a-61f80ad82b39
+Resource(
+	imagenes * "skip_gram.png",
+	:alt => "Skip-gram",
+	:width => 500
+)
+
+# ╔═╡ be14b504-bf76-4053-8098-71c791108151
+md"""
+Skip-gram
+
+Pineapples are **spikey** and yellow
+
+Fuente: https://community.alteryx.com/t5/Data-Science/Word2vec-for-the-Alteryx-Community/ba-p/305285
+"""
+
+# ╔═╡ e31a02d0-d16a-4f11-a767-050139079635
+md"""
+## Word2vec
+
+Una primera característica impresionante de este embedding es que, si lo proyectamos a un espacio de 3 dimensiones veremos que conceptos similares se encuentran cerca unos de otros.
+
+[Visualización de embeddings.](https://projector.tensorflow.org/)
+"""
+
+# ╔═╡ bee075f8-65e2-4991-ae10-e749d1119bb2
+md"""
+## Word2vec
+
+Otra característica no menos impresionante, es que podemos hacer operaciones entre los vectores del espacio de Word2vec:
+
+**king - male +female = queen** (tiene embebida la semántica de realiza)
+
+**Spanish - country + Italy = Italian** (tiene embebida la semántica de lengua)
+
+**dogs - dog + cat = cats** (tiene embebido el sentido de pluralidad)
+
+"""
+
+# ╔═╡ 84f87d3f-d60e-4a95-a48c-e77a25874d0f
+md"""
+# Tareas en NLP
+"""
+
+# ╔═╡ e0917f33-9a77-439a-badf-66a3d04b248a
+md"""
+## Introducción
+
+Algunas de las tareas típicas en NLP son:
+
+* Generación de texto.
+* Clasificación de texto.
+* Traducción automática.
+
+Vamos a ver cada una de ellas.
+"""
+
+# ╔═╡ 02bce938-3cf8-41fd-b8b5-da36d2bf3782
+md"""
+## Generación de texto
+
+De manera análoga a la predicción del siguiente valor en secuencias de datos temporales, para generar texto podemos utilizar redes recurrentes (RNN).
+
+Durante el entrenamiento vamos proporcionando a la red secuencias de letras como entrada, y debe predecir la siguiente letra, que se proporciona a la salida.
+
+En este caso podemos utilizar una variación de las RNN, las Gated Recurrent Units (GRU).
+"""
+
+# ╔═╡ a601d1f6-50e8-460c-8b00-33c67ea535b6
+md"""
+## Generación de texto
+
+Las celdas (neuronas) GRU (Gated Recurrent Unit) son una mejora de las neuronas LSTM con un rendimiento parecido, pero utilizan menos parámetros, y menos funciones internas para recordar fragmentos de texto.
+"""
+
+# ╔═╡ 547eda5f-ba82-41d7-b9d6-0160813fb3f8
+Resource(
+	imagenes * "gru.png",
+	:alt => "Gated recurrent unit",
+	:width => 500
+)
+
+# ╔═╡ 92307ff3-745e-41ef-8491-cf6306fc9a64
+md"""
+## Generación de texto
+
+Crear una red para generar texto con GRU es relativamente sencillo:
+
+```{.python}
+modelo = tf.keras.Sequential([
+    tf.keras.layers.Embedding(input_dim=letras, output_dim=dimension),
+    tf.keras.layers.GRU(128, return_sequences=True),
+    tf.keras.layers.Dense(letras, activation="softmax")
+])
+model.compile(loss="sparse_categorical_crossentropy", optimizer="nadam",
+              metrics=["accuracy"])
+```
+
+Fíjate en que, en este caso, el embedding se va construyendo en el proceso de entrenamiento de la red.
+"""
+
+# ╔═╡ 99437b1f-f38d-40ce-bd43-d071669cef2f
+md"""
+## Generación de texto
+
+Una vez entrenada la red, si le proporcionamos un texto inicial de partida, la red irá añadiendo carácter a carácter hasta alcanzar el carácter especial **<EOF>** final.
+
+El estilo del texto generado coincidirá con el del texto utilizado para entrenar la red.
+
+Además, podemos hacer *transfer learning*, si tenemos una red entrenada, podemos reentrenarla utilizando la misma técnica que empleamos con redes convolucionales:
+"""
+
+# ╔═╡ b167c50a-38dd-4485-aabb-9a5e97ded2b4
+md"""
+## Generación de texto
+
+1. Utilizar una arquitectura inicial ya entrenada.
+1. Eliminar las capas más cercanas a la salida y sustituirlas por nuevas capas adaptadas a nuestro problema.
+1. Durante la fase de entrenamiento:
+    1. _Congelar_ los pesos de las capas preexistentes.
+    1. Entrenar durante unas épocas hasta que la precisión sobre el conjunto de validación se estabilice.
+    1. _Descongelar_ todas las capas y entrenar hasta conseguir una buena precisión.
+"""
+
+# ╔═╡ 8ef6df12-63ca-4544-8df9-14bb4c944319
+md"""
+## Clasificación de texto
+"""
+
+# ╔═╡ f6bf7355-4d41-4d5b-8034-492871b67b7c
+Resource(
+	imagenes * "analisis_sentimientos.png",
+	:alt => "Análisis de sentimientos",
+	:width => 500
+)
+
+# ╔═╡ 4e5b4466-587a-44f5-85c4-561c454e2100
+md"""
+Supongamos que queremos clasificar textos como positivos, negativos o neutros.
+
+En el conjunto de entrenamiento, o todos los textos tienen el mismo número de palabras.
+"""
+
+# ╔═╡ a7b091ab-0dcc-44c9-a93e-118d1610a855
+md"""
+## Clasificación de texto
+
+Podemos resolverlo insertando una marca especial que indique huecos, donde se esperan palabras.
+
+Pero esto no dará buenos resultados durante el proceso de entrenamiento.
+
+Una mejor solución es indicar a la red que las marcas de _hueco_ no sean tenidas en cuenta durante el proceso de entrenamiento.
+
+```{.python}
+tf.keras.layers.Embedding(tam_vacobulario, tam_embedding, mask_zero=True)
+```
+
+De igual modo, los _huecos_ tampoco se tendrán en cuenta en el proceso de clasificación.
+"""
+
+# ╔═╡ dc52bfd9-2bfd-4882-88cd-f869a135945c
+md"""
+## Clasificación de texto
+
+Para construir la red que analiza sentimientos, primero construimos la capa de vectorización, ahora estamos trabajando con palabras, e inicialmente no sabemos cuantas palabras tiene nuestro corpus:
+
+```{.python}
+text_vec_layer = tf.keras.layers.TextVectorization(max_tokens=tam_maximo)
+text_vec_layer.adapt([textos, etiquetas])
+```
+
+Y ahora construimos la red:
+
+```{.python}
+modelo = tf.keras.Sequential([
+    text_vec_layer,
+    tf.keras.layers.Embedding(tam_vocabulario, tam_embedding),
+    tf.keras.layers.GRU(128),
+    tf.keras.layers.Dense(1, activation="sigmoid")
+])
+model.compile(loss="binary_crossentropy", optimizer="nadam",
+              metrics=["accuracy"])
+```
+"""
+
+# ╔═╡ 0b8d86b8-ab46-466f-91a4-70b689eb6b21
+md"""
+## Traducción automática
+
+Las redes recurrentes almacenan _memoria_ que es útil para tareas de traducción de textos, ya que es importante guardar el contexto de las palabras en la traducción.
+"""
+
+# ╔═╡ 96221fff-1ac1-497c-97da-62c71571100c
+md"""
+## Traducción automática
+
+Durante la fase de entrenamiento.
+"""
+
+# ╔═╡ 7c25120d-4043-4d81-8961-06b5192cf526
+Resource(
+	imagenes * "nlp_rnn.png",
+	:alt => "Traducción automática",
+	:width => 500
+)
+
+# ╔═╡ 81b23354-0862-4226-a2e9-26a9ceb700e2
+md"""
+Fuente: Hands-on machine learning - Aurélien Géron
+"""
+
+# ╔═╡ 55b122db-fe73-4ccf-ad85-2ecb282de7e3
+md"""
+## Traducción automática
+
+Durante la fase de traducción.
+"""
+
+# ╔═╡ 4c98dcf0-2a02-474e-a4c6-7f9605ecc208
+Resource(
+	imagenes * "nlp_rnn_decoder.png",
+	:alt => "Fase de traducción",
+	:width => 500
+)
+
+# ╔═╡ cb4da7e6-eb30-4369-9c6d-60e21bf7256c
+md"""
+Fuente: Hands-on machine learning - Aurélien Géron
+"""
+
+# ╔═╡ e44c1ec9-4d42-4dc7-9d4c-368d886686aa
+md"""
+## Traducción automática
+
+Durante la fase de traducción.
+"""
+
+# ╔═╡ e217765a-ad91-43d0-ac80-e4d7f1e5f38a
+Resource(
+	imagenes * "rnn_traduccion.png",
+	:alt => "Fase de traducción",
+	:width => 500
+)
+
+# ╔═╡ 140b7a93-4bd6-44a3-baaf-562d364b916d
+md"""
+Fuente: A Survey of Deep Learning Techniques for Neural Machine Translation, S. Yan et al., 2020.
+"""
+
+# ╔═╡ d943e918-6d72-45d9-b118-b88dcaacea65
+md"""
+## Traducción automática
+
+Una mejora de la arquitectura anterior son las redes bidireccionales:
+"""
+
+# ╔═╡ bb095489-b75b-47c1-b785-e59c317691f6
+Resource(
+	imagenes * "rnn_bidireccional.png",
+	:alt => "Fase de traducción",
+	:width => 500
+)
+
+# ╔═╡ fbf000ab-aca2-4fb7-8b3f-ef6791ad7cc1
+md"""
+En este caso, la información del estado oculto se transmite en dos direcciones, con lo que el contexto se amplia hacia adelante en la secuencia, y también hacia atrás.
+
+Fuente: A Survey of Deep Learning Techniques for Neural Machine Translation, S. Yan et al., 2020.
+"""
+
+# ╔═╡ 9f58a7f5-ced0-4788-b5b3-4a57a0063b31
+md"""
+## Transformers
+
+Los transformers son una vuelta de tuerca al concepto de mantener la información entre partes de la frase cuando se analiza.
+
+En las redes recurrentes bidireccionales, las posibles relaciones fluyen tanto hacia adelante en la frase como hacia atrás, en el proceso de entrenamiento.
+
+Los transformers utilizan el concepto de atención, que enmascara las partes de la frase que son de interés para la palabra que se está traduciendo en cada  momento.
+"""
+
+# ╔═╡ 6c7acc38-6290-4cb5-893d-133404ac3c86
+md"""
+## Transformers
+
+Este es el mecanismo de atención tal y como se presenta en el [artículo](https://arxiv.org/pdf/1706.03762) original
+
+Los dos componentes interesante son los bloques de atención (Attention).
+"""
+
+# ╔═╡ 0ae76bbd-5c4c-4ff5-8ec1-14eb89453076
+Resource(
+	imagenes * "transformer.png",
+	:alt => "Transformers",
+	:height => 500
+)
+
+# ╔═╡ b5add997-923c-4827-b1a6-0e513d981480
+md"""
+Fuente: Attention is all you need - A. Vaswani et al.
+"""
+
+# ╔═╡ d13bc23b-bf3a-4385-add2-4c2c268fc4f1
+md"""
+## Transformers
+"""
+
+# ╔═╡ 53e70c90-c0a5-4c9c-ae0a-3437f21adeb7
+Resource(
+	imagenes * "transformer2.png",
+	:alt => "Transformers",
+	:width => 900
+)
+
+# ╔═╡ 4f4e0350-1e9e-4d30-b428-4336f6cb4f7a
+md"""
+La parte novedosa es utilizar máscaras para que la red encuentre relación entre las partes del texto aunque estas se encuentren alejadas entre sí dentro de la misma frase.
+
+Fuente: Attention is all you need - A. Vashvani et al.
+"""
+
+# ╔═╡ e9c837ad-f0a7-41f8-a932-e4699d58c277
+md"""
+## Transformers
+
+Los Transformers son una de las tecnologías más avanzada para tareas de NLP.
+
+Si te interesa este tema, la página web de referencia es 
+[Hugging Face](https://huggingface.co/), donde podrás encontrar una buena 
+cantidad de modelos pre-entrenados y mucha información sobre NLP.
+
+Otra web muy útil es la de 
+[Somos NLP](https://somosnlp.org/) que une a la comunidad de NLP en español.
+"""
+
+# ╔═╡ 0050209d-57cd-4dcf-aac0-b753172a552c
+md"""
+## Hugging Face
+
+Hugging Face, entre otras muchas cosas, es un repositorio de LLM listos para usar o adaptar en tus aplicaciones.
+
+Su uso básico es muy sencillo.
+
+Primero tendremos que instalar la versión de keras con la que trabaja los transformers de Hugging Face.
+
+```{.bash}
+micromamba install tf-keras
+```
+
+Y cargamos la biblioteca:
+
+```{.python}
+from transformers import pipeline
+```
+"""
+
+# ╔═╡ 3c6c6b3b-2ff6-49ae-b534-ddfccaca12fb
+md"""
+## Hugging Face
+
+Si lo que queremos hacer es **clasificación de textos**, lo primero es encontrar 
+un modelo entrenado para ello y en español.
+
+Luego, creamos un pipeline indicando la tarea y el modelo.
+
+```{.python}
+nombre_modelo = "UMUTeam/roberta-spanish-sentiment-analysis"
+clasificador = pipeline("sentiment-analysis", model=nombre_modelo)
+clasificacion = clasificador("No me gusta comer fuera de casa")
+print(clasificacion)
+```
+
+El resultado es:
+
+```{.bash}
+[{'label': 'negative', 'score': 0.9891014695167542}]
+```
+"""
+
+# ╔═╡ f1c88b97-179c-41b8-860a-5fc7b61780c6
+md"""
+## Hugging Face
+
+Otro ejemplo de clasificación de sentimientos:
+
+```{.bash}
+clasificacion = clasificador("Ayer fui al cine a ver una peli y pasé una tarde muy agradable")
+print(clasificacion)
+```
+
+El resultado es:
+
+```{.bash}
+[{'label': 'positive', 'score': 0.9974034428596497}]
+```
+
+Como puedes ver, en ambos casos el resultado es bastante bueno.
+"""
+
+# ╔═╡ 8afabde3-ce96-4590-aebb-ab61f6ad1572
+md"""
+## Hugging Face
+
+Si la tarea que queremos hacer es generar texto:
+
+```{.python}
+nombre_modelo = "Kukedlc/Llama-7b-spanish"
+generador = pipeline("text-generation", model=nombre_modelo)
+
+texto = generador("Hoy voy a comer a casa", max_length=30)
+print(texto)
+```
+
+El resultado es:
+
+```{.bash}
+Hoy voy a comer a casa de mis padres.
+```
+"""
+
+# ╔═╡ 0788fccf-cfe2-4b12-9ba8-7c2a1def2218
+md"""
+## Hugging Face
+
+Alguna tarea más compleja como el reconocimiento de entidades:
+
+```{.python}
+ner = pipeline("ner", grouped_entities=True)
+ner("Me llamo Óscar y trabajo como profesor en la UJI de Castellón.")
+```
+
+El resultado es:
+
+```{.bash}
+[{'entity_group': 'PER',
+  'score': 0.6795335,
+  'word': 'Óscar',
+  'start': 9,
+  'end': 14},
+ {'entity_group': 'ORG',
+  'score': 0.99412817,
+  'word': 'UJI',
+  'start': 45,
+  'end': 48},
+ {'entity_group': 'LOC',
+  'score': 0.94170475,
+  'word': 'Castellón',
+  'start': 52,
+  'end': 61}]
+```
+"""
+
+# ╔═╡ 6cff35d1-55f3-492f-8026-aa0d13700e69
+md"""
+## Hugging Face
+
+Finalmente, hacer resúmenes de textos:
+
+```{.python}
+resumidor = pipeline("summarization")
+resumen = resumidor( "En una economía tan estacional como la española, a no
+ser que haya eventos disruptivos como una pandemia o un colapso como el de
+2008, el comportamiento de la afiliación a la Seguridad Social y del paro
+registrado riman cada mes. Y noviembre, con la temporada turística veraniega
+completamente agotada y a la espera de la Navidad, no suele ser un buen mes
+para el mercado laboral. Así, España perdió en noviembre 30.050 empleos, hasta
+dejar la afiliación media en 21.302.463 trabajadores, el mayor bajón en el
+undécimo mes desde 2019. El retroceso se centra en la hostelería, un sector en
+el que se perdieron 120.000 empleos respecto a octubre, lo que también se nota
+en la desagregación por territorios: la ocupación solo cae con fuerza en
+Baleares, una región de monocultivo turístico. Los datos son algo mejores en
+paro registrado, con un retroceso de 16.036 personas. Pero es una caída leve,
+peor que la de los tres últimos años, de la mano de un dato positivo: el total
+de parados en noviembre es el menor desde 2007, antes de la Gran Recesión. En
+la misma línea, la cifra de ocupados es la más alta que se haya registrado
+nunca en un mes de noviembre.")
+```
+
+"""
+
+# ╔═╡ 320611a2-9366-4aa6-86ba-ab7fc247ab84
+md"""
+## Hugging Face
+
+Y este es el resultado del resumen:
+
+```{.bash} 
+[{'summary_text': ' España perdió en noviembre 30.050 empleos, hasta
+dejar la afiliación media en 21.302.463 trabajadores . El retroceso se centra
+en la hostelería, un sector en el que se perdieron 120,000 empleo a octubre
+.'}]
+```
+
+Como puedes ver, bastante bueno.
+
+"""
+
+# ╔═╡ 11b6f7ff-f6d5-4f0d-8a9f-aa1eb2604b55
+md"""
+## Otras tareas en NLP
+
+Hay otras muchas tareas dentro del campo de NLP:
+
+* Respuestas a preguntas.
+* Resumidores de texto.
+* Texto a voz y voz a texto.
+* Etiquetado de partes del discurso.
+
+Sólo por mencionar algunas.
+"""
+
+# ╔═╡ 61de2811-9a8d-40d3-9248-22c147dc2aee
+md"""
+# Resumen
+
+* El procesamiento de lenguaje natural es una disciplina muy amplia y con gran tradición dentro de la inteligencia artificial.
+* Hemos visto algunas de las piezas básicas para trabajar con NLP, como los embeddings.
+* Hemos visto como las redes recurrentes son muy buenas para algunas tareas típicas dentro de NLP, como la generación de textos, la clasificación y la traducción.
+* Actualmente, los transformers son la arquitectura con un mejor rendimiento en tareas de NLP.
+* Hugging Face ofrece una gran cantidad de modelo entrenados listos para ser utilizados, o como base para crear nuestros propios modelos.
+"""
+
+# ╔═╡ 9d9bd2f8-71d8-4d52-8437-805e6de7c391
+md"""
+# Referencias
+
+1. [Visualización de embeddings.](https://projector.tensorflow.org/)
+1. [Hugging face.](https://huggingface.co/)
+1. [Somos NLP.](https://somosnlp.org)
+"""
+
+# ╔═╡ 00000000-0000-0000-0000-000000000001
+PLUTO_PROJECT_TOML_CONTENTS = """
+[deps]
+PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
+ShortCodes = "f62ebe17-55c5-4640-972f-b59c0dd11ccf"
+
+[compat]
+PlutoUI = "~0.7.68"
+ShortCodes = "~0.3.6"
+"""
+
+# ╔═╡ 00000000-0000-0000-0000-000000000002
+PLUTO_MANIFEST_TOML_CONTENTS = """
+# This file is machine-generated - editing it directly is not advised
+
+julia_version = "1.11.6"
+manifest_format = "2.0"
+project_hash = "edde6983ca5ea77032cae4d208a4e9ee1f59c806"
+
+[[deps.AbstractPlutoDingetjes]]
+deps = ["Pkg"]
+git-tree-sha1 = "6e1d2a35f2f90a4bc7c2ed98079b2ba09c35b83a"
+uuid = "6e696c72-6542-2067-7265-42206c756150"
+version = "1.3.2"
+
+[[deps.ArgTools]]
+uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
+version = "1.1.2"
+
+[[deps.Artifacts]]
+uuid = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
+version = "1.11.0"
+
+[[deps.Base64]]
+uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
+version = "1.11.0"
+
+[[deps.CodecZlib]]
+deps = ["TranscodingStreams", "Zlib_jll"]
+git-tree-sha1 = "962834c22b66e32aa10f7611c08c8ca4e20749a9"
+uuid = "944b1d66-785c-5afd-91f1-9de20f533193"
+version = "0.7.8"
+
+[[deps.ColorTypes]]
+deps = ["FixedPointNumbers", "Random"]
+git-tree-sha1 = "67e11ee83a43eb71ddc950302c53bf33f0690dfe"
+uuid = "3da002f7-5984-5a60-b8a6-cbb66c0b333f"
+version = "0.12.1"
+
+    [deps.ColorTypes.extensions]
+    StyledStringsExt = "StyledStrings"
+
+    [deps.ColorTypes.weakdeps]
+    StyledStrings = "f489334b-da3d-4c2e-b8f0-e476e12c162b"
+
+[[deps.CompilerSupportLibraries_jll]]
+deps = ["Artifacts", "Libdl"]
+uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
+version = "1.1.1+0"
+
+[[deps.Dates]]
+deps = ["Printf"]
+uuid = "ade2ca70-3891-5945-98fb-dc099432e06a"
+version = "1.11.0"
+
+[[deps.Downloads]]
+deps = ["ArgTools", "FileWatching", "LibCURL", "NetworkOptions"]
+uuid = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
+version = "1.6.0"
+
+[[deps.FileWatching]]
+uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
+version = "1.11.0"
+
+[[deps.FixedPointNumbers]]
+deps = ["Statistics"]
+git-tree-sha1 = "05882d6995ae5c12bb5f36dd2ed3f61c98cbb172"
+uuid = "53c48c17-4a7d-5ca2-90c5-79b7896eea93"
+version = "0.8.5"
+
+[[deps.Hyperscript]]
+deps = ["Test"]
+git-tree-sha1 = "179267cfa5e712760cd43dcae385d7ea90cc25a4"
+uuid = "47d2ed2b-36de-50cf-bf87-49c2cf4b8b91"
+version = "0.0.5"
+
+[[deps.HypertextLiteral]]
+deps = ["Tricks"]
+git-tree-sha1 = "7134810b1afce04bbc1045ca1985fbe81ce17653"
+uuid = "ac1192a8-f4b3-4bfe-ba22-af5b92cd3ab2"
+version = "0.9.5"
+
+[[deps.IOCapture]]
+deps = ["Logging", "Random"]
+git-tree-sha1 = "b6d6bfdd7ce25b0f9b2f6b3dd56b2673a66c8770"
+uuid = "b5f81e59-6552-4d32-b1f0-c071b021bf89"
+version = "0.2.5"
+
+[[deps.InteractiveUtils]]
+deps = ["Markdown"]
+uuid = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
+version = "1.11.0"
+
+[[deps.JSON]]
+deps = ["Dates", "Mmap", "Parsers", "Unicode"]
+git-tree-sha1 = "31e996f0a15c7b280ba9f76636b3ff9e2ae58c9a"
+uuid = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
+version = "0.21.4"
+
+[[deps.JSON3]]
+deps = ["Dates", "Mmap", "Parsers", "PrecompileTools", "StructTypes", "UUIDs"]
+git-tree-sha1 = "411eccfe8aba0814ffa0fdf4860913ed09c34975"
+uuid = "0f8b85d8-7281-11e9-16c2-39a750bddbf1"
+version = "1.14.3"
+
+    [deps.JSON3.extensions]
+    JSON3ArrowExt = ["ArrowTypes"]
+
+    [deps.JSON3.weakdeps]
+    ArrowTypes = "31f734f8-188a-4ce0-8406-c8a06bd891cd"
+
+[[deps.LibCURL]]
+deps = ["LibCURL_jll", "MozillaCACerts_jll"]
+uuid = "b27032c2-a3e7-50c8-80cd-2d36dbcbfd21"
+version = "0.6.4"
+
+[[deps.LibCURL_jll]]
+deps = ["Artifacts", "LibSSH2_jll", "Libdl", "MbedTLS_jll", "Zlib_jll", "nghttp2_jll"]
+uuid = "deac9b47-8bc7-5906-a0fe-35ac56dc84c0"
+version = "8.6.0+0"
+
+[[deps.LibGit2]]
+deps = ["Base64", "LibGit2_jll", "NetworkOptions", "Printf", "SHA"]
+uuid = "76f85450-5226-5b5a-8eaa-529ad045b433"
+version = "1.11.0"
+
+[[deps.LibGit2_jll]]
+deps = ["Artifacts", "LibSSH2_jll", "Libdl", "MbedTLS_jll"]
+uuid = "e37daf67-58a4-590a-8e99-b0245dd2ffc5"
+version = "1.7.2+0"
+
+[[deps.LibSSH2_jll]]
+deps = ["Artifacts", "Libdl", "MbedTLS_jll"]
+uuid = "29816b5a-b9ab-546f-933c-edad1886dfa8"
+version = "1.11.0+1"
+
+[[deps.Libdl]]
+uuid = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
+version = "1.11.0"
+
+[[deps.LinearAlgebra]]
+deps = ["Libdl", "OpenBLAS_jll", "libblastrampoline_jll"]
+uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+version = "1.11.0"
+
+[[deps.Logging]]
+uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
+version = "1.11.0"
+
+[[deps.MIMEs]]
+git-tree-sha1 = "c64d943587f7187e751162b3b84445bbbd79f691"
+uuid = "6c6e2e6c-3030-632d-7369-2d6c69616d65"
+version = "1.1.0"
+
+[[deps.MacroTools]]
+git-tree-sha1 = "1e0228a030642014fe5cfe68c2c0a818f9e3f522"
+uuid = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
+version = "0.5.16"
+
+[[deps.Markdown]]
+deps = ["Base64"]
+uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
+version = "1.11.0"
+
+[[deps.MbedTLS_jll]]
+deps = ["Artifacts", "Libdl"]
+uuid = "c8ffd9c3-330d-5841-b78e-0817d7145fa1"
+version = "2.28.6+0"
+
+[[deps.Memoize]]
+deps = ["MacroTools"]
+git-tree-sha1 = "2b1dfcba103de714d31c033b5dacc2e4a12c7caa"
+uuid = "c03570c3-d221-55d1-a50c-7939bbd78826"
+version = "0.4.4"
+
+[[deps.Mmap]]
+uuid = "a63ad114-7e13-5084-954f-fe012c677804"
+version = "1.11.0"
+
+[[deps.MozillaCACerts_jll]]
+uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
+version = "2023.12.12"
+
+[[deps.NetworkOptions]]
+uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
+version = "1.2.0"
+
+[[deps.OpenBLAS_jll]]
+deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
+uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
+version = "0.3.27+1"
+
+[[deps.Parsers]]
+deps = ["Dates", "PrecompileTools", "UUIDs"]
+git-tree-sha1 = "7d2f8f21da5db6a806faf7b9b292296da42b2810"
+uuid = "69de0a69-1ddd-5017-9359-2bf0b02dc9f0"
+version = "2.8.3"
+
+[[deps.Pkg]]
+deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "Random", "SHA", "TOML", "Tar", "UUIDs", "p7zip_jll"]
+uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
+version = "1.11.0"
+
+    [deps.Pkg.extensions]
+    REPLExt = "REPL"
+
+    [deps.Pkg.weakdeps]
+    REPL = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
+
+[[deps.PlutoUI]]
+deps = ["AbstractPlutoDingetjes", "Base64", "ColorTypes", "Dates", "Downloads", "FixedPointNumbers", "Hyperscript", "HypertextLiteral", "IOCapture", "InteractiveUtils", "JSON", "Logging", "MIMEs", "Markdown", "Random", "Reexport", "URIs", "UUIDs"]
+git-tree-sha1 = "ec9e63bd098c50e4ad28e7cb95ca7a4860603298"
+uuid = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
+version = "0.7.68"
+
+[[deps.PrecompileTools]]
+deps = ["Preferences"]
+git-tree-sha1 = "5aa36f7049a63a1528fe8f7c3f2113413ffd4e1f"
+uuid = "aea7be01-6a6a-4083-8856-8a6e6704d82a"
+version = "1.2.1"
+
+[[deps.Preferences]]
+deps = ["TOML"]
+git-tree-sha1 = "9306f6085165d270f7e3db02af26a400d580f5c6"
+uuid = "21216c6a-2e73-6563-6e65-726566657250"
+version = "1.4.3"
+
+[[deps.Printf]]
+deps = ["Unicode"]
+uuid = "de0858da-6303-5e67-8744-51eddeeeb8d7"
+version = "1.11.0"
+
+[[deps.Random]]
+deps = ["SHA"]
+uuid = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+version = "1.11.0"
+
+[[deps.Reexport]]
+git-tree-sha1 = "45e428421666073eab6f2da5c9d310d99bb12f9b"
+uuid = "189a3867-3050-52da-a836-e630ba90ab69"
+version = "1.2.2"
+
+[[deps.SHA]]
+uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
+version = "0.7.0"
+
+[[deps.Serialization]]
+uuid = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
+version = "1.11.0"
+
+[[deps.ShortCodes]]
+deps = ["Base64", "CodecZlib", "Downloads", "JSON3", "Memoize", "URIs", "UUIDs"]
+git-tree-sha1 = "5844ee60d9fd30a891d48bab77ac9e16791a0a57"
+uuid = "f62ebe17-55c5-4640-972f-b59c0dd11ccf"
+version = "0.3.6"
+
+[[deps.Statistics]]
+deps = ["LinearAlgebra"]
+git-tree-sha1 = "ae3bb1eb3bba077cd276bc5cfc337cc65c3075c0"
+uuid = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
+version = "1.11.1"
+
+    [deps.Statistics.extensions]
+    SparseArraysExt = ["SparseArrays"]
+
+    [deps.Statistics.weakdeps]
+    SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+
+[[deps.StructTypes]]
+deps = ["Dates", "UUIDs"]
+git-tree-sha1 = "159331b30e94d7b11379037feeb9b690950cace8"
+uuid = "856f2bd8-1eba-4b0a-8007-ebc267875bd4"
+version = "1.11.0"
+
+[[deps.TOML]]
+deps = ["Dates"]
+uuid = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
+version = "1.0.3"
+
+[[deps.Tar]]
+deps = ["ArgTools", "SHA"]
+uuid = "a4e569a6-e804-4fa4-b0f3-eef7a1d5b13e"
+version = "1.10.0"
+
+[[deps.Test]]
+deps = ["InteractiveUtils", "Logging", "Random", "Serialization"]
+uuid = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+version = "1.11.0"
+
+[[deps.TranscodingStreams]]
+git-tree-sha1 = "0c45878dcfdcfa8480052b6ab162cdd138781742"
+uuid = "3bb67fe8-82b1-5028-8e26-92a6c54297fa"
+version = "0.11.3"
+
+[[deps.Tricks]]
+git-tree-sha1 = "6cae795a5a9313bbb4f60683f7263318fc7d1505"
+uuid = "410a4b4d-49e4-4fbc-ab6d-cb71b17b3775"
+version = "0.1.10"
+
+[[deps.URIs]]
+git-tree-sha1 = "bef26fb046d031353ef97a82e3fdb6afe7f21b1a"
+uuid = "5c2747f8-b7ea-4ff2-ba2e-563bfd36b1d4"
+version = "1.6.1"
+
+[[deps.UUIDs]]
+deps = ["Random", "SHA"]
+uuid = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
+version = "1.11.0"
+
+[[deps.Unicode]]
+uuid = "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
+version = "1.11.0"
+
+[[deps.Zlib_jll]]
+deps = ["Libdl"]
+uuid = "83775a58-1f1d-513f-b197-d71354ab007a"
+version = "1.2.13+1"
+
+[[deps.libblastrampoline_jll]]
+deps = ["Artifacts", "Libdl"]
+uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
+version = "5.11.0+0"
+
+[[deps.nghttp2_jll]]
+deps = ["Artifacts", "Libdl"]
+uuid = "8e850ede-7688-5339-a07c-302acd2aaf8d"
+version = "1.59.0+0"
+
+[[deps.p7zip_jll]]
+deps = ["Artifacts", "Libdl"]
+uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
+version = "17.4.0+2"
+"""
+
+# ╔═╡ Cell order:
+# ╠═c2fd34b8-66db-11f0-3efd-21960f239f79
+# ╠═efc09298-51f8-4013-9677-497b6de474be
+# ╠═367d5f39-3928-4709-8de9-2f4b1f046acd
+# ╠═2a803c80-dece-4f52-9898-1cc3ba15ebbc
+# ╠═e05614d4-5762-4839-b657-1c98b2054de4
+# ╠═9e00079f-b241-4c7a-9c24-b229e08428df
+# ╠═b72590de-c5d6-422d-8a7d-572cc3b1c3c3
+# ╠═7128e86b-bdb9-4e7a-84ba-ee8682f8ae4f
+# ╠═1be76676-2de5-4df0-9e51-e95ce80c4ece
+# ╠═9476c68a-19fb-4855-9c6e-3d2cf1e9e403
+# ╠═7aa6b29c-3e43-4b2a-9323-655f90835e66
+# ╠═0679cc8f-5779-41ad-ac5d-13f1a303b0dc
+# ╠═70676122-eb80-4b6d-9c78-e489292c3f5c
+# ╠═2ea8cba5-3286-4d26-8bbe-76b7e1ba868f
+# ╠═813ecbd6-74b8-4d26-a92d-c6098044e64c
+# ╠═116bf570-3a18-4789-b37c-18755c401f5d
+# ╠═15e631ed-dcbd-4a09-a020-474671543c26
+# ╠═c0a6ed84-c2e1-4778-9698-3c1a346cc6bf
+# ╠═e2c82807-91c9-422f-8c68-e9550d25f239
+# ╠═bfbe0854-0fc8-4f8f-9286-977e734cab12
+# ╠═1c8635e9-5f6e-4005-95d3-a3811498a179
+# ╠═9c9997ea-e050-4960-b656-3048091b0035
+# ╠═ac9ef535-5f67-4d49-a56d-fe2bd44993f6
+# ╠═4d9883fe-1ead-4d07-ad35-5c8d935412b5
+# ╠═5c217c15-be06-464e-a1fc-577d6059205c
+# ╠═bc49d4cb-ab79-4fa0-809f-fb3ba82e5adc
+# ╠═d2c96070-c07f-49c4-84f5-bebf7498b314
+# ╠═a1ff9ae5-a131-40c2-833a-4f17fb765d1b
+# ╠═22ec98af-c189-46ab-99a1-5cd8d51a77a2
+# ╠═28b7e493-acf2-49ce-a156-ce2b1bab2489
+# ╠═c31ee640-cdba-4469-b755-a6406e101015
+# ╠═8c5cd066-9fa7-4c62-beed-e858d0f3a311
+# ╠═87d0f2f2-eaea-4a7c-bca9-ceabab0da099
+# ╠═1ebf121c-e8c1-45f8-954f-a7ad10157228
+# ╠═f4db6144-ef66-414c-9854-c05d0dad8ef3
+# ╠═ac928fe1-5926-44d7-912e-be19f5128b84
+# ╠═bafdc086-0b06-4f33-8fbe-a8933c82ee47
+# ╠═7bd2726c-6c8a-48d9-b1ae-eed8bcc88156
+# ╠═4c9944c1-60bf-4e57-a0c9-6219baeb2313
+# ╠═92c5efbe-6148-4813-8e28-ddd73808b6e1
+# ╠═1c7fc9ef-5259-498b-80ea-b8a21d4b2fc5
+# ╠═7f1ebe1e-7e9c-480a-aad5-23e6d70607cc
+# ╠═f7129b01-7d93-41f9-a5f2-526ed80311af
+# ╠═732ca76c-97ee-4762-9cd5-cd76752391f5
+# ╠═9c9247a8-fb07-4924-8fa3-445d3f4ade54
+# ╠═7f09d56e-77b3-45e5-ac5a-61f80ad82b39
+# ╠═be14b504-bf76-4053-8098-71c791108151
+# ╠═e31a02d0-d16a-4f11-a767-050139079635
+# ╠═bee075f8-65e2-4991-ae10-e749d1119bb2
+# ╠═84f87d3f-d60e-4a95-a48c-e77a25874d0f
+# ╠═e0917f33-9a77-439a-badf-66a3d04b248a
+# ╠═02bce938-3cf8-41fd-b8b5-da36d2bf3782
+# ╠═a601d1f6-50e8-460c-8b00-33c67ea535b6
+# ╠═547eda5f-ba82-41d7-b9d6-0160813fb3f8
+# ╠═92307ff3-745e-41ef-8491-cf6306fc9a64
+# ╠═99437b1f-f38d-40ce-bd43-d071669cef2f
+# ╠═b167c50a-38dd-4485-aabb-9a5e97ded2b4
+# ╠═8ef6df12-63ca-4544-8df9-14bb4c944319
+# ╠═f6bf7355-4d41-4d5b-8034-492871b67b7c
+# ╠═4e5b4466-587a-44f5-85c4-561c454e2100
+# ╠═a7b091ab-0dcc-44c9-a93e-118d1610a855
+# ╠═dc52bfd9-2bfd-4882-88cd-f869a135945c
+# ╠═0b8d86b8-ab46-466f-91a4-70b689eb6b21
+# ╠═96221fff-1ac1-497c-97da-62c71571100c
+# ╠═7c25120d-4043-4d81-8961-06b5192cf526
+# ╠═81b23354-0862-4226-a2e9-26a9ceb700e2
+# ╠═55b122db-fe73-4ccf-ad85-2ecb282de7e3
+# ╠═4c98dcf0-2a02-474e-a4c6-7f9605ecc208
+# ╠═cb4da7e6-eb30-4369-9c6d-60e21bf7256c
+# ╠═e44c1ec9-4d42-4dc7-9d4c-368d886686aa
+# ╠═e217765a-ad91-43d0-ac80-e4d7f1e5f38a
+# ╠═140b7a93-4bd6-44a3-baaf-562d364b916d
+# ╠═d943e918-6d72-45d9-b118-b88dcaacea65
+# ╠═bb095489-b75b-47c1-b785-e59c317691f6
+# ╠═fbf000ab-aca2-4fb7-8b3f-ef6791ad7cc1
+# ╠═9f58a7f5-ced0-4788-b5b3-4a57a0063b31
+# ╠═6c7acc38-6290-4cb5-893d-133404ac3c86
+# ╠═0ae76bbd-5c4c-4ff5-8ec1-14eb89453076
+# ╠═b5add997-923c-4827-b1a6-0e513d981480
+# ╠═d13bc23b-bf3a-4385-add2-4c2c268fc4f1
+# ╠═53e70c90-c0a5-4c9c-ae0a-3437f21adeb7
+# ╠═4f4e0350-1e9e-4d30-b428-4336f6cb4f7a
+# ╠═e9c837ad-f0a7-41f8-a932-e4699d58c277
+# ╠═0050209d-57cd-4dcf-aac0-b753172a552c
+# ╠═3c6c6b3b-2ff6-49ae-b534-ddfccaca12fb
+# ╠═f1c88b97-179c-41b8-860a-5fc7b61780c6
+# ╠═8afabde3-ce96-4590-aebb-ab61f6ad1572
+# ╠═0788fccf-cfe2-4b12-9ba8-7c2a1def2218
+# ╠═6cff35d1-55f3-492f-8026-aa0d13700e69
+# ╠═320611a2-9366-4aa6-86ba-ab7fc247ab84
+# ╠═11b6f7ff-f6d5-4f0d-8a9f-aa1eb2604b55
+# ╠═61de2811-9a8d-40d3-9248-22c147dc2aee
+# ╠═9d9bd2f8-71d8-4d52-8437-805e6de7c391
+# ╟─00000000-0000-0000-0000-000000000001
+# ╟─00000000-0000-0000-0000-000000000002

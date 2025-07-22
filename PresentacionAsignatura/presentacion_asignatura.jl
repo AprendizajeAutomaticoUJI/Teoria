@@ -23,7 +23,7 @@ md"""
 
 Grado en Inteligencia Robótica - Universitat Jaume I (UJI)
 
-![](https://ujiapps.uji.es/ade/rest/storage/63c07717-5208-4240-b688-aa6ff558b466?guest=true)
+![](https://belmonte.uji.es/imgs/uji.jpg)
 """
 
 # ╔═╡ 7debff7b-7ac3-42c2-80ed-404e4dd6dc18
