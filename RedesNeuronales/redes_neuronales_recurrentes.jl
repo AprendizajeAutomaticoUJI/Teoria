@@ -486,8 +486,8 @@ en la serie.
 Vamos a empezar escalando los datos:
 
 ```{.julia}
-scaler = MinMaxScaler()
-df = scaler.fit_transform(df)
+escalado = fit(UnitRangeTransform, co2_train)
+co2_train_escalado = Float32.(StatsBase.transform(escalado, co2_train))
 ```
 
 Cada entrada de entrenamiento es una serie de 10 elementos de la serie temporal, 
@@ -502,6 +502,128 @@ la salida es el siguiente dato en la serie:
   0.06171482 0.01303392 0.         0.01884422]]  -->  0.03643216080402034
 ```
 """
+
+# ╔═╡ 139987b8-5ce6-4456-96fe-6b90a9cb9957
+md"""
+## Show me the code
+
+Ahora ya podemos construir la red, vamos a empezar con una red sencilla de 
+una única capa:
+
+```julia
+tamaño = 10
+rnn = Chain(
+	RNN(tamaño => 64),
+	Dense(64 => 1)
+)
+```
+
+La entrenamos:
+
+```julia
+λ = 0.001
+epocas = 2000
+datos = [(Xtrain, ytrain)]
+optimizador = Flux.setup(Adam(λ), modelo)
+
+function perdidas(modelo, X, y)
+    Flux.reset!(modelo) # Importante resetear el modelo antes de usarlo
+    Flux.Losses.mse(modelo(X), y)
+end
+
+perdidas_entrenamiento = []
+perdidas_pruebas = []
+@showprogress for epoca ∈ 1:epocas
+	train!(perdidas, modelo, datos, optimizador)
+	push!(perdidas_entrenamiento, perdidas(modelo, Xtrain, ytrain))
+	push!(perdidas_pruebas, perdidas(modelo, Xtest, ytest))
+end
+```
+"""
+
+# ╔═╡ 00117c64-829c-4bb7-95b6-c797a4999513
+md"""
+## Show me the code
+"""
+
+# ╔═╡ f24db46c-8e84-44a5-8e62-33bee1178340
+Resource(
+	imagenes * "rnn64_2000_perdidas.png",
+	:alt => "Resultado del entrenamiento",
+	:width => 600,
+)
+
+# ╔═╡ c3aa482d-37d9-4a44-a65a-df51f987e966
+md"""
+El erro cuadrático medio sobre el conjunto de pruebas (datos escalados) al final del entrenamiento es de 4.4029e-4.
+"""
+
+# ╔═╡ c718a23d-91df-4576-9039-16aed0894f50
+md"""
+## Show me the code
+
+Hagamos ahora las predicciones con el modelo entrenado:
+
+```julia
+Flux.reset!(modelo) # Importante resetear el modelo
+estimado = modelo(X)' # Calculamos valores estimados con el modelo
+estimado_desescalado = StatsBase.reconstruct(escalado, estimado)
+y_desescalado = StatsBase.reconstruct(escalado, y') # Desacemos escalados
+
+```
+"""
+
+# ╔═╡ 2364115b-370d-4e2f-8de8-fcf9e7189f5c
+Resource(
+	imagenes * "rnn64_2000_entrenamiento.png",
+	:alt => "Resultado sobre el conjunto de pruebas",
+	:width => 600,
+)
+
+# ╔═╡ d7c54967-5a6e-4fbc-8689-5d6454a95275
+md"""
+## Show me the code
+
+Veamos ahora cómo construir una RNN con varias capas:
+
+```julia
+tamaño = 10
+rnn = Chain(
+	RNN(tamaño => 128),
+	RNN(128 => 64),
+	RNN(64 => 32),
+	Dense(32 => 1)
+)
+```
+
+La entrenamos con el mismo código que antes, y obtenemos:
+"""
+
+# ╔═╡ 986fa101-f14a-430e-bba6-a5c5786f648f
+Resource(
+	imagenes * "rnn128_2000_perdidas.png",
+	:alt => "Resultado del entrenamiento",
+	:width => 600,
+)
+
+# ╔═╡ 7ac6fa90-2fe2-4a09-8a3d-f5c02c8a12f5
+md"""
+De nuevo, las pérdidas mostradas son sobre los datos escalados. Las pérdidas han bajado con la red de varias capas ahora es de 3.599e-4.
+"""
+
+# ╔═╡ 481e34c0-e245-4987-ae96-ca5b30a114ce
+md"""
+## Show me the code
+
+Y las predicciones para el modelo recurrente con más de una capa:
+"""
+
+# ╔═╡ f1dc7a2b-00f2-4b7f-bf58-4051492e5a36
+Resource(
+	imagenes * "rnn128_2000_entrenamiento.png",
+	:alt => "Resultado sobre el conjunto de pruebas",
+	:width => 600,
+)
 
 # ╔═╡ f3de6610-6a40-493b-95cc-b8a44236d42d
 md"""
@@ -570,18 +692,100 @@ Las puertas combinan estos resultados para guardar el estado a largo plazo.
 # ╔═╡ a665581b-afd5-4846-8af2-e80a5aa2b044
 md"""
 ## Show me the code
-Desde el punto de vista de la programación con Tensorflow sólo tenemos que 
-cambiar el nombre de la capa:
 
-```{.julia}
-modelo = Sequential([
-    Input(shape=(1, steps)),
-    LSTM(64),
-    Dense(1)
-])
+Símplemente tenemos que sustituir la capa RNN por una capa LSTM:
+
+```julia
+lstm = Chain(
+	LSTM(tamaño => 64),
+	Dense(64 => 1)
+)
 ```
 
 Hemos sustituido la capa recurrente por la LSTM.
+
+El código de entrenamiento vuelve a ser el mismo que ante, y el resultados que obtenemos es:
+"""
+
+# ╔═╡ c9fd4dae-5bd7-40be-b143-387f7f8ec02d
+Resource(
+	imagenes * "lstm64_2000_perdidas.png",
+	:alt => "Resultado del entrenamiento",
+	:width => 600,
+)
+
+# ╔═╡ 29e60920-bdde-4c06-8626-7b35e25330a7
+md"""
+En este caso particular, incluso las pérdidas son menores que para la red recurrente con 3 capas.
+"""
+
+# ╔═╡ c3557873-9d05-432c-aa83-4394a85e4d54
+md"""
+## Show me the code
+"""
+
+# ╔═╡ c70e20a7-da2b-4215-9b57-24053b6a2df1
+Resource(
+	imagenes * "lstm64_2000_entrenamiento.png",
+	:alt => "Resultado del entrenamiento",
+	:width => 600,
+)
+
+# ╔═╡ d0764e8b-98bc-4c5a-b7b5-be5adaca308e
+md"""
+Este es el ajuste del modelo a los datos de prueba.
+"""
+
+# ╔═╡ a096a33d-9304-49bc-a437-4642d323780c
+md"""
+## Show me the code
+
+Finalmente veamos como construir una red LSTM profunda, de tres capas:
+
+```julia
+lstm = Chain(
+	LSTM(tamaño => 128),
+	LSTM(128 => 64),
+	LSTM(64 => 32),
+	Dense(32 => 1)
+)
+```
+
+El código de entrenamiento es exactamente igual que antes.
+"""
+
+# ╔═╡ 2f78ace3-e200-4d39-95cb-ddb93fe45e15
+md"""
+## Show me the code
+"""
+
+# ╔═╡ 440cede5-2390-4c06-9f92-f65b6f4a20f6
+Resource(
+	imagenes * "lstm128_2000_perdidas.png",
+	:alt => "Resultado del entrenamiento",
+	:width => 600,
+)
+
+# ╔═╡ c19c0c27-4590-4f55-aebd-28ce85ccfc82
+md"""
+En este caso, la red LSTM con 3 capas tiene el menor error cuadrático medio más pequeño de todos los modelos probados.
+"""
+
+# ╔═╡ 0b1abb5a-b71e-4dd3-a18a-f51c80ce7df1
+md"""
+## Show me the code
+"""
+
+# ╔═╡ ab85d350-8b4c-4d64-a6b3-2d81c66f3758
+Resource(
+	imagenes * "lstm128_2000_entrenamiento.png",
+	:alt => "Resultado del entrenamiento",
+	:width => 600,
+)
+
+# ╔═╡ 2b407461-7868-46ef-b081-fcc66183ee1d
+md"""
+Y este es el ajuste del modelo a los datos de prueba.
 """
 
 # ╔═╡ 50c8ba61-48e7-4e02-a839-4421963f0d19
@@ -2217,6 +2421,17 @@ version = "1.8.1+0"
 # ╠═ede5cec8-4238-4953-9323-a2094dcb0058
 # ╠═3838c8de-686c-4da9-9698-fbe36b1dd69b
 # ╠═44736b6f-76c8-46bf-b85c-3f1ca9bfcfbf
+# ╠═139987b8-5ce6-4456-96fe-6b90a9cb9957
+# ╠═00117c64-829c-4bb7-95b6-c797a4999513
+# ╠═f24db46c-8e84-44a5-8e62-33bee1178340
+# ╠═c3aa482d-37d9-4a44-a65a-df51f987e966
+# ╠═c718a23d-91df-4576-9039-16aed0894f50
+# ╠═2364115b-370d-4e2f-8de8-fcf9e7189f5c
+# ╠═d7c54967-5a6e-4fbc-8689-5d6454a95275
+# ╠═986fa101-f14a-430e-bba6-a5c5786f648f
+# ╠═7ac6fa90-2fe2-4a09-8a3d-f5c02c8a12f5
+# ╠═481e34c0-e245-4987-ae96-ca5b30a114ce
+# ╠═f1dc7a2b-00f2-4b7f-bf58-4051492e5a36
 # ╠═f3de6610-6a40-493b-95cc-b8a44236d42d
 # ╠═b00fc178-e092-4961-9a90-fab2961f8db6
 # ╠═4c459fa3-50b5-4a14-952d-a21afd0841b9
@@ -2225,6 +2440,18 @@ version = "1.8.1+0"
 # ╠═21ef5c35-084f-45f9-b9dc-31e5794821fe
 # ╠═6111cb71-2f89-4185-9842-9fd690f7b875
 # ╠═a665581b-afd5-4846-8af2-e80a5aa2b044
+# ╠═c9fd4dae-5bd7-40be-b143-387f7f8ec02d
+# ╠═29e60920-bdde-4c06-8626-7b35e25330a7
+# ╠═c3557873-9d05-432c-aa83-4394a85e4d54
+# ╠═c70e20a7-da2b-4215-9b57-24053b6a2df1
+# ╠═d0764e8b-98bc-4c5a-b7b5-be5adaca308e
+# ╠═a096a33d-9304-49bc-a437-4642d323780c
+# ╠═2f78ace3-e200-4d39-95cb-ddb93fe45e15
+# ╠═440cede5-2390-4c06-9f92-f65b6f4a20f6
+# ╠═c19c0c27-4590-4f55-aebd-28ce85ccfc82
+# ╠═0b1abb5a-b71e-4dd3-a18a-f51c80ce7df1
+# ╠═ab85d350-8b4c-4d64-a6b3-2d81c66f3758
+# ╠═2b407461-7868-46ef-b081-fcc66183ee1d
 # ╠═50c8ba61-48e7-4e02-a839-4421963f0d19
 # ╠═04ed7aa3-6e72-4a9f-9c3e-98a9403a24df
 # ╠═7ba3ff0e-5f2d-47da-a4fd-24c85b783746
