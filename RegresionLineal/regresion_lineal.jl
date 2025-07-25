@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.6
+# v0.20.13
 
 using Markdown
 using InteractiveUtils
@@ -41,44 +41,10 @@ end
 # ╔═╡ 518c90c6-e42d-4c2c-bf1e-8892dac5e4a0
 using Normalization
 
-# ╔═╡ df4e377a-895e-483d-8894-75629bb2533f
-# ╠═╡ disabled = true
-#=╠═╡
-html"""
-# # Aumentar el zoom hasta 170
-<style>
-	p {
-		font-size: 27px
-	}
-
-	li {
-		font-size: 20px;
-	}
-	
-	body h1 {
-		font-size: 50px;
-		font-family: sans-serif;
-	}
-	
-	body h2 {
-		font-size: 40px;
-		font-family: sans-serif;
-		padding-top: 10px;
-	}
-	
-	main {
-		# max-width: 950px !important;
-		max-width: 90% !important;
-		margin-right: 80px !important; # Debe quedar comentada para editar
-	}
-</style>
-"""
-  ╠═╡ =#
-
 # ╔═╡ 55ee1eef-992e-4a5f-95dd-9e8790dd5b5f
-html"""
-<link rel="stylesheet" type="text/css" href="https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/mi_estilo.css" media="screen" />
-"""
+# html"""
+# <link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
+# """
 
 # ╔═╡ 266e632b-30a5-4ae4-981f-8e2ab61e3232
 TableOfContents(title="Contenidos", depth=1)
@@ -1663,7 +1629,7 @@ StatsPlots = "~0.15.7"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.11.3"
+julia_version = "1.11.6"
 manifest_format = "2.0"
 project_hash = "7dbf4637bf173a6b4870fc4057a05d4052b891aa"
 
@@ -2942,7 +2908,7 @@ version = "0.3.27+1"
 [[deps.OpenLibm_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "05823500-19ac-5b8b-9628-191a04bc5112"
-version = "0.8.1+2"
+version = "0.8.5+0"
 
 [[deps.OpenML]]
 deps = ["ARFFFiles", "HTTP", "JSON", "Markdown", "Pkg", "Scratch"]
@@ -3949,7 +3915,6 @@ version = "1.4.1+2"
 """
 
 # ╔═╡ Cell order:
-# ╠═df4e377a-895e-483d-8894-75629bb2533f
 # ╠═55ee1eef-992e-4a5f-95dd-9e8790dd5b5f
 # ╠═6f6339a7-9b4d-4272-94f7-9234d3d3be41
 # ╠═518c90c6-e42d-4c2c-bf1e-8892dac5e4a0
