@@ -258,6 +258,19 @@ md"""
 Fuente: Medium
 """
 
+# ╔═╡ 6744bcec-8e4a-420f-aeb9-34de80d0404c
+md"""
+## Show me the code
+
+En julia puedes utilizar trucos para obtener la matriz one-hot-encoding:
+"""
+
+# ╔═╡ 767aaf9a-1984-404a-ae79-a74fc919861d
+capitales = ["Houston", "Rome", "Madrid", "London"]
+
+# ╔═╡ cc042ada-03d1-4189-abf0-9337546e6bec
+capitales .== permutedims(capitales)
+
 # ╔═╡ 1ebf121c-e8c1-45f8-954f-a7ad10157228
 md"""
 ## Embeddings
@@ -309,10 +322,10 @@ En **h** vamos a tener una representación _densa_ de la información en el espa
 md"""
 ## Embeddings
 
-En **Tensorflow** existe una capa para crear embeddings:
+En **Juia** existe una capa para crear embeddings:
 
-```{.python}
-tf.keras.layers.Embedding(tam_vocabulario, tam_embedding)
+```julia
+Embedding(tam_vocabulario => tam_embedding)
 ```
 
 Donde **tam_vocabulario** indica el número de palabras en nuestro vocabulario, y **tam_embedding** las dimensiones del embedding.
@@ -387,6 +400,121 @@ Otra característica no menos impresionante, es que podemos hacer operaciones en
 
 **dogs - dog + cat = cats** (tiene embebido el sentido de pluralidad)
 
+"""
+
+# ╔═╡ 7a6bf294-4694-43d9-b4b6-5f085dddf29f
+md"""
+## Show me the code
+
+En Julia podemos trabajar con embeddings utilizando el paquete **Embeddings**, que dispone de embeddings ya entrenados, algunos de ellos en español y catalán.
+
+```{.julia}
+using Embeddings
+
+# Para conocer los embeddings que tenemos disponibles
+language_files(FastText_Text{:es})
+```
+
+```{.shell}
+4-element Vector{String}:
+ "FastText es CommonCrawl Text/cc.es.300.vec"
+ "FastText es Wiki Text/wiki.es.vec"
+ "FastText es CommonCrawl Text/cc.es.300.vec"
+ "FastText es Wiki Text/wiki.es.vec"
+```
+
+```{.julia}
+# Para cargar el primero de los embeddings
+español = load_embeddings(FastText_Text{:es}, 1)
+```
+"""
+
+# ╔═╡ 4ca5b39c-e180-4956-bbbc-3ff3b51aa1a4
+md"""
+## Show me the code
+
+Para obtener el vector de embedding de una palabra en el diccionario puedes utilizar el código de ejemplo que encuentras en la documentación del paquete:
+
+```{.julia}
+diccionario = Dict(palabra => indice for (indice, palabra) in enumerate(español.vocab))
+
+function obten_embedding(palabra)
+    indice = diccionario[palabra]
+    return español.embeddings[:,indice]
+end
+
+# Una función de ayuda
+function coseno(v1::Vector{Float32}, v2::Vector{Float32})
+       return dot(v1, v2) / (sqrt(dot(v1, v1))*sqrt(dot(v2, v2)))
+end
+```
+"""
+
+# ╔═╡ ea93bd5e-d8ca-4d75-807e-bc4b315464ce
+md"""
+## Show me the code
+Vamos a calcular el concepto de reina a partir de los conceptos mujer, rey, hombre, y calcular la distancia coseno entre el vector del embedding para reina y el calculado:
+
+```{.julia}
+rey = obten_embedding("rey")
+reina = obten_embedding("reina")
+hombre = obten_embedding("hombre")
+mujer = obten_embedding("mujer")
+
+reina2 = rey - hombre + mujer
+coseno(reina, reina2)
+rey2 = reina - mujer + hombre
+coseno(rey, rey2)
+```
+
+Obtenemos:
+
+```{.shell}
+0.7006942f0 (45 grados)
+0.6734288f0 (47 grados)
+```
+"""
+
+# ╔═╡ bd0096b0-7059-4444-81c6-ee6daffa0392
+md"""
+## Show me the code
+Vamos a calcular el concepto de gatos a partir de los conceptos perro, perros y gato, y calcular la distancia coseno entre el vector del embedding para gatos y el calculado:
+
+```{.julia}
+perro = obten_embedding("perro")
+gato = obten_embedding("gato")
+perros = obten_embedding("perros")
+gatos = obten_embedding("gatos")
+
+gatos2 = perros - perro + gato
+coseno(gatos, gatos2)
+```
+
+Obtenemos:
+
+```{.shell}
+0.88137954f0 (28 grados)
+```
+"""
+
+# ╔═╡ a94e7a01-d5d1-4b95-8e6c-bf1ad2b0b4e5
+md"""
+## Show me the code
+
+Finalmente vamos a calcular el concepto de pluralidad a partir de perros y gatos, y compararlos:
+
+```{.julia}
+pluralidad_gato = gatos - gato
+pluralidad_perro = perros - perro
+
+coseno(pluralidad_gato, pluralidad_perro)
+```
+
+Obtenemos:
+
+```{.shell}
+0.86211735f0 (30 grados)
+```
 """
 
 # ╔═╡ 84f87d3f-d60e-4a95-a48c-e77a25874d0f
@@ -1259,6 +1387,9 @@ version = "17.4.0+2"
 # ╠═c31ee640-cdba-4469-b755-a6406e101015
 # ╠═8c5cd066-9fa7-4c62-beed-e858d0f3a311
 # ╠═87d0f2f2-eaea-4a7c-bca9-ceabab0da099
+# ╠═6744bcec-8e4a-420f-aeb9-34de80d0404c
+# ╠═767aaf9a-1984-404a-ae79-a74fc919861d
+# ╠═cc042ada-03d1-4189-abf0-9337546e6bec
 # ╠═1ebf121c-e8c1-45f8-954f-a7ad10157228
 # ╠═f4db6144-ef66-414c-9854-c05d0dad8ef3
 # ╠═ac928fe1-5926-44d7-912e-be19f5128b84
@@ -1275,6 +1406,11 @@ version = "17.4.0+2"
 # ╠═be14b504-bf76-4053-8098-71c791108151
 # ╠═e31a02d0-d16a-4f11-a767-050139079635
 # ╠═bee075f8-65e2-4991-ae10-e749d1119bb2
+# ╠═7a6bf294-4694-43d9-b4b6-5f085dddf29f
+# ╠═4ca5b39c-e180-4956-bbbc-3ff3b51aa1a4
+# ╠═ea93bd5e-d8ca-4d75-807e-bc4b315464ce
+# ╠═bd0096b0-7059-4444-81c6-ee6daffa0392
+# ╠═a94e7a01-d5d1-4b95-8e6c-bf1ad2b0b4e5
 # ╠═84f87d3f-d60e-4a95-a48c-e77a25874d0f
 # ╠═e0917f33-9a77-439a-badf-66a3d04b248a
 # ╠═02bce938-3cf8-41fd-b8b5-da36d2bf3782
