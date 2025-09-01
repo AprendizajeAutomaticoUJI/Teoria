@@ -83,7 +83,7 @@ Fuente: Lollixzc, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, v
 # ╔═╡ e001bbc2-a5db-4475-8f37-a3271413f431
 Resource(
 	"https://upload.wikimedia.org/wikipedia/commons/1/1b/AI_hierarchy.svg",
-	:alt => "Computer Vision Book",
+	:alt => "Disciplinas de la IA",
 	:width => 300
 )
 
@@ -104,7 +104,7 @@ Un ejemplo para aclarar los tres conceptos: reconocer dígitos escritos a mano: 
 # ╔═╡ 243d3a2d-e002-499a-9ae9-1a96a8670893
 Resource(
 	"https://upload.wikimedia.org/wikipedia/commons/f/f7/MnistExamplesModified.png",
-	:alt => "Computer Vision Book",
+	:alt => "Conjunto de datos MNIST",
 	:width => 550
 )
 
@@ -147,7 +147,7 @@ Por ejemplo, si queremos entrenar un algoritmo para que reconozca dígitos, mi c
 # ╔═╡ 3ce300ab-bfa8-4206-8d5f-1514ead9de4f
 Resource(
 	"https://upload.wikimedia.org/wikipedia/commons/f/f7/MnistExamplesModified.png",
-	:alt => "Computer Vision Book",
+	:alt => "Conjunto de datos MNIST",
 	:width => 550
 )
 
@@ -216,7 +216,7 @@ Cada ensayo tiene una recompensa, que puede ser positiva o negativa. La combinac
 # ╔═╡ c3478d98-4b58-4af4-99b5-796e7acc6578
 Resource(
 	"https://belmonte.uji.es/Docencia/IR2130/Teoria/Introduccion/Imagenes/laberinto.jpg",
-	:alt => "Computer Vision Book",
+	:alt => "Laberinto",
 	:width => 500
 )
 
@@ -280,7 +280,7 @@ Entonces decimos que el modelo subajusta los datos.
 # ╔═╡ 38a34350-09d9-4006-8664-b296e71698c1
 Resource(
 	"https://belmonte.uji.es/Docencia/IR2130/Teoria/Introduccion/Imagenes/subajuste.png",
-	:alt => "Computer Vision Book",
+	:alt => "Subajuste",
 	:width => 600
 )
 
@@ -296,7 +296,7 @@ Entonces el modelo sobreajusta los datos.
 # ╔═╡ 0818638d-6cc0-4024-8e9c-23374af5424d
 Resource(
 	"https://belmonte.uji.es/Docencia/IR2130/Teoria/Introduccion/Imagenes/sobreajuste.png",
-	:alt => "Computer Vision Book",
+	:alt => "Sobreajuste",
 	:width => 600
 )
 
@@ -332,7 +332,7 @@ Si el problema es de clasificación, usualmente se presentan los resultados con 
 # ╔═╡ 22f12815-acad-454c-98ee-b8f931f44802
 Resource(
 	"https://belmonte.uji.es/Docencia/IR2130/Teoria/Introduccion/Imagenes/matriz_confusion.png",
-	:alt => "Computer Vision Book",
+	:alt => "Matriz de confusión",
 	:width => 500
 )
 
@@ -356,7 +356,7 @@ Otra métrica menos utilizada pero bastante informativa en clasificación binari
 # ╔═╡ a352c007-cb3c-4e9a-8cc9-e5deea7d7123
 Resource(
 	"https://belmonte.uji.es/Docencia/IR2130/Teoria/Introduccion/Imagenes/auc.png",
-	:alt => "Computer Vision Book",
+	:alt => "Curva ROC",
 	:width => 600
 )
 
