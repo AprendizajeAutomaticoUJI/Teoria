@@ -56,9 +56,14 @@ md"""
 Óscar Belmonte Fernández - IR2130 Aprendizaje Automático
 
 Grado en Inteligencia Robótica - Universitat Jaume I (UJI)
-
-![](https://ujiapps.uji.es/ade/rest/storage/63c07717-5208-4240-b688-aa6ff558b466?guest=true)
 """
+
+# ╔═╡ 2a8ae7fc-5eab-427a-974f-4e52017f040d
+Resource(
+	"https://belmonte.uji.es/imgs/uji.jpg",
+	:alt => "Logo UJI",
+	:width => 500
+)
 
 # ╔═╡ cc81afb1-c73d-4e75-b572-21a70608dd9d
 md"""
@@ -442,7 +447,7 @@ Otra prueba gráfica que podemos utilizar son los qqplot o gráficos cuantil-cua
 """
 
 # ╔═╡ ad16e07e-f7c2-4bce-9f71-0d0334459ef6
-qqnorm(residuos, xlabel="Cuantiles teóricos", ylabel="Cuantiles de los datos", title="Gráfico cuantil-cualtil de los residuos", size=(900,400))
+qqnorm(residuos, xlabel="Cuantiles teóricos", ylabel="Cuantiles de los datos", title="Gráfico cuantil-cuantil de los residuos", size=(900,400))
 
 # ╔═╡ 08794500-ec04-4834-8852-c79680f0d136
 md"""
@@ -670,6 +675,7 @@ md"""
 
 Para terminar con esta sección vamos a ver cómo la expresión de la función 
 de pérdidas: 
+
 $\mathcal{L}(h_\mathbf{\theta}) = \frac{1}{N} \sum_{i=1}^N \lvert y_i - x_i\theta \rvert ^2$
 
 aparece de modo natural al asumir que los residuos están normalmente 
@@ -1576,12 +1582,6 @@ md"""
 - Hemos introducido la regularización para mejorar el rendimiento.
 - Es importante que compruebes que se cumplen las condiciones para aplicar regresión lineal: residuos distribuido según una gaussiana centrada en el 0.
 """
-
-# ╔═╡ 31f685d8-b2b3-49d3-88a0-e45f24e69bd8
-# ╠═╡ disabled = true
-#=╠═╡
-v = [1,2,3]
-  ╠═╡ =#
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -3920,6 +3920,7 @@ version = "1.4.1+2"
 # ╠═518c90c6-e42d-4c2c-bf1e-8892dac5e4a0
 # ╠═266e632b-30a5-4ae4-981f-8e2ab61e3232
 # ╠═d0fe37ee-bbc1-11ef-2f0c-4b6bc41d2c3a
+# ╠═2a8ae7fc-5eab-427a-974f-4e52017f040d
 # ╠═cc81afb1-c73d-4e75-b572-21a70608dd9d
 # ╠═e709b44b-57b0-482d-bc11-93b91451d790
 # ╠═515ef8bd-82e3-4f94-8fbc-0626ed34e5b7
@@ -4126,6 +4127,5 @@ version = "1.4.1+2"
 # ╠═3becbcf2-753c-4662-bc05-be7e625146b0
 # ╠═61e188a0-8080-4e76-8531-cca90d56cc14
 # ╠═5c0b5a16-fd1d-4b8c-aa70-d746332b4d28
-# ╠═31f685d8-b2b3-49d3-88a0-e45f24e69bd8
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
