@@ -720,18 +720,6 @@ Calculamos la curva ROC:
 # ╔═╡ ececc102-a1d5-4669-8bea-6a3deabc540b
 fpr, tpr = roc_curve(predict(maquina, select(prueba, [:weight, :height])), coerce(prueba.male, OrderedFactor))
 
-# ╔═╡ 50d77a1c-a13d-4aa6-95f9-3f4dbba8bda8
-# ╠═╡ disabled = true
-#=╠═╡
-typeof(coerce(prueba.male, OrderedFactor))
-  ╠═╡ =#
-
-# ╔═╡ f3f6159e-261d-4f75-9ea2-36998b4578eb
-# ╠═╡ disabled = true
-#=╠═╡
-typeof(predict(maquina, select(prueba, [:weight, :height])))
-  ╠═╡ =#
-
 # ╔═╡ 511ea9f7-d54f-46b4-b184-7bec2bfa274f
 md"""
 Calculamos el área bajo la curva:
@@ -3208,8 +3196,6 @@ version = "1.4.1+2"
 # ╠═c12c09f0-75db-4a40-a201-1bd8d69b482a
 # ╠═c00f5e6e-cb0e-44d9-8fe9-41ed8da6eed3
 # ╠═ececc102-a1d5-4669-8bea-6a3deabc540b
-# ╠═50d77a1c-a13d-4aa6-95f9-3f4dbba8bda8
-# ╠═f3f6159e-261d-4f75-9ea2-36998b4578eb
 # ╠═511ea9f7-d54f-46b4-b184-7bec2bfa274f
 # ╠═ce15f735-0e8a-47fe-90f3-d06fbc296b33
 # ╠═3e1e3253-4eee-4284-ac87-3de5d451495a

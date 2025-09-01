@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.8
+# v0.20.13
 
 using Markdown
 using InteractiveUtils
@@ -55,9 +55,14 @@ md"""
 Óscar Belmonte Fernández - IR2130 Aprendizaje Automático
 
 Grado en Inteligencia Robótica - Universitat Jaume I (UJI)
-
-![](https://ujiapps.uji.es/ade/rest/storage/63c07717-5208-4240-b688-aa6ff558b466?guest=true)
 """
+
+# ╔═╡ 43475479-3247-4913-b355-30e4ec0240be
+Resource(
+	"https://belmonte.uji.es/imgs/uji.jpg",
+	:alt => "Logo UJI",
+	:width => 400
+)
 
 # ╔═╡ 7fd1c6ad-a229-4123-bbeb-c4b55d5ffc31
 md"""
@@ -84,7 +89,7 @@ md"""
 md"""
 ## Referencias
 
-
+1. Pattern recognition and Machine Learning. Capítulos 6 y 7.
 """
 
 # ╔═╡ 4b30ab11-03a3-4bde-bd55-1e8f737157b6
@@ -128,9 +133,6 @@ end
 
 # ╔═╡ c55facf6-29ad-4cce-9f91-e1e053c7aa70
 datos = genera_datos([0.1,2.0], 5.0, 5)
-
-# ╔═╡ f47c2397-d8fd-48f3-89cd-51399ac2be90
-# datos = genera_datos([.26679248982037507, -0.014910417266357001], -40.58458179553991, 5)
 
 # ╔═╡ 8d94edc6-042e-4932-a7ed-57d71d6f56a2
 function plot_datos(datos)
@@ -679,6 +681,9 @@ plot_datos_limites(datos, vectores_soporte)
 
 # ╔═╡ 9b1b2fd2-d2cb-44a5-8842-be320c17b3fb
 plot_datos_limites(datos, vectores_soporte)
+
+# ╔═╡ b5200bfb-c01f-47ef-8d7b-98377becf206
+θ, θ0
 
 # ╔═╡ 4c8f525a-ca10-4854-a55a-8c620a21f9e8
 md"""
@@ -1285,7 +1290,7 @@ PlutoUI = "~0.7.61"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.11.5"
+julia_version = "1.11.6"
 manifest_format = "2.0"
 project_hash = "da02909b2a19e5b9c266f714f63a4b17fcb92241"
 
@@ -3241,6 +3246,7 @@ version = "1.4.1+2"
 # ╠═f996441d-9968-4e5c-b814-25bfb0413d61
 # ╠═17a8e36a-0257-45b0-9ded-a43a85979709
 # ╠═d2d91db2-0213-4329-9d6a-524b5602e987
+# ╠═43475479-3247-4913-b355-30e4ec0240be
 # ╠═7fd1c6ad-a229-4123-bbeb-c4b55d5ffc31
 # ╠═782310a4-9d89-4332-9cad-b6ab46a24a2a
 # ╠═b44ddc15-a3e7-4282-ae23-18a163c3aad2
@@ -3250,11 +3256,10 @@ version = "1.4.1+2"
 # ╠═8064744a-796c-44a7-a2ab-d60909ecbe0d
 # ╠═40151e5b-9c13-4178-9de1-0feeb4bf31ac
 # ╠═c55facf6-29ad-4cce-9f91-e1e053c7aa70
-# ╠═f47c2397-d8fd-48f3-89cd-51399ac2be90
 # ╠═8d94edc6-042e-4932-a7ed-57d71d6f56a2
 # ╠═8bb58a9c-d947-4470-9348-f8dc6c4d3e11
 # ╠═953e4a5d-1094-49cf-86df-736a4166ab00
-# ╠═131778f5-3927-4daf-a5f0-1e69e65bc773
+# ╟─131778f5-3927-4daf-a5f0-1e69e65bc773
 # ╠═bf8856f1-8e20-4288-9db8-906e12088412
 # ╠═85589b93-c3fc-417f-bfda-0d44c9d5d4c7
 # ╠═f43e4aa9-29b0-4e94-8486-17c40fc385a7
@@ -3316,6 +3321,7 @@ version = "1.4.1+2"
 # ╠═e72c0f9c-7233-42da-af5c-0da3348e63fd
 # ╠═e9bb1b66-90b7-4d2a-bd08-eeccd5b89d58
 # ╠═71103b9c-4d79-4f0e-845b-a84e8de1d063
+# ╠═b5200bfb-c01f-47ef-8d7b-98377becf206
 # ╠═4c8f525a-ca10-4854-a55a-8c620a21f9e8
 # ╠═64859989-d320-44d2-97da-4c08f75e17c2
 # ╠═4fa4e2da-bdd8-4337-bcd8-568f0c546079
