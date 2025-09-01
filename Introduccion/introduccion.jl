@@ -32,9 +32,14 @@ md"""
 Óscar Belmonte Fernández - IR2130 Aprendizaje Automático
 
 Grado en Inteligencia Robótica - Universitat Jaume I (UJI)
-
-![](https://ujiapps.uji.es/ade/rest/storage/63c07717-5208-4240-b688-aa6ff558b466?guest=true)
 """
+
+# ╔═╡ 6e640278-d33c-4920-baeb-d7fad757a6b5
+Resource(
+	"https://belmonte.uji.es/imgs/uji.jpg",
+	:alt => "Logo UJI",
+	:width => 500
+)
 
 # ╔═╡ d4f797f3-f2df-4068-8af0-36c2d6735f56
 md"""
@@ -1590,6 +1595,7 @@ version = "1.4.1+1"
 # ╠═3c877af8-1d0e-41d4-bfc4-43e7fe3263aa
 # ╠═13faae83-cbcf-4184-a921-9d14482a9636
 # ╠═89503130-b960-11ef-3401-b3f35716b97c
+# ╠═6e640278-d33c-4920-baeb-d7fad757a6b5
 # ╠═d4f797f3-f2df-4068-8af0-36c2d6735f56
 # ╠═362123c4-eca1-4a98-a881-c1f327d934af
 # ╠═7c09922c-63a1-4fcf-9108-d3da329421bd
