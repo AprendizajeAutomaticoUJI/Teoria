@@ -64,24 +64,23 @@ md"""
 # ╔═╡ 50f4b33b-16fa-4970-96ce-652a0c565131
 md"""
 ## Dónde se situa la disciplina del aprendizaje automático
-
-
 """
 
-# ╔═╡ ab5b242a-cbd6-40b5-a84e-cd5f65797a52
-html"""
-<div class="fila">
-	<div class="columna40">
-		<img src="https://upload.wikimedia.org/wikipedia/commons/1/1b/AI_hierarchy.svg" alt="drawing" width="300"/>
-	</div>
+# ╔═╡ 80569cec-36b6-4a9e-a283-cdb7e758286f
+md"""
+El AA es un subcampo de la IA.
 
-	<div class="columna60">
-		<p>El AA es un subcampo de la IA.</p>
-		<p>A su vez, el Aprendizaje Profundo es un subcampo del AA.</p>
-	</div>
-</div>
-<p class="fuente">Fuente: Lollixzc, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons</p>
+A su vez, el Aprendizaje Profundo es un subcampo del AA.
+
+Fuente: Lollixzc, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0, via Wikimedia Commons
 """
+
+# ╔═╡ e001bbc2-a5db-4475-8f37-a3271413f431
+Resource(
+	"https://upload.wikimedia.org/wikipedia/commons/1/1b/AI_hierarchy.svg",
+	:alt => "Computer Vision Book",
+	:width => 300
+)
 
 # ╔═╡ 56b4728d-988a-4e37-b784-40f5c017bc53
 md"""
@@ -97,11 +96,12 @@ md"""
 Un ejemplo para aclarar los tres conceptos: reconocer dígitos escritos a mano: La tarea (T) es etiquetar cada uno de los dígitos que aparecen en un número escrito a mano; la experiencia (E) es el conjunto de datos de entrenamiento, cada elemento del conjunto es una imagen con su correspondiente etiqueta; el rendimiento (P) es la medida de lo bien que funciona el algoritmo, por ejemplo en número de dígitos de prueba correctamente clasificado frente al número total de dígitos de prueba. 
 """
 
-# ╔═╡ 8382ccf5-075f-4a90-9bf3-a8b895ddd47d
-html"""
-<img src="https://upload.wikimedia.org/wikipedia/commons/f/f7/MnistExamplesModified.png" class="center">
-<p class="fuente">Fuente: Mitchel, 1997.</p>
-"""
+# ╔═╡ 243d3a2d-e002-499a-9ae9-1a96a8670893
+Resource(
+	"https://upload.wikimedia.org/wikipedia/commons/f/f7/MnistExamplesModified.png",
+	:alt => "Computer Vision Book",
+	:width => 550
+)
 
 # ╔═╡ e72f0505-cee3-4b01-add7-9731d9b3bc2d
 md"""
@@ -132,19 +132,19 @@ md"""
 ## Aprendizaje supervisado
 """
 
-# ╔═╡ 2da414e5-fa75-4aab-b950-56338a5cec87
-html"""
-<p>El conjunto de datos de entrenamiento que se proporciona al algoritmo contiene el resultado esperado para cada una de las muestras.</p>
+# ╔═╡ 08de31a2-8322-4e83-a47d-8e06f90123d1
+md"""
+El conjunto de datos de entrenamiento que se proporciona al algoritmo contiene el resultado esperado para cada una de las muestras.
 
-<div class="fila">
-	<div class="columna">
-		<p>Por ejemplo, si queremos entrenar un algoritmo para que reconozca dígitos, mi conjunto de entrenamiento debe tener imágenes de dígitos, y cada imagen una etiqueta correspondiente al dígito que representa.</p>
-	</div>
-	<div class="columna">
-		<img src="https://upload.wikimedia.org/wikipedia/commons/f/f7/MnistExamplesModified.png">
-	</div>
-</div>
+Por ejemplo, si queremos entrenar un algoritmo para que reconozca dígitos, mi conjunto de entrenamiento debe tener imágenes de dígitos, y cada imagen una etiqueta correspondiente al dígito que representa.
 """
+
+# ╔═╡ 3ce300ab-bfa8-4206-8d5f-1514ead9de4f
+Resource(
+	"https://upload.wikimedia.org/wikipedia/commons/f/f7/MnistExamplesModified.png",
+	:alt => "Computer Vision Book",
+	:width => 550
+)
 
 # ╔═╡ 1eb5706b-5c1b-44c9-b5cc-d21dc1a1c13f
 md"""
@@ -201,17 +201,25 @@ md"""
 ## Aprendizaje por refuerzo
 """
 
-# ╔═╡ 7d4cbf3d-119c-41ce-99ee-014760a09a5d
-html"""
-<div class="fila">
-	<div class="columna60">
-		<p>La resolución de un problema se realiza mediante ensayo y error.</p>
-		<p>Cada ensayo tiene una recompensa, que puede ser positiva o negativa. La combinación de ensayo y recompensa condiciona el siguiente ensayo a tomar.</p>
-	</div>
-	<div class="columna40">
-		<img src="https://www3.uji.es/~belfern/Docencia/IR2130/Teoria/Introduccion/Imagenes/laberinto.jpg" width="100%">
-	</div>
-</div>
+# ╔═╡ 94b8def4-d692-4c3a-bddd-9bae82ea1182
+md"""
+La resolución de un problema se realiza mediante ensayo y error.
+
+Cada ensayo tiene una recompensa, que puede ser positiva o negativa. La combinación de ensayo y recompensa condiciona el siguiente ensayo a tomar.
+"""
+
+# ╔═╡ c3478d98-4b58-4af4-99b5-796e7acc6578
+Resource(
+	"https://belmonte.uji.es/Docencia/IR2130/Teoria/Introduccion/Imagenes/laberinto.jpg",
+	:alt => "Computer Vision Book",
+	:width => 500
+)
+
+# ╔═╡ c3cbda96-1ddb-407b-be11-b668c77a1148
+md"""
+La resolución de un problema se realiza mediante ensayo y error.
+
+Cada ensayo tiene una recompensa, que puede ser positiva o negativa. La combinación de ensayo y recompensa condiciona el siguiente ensayo a tomar.
 """
 
 # ╔═╡ 6121337e-ebb8-4e82-82cd-361b6e6d28d2
@@ -264,10 +272,12 @@ Un problema que puede aparecer cuando entrenamos un modelo de AA es que no gener
 Entonces decimos que el modelo subajusta los datos.
 """
 
-# ╔═╡ 11ba746d-a43d-4e82-8e26-1e0d2a2feea1
-html"""
-<img src="https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/Introduccion/subajuste.png" style="width:700px" class="center">
-"""
+# ╔═╡ 38a34350-09d9-4006-8664-b296e71698c1
+Resource(
+	"https://belmonte.uji.es/Docencia/IR2130/Teoria/Introduccion/Imagenes/subajuste.png",
+	:alt => "Computer Vision Book",
+	:width => 600
+)
 
 # ╔═╡ 175bd281-7b28-4f7b-ab72-a2b4136fc5b5
 md"""
@@ -278,10 +288,12 @@ Por el contrario, a veces forzamos el modelo en la fase de entrenamiento para qu
 Entonces el modelo sobreajusta los datos.
 """
 
-# ╔═╡ abb5d5c1-8aa0-4220-bb13-82b11b9604a4
-html"""
-<img src="https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/Introduccion/sobreajuste.png" style="width:700px" class="center">
-"""
+# ╔═╡ 0818638d-6cc0-4024-8e9c-23374af5424d
+Resource(
+	"https://belmonte.uji.es/Docencia/IR2130/Teoria/Introduccion/Imagenes/sobreajuste.png",
+	:alt => "Computer Vision Book",
+	:width => 600
+)
 
 # ╔═╡ d18ea8da-3fe4-49b0-bbad-d2b3ccb1ab0a
 md"""
@@ -312,10 +324,12 @@ md"""
 Si el problema es de clasificación, usualmente se presentan los resultados con forma de matriz de confusión:
 """
 
-# ╔═╡ e48333f5-7d7b-41cd-ad23-c211edc40ff9
-html"""
-<img src="https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/Introduccion/matriz_confusion.png" class="center">
-"""
+# ╔═╡ 22f12815-acad-454c-98ee-b8f931f44802
+Resource(
+	"https://belmonte.uji.es/Docencia/IR2130/Teoria/Introduccion/Imagenes/matriz_confusion.png",
+	:alt => "Computer Vision Book",
+	:width => 500
+)
 
 # ╔═╡ 891c83de-9dd6-4c35-a427-8734fd57a2eb
 md"""
@@ -334,10 +348,12 @@ md"""
 Otra métrica menos utilizada pero bastante informativa en clasificación binaria es el Área Bajo la Curva (AUC - Area Under the Curve).
 """
 
-# ╔═╡ f0731f08-333f-4cb6-9f7e-194627dfba7d
-html"""
-<img src="https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/Introduccion/auc.png" class="center">
-"""
+# ╔═╡ a352c007-cb3c-4e9a-8cc9-e5deea7d7123
+Resource(
+	"https://belmonte.uji.es/Docencia/IR2130/Teoria/Introduccion/Imagenes/auc.png",
+	:alt => "Computer Vision Book",
+	:width => 600
+)
 
 # ╔═╡ 6c0600e0-ebc5-4c10-920e-2a4c68c48721
 md"""
@@ -1578,36 +1594,40 @@ version = "1.4.1+1"
 # ╠═362123c4-eca1-4a98-a881-c1f327d934af
 # ╠═7c09922c-63a1-4fcf-9108-d3da329421bd
 # ╠═50f4b33b-16fa-4970-96ce-652a0c565131
-# ╠═ab5b242a-cbd6-40b5-a84e-cd5f65797a52
+# ╠═80569cec-36b6-4a9e-a283-cdb7e758286f
+# ╠═e001bbc2-a5db-4475-8f37-a3271413f431
 # ╠═56b4728d-988a-4e37-b784-40f5c017bc53
 # ╠═63b90197-c31f-416b-9d2b-c559dd07eca1
-# ╠═8382ccf5-075f-4a90-9bf3-a8b895ddd47d
+# ╠═243d3a2d-e002-499a-9ae9-1a96a8670893
 # ╠═e72f0505-cee3-4b01-add7-9731d9b3bc2d
 # ╠═90445984-5589-4d4b-94ee-7544223b9016
 # ╠═0496fc5a-c213-4cb4-8181-a8d4b92979e8
-# ╠═2da414e5-fa75-4aab-b950-56338a5cec87
+# ╠═08de31a2-8322-4e83-a47d-8e06f90123d1
+# ╠═3ce300ab-bfa8-4206-8d5f-1514ead9de4f
 # ╠═1eb5706b-5c1b-44c9-b5cc-d21dc1a1c13f
 # ╠═6c3367b8-c0f3-406d-af06-44faed0b7bde
 # ╠═ccd2163b-ca15-4a0e-bb25-7835c14e33a2
 # ╠═112c940c-fe03-4a8d-bebe-024ceb30170c
 # ╠═0ea9bd55-9cb1-4e04-89a8-f8102ad6e20b
 # ╠═33265b15-5a1f-445c-8184-519e88028f8e
-# ╠═7d4cbf3d-119c-41ce-99ee-014760a09a5d
+# ╠═94b8def4-d692-4c3a-bddd-9bae82ea1182
+# ╠═c3478d98-4b58-4af4-99b5-796e7acc6578
+# ╠═c3cbda96-1ddb-407b-be11-b668c77a1148
 # ╠═6121337e-ebb8-4e82-82cd-361b6e6d28d2
 # ╠═162c6f5b-5fa0-4975-b507-8f62c49f2afb
 # ╠═b89e7a17-2963-4b39-b060-efcf0666fc26
 # ╠═c39ff5b3-ce9f-446f-9728-c723ae4f74c3
 # ╠═0d1ce458-fab3-48f5-ac12-271ec14bd2f6
-# ╠═11ba746d-a43d-4e82-8e26-1e0d2a2feea1
+# ╠═38a34350-09d9-4006-8664-b296e71698c1
 # ╠═175bd281-7b28-4f7b-ab72-a2b4136fc5b5
-# ╠═abb5d5c1-8aa0-4220-bb13-82b11b9604a4
+# ╠═0818638d-6cc0-4024-8e9c-23374af5424d
 # ╠═d18ea8da-3fe4-49b0-bbad-d2b3ccb1ab0a
 # ╠═1d659e8e-33f5-451f-9aff-e07ec9ee33c8
 # ╠═14c83470-1c2f-4d07-aed4-122568d4edbb
-# ╠═e48333f5-7d7b-41cd-ad23-c211edc40ff9
+# ╠═22f12815-acad-454c-98ee-b8f931f44802
 # ╠═891c83de-9dd6-4c35-a427-8734fd57a2eb
 # ╠═dcd17617-6aa4-4ed0-aff7-5a9184990aee
-# ╠═f0731f08-333f-4cb6-9f7e-194627dfba7d
+# ╠═a352c007-cb3c-4e9a-8cc9-e5deea7d7123
 # ╠═6c0600e0-ebc5-4c10-920e-2a4c68c48721
 # ╠═7fcae622-7d09-4cae-bb54-197e4ecb5d6d
 # ╠═a48c3da3-8a99-406a-a2e2-8246da87618e
