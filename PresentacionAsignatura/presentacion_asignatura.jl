@@ -40,9 +40,9 @@ Correo electrónico: [oscar.belmonte@uji.es](mailto:oscar.belmonte@uji.es)
 
 **Tutorías**
 
-Martes: 12:00 a 13:30
+Miércoles: 12:00 a 13:30
 
-Miércoles: 12:00 a 13:30 
+Viernes: 12:00 a 13:30 
 """
 
 # ╔═╡ bebd3486-d3d5-4b64-b667-5ab441d79d5c
@@ -170,9 +170,6 @@ Las fechas de los exámenes están en el
 md"""
 # ¿Preguntas?
 """
-
-# ╔═╡ 692b56ed-6ab7-4a54-9ae9-f7446484d619
-
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -481,6 +478,5 @@ version = "17.4.0+2"
 # ╠═bf1db002-603f-408a-aa77-1b043b796bb6
 # ╠═a215b103-c532-47c8-bc3c-785fe331e633
 # ╠═c2a05357-be60-48cf-9da9-68d71a1eaec3
-# ╠═692b56ed-6ab7-4a54-9ae9-f7446484d619
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
