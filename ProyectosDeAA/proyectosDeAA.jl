@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.6
+# v0.20.13
 
 using Markdown
 using InteractiveUtils
@@ -30,14 +30,12 @@ Grado en Inteligencia Robótica - Universitat Jaume I (UJI)
 md"""
 ## Introducción
 
-Un proyecto de AA necesita de cierta organización previa antes de su inicio. 
+Un proyecto de aprendizaje automático necesita de cierta organización previa antes de su inicio. 
 En particular, el uso de los datos debe ser claramente establecido.
 
-El desarrollo de este tipo de proyectos es una fase continua de prueba y error, 
-siempre hay espacio suficiente para probar nuevas idea.
+El desarrollo de proyectos aprendizaje automático es una fase continua de prueba y error, siempre hay espacio suficiente para probar nuevas idea.
 
-Como en todo proyecto, es muy importante ir documentando todo el trabajo, así 
-como las conclusiones que se van obteniendo.
+Como en todo proyecto, es muy importante ir documentando todo el trabajo, así como las conclusiones que se van obteniendo.
 """
 
 # ╔═╡ 276f4250-bd8c-408c-9cb0-0493f5f7b3fe
@@ -229,7 +227,7 @@ PlutoUI = "~0.7.61"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.11.5"
+julia_version = "1.11.6"
 manifest_format = "2.0"
 project_hash = "6d1b77f27e79835fc27b2d7e99ab8fcaf37aa976"
 
