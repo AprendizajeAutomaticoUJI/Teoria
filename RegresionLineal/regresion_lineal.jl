@@ -1392,9 +1392,6 @@ Extraigo los coeficientes del polinomio y el término independiente.
 A, b = regresion_ridge[1:end-1, :], regresion_ridge[end, :]
   ╠═╡ =#
 
-# ╔═╡ de34ec11-da3b-4b11-bb16-2696367963fa
-@which ridge
-
 # ╔═╡ 4cfb2906-1717-4783-b653-4a3c5400842c
 md"""
 ## Modelos lineales regularizados: Ridge
@@ -4097,7 +4094,6 @@ version = "1.4.1+2"
 # ╠═363847f2-3cc6-4849-8c99-1a358a3227f6
 # ╟─178e6c6e-e469-4a83-80e9-919cf58a2699
 # ╠═99acc500-db17-47cb-b1fe-46221270662d
-# ╠═de34ec11-da3b-4b11-bb16-2696367963fa
 # ╟─4cfb2906-1717-4783-b653-4a3c5400842c
 # ╠═32d2acdc-e835-47d1-8979-3336d5312b78
 # ╠═b495bcdb-9204-4c07-a736-19c18622f244
