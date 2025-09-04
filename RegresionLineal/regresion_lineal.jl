@@ -404,15 +404,24 @@ end
 # ╔═╡ 287328fd-2389-4e7e-84f9-4cd932db899a
 md"""
 ## Normalidad de los residuos
-Para calcular la bondad del ajuste a una normal podemos utilizar el test de Shapiro-Wilk, que nos da un p-valor de $p = 0.2499$.
-
-En ambos caso del p-valor es mayor que $0.05$, luego no podemos descartar 
-que los residuos sigan una distribución normal.
-
+Para calcular la bondad del ajuste a una normal podemos utilizar la prueba de Shapiro-Wilk:
 """
 
 # ╔═╡ 5443ad0a-deb3-463f-8975-12fb969df1cc
 ShapiroWilkTest(residuos)
+
+# ╔═╡ 13a23e81-542b-4290-9101-4d3e2d33c7c4
+md"""
+El p-valor que obtenemos:
+"""
+
+# ╔═╡ 5c3c4e78-6e8a-43e0-83a4-b2728e846981
+pvalue(ShapiroWilkTest(residuos))
+
+# ╔═╡ 00cc7560-f1c7-449a-8ce9-c25bf9e6fa31
+md"""
+La prueba nos da un p-valor de $p = 0.2499$, que es mayor que $0.05$, luego no podemos descartar que los residuos sigan una distribución normal.
+"""
 
 # ╔═╡ 965d8844-8fdd-4e88-a6bd-01281a5fb642
 md"""
@@ -3956,6 +3965,9 @@ version = "1.4.1+2"
 # ╠═cf291a6a-18ba-476a-a9c9-ddcd1f75c514
 # ╠═287328fd-2389-4e7e-84f9-4cd932db899a
 # ╠═5443ad0a-deb3-463f-8975-12fb969df1cc
+# ╠═13a23e81-542b-4290-9101-4d3e2d33c7c4
+# ╠═5c3c4e78-6e8a-43e0-83a4-b2728e846981
+# ╠═00cc7560-f1c7-449a-8ce9-c25bf9e6fa31
 # ╠═965d8844-8fdd-4e88-a6bd-01281a5fb642
 # ╠═f5a3b766-4781-47de-8097-af3bd8bc4ecd
 # ╠═ac831749-b0aa-49f5-ad1b-92e45599551d
