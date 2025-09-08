@@ -33,7 +33,7 @@ Resource(
 
 # ╔═╡ 7debff7b-7ac3-42c2-80ed-404e4dd6dc18
 md"""
-## Mis datos
+# Mis datos
 
 Óscar Belmonte Fernández.
 
@@ -52,7 +52,7 @@ Viernes: 12:00 a 13:30
 
 # ╔═╡ bebd3486-d3d5-4b64-b667-5ab441d79d5c
 md"""
-## Estructura de la asignatura
+# Estructura de la asignatura
 
 |Actividad|Presenciales|No presenciales|
 |---------|:------------:|:---------------:|
@@ -66,7 +66,7 @@ md"""
 
 # ╔═╡ 2edb759d-92a8-4eeb-a81a-d178dad933df
 md"""
-## Relación con otras asignaturas del grado
+# Relación con otras asignaturas del grado
 
 * IR2119 - Fundamentos de Inteligencia Artificial.
 * IR2122 - Reconocimiento de patrones.
@@ -75,7 +75,7 @@ md"""
 
 # ╔═╡ 8843dc3e-586a-43d0-b6d0-c9f63f3726f7
 md"""
-## Resultados de aprendizaje
+# Resultados de aprendizaje
 
 1. Aplicar métodos de regresión lineal y logística a problemas de regresión y clasificación.
 2. Aplicar máquinas de vectores soporte a problemas de clasificación lineal y no lineal.
@@ -85,7 +85,7 @@ md"""
 
 # ╔═╡ cc721787-1bca-4e46-a6f4-f7d869e82cdc
 md"""
-## Resultados de aprendizaje
+# Resultados de aprendizaje
 
 5. Aplicar métodos de aprendizaje por refuerzo a la solución de problemas en el ámbito de la robótica.
 6. Diseñar e implementar procesos efectivos de entrenamiento y evaluación de sistemas inteligentes.
@@ -94,7 +94,7 @@ md"""
 
 # ╔═╡ 0100f308-a45b-409d-9bfd-eb92046a8ac0
 md"""
-## Temario de teoría
+# Temario de teoría
 
 1. Introducción al Aprendizaje Automático.
 1. Regresión lineal.
@@ -107,7 +107,7 @@ md"""
 
 # ╔═╡ 38780e19-1508-411a-86b5-bc35794561e3
 md"""
-## Temario de prácticas
+# Temario de prácticas
 
 1. Regresión lineal.
 1. Regresión logística.
@@ -118,9 +118,7 @@ md"""
 
 # ╔═╡ a8bba0f1-7f62-48f3-9074-40a639ef2daa
 md"""
-## Metodología
-
-**Teoría**
+# Metodología de teoría
 
 * Presentación de contenidos teóricos.
 * Los contenidos teóricos se evaluarán mediante un examen.
@@ -128,9 +126,7 @@ md"""
 
 # ╔═╡ c080fdd4-9e69-4922-b418-27c67385f3be
 md"""
-## Metodología
-
-**Prácticas**
+## Metodología de prácticas
 
 * Presentación de las prácticas.
 * Las prácticas se realizarán en pareja.
@@ -138,28 +134,9 @@ md"""
 * Las práctica se evalúan como Apta/No apta.
 """
 
-# ╔═╡ bf1db002-603f-408a-aa77-1b043b796bb6
-md"""
-## Bibliografía
-
-**Bibliografía Básica**
-
-1. Christopher M. Bishop. Pattern Recognition and Machine Learning.
-   Springer-Verlag New York Inc.; 2006.
-1. Ian Goodfellow, Yoshua Bengio and Aaron Courville. Deep Learning. MIT Press. 2016.
-1. Richard S. Sutton and Andrew G. Barto. Reinforcement Learning: An Introduction. Bradford Books. 2018.
-
-**Bibliografía complementaria**
-
-1. Bogumil Kaminski. Julia for Data Analysis. Manning. 2013.
-1. Miguel Morales. Grokking Deep Reinforcement Learning. Maning. 2020.
-1. Simone Scardapane. Alice’s adventures in a differentiable wonderland : a primer on designing neural networks. 2024.
-1. Christopher M. Bishop and Hugh Bishop. Deep learning : foundations and concepts. Springer. 2024.
-"""
-
 # ╔═╡ a215b103-c532-47c8-bc3c-785fe331e633
 md"""
-## Sistema de evaluación
+# Sistema de evaluación
 
 |        Prueba           | Ponderación |
 |-------------------------|:-----------:|
@@ -169,6 +146,38 @@ md"""
 
 Las fechas de los exámenes están en el 
 [SIA](https://ujiapps.uji.es/sia/rest/publicacion/2025/estudio/244/asignatura/IR2130/examenes).
+"""
+
+# ╔═╡ bf1db002-603f-408a-aa77-1b043b796bb6
+md"""
+# Bibliografía Básica
+
+1. Christopher M. Bishop. Pattern Recognition and Machine Learning.
+   Springer-Verlag New York Inc.; 2006.
+1. Ian Goodfellow, Yoshua Bengio and Aaron Courville. Deep Learning. MIT Press. 2016.
+1. Richard S. Sutton and Andrew G. Barto. Reinforcement Learning: An Introduction. Bradford Books. 2018.
+"""
+
+# ╔═╡ 105e7099-df56-4381-b1f2-282056b633db
+md"""
+# Bibliografía complementaria
+
+1. Bogumil Kaminski. Julia for Data Analysis. Manning. 2013.
+1. Miguel Morales. Grokking Deep Reinforcement Learning. Maning. 2020.
+1. Simone Scardapane. Alice’s adventures in a differentiable wonderland : a primer on designing neural networks. 2024.
+1. Christopher M. Bishop and Hugh Bishop. Deep learning : foundations and concepts. Springer. 2024.
+1. Clemens Heitzinger. Algorithms in Julia. Springer. 2022.
+"""
+
+# ╔═╡ d895d219-e7b2-45d1-ad89-1a2ec3658b6b
+md"""
+# Recursos
+
+* [Github de la parte de teoría](https://github.com/AprendizajeAutomaticoUJI/Teoria)
+* [Github de los enenciados de prácticas](https://github.com/AprendizajeAutomaticoUJI/PracticasEnunciados)
+* [Lenguaje de programación Julia](https://julialang.org/)
+* [ML en Julia](https://juliaml.ai/)
+* [Libros de notas con Pluto](https://plutojl.org/)
 """
 
 # ╔═╡ c2a05357-be60-48cf-9da9-68d71a1eaec3
@@ -467,22 +476,24 @@ version = "17.4.0+2"
 """
 
 # ╔═╡ Cell order:
-# ╠═ec9e6662-2bde-11f0-3655-15ea6ea13bd3
-# ╠═4dbffcda-9738-4b8a-8ab2-25a76fbafb96
-# ╠═f35234c3-e5eb-41b3-ba3d-57dc44613f29
-# ╠═c22c21ac-7988-4fe4-9540-8ded260c95f6
-# ╠═f54b4416-56c2-44d9-9d27-86d056e90377
-# ╠═7debff7b-7ac3-42c2-80ed-404e4dd6dc18
-# ╠═bebd3486-d3d5-4b64-b667-5ab441d79d5c
-# ╠═2edb759d-92a8-4eeb-a81a-d178dad933df
-# ╠═8843dc3e-586a-43d0-b6d0-c9f63f3726f7
-# ╠═cc721787-1bca-4e46-a6f4-f7d869e82cdc
-# ╠═0100f308-a45b-409d-9bfd-eb92046a8ac0
-# ╠═38780e19-1508-411a-86b5-bc35794561e3
-# ╠═a8bba0f1-7f62-48f3-9074-40a639ef2daa
-# ╠═c080fdd4-9e69-4922-b418-27c67385f3be
-# ╠═bf1db002-603f-408a-aa77-1b043b796bb6
-# ╠═a215b103-c532-47c8-bc3c-785fe331e633
-# ╠═c2a05357-be60-48cf-9da9-68d71a1eaec3
+# ╟─ec9e6662-2bde-11f0-3655-15ea6ea13bd3
+# ╟─4dbffcda-9738-4b8a-8ab2-25a76fbafb96
+# ╟─f35234c3-e5eb-41b3-ba3d-57dc44613f29
+# ╟─c22c21ac-7988-4fe4-9540-8ded260c95f6
+# ╟─f54b4416-56c2-44d9-9d27-86d056e90377
+# ╟─7debff7b-7ac3-42c2-80ed-404e4dd6dc18
+# ╟─bebd3486-d3d5-4b64-b667-5ab441d79d5c
+# ╟─2edb759d-92a8-4eeb-a81a-d178dad933df
+# ╟─8843dc3e-586a-43d0-b6d0-c9f63f3726f7
+# ╟─cc721787-1bca-4e46-a6f4-f7d869e82cdc
+# ╟─0100f308-a45b-409d-9bfd-eb92046a8ac0
+# ╟─38780e19-1508-411a-86b5-bc35794561e3
+# ╟─a8bba0f1-7f62-48f3-9074-40a639ef2daa
+# ╟─c080fdd4-9e69-4922-b418-27c67385f3be
+# ╟─a215b103-c532-47c8-bc3c-785fe331e633
+# ╟─bf1db002-603f-408a-aa77-1b043b796bb6
+# ╟─105e7099-df56-4381-b1f2-282056b633db
+# ╟─d895d219-e7b2-45d1-ad89-1a2ec3658b6b
+# ╟─c2a05357-be60-48cf-9da9-68d71a1eaec3
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
