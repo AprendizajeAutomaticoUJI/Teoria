@@ -8,9 +8,9 @@ using InteractiveUtils
 using PlutoUI
 
 # ╔═╡ 1db7081a-2bdc-11f0-0c01-4b497af0a469
-# html"""
-# <link rel="stylesheet" type="text/css" href="https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/mi_estilo.css" media="screen" />
-# """
+html"""
+<link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
+"""
 
 # ╔═╡ 8211d6e7-2da7-42dc-a03e-f7e8827d0bd4
 TableOfContents(title="Contenidos", depth=1)
@@ -505,32 +505,32 @@ version = "17.4.0+2"
 """
 
 # ╔═╡ Cell order:
-# ╠═1db7081a-2bdc-11f0-0c01-4b497af0a469
-# ╠═0a611a39-2f34-4190-84ea-36791341ed75
-# ╠═8211d6e7-2da7-42dc-a03e-f7e8827d0bd4
-# ╠═2ba8182e-7607-4516-8c65-7f2b8362672f
-# ╠═39a5d438-5034-49d6-9256-9fbe43fc9e01
-# ╠═276f4250-bd8c-408c-9cb0-0493f5f7b3fe
-# ╠═67b9cdd1-32b3-431b-9fe4-88fc39057eb0
-# ╠═27f48568-a11b-43a0-bc3a-a2306d3c9963
-# ╠═1eff8fdd-86c1-4ffc-ad78-cce43ee6a786
-# ╠═f8771a01-7018-4ae0-a6e6-1d21c994e9a9
-# ╠═72a9bc7c-bb05-4814-97d6-90fb17bb37bb
-# ╠═856c2092-93ac-4c77-8455-d838fd74ab62
-# ╠═de706874-4566-477a-bcfa-f4145ea20cdb
-# ╠═ecf46d82-359d-4e54-ac55-e5748a9ef97e
-# ╠═27d4223e-66cb-4136-9d37-bb9cc704a0da
-# ╠═7bef6ea7-48f6-4491-9b16-e08a5597c101
-# ╠═7cdff43a-666f-4704-9ece-dbc81d0ab0c2
-# ╠═eeb73f9a-c310-491c-8d11-3e4954302d59
-# ╠═d119b883-aaa4-48c4-ab72-1c40913a04ce
-# ╠═bb0fa793-9662-4926-9eef-077d22963c15
-# ╠═5842c918-9ebf-4903-be1c-7f5377b66002
-# ╠═2754be9e-f58b-4921-a3dc-d43eed844362
-# ╠═9c99a746-9534-477c-8f73-8a5cf4f94a78
-# ╠═a1f64f7d-eedb-4ac3-9ceb-e8b751a561c9
-# ╠═2532887c-9182-4167-8ee8-6d3d5cf486e5
-# ╠═1160e27a-611a-4868-8cd3-77fe30fa4edd
-# ╠═8eb3ddb5-8ccd-446e-9e1d-bc1150e3f8d9
+# ╟─1db7081a-2bdc-11f0-0c01-4b497af0a469
+# ╟─0a611a39-2f34-4190-84ea-36791341ed75
+# ╟─8211d6e7-2da7-42dc-a03e-f7e8827d0bd4
+# ╟─2ba8182e-7607-4516-8c65-7f2b8362672f
+# ╟─39a5d438-5034-49d6-9256-9fbe43fc9e01
+# ╟─276f4250-bd8c-408c-9cb0-0493f5f7b3fe
+# ╟─67b9cdd1-32b3-431b-9fe4-88fc39057eb0
+# ╟─27f48568-a11b-43a0-bc3a-a2306d3c9963
+# ╟─1eff8fdd-86c1-4ffc-ad78-cce43ee6a786
+# ╟─f8771a01-7018-4ae0-a6e6-1d21c994e9a9
+# ╟─72a9bc7c-bb05-4814-97d6-90fb17bb37bb
+# ╟─856c2092-93ac-4c77-8455-d838fd74ab62
+# ╟─de706874-4566-477a-bcfa-f4145ea20cdb
+# ╟─ecf46d82-359d-4e54-ac55-e5748a9ef97e
+# ╟─27d4223e-66cb-4136-9d37-bb9cc704a0da
+# ╟─7bef6ea7-48f6-4491-9b16-e08a5597c101
+# ╟─7cdff43a-666f-4704-9ece-dbc81d0ab0c2
+# ╟─eeb73f9a-c310-491c-8d11-3e4954302d59
+# ╟─d119b883-aaa4-48c4-ab72-1c40913a04ce
+# ╟─bb0fa793-9662-4926-9eef-077d22963c15
+# ╟─5842c918-9ebf-4903-be1c-7f5377b66002
+# ╟─2754be9e-f58b-4921-a3dc-d43eed844362
+# ╟─9c99a746-9534-477c-8f73-8a5cf4f94a78
+# ╟─a1f64f7d-eedb-4ac3-9ceb-e8b751a561c9
+# ╟─2532887c-9182-4167-8ee8-6d3d5cf486e5
+# ╟─1160e27a-611a-4868-8cd3-77fe30fa4edd
+# ╟─8eb3ddb5-8ccd-446e-9e1d-bc1150e3f8d9
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
