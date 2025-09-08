@@ -1034,7 +1034,6 @@ Grado del polinomio: $(@bind grado NumberField(1:12, default=2))
 # ╔═╡ b117c48e-2e1b-4908-8747-58d080a829f0
 function ajuste_polinomial(grado::Int)
 	fit = Polynomials.fit(data[:,:weight], data[:,:height], grado)
-	# print(fit)
 	rmse = rms(fit.(data[:, :weight]), data[:, :height])
 	fit, rmse
 end;
