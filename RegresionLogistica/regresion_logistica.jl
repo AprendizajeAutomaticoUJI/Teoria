@@ -38,9 +38,9 @@ using MLJ
 using PlutoUI
 
 # ╔═╡ 67ff8652-f2c7-11ef-3967-593c57b25a22
-# html"""
-# <link rel="stylesheet" type="text/css" href="https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/mi_estilo.css" media="screen" />
-# """
+html"""
+<link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
+"""
 
 # ╔═╡ f4492566-e856-4fc1-b5f7-6897874cf19f
 import PlotlyBase
@@ -52,7 +52,7 @@ import PlotlyKaleido
 import Distributions: fit
 
 # ╔═╡ 86baef7c-e1aa-4e24-b6e0-ed9b40761059
-plotly()
+plotly();
 
 # ╔═╡ 0d1ffc59-3f36-49e6-a0f4-c0c91fe9b5b8
 TableOfContents(title = "Contenidos", depth=1)
@@ -320,6 +320,11 @@ Quizás, las distribuciones de peso y altura sigan una distribución normal, es
 lo que sabemos de datos poblacionales generales.
 """
 
+# ╔═╡ 752ea24a-ca1c-43fe-a98a-168643c8378b
+md"""
+## Distribución de los datos
+"""
+
 # ╔═╡ 92192af7-a787-4cd8-86a4-13b386b51f10
 function ajuste_normales()
 	hombres_peso = fit(Normal, hombres_adultos.weight)
@@ -341,9 +346,14 @@ end
 # ╔═╡ ad4a41b9-7a8c-4999-a88a-28f816ffb0ba
 ajuste_normales()
 
-# ╔═╡ 0bc95d3e-d681-4be0-8aaf-57758a11a22a
+# ╔═╡ 42362461-58bf-49b4-8199-c6bd3e0f2900
 md"""
 Si comprobamos la bondad de los ajustes a normales.
+"""
+
+# ╔═╡ 0bc95d3e-d681-4be0-8aaf-57758a11a22a
+md"""
+## Distribución de los datos
 
 El p-valor para el ajuste del peso de los hombres con la prueba de Anderson-Darling:
 """
@@ -424,6 +434,11 @@ Las covarianzas para las mujeres:
 # ╔═╡ e4e11601-94db-4642-af8f-9838d6ca2994
 NamedArray(cov(Matrix(mujeres_adultas)), (names(mujeres_adultas), names(mujeres_adultas)))
 
+# ╔═╡ a21a7ad8-b71d-4053-8350-1748fd204250
+md"""
+## Covarianza de los datos
+"""
+
 # ╔═╡ 3e814d0e-5fe0-475f-a488-40727787dd59
 md"""
 Si nos quedamos sólo con peso y altura, ajustamos a una distribución gaussiana multivariada y visualizamos:
@@ -450,6 +465,11 @@ end
 
 # ╔═╡ bf361273-75aa-4620-b63d-a7e8f47f83c8
 contorno_normales()
+
+# ╔═╡ 629bed62-cb21-481b-b24d-b123e16d607d
+md"""
+## Covarianza de los datos
+"""
 
 # ╔═╡ 85cbdac8-a4c8-4a91-ba6d-90f0c55ba818
 md"""
@@ -663,7 +683,7 @@ entrenamiento, prueba = partition(adultos, 0.75, rng=3)
 md"""
 ## Aplicación a los datos de Howell
 
-Primero cargamos el modelo: **LogisticClassifier** para la regresión logística.
+Luego cargamos el modelo: **LogisticClassifier** para la regresión logística.
 """
 
 # ╔═╡ 46448798-4d11-45bd-9fce-a2c2d9118763
@@ -679,6 +699,11 @@ X = select(entrenamiento, [:weight, :height])
 
 # ╔═╡ 02f644b9-a877-4e91-9c4f-aff38a3dac2a
 y = coerce(entrenamiento.male, OrderedFactor)
+
+# ╔═╡ 88992576-3631-4d79-8008-5778d0cd850b
+md"""
+## Aplicación a los datos de Howell
+"""
 
 # ╔═╡ ad633dbf-a0c1-4328-835e-a970dace06a8
 md"""
@@ -696,6 +721,11 @@ Obtenemos las predicciones del modelo para los datos de prueba:
 # ╔═╡ 5a41f8da-a56e-4e1a-ad3c-815df8872d90
 ŷ = predict_mode(maquina, select(prueba, [:weight, :height]))
 
+# ╔═╡ 0e043d3c-96ec-402f-a0e1-ced01d5841ec
+md"""
+## Aplicación a los datos de Howell
+"""
+
 # ╔═╡ ef6f0e0d-3ebd-4a8a-aa28-c0d24b4b0382
 md"""
 Mostramos la matriz de confusión para ver el resultado:
@@ -711,6 +741,11 @@ Calculamos la precisión del modelo:
 
 # ╔═╡ c12c09f0-75db-4a40-a201-1bd8d69b482a
 accuracy(ŷ, prueba.male)
+
+# ╔═╡ 335a4475-f46a-4255-af6c-cce27f2cc693
+md"""
+## Aplicación a los datos de Howell
+"""
 
 # ╔═╡ c00f5e6e-cb0e-44d9-8fe9-41ed8da6eed3
 md"""
@@ -735,6 +770,11 @@ Mostramos la curva ROC:
 
 # ╔═╡ 46bc179b-7c0e-4987-8a64-ecbd28847e80
 plot(fpr,tpr, title="Curva ROC auc=$auc", xlabel="False positive rate", ylabel="True positive rate", legend=false)
+
+# ╔═╡ 400bd916-166c-4c3a-a2bc-1e244f05d742
+md"""
+## Aplicación a los datos de Howell
+"""
 
 # ╔═╡ efa6b1c3-e6aa-4e6b-b745-0595d36f59a8
 md"""
@@ -763,6 +803,11 @@ hombres_plot = cat(Matrix(hombres_adultos[:,[:weight, :height]]), ones(size(homb
 
 # ╔═╡ a963e81f-011c-4211-a2f6-b3fd24810196
 mujeres_plot= cat(Matrix(mujeres_adultas[:, [:weight, :height]]), ones(size(mujeres_adultas, 1)), dims=2)
+
+# ╔═╡ 98d486a3-cd4f-45a6-90c5-fbf650a713d8
+md"""
+## Aplicación a los datos de Howell
+"""
 
 # ╔═╡ 4651681e-d16b-462b-b51c-bde9efb44eb6
 md"""
@@ -3112,7 +3157,7 @@ version = "1.4.1+2"
 # ╠═0d1ffc59-3f36-49e6-a0f4-c0c91fe9b5b8
 # ╠═95697151-e85c-42b3-8c92-cb206ed70e0b
 # ╠═987c2875-6ae9-43e9-b9be-aa560e644c8c
-# ╟─4d219ec4-6bd6-45c1-9013-18c5806b274d
+# ╠═4d219ec4-6bd6-45c1-9013-18c5806b274d
 # ╠═ca2fe96c-0eb3-47c7-9537-a26ed3ab44e1
 # ╠═0d5bcada-a6a8-4bc1-8af6-6a2ee5a0729f
 # ╠═8fa5709e-e7da-48ba-9d44-357adf5459b6
@@ -3132,52 +3177,56 @@ version = "1.4.1+2"
 # ╠═8addd58e-47c8-42bf-88cb-c9d33bc77ce9
 # ╠═239098fc-2202-493f-af15-6dcd85154103
 # ╠═e2b69df9-227d-42b2-a10a-c230525b5a04
-# ╟─ee9223fc-8d4d-45b5-8d19-9f0dfba5596f
+# ╠═ee9223fc-8d4d-45b5-8d19-9f0dfba5596f
 # ╠═63327e12-c31e-433f-b110-0b4a6acf0e8e
 # ╠═51f1622c-d0f7-430c-a2b7-e3ea5c2bbeae
-# ╟─7a153f0b-a604-4cbc-9af1-911b247ebc7a
+# ╠═7a153f0b-a604-4cbc-9af1-911b247ebc7a
+# ╠═752ea24a-ca1c-43fe-a98a-168643c8378b
 # ╠═92192af7-a787-4cd8-86a4-13b386b51f10
 # ╠═ad4a41b9-7a8c-4999-a88a-28f816ffb0ba
-# ╟─0bc95d3e-d681-4be0-8aaf-57758a11a22a
+# ╠═42362461-58bf-49b4-8199-c6bd3e0f2900
+# ╠═0bc95d3e-d681-4be0-8aaf-57758a11a22a
 # ╠═9e5fa7a9-f7ad-4ab0-ad47-64bb777c584a
-# ╟─67333fdc-c200-4776-aafb-7947f6be05f9
+# ╠═67333fdc-c200-4776-aafb-7947f6be05f9
 # ╠═5f306070-918c-4491-992e-6d47307a9139
-# ╟─e7341d4c-624e-44d1-9ab4-b30bb6dfef4f
+# ╠═e7341d4c-624e-44d1-9ab4-b30bb6dfef4f
 # ╠═288ed03e-d9e7-41f3-9f91-b67bfda75b0c
-# ╟─369232ee-276b-4abb-a308-f3071cb0ffa5
+# ╠═369232ee-276b-4abb-a308-f3071cb0ffa5
 # ╠═7d3a83f1-27e6-487f-b85e-96bba7704550
-# ╟─8e6b402f-cd3e-41e0-9be5-41e939a817f5
-# ╟─b1f4000f-9fc1-4363-a3c2-f08be4348ac5
+# ╠═8e6b402f-cd3e-41e0-9be5-41e939a817f5
+# ╠═b1f4000f-9fc1-4363-a3c2-f08be4348ac5
 # ╠═b248e25c-0507-44df-98f7-af73b72f5be6
-# ╟─8e01180b-560c-4eb9-a28f-79e6034e7208
+# ╠═8e01180b-560c-4eb9-a28f-79e6034e7208
 # ╠═14bbf814-5254-4528-bcd0-6732aaf46b2c
-# ╟─3389b7e8-305a-4242-bae9-926f8bfa5ee8
+# ╠═3389b7e8-305a-4242-bae9-926f8bfa5ee8
 # ╠═c33a49ae-1c51-40cf-8b39-107fc942e362
-# ╟─ae448d10-e562-4a8f-899e-bc1484e63bf5
+# ╠═ae448d10-e562-4a8f-899e-bc1484e63bf5
 # ╠═240fc13e-a96b-4340-bdb3-cc367aab9650
-# ╟─f57559bd-d99b-43e8-b2dc-5cb75abf668e
+# ╠═f57559bd-d99b-43e8-b2dc-5cb75abf668e
 # ╠═e4e11601-94db-4642-af8f-9838d6ca2994
-# ╟─3e814d0e-5fe0-475f-a488-40727787dd59
+# ╠═a21a7ad8-b71d-4053-8350-1748fd204250
+# ╠═3e814d0e-5fe0-475f-a488-40727787dd59
 # ╠═96ad543b-d968-4fb3-b358-92ea5197436c
 # ╠═bf361273-75aa-4620-b63d-a7e8f47f83c8
-# ╟─85cbdac8-a4c8-4a91-ba6d-90f0c55ba818
+# ╠═629bed62-cb21-481b-b24d-b123e16d607d
+# ╠═85cbdac8-a4c8-4a91-ba6d-90f0c55ba818
 # ╠═9458817b-d025-4f73-9c71-42fdb2bbd266
-# ╟─517c9b6c-d4b7-45c6-a916-12f92f07fb08
-# ╟─bc3c772e-578d-4fea-ad56-bc0b5598d43e
-# ╟─2cd44fbd-46e9-4942-ac06-df9c5af1badc
-# ╟─30f3a04d-fe07-4293-b457-e26299d216d9
-# ╟─97fe3b83-59a4-4474-bc53-a81a018518d4
-# ╟─441170ee-8d7f-4b36-ab2d-8075c4196b5d
+# ╠═517c9b6c-d4b7-45c6-a916-12f92f07fb08
+# ╠═bc3c772e-578d-4fea-ad56-bc0b5598d43e
+# ╠═2cd44fbd-46e9-4942-ac06-df9c5af1badc
+# ╠═30f3a04d-fe07-4293-b457-e26299d216d9
+# ╠═97fe3b83-59a4-4474-bc53-a81a018518d4
+# ╠═441170ee-8d7f-4b36-ab2d-8075c4196b5d
 # ╠═19db055b-db56-4f64-bab7-6f598c93e175
 # ╠═330e6f0f-f955-405d-8c66-ae9efa8d7e0a
-# ╟─8f6a1785-f5fc-4216-af16-8c84d46b5b40
-# ╟─d48f86ef-1894-4f82-ab34-6b4553996902
-# ╟─cd15154f-fc0f-41ba-a711-0236ffa9f04d
-# ╟─f057fb6c-af57-46c0-b712-06eed205dbc8
-# ╟─0ab915b8-2d9d-4edf-9b26-a7783eb6326e
-# ╟─97b78daf-0932-4950-bfe5-def83b79f199
-# ╟─72bfb2fd-7ff4-42a0-9bf1-1266fa1d86ba
-# ╟─409db5f5-d986-4e5e-af5d-1de216cfba1d
+# ╠═8f6a1785-f5fc-4216-af16-8c84d46b5b40
+# ╠═d48f86ef-1894-4f82-ab34-6b4553996902
+# ╠═cd15154f-fc0f-41ba-a711-0236ffa9f04d
+# ╠═f057fb6c-af57-46c0-b712-06eed205dbc8
+# ╠═0ab915b8-2d9d-4edf-9b26-a7783eb6326e
+# ╠═97b78daf-0932-4950-bfe5-def83b79f199
+# ╠═72bfb2fd-7ff4-42a0-9bf1-1266fa1d86ba
+# ╠═409db5f5-d986-4e5e-af5d-1de216cfba1d
 # ╠═3cf08dc9-e14a-4b33-a31b-43e4d9494995
 # ╠═a3889151-f6b0-42a7-9251-14136107d5f7
 # ╠═350afb0c-dc70-47f8-a393-ee462f01798f
@@ -3186,25 +3235,30 @@ version = "1.4.1+2"
 # ╠═ac4e5b7b-3a3e-42fe-b059-dcff8fd91a62
 # ╠═52abed5f-197b-4308-a875-1c351725358d
 # ╠═02f644b9-a877-4e91-9c4f-aff38a3dac2a
+# ╠═88992576-3631-4d79-8008-5778d0cd850b
 # ╠═ad633dbf-a0c1-4328-835e-a970dace06a8
 # ╠═122c7f45-af9d-43a7-ba90-455b22196166
 # ╠═7bded503-d16c-4a29-a041-6402b17396d1
 # ╠═5a41f8da-a56e-4e1a-ad3c-815df8872d90
+# ╠═0e043d3c-96ec-402f-a0e1-ced01d5841ec
 # ╠═ef6f0e0d-3ebd-4a8a-aa28-c0d24b4b0382
 # ╠═ee79aa91-420d-44a6-bc17-4a5a5f6e6231
 # ╠═f88330d0-7bf9-4366-bbf9-363ed7fe5cec
 # ╠═c12c09f0-75db-4a40-a201-1bd8d69b482a
+# ╠═335a4475-f46a-4255-af6c-cce27f2cc693
 # ╠═c00f5e6e-cb0e-44d9-8fe9-41ed8da6eed3
 # ╠═ececc102-a1d5-4669-8bea-6a3deabc540b
 # ╠═511ea9f7-d54f-46b4-b184-7bec2bfa274f
 # ╠═ce15f735-0e8a-47fe-90f3-d06fbc296b33
 # ╠═3e1e3253-4eee-4284-ac87-3de5d451495a
 # ╠═46bc179b-7c0e-4987-8a64-ecbd28847e80
+# ╠═400bd916-166c-4c3a-a2bc-1e244f05d742
 # ╠═efa6b1c3-e6aa-4e6b-b745-0595d36f59a8
 # ╠═fa8dc7ad-c6cb-4f69-8e5d-738bcc45354a
 # ╠═0c7b05ae-b4c9-475b-983a-29df7298cb11
 # ╠═9c4ed964-c3b2-4ac3-833e-98af8e787b53
 # ╠═a963e81f-011c-4211-a2f6-b3fd24810196
+# ╠═98d486a3-cd4f-45a6-90c5-fbf650a713d8
 # ╠═4651681e-d16b-462b-b51c-bde9efb44eb6
 # ╠═b57f71a8-4cba-4afb-86c6-c8240e8fc49d
 # ╠═b9f24a63-4fc9-47da-b3cf-adce20b0cea3
