@@ -8,9 +8,9 @@ using InteractiveUtils
 using PlutoUI
 
 # ╔═╡ ec9e6662-2bde-11f0-3655-15ea6ea13bd3
-# html"""
-# <link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
-# """
+html"""
+<link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
+"""
 
 # ╔═╡ f35234c3-e5eb-41b3-ba3d-57dc44613f29
 TableOfContents(title="Contenidos", depth=1)
@@ -39,7 +39,7 @@ md"""
 
 Despacho TI-1203-DD.
 
-Página web: [http://www3.uji.es/~belfern](http://www3.uji.es/~belfern)
+Página web: [https://belmonte.uji.es](https://belmonte.uji.es)
 
 Correo electrónico: [oscar.belmonte@uji.es](mailto:oscar.belmonte@uji.es)
 
@@ -476,7 +476,7 @@ version = "17.4.0+2"
 """
 
 # ╔═╡ Cell order:
-# ╠═ec9e6662-2bde-11f0-3655-15ea6ea13bd3
+# ╟─ec9e6662-2bde-11f0-3655-15ea6ea13bd3
 # ╟─4dbffcda-9738-4b8a-8ab2-25a76fbafb96
 # ╟─f35234c3-e5eb-41b3-ba3d-57dc44613f29
 # ╟─c22c21ac-7988-4fe4-9540-8ded260c95f6
