@@ -186,14 +186,16 @@ md"""
 
 En nuestro conjunto de datos de entrenamiento tenemos algunas muestras etiquetadas, pero otra muchas no tiene etiqueta.
 
-Por ejemplo, detectar transacciones bancarias fraudulentas. Usualmente, en número de transacciones etiquetadas suele ser pequeño. Un procedimiento para asignar etiquetas a las transacciones no etiquetadas puede realizar un agrupamiento de todo el conjunto de datos, y después asignar etiquetas a las transacciones que no tienen etiqueta según la etiqueta mayoritaria del conjunto en el que han sido clasificadas.
+Por ejemplo, detectar transacciones bancarias fraudulentas. Usualmente, el número de transacciones etiquetadas suele ser pequeño en comparación con el número de transacciones totales disponible.
+
+Un procedimiento para asignar etiquetas a las transacciones no etiquetadas puede realizar un agrupamiento de todo el conjunto de datos, y después asignar etiquetas a las transacciones que no tienen etiqueta según la etiqueta mayoritaria del conjunto en el que han sido clasificadas.
 """
 
 # ╔═╡ 0ea9bd55-9cb1-4e04-89a8-f8102ad6e20b
 md"""
 ## Aprendizaje auto-supervisado
 
-En este tipo de aprendizaje, el conjunto de entrenamiento no está etiquetado y el objetivo es encontrar las estiquetas para cada elemento del conjunto; para ello se procede en dos pasos:
+En este tipo de aprendizaje, el conjunto de entrenamiento no está etiquetado y el objetivo es encontrar las etiquetas para cada elemento del conjunto; para ello se procede en dos pasos:
 
 1. Se elimina información de cada elemento del conjunto y la tarea del algoritmo es reconstruir la parte que falta.
 1. Una vez que el algoritmo aprende a reconstruir, se le indica la etiqueta de lo que ha reconstruido.
@@ -208,9 +210,9 @@ md"""
 
 # ╔═╡ 94b8def4-d692-4c3a-bddd-9bae82ea1182
 md"""
-La resolución de un problema se realiza mediante ensayo y error.
+La resolución de un problema se realiza mediante prueba y error.
 
-Cada ensayo tiene una recompensa, que puede ser positiva o negativa. La combinación de ensayo y recompensa condiciona el siguiente ensayo a tomar.
+Cada prueba tiene una recompensa, que puede ser positiva o negativa. La combinación de prueba y recompensa condiciona la siguiente prueba a tomar.
 """
 
 # ╔═╡ c3478d98-4b58-4af4-99b5-796e7acc6578
@@ -322,6 +324,14 @@ $MSE = \frac{1}{N}\sum_{n=1}^N (y_n - \hat{y}_n)^2$
 $MAE = \frac{1}{N} \sum_{n=1}^N |y_n - \hat{y}_n|$
 """
 
+# ╔═╡ 6c0600e0-ebc5-4c10-920e-2a4c68c48721
+md"""
+## Métricas
+
+La idea básica de la clasificación binaria es establecer algún modo una ordenación de los datos según algún criterio. El segundo paso es establecer un umbral dentro de la ordenación, de tal modo que las muestras que superen ese umbral se clasifican como positivas, y las que no, se clasifican como negativas.
+
+"""
+
 # ╔═╡ 14c83470-1c2f-4d07-aed4-122568d4edbb
 md"""
 ## Métricas
@@ -359,14 +369,6 @@ Resource(
 	:alt => "Curva ROC",
 	:width => 600
 )
-
-# ╔═╡ 6c0600e0-ebc5-4c10-920e-2a4c68c48721
-md"""
-## Métricas
-
-La idea básica de la clasificación binaria es establecer de algún modo una ordenación de los datos según algún criterio. El segundo paso es establecer un umbral dentro de la ordenación, de tal modo que las muestras que superen ese umbral se clasifican como positivas, y las que no, se clasifican como negativas.
-
-"""
 
 # ╔═╡ 7fcae622-7d09-4cae-bb54-197e4ecb5d6d
 md"""
@@ -1591,7 +1593,7 @@ version = "1.4.1+1"
 """
 
 # ╔═╡ Cell order:
-# ╠═07b1def1-1b33-460a-9683-358dc757f6d0
+# ╟─07b1def1-1b33-460a-9683-358dc757f6d0
 # ╟─3c877af8-1d0e-41d4-bfc4-43e7fe3263aa
 # ╟─13faae83-cbcf-4184-a921-9d14482a9636
 # ╟─89503130-b960-11ef-3401-b3f35716b97c
@@ -1616,7 +1618,7 @@ version = "1.4.1+1"
 # ╟─112c940c-fe03-4a8d-bebe-024ceb30170c
 # ╟─0ea9bd55-9cb1-4e04-89a8-f8102ad6e20b
 # ╟─33265b15-5a1f-445c-8184-519e88028f8e
-# ╟─94b8def4-d692-4c3a-bddd-9bae82ea1182
+# ╠═94b8def4-d692-4c3a-bddd-9bae82ea1182
 # ╟─c3478d98-4b58-4af4-99b5-796e7acc6578
 # ╟─c3cbda96-1ddb-407b-be11-b668c77a1148
 # ╟─6121337e-ebb8-4e82-82cd-361b6e6d28d2
@@ -1629,12 +1631,12 @@ version = "1.4.1+1"
 # ╟─0818638d-6cc0-4024-8e9c-23374af5424d
 # ╟─d18ea8da-3fe4-49b0-bbad-d2b3ccb1ab0a
 # ╟─1d659e8e-33f5-451f-9aff-e07ec9ee33c8
+# ╟─6c0600e0-ebc5-4c10-920e-2a4c68c48721
 # ╟─14c83470-1c2f-4d07-aed4-122568d4edbb
 # ╟─22f12815-acad-454c-98ee-b8f931f44802
 # ╟─891c83de-9dd6-4c35-a427-8734fd57a2eb
 # ╟─dcd17617-6aa4-4ed0-aff7-5a9184990aee
 # ╟─a352c007-cb3c-4e9a-8cc9-e5deea7d7123
-# ╟─6c0600e0-ebc5-4c10-920e-2a4c68c48721
 # ╟─7fcae622-7d09-4cae-bb54-197e4ecb5d6d
 # ╟─a48c3da3-8a99-406a-a2e2-8246da87618e
 # ╟─59c273bb-8cb0-43ed-90d1-7bc9086a1233
