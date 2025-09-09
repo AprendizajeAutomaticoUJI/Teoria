@@ -126,7 +126,7 @@ md"""
 
 # ╔═╡ c080fdd4-9e69-4922-b418-27c67385f3be
 md"""
-## Metodología de prácticas
+# Metodología de prácticas
 
 * Presentación de las prácticas.
 * Las prácticas se realizarán en pareja.
