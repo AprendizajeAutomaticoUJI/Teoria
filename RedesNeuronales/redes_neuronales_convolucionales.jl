@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.13
+# v0.20.17
 
 using Markdown
 using InteractiveUtils
@@ -89,9 +89,7 @@ Resource(
 md"""
 ## Introducción
 
-Utilizar redes densas en visión por computador es impracticable. El tamaño de 
-una imagen, en píxeles, determina el número de neuronas en la capa de entrada 
-y posteriores.
+Utilizar redes densas en visión por computador es impracticable. El tamaño de una imagen, en píxeles, determina el número de neuronas en la capa de entrada y posteriores.
 
 El número de parámetros que es necesario entrenar es muy elevado.
 """
@@ -116,15 +114,12 @@ md"""
 
 Las redes convolucionales proponen una solución basada en dos elementos:
 
-1. Utilizar convoluciones para **aprender** las características relevantes de 
-las imágenes.
+1. Utilizar convoluciones para **aprender** las características relevantes de las imágenes.
 1. Utilizar **pooling** para reducir el tamaño de las imágenes.
 
-Además, en muchos casos las últimas capas de una red 
-convolucional están formadas por capas densas.
+Además, en muchos casos las últimas capas de una red convolucional están formadas por capas densas.
 
-Esto permite utilizar redes neuronales en las tareas típicas de la visión por 
-computador.
+Esto permite utilizar redes neuronales en las tareas típicas de la visión por computador.
 """
 
 # ╔═╡ 4e1c05fb-ebf4-4397-9ceb-838586369223
