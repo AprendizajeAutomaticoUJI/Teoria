@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.13
+# v0.20.17
 
 using Markdown
 using InteractiveUtils
@@ -38,9 +38,9 @@ using MLJ
 using PlutoUI
 
 # ╔═╡ 67ff8652-f2c7-11ef-3967-593c57b25a22
-html"""
-<link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
-"""
+# html"""
+# <link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
+# """
 
 # ╔═╡ f4492566-e856-4fc1-b5f7-6897874cf19f
 import PlotlyBase
