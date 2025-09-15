@@ -799,14 +799,16 @@ md"""
 Para que los experimentos sean reproducibles inicializamos la semilla del generador de números aleatorios:
 """
 
-# ╔═╡ 4320b284-f595-4408-920a-d93cbfae2116
-# semilla = 2
-
 # ╔═╡ 7a08c1e0-de42-4644-ab97-5bb3e5e07805
 Random.seed!(semilla)
 
+# ╔═╡ b5f9fccd-8d35-4406-aaf8-7064ef512c92
+md"""
+Dividimos el conjunto de datos para entrenamiento y prueba:
+"""
+
 # ╔═╡ 6e0c2dc5-0037-480f-9b47-0ef951a0af86
-entrenamiento_clasificacion_howell, prueba_clasificacion_howell = partition(adultas, 0.75, rng=semilla);
+entrenamiento_clasificacion_howell, prueba_clasificacion_howell = partition(adultas, 0.8, rng=semilla);
 
 # ╔═╡ 237e0af0-7abd-4d0d-82a5-be590e3a0555
 md"""
@@ -3215,8 +3217,8 @@ version = "1.9.2+0"
 # ╠═ed7fc6a7-6f89-4d88-92aa-ec96e9171c6a
 # ╠═fd9766e3-4a9f-4746-b695-c2b20b192897
 # ╠═75a7fc03-26fc-458d-bb0e-e0ed26b0ff65
-# ╠═4320b284-f595-4408-920a-d93cbfae2116
 # ╠═7a08c1e0-de42-4644-ab97-5bb3e5e07805
+# ╠═b5f9fccd-8d35-4406-aaf8-7064ef512c92
 # ╠═6e0c2dc5-0037-480f-9b47-0ef951a0af86
 # ╠═237e0af0-7abd-4d0d-82a5-be590e3a0555
 # ╠═f03bcd24-fb92-45f7-8489-0901ec8714b2
