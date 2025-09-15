@@ -70,7 +70,7 @@ md"""
 
 Las redes neuronales son modelos de aprendizaje automático muy potentes, pero costosos de entrenar.
 
-Su entrenamiento se basa en el algoritmo de retro propagación, que es un una combinación del algoritmo de descenso de gradiente y de la regla de la cadena.
+Su entrenamiento se basa en el algoritmo de retropropagación, que es un una combinación del algoritmo de descenso de gradiente y de la regla de la cadena.
 
 Las redes neuronales pueden resolver tanto problemas supervisados como no supervisados. Además se pueden utilizar tanto en tareas de clasificación como de regresión.
 """
@@ -157,7 +157,7 @@ No exite contacto físico entre las neuronas (este descubrimiento le valió el N
 Resource(
 	url_imagenes * "sinapsis.png",
 	:alt => "Neurona",
-	:width => 600
+	:width => 500
 )
 
 # ╔═╡ 135e5c27-0f1a-46a5-9997-254c6547ff1e
@@ -188,7 +188,7 @@ Resource(
 md"""
 ## Estructura de una neurona artificial
 
-¿Qué ocurre dentro de una neurona artificial?. Cada seña de entrada se multiplica por un peso y se añade un **bias**. Fíjate en que esta operación es lineal. El resultado del cálculo pasa («salta») a la siguiente neurona.
+¿Qué ocurre dentro de una neurona artificial? Cada seña de entrada se multiplica por un peso y se añade un **bias**. Fíjate en que esta operación es lineal. El resultado del cálculo pasa («salta») a la siguiente neurona.
 """
 
 # ╔═╡ df53f204-76e8-43f7-858f-48c5f8f78eeb
@@ -214,9 +214,7 @@ Resource(
 
 # ╔═╡ d0e46bda-cd81-4717-87b1-e5ef283f6e7b
 md"""
-De este modo solo podremos *resolver* problema lineales (regresón lineal, o clasificación con fronteras lineales), pero no podremos resolver problemas más complejos, por ejemplo, simular la función XOR con una red neuronal.
-
-Es necesario introducir la **no linearidad** de otro modo.
+De este modo solo podremos *resolver* problema lineales (regresón lineal, o clasificación con fronteras lineales), pero no podremos resolver problemas más complejos, por ejemplo la función XOR. Es necesario introducir la **no linearidad** de otro modo.
 """
 
 # ╔═╡ 9d41b30b-afab-4f83-ae60-9fc50dea90b9
@@ -235,10 +233,10 @@ function escalon(x, a)
 	else
 		return 1
 	end
-end
+end;
 
 # ╔═╡ 0197bb9a-1410-4fa4-8750-bae1e71b971a
-plot(x -> escalon(x, 0), title = "Función de Heaviside o escalón", legends = false)
+plot(x -> escalon(x, 0), title = "Función de Heaviside o escalón", legends = false, size = (400,200))
 
 # ╔═╡ ced47da1-fbf0-4e7e-8695-1f9db7fc0bc2
 md"""
@@ -269,11 +267,11 @@ $\sigma(\omega x) = \frac{1}{1+e^{-\omega x}}$
 """
 
 # ╔═╡ c1d85e3c-51e9-45eb-b209-7da56905e6d5
-sigmoide(x, ω) = 1 / (1 + exp(-ω*x))
+sigmoide(x, ω) = 1 / (1 + exp(-ω*x));
 
 # ╔═╡ 924c5b93-cc37-40b6-aad5-67cc18421895
 begin 
-	plot(x -> escalon(x, 0), width = 2, label = "Escalón")
+	plot(x -> escalon(x, 0), width = 2, label = "Escalón", size = (400, 300))
 	plot!(x -> sigmoide(x, 1), label = "Sigmoide ω=1")
 	plot!(x -> sigmoide(x, 5), label = "Sigmoide ω=5")
 	plot!(x -> sigmoide(x, 10), label = "Sigmoide ω=10")
@@ -316,7 +314,7 @@ El siguiente paso fue añadir sucesivas capas para mejorar los resultados de las
 Resource(
 	url_imagenes * "estructura_red_neuronal.png",
 	:alt => "Estructura de una red neuronal.",
-	:width => 400
+	:width => 300
 )
 
 # ╔═╡ 8e144c0b-8ae4-4865-931f-a52afa55965d
@@ -557,7 +555,7 @@ end
 
 # ╔═╡ 07bb71de-f226-40fb-b735-73863bf0688e
 begin
-	plot(y_t[1,:], label="Seno")
+	plot(y_t[1,:], label="Seno", size = (500, 300))
 	scatter!(modelo_seno(x_t)[1,:], label="Ajuste")
 end
 
@@ -590,19 +588,24 @@ La red tiene la siguiente estructura:
 1. La capa de entrada con una neurona a la entrada y tres salidas hacia la siguiente capa densamente conectada (cada neurona de entradas se conecta con todas las neuronas de la siguiente capa)
 1. Una capa intermedia con tres neuronas a la entrada y tres salidas hacia la siguente capa densamente conectada.
 1. Una capa de salida con una neurona.
-
-Importante, en este caso la red sólo tiene 22 parámetros que entrenar, sensiblemente menos parámetros que la red anterior con una única capa.
 """
 
 # ╔═╡ 839d9885-b6f7-4c23-ae5f-8db14145c553
 md"""
 ## Entrenar la red
 
+Importante, en este caso la red sólo tiene 22 parámetros que entrenar, sensiblemente menos parámetros que la red anterior con una única capa.
+
 Sólo nos queda definir el optimizador (Adam esta vez), y entrenar la red:
 """
 
 # ╔═╡ 13f55aab-0a02-4bc7-9b9a-8765c15586b8
 optimizador_profundo = Flux.setup(Adam(0.05), modelo_seno_profundo);
+
+# ╔═╡ 4a6db645-3282-40e2-a822-f159b79c183b
+md"""
+## Entrenar la red
+"""
 
 # ╔═╡ 398910d5-be33-49a4-a761-8bcbcd872eb8
 with_logger(NullLogger()) do
@@ -613,7 +616,7 @@ end
 
 # ╔═╡ af5c6a1f-5053-49a4-a2de-7bc7139f58bb
 begin
-	plot(y_t[1,:], label="Seno")
+	plot(y_t[1,:], label="Seno", size = (500,300))
 	scatter!(modelo_seno_profundo(x_t)[1,:], label="Ajuste")
 end
 
@@ -681,7 +684,7 @@ function crea_red(semilla)
 end
 
 # ╔═╡ 17fc15fd-1eda-4dae-ae51-e0b5610f0041
-datos_howell = [(X_entrenamiento_howell, y_entrenamiento_howell)]
+datos_howell = [(X_entrenamiento_howell, y_entrenamiento_howell)];
 
 # ╔═╡ c3d0c723-0852-4365-9e4c-b64d95a1bcb8
 md"""
@@ -726,7 +729,7 @@ end
 # ╔═╡ bb922155-c271-49ff-9526-3d7a228ace37
 let
 	# plot(mse, label="Entrenamiento", xlims = (35_000,50_000), ylims = (0, 100))
-	plot(mse, label="Entrenamiento")
+	plot(mse, label="Entrenamiento", size = (500, 300))
 	plot!(mse_validacion, label="Validación")
 end
 
@@ -767,7 +770,7 @@ let
 
 	scatter(entrenamiento_howell[entrenamiento_howell.male.==0, :weight], entrenamiento_howell[entrenamiento_howell.male.==0, :height], label="Mujeres", color=:green)
 	p2 = scatter!(entrenamiento_howell[entrenamiento_howell.male.==0, :weight], red_howell(X_howell_mujeres)[1,:], label="Mujeres ajuste", color=:magenta, xlabel="Peso", ylabel="Altura")
-	plot(p, p1, p2, layout=l, size=(1200, 600))
+	plot(p, p1, p2, layout=l, size=(800, 450))
 end
 
 # ╔═╡ 3584250c-f199-4c27-ba22-d359b245b02c
@@ -838,6 +841,11 @@ caracteristicas_clasificacion = [:weight, :height, :age]
 # ╔═╡ 7b180556-ecd3-480f-bb1b-7adb84f91ccf
 X_entrenamiento_clasificacion = Float32.(Matrix(entrenamiento_clasificacion_howell[:, caracteristicas_clasificacion]))
 
+# ╔═╡ 517e1381-a094-4d13-aadc-c75787ef9091
+md"""
+## Clasificación con NN
+"""
+
 # ╔═╡ fb6b3f31-c188-4c82-bc15-996fd909bfcf
 md"""
 Normalizamos las columnas de la matriz, y la traspongo:
@@ -850,7 +858,7 @@ X_entrenamiento_normalizada = Float32.(normaliza_matriz(X_entrenamiento_clasific
 y_entrenamiento_clasificacion = Float32.(Flux.onehotbatch(entrenamiento_clasificacion_howell.male, 0:1))
 
 # ╔═╡ 015c2a61-f7b4-41d9-81c7-85299de42a52
-X_prueba_clasificacion = Float32.(Matrix(prueba_clasificacion_howell[:, caracteristicas_clasificacion]))
+X_prueba_clasificacion = Float32.(Matrix(prueba_clasificacion_howell[:, caracteristicas_clasificacion]));
 
 # ╔═╡ 71dd85c1-e743-4641-9522-8904da9fa04e
 md"""
@@ -918,6 +926,11 @@ end
 
 # ╔═╡ 00719c6c-41dd-47d2-9c66-e9169bada27c
 entrena_clasificacion!(perdidas_clasificacion, red_clasificacion, datos_clasificacion, optimizador_clasificacion)
+
+# ╔═╡ 3156227d-ad46-49f5-8540-128267f03954
+md"""
+## Clasificación con NN
+"""
 
 # ╔═╡ c3c1cb31-fac1-4758-a60e-e5231b046d81
 md"""
@@ -3187,6 +3200,7 @@ version = "1.9.2+0"
 # ╠═4487a15e-2c7c-4aad-91af-5859d65c775c
 # ╠═839d9885-b6f7-4c23-ae5f-8db14145c553
 # ╠═13f55aab-0a02-4bc7-9b9a-8765c15586b8
+# ╠═4a6db645-3282-40e2-a822-f159b79c183b
 # ╠═398910d5-be33-49a4-a761-8bcbcd872eb8
 # ╠═af5c6a1f-5053-49a4-a2de-7bc7139f58bb
 # ╠═a306ffcd-5f77-4082-891d-0fbe202f8181
@@ -3225,6 +3239,7 @@ version = "1.9.2+0"
 # ╠═a4d9101a-99c0-4949-b8bb-e440a74c3193
 # ╠═c25f9730-f107-4cc3-a517-542b17e58901
 # ╠═7b180556-ecd3-480f-bb1b-7adb84f91ccf
+# ╠═517e1381-a094-4d13-aadc-c75787ef9091
 # ╠═fb6b3f31-c188-4c82-bc15-996fd909bfcf
 # ╠═fa68f129-609d-442f-8d9d-06e3a0bc5bb7
 # ╠═7af6e33b-b9cf-4428-b457-0fbc7f0c5eb0
@@ -3242,6 +3257,7 @@ version = "1.9.2+0"
 # ╠═5dfda864-7b57-4b85-b583-24b21c7d7b70
 # ╠═e98382a3-5a96-4d4c-8748-97231231393a
 # ╠═00719c6c-41dd-47d2-9c66-e9169bada27c
+# ╠═3156227d-ad46-49f5-8540-128267f03954
 # ╠═c3c1cb31-fac1-4758-a60e-e5231b046d81
 # ╠═f15af338-b9bf-40f4-ba5c-9922550a9482
 # ╠═7626e1b9-e312-4e96-9ee1-925d80ae0cb3
