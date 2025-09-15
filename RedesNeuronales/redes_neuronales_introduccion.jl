@@ -68,7 +68,7 @@ Resource(
 md"""
 ## Introducción
 
-Las redes neuronales son modelos de aprendizaje automático muy potentes, pero complicados de entrenar.
+Las redes neuronales son modelos de aprendizaje automático muy potentes, pero costosos de entrenar.
 
 Su entrenamiento se basa en el algoritmo de retro propagación, que es un una combinación del algoritmo de descenso de gradiente y de la regla de la cadena.
 
@@ -82,6 +82,8 @@ md"""
 El [premio Nobel de Física de 2024](https://elpais.com/ciencia/2024-10-08/premio-nobel-de-fisica.html) se otorgó a John Hopfield y Geoffrey Hinton por sus contribuciones dentro del campo de la redes neuronales.
 
 El [premio Nobel de Química de 2024](https://elpais.com/ciencia/2024-10-09/premio-nobel-de-quimica.html) se otorgó a John Jumper, Demis Hassabis y David Baker por la aplicación del aprendizaje profundo a resolver el problema del plegamiento de proteínas.
+
+Los premios Nobel han valorado el desarrollo de las redes neuronales.
 """
 
 # ╔═╡ f65234a5-1af3-48de-be23-a6c3050b79a6
@@ -127,7 +129,7 @@ Neuronas vista al microscopio dibujadas por Santiago Ramón y Cajal.
 md"""
 ## Bases biológicas de las NN
 
-Una neurona recibe señal de otras neuronas a través de la dendrita, y envía señal a otras neuronas a través del axón.
+La fisiología del cerebro nos muetra que una neurona recibe señal de otras neuronas a través de la dendrita, y, en caso de que se active, envía señal a otras neuronas a través del axón. Si la neurona no se activa, la señal no se enviará a otras neuronas.
 """
 
 # ╔═╡ 3e361edb-a6fc-4c26-8c91-f44eec0a6a6c
@@ -147,6 +149,8 @@ Diseñado por Freepik (https://www.freepik.es)
 # ╔═╡ 8796c632-7302-4213-be40-67e7b11f5a35
 md"""
 ## Bases biológicas de las NN
+
+No exite contacto físico entre las neuronas (este descubrimiento le valió el Nobel de Medicina a Santiago Ramón y Cajal en 1906), la señal «salta» de una neuroa a otra.
 """
 
 # ╔═╡ b64fa92a-dfc8-4049-a069-9a1c4f61b65c
@@ -170,7 +174,7 @@ md"""
 # Estructura de las NN
 ## Estructura de una neurona artificial
 
-Una neurona artificial:
+Las redes neuronales artificiales están inspiradas en las redes neuronales. Una neurona artificial se suele representar por el siguiente esquema:
 """
 
 # ╔═╡ 4d082d8e-7b85-4e94-91b4-0e550ccd9458
@@ -184,7 +188,7 @@ Resource(
 md"""
 ## Estructura de una neurona artificial
 
-Activación de la neurona artificial. Cada seña de entrada se multiplica por un peso y se añade un **bias**.
+¿Qué ocurre dentro de una neurona artificial?. Cada seña de entrada se multiplica por un peso y se añade un **bias**. Fíjate en que esta operación es lineal. El resultado del cálculo pasa («salta») a la siguiente neurona.
 """
 
 # ╔═╡ df53f204-76e8-43f7-858f-48c5f8f78eeb
@@ -198,7 +202,7 @@ Resource(
 md"""
 ## Estructura de una neurona artificial
 
-Aunque **apilemos** varias capas el resultado es siempre lineal con respecto de los valores de entrada (_Demostración_).
+Ya que las operaciones dentro de una neurona son lineales, aunque **apilemos** varias capas de neuronas el resultado seguirá siendo lineal con respecto de los valores de entrada (_Demostración_).
 """
 
 # ╔═╡ bbbc0b92-185b-4126-b858-e94af0211a6c
@@ -210,6 +214,8 @@ Resource(
 
 # ╔═╡ d0e46bda-cd81-4717-87b1-e5ef283f6e7b
 md"""
+De este modo solo podremos *resolver* problema lineales (regresón lineal, o clasificación con fronteras lineales), pero no podremos resolver problemas más complejos, por ejemplo, simular la función XOR con una red neuronal.
+
 Es necesario introducir la **no linearidad** de otro modo.
 """
 
@@ -217,7 +223,33 @@ Es necesario introducir la **no linearidad** de otro modo.
 md"""
 ## Estructura de una neurona artificial
 
-La función de activación es el ingrediente que introduce la no-linearidad en las redes neuronales.
+La función de activación es el ingrediente que introduce la no-linearidad en las redes neuronales. Al resultado de la operación lineal le aplico una función no lineal.
+
+La función de activación más sencilla es la función de Heaviside o función esaclón:
+"""
+
+# ╔═╡ 217fcf4e-f83e-4bbe-906c-cc1e1f44d7b9
+function escalon(x, a)
+	if x < a
+		return 0
+	else
+		return 1
+	end
+end
+
+# ╔═╡ 0197bb9a-1410-4fa4-8750-bae1e71b971a
+plot(x -> escalon(x, 0), title = "Función de Heaviside o escalón", legends = false)
+
+# ╔═╡ ced47da1-fbf0-4e7e-8695-1f9db7fc0bc2
+md"""
+El problema on la función escalón es que no es derivable en x = 0 (para el ejemplo mostrado).
+"""
+
+# ╔═╡ 080718d1-9de3-4435-8168-76de5b7570ec
+md"""
+## Estructura de una neurona artificial
+
+Como ya sabemos, el algoritmo de descenso de gradiente utiliza la derivada de las funciones, por lo que la función escalón no es una buena elección como función de activación, ya que la derivada no esta definida en todos los punto de su dominio.
 """
 
 # ╔═╡ 3063a028-22e6-467f-82fb-139492ed4e6b
@@ -229,10 +261,23 @@ Resource(
 
 # ╔═╡ 359e990e-41bc-43bc-9504-d520476ea035
 md"""
-Función de activación sigmoide.
+## Estructura de una neurona artificial
+
+En vez de la función escalon, tomamos como función de activación la función sigmoide.
 
 $\sigma(\omega x) = \frac{1}{1+e^{-\omega x}}$
 """
+
+# ╔═╡ c1d85e3c-51e9-45eb-b209-7da56905e6d5
+sigmoide(x, ω) = 1 / (1 + exp(-ω*x))
+
+# ╔═╡ 924c5b93-cc37-40b6-aad5-67cc18421895
+begin 
+	plot(x -> escalon(x, 0), width = 2, label = "Escalón")
+	plot!(x -> sigmoide(x, 1), label = "Sigmoide ω=1")
+	plot!(x -> sigmoide(x, 5), label = "Sigmoide ω=5")
+	plot!(x -> sigmoide(x, 10), label = "Sigmoide ω=10")
+end
 
 # ╔═╡ 26ffe43c-fcda-4c52-be27-ce945f1084d9
 md"""
@@ -264,7 +309,7 @@ Aunque esta arquitectura es muy sencilla, permite hacer tareas simples de clasif
 md"""
 ## Estructura de una NN
 
-El siguiente paso fue añadir sucesivas capas para mejorar los resultados de las redes. Esta arquitectura se llama **Multi Layer Perceptron** (MLP).
+El siguiente paso fue añadir sucesivas capas para mejorar los resultados de las redes. Esta arquitectura se llama **Multi Layer Perceptron** (MLP). Al apilar varias capas de neuronal con funciones de activación, conseguimos resolver problemas más complejos, como la función XOR.
 """
 
 # ╔═╡ b6e330c6-8285-4f5b-a933-7c5a35f1fbab
@@ -314,10 +359,10 @@ md"""
 
 De un modo muy somero el algoritmo funciona del siguiente modo:
 
-1. Se inicializan, de manera aleatoria, los pesos de la red.
-1. Para cada dato del conjunto de entrenamiento, se calcula su salida.
-1. Se calcula el error entre la salida calculada y la real.
-1. Se utiliza descenso de gradiente para calcular los nuevos pesos de la última capa.
+1. Se inicializan los pesos de la red de manera aleatoria.
+1. Para cada dato del conjunto de entrenamiento, se calcula su salida (paso forward).
+1. Se calcula el error entre la salida calculada y la real $\epsilon = \hat{y} - y$.
+1. Se utiliza descenso de gradiente para actualizar los pesos de la última capa.
 """
 
 # ╔═╡ f08f7c50-0b54-4c0d-b65a-b0389d41d2a9
@@ -326,7 +371,6 @@ md"""
 
 5. Se propaga hacia atrás la actualización de los pesos utilizando la regla de la cadena hasta que se actualizan los pesos de todas las capas.
 1. Se repite el proceso desde el punto 2, hasta un número determinado de pasos o hasta que la actualización de los pesos no es significativa en dos pasos consecutivos.
-
 """
 
 # ╔═╡ 1a52c360-1fb4-49df-a0f2-8a75f0f981d8
@@ -335,9 +379,11 @@ md"""
 
 Detalles a tener en cuenta:
 
-1. El problema de optimización no es cuadrático (mínimo de la función de pérdidas), luego no está garantizado que el algoritmo se detenga en el mínimo global.
+1. El problema de optimización no es cuadrático (mínimo de la función de pérdidas), luego no está garantizado que el algoritmo se detenga en el mínimo global, el algoritmo puede deternese en un mínimo local.
 1. El resultado depende de los valores aleatorios iniciales que se asignan a los pesos.
 1. El algoritmo puede **fallar** porque al propagar el gradiente este se **desvanezca** o **explote**.
+
+Se puede demostrar que el algoritmo de retropropagación siempre converge, es decir, encuentra un mínimo.
 """
 
 # ╔═╡ 0a978bc5-bf88-4702-90ac-821604054683
@@ -416,10 +462,9 @@ md"""
 Los pasos para crear y entrenar una red son:
 
 1. Definir la arquitectura de la red.
-1. **Compilar** la red para seleccionar entre otros:
+1. Definir los siguientes componentes del entrenamiento:
     * Función de pérdidas.
     * Optimizador.
-    * Métrica de evaluación del entrenamiento.
 1. Entrenar la red con un conjunto de datos.
 """
 
@@ -434,7 +479,7 @@ Como ejemplo, vamos a crear una red que ajuste los datos de la función seno:
 function crea_datos()
 	x_t = Float32.(collect(range(0, 2π, 50))')
 	y_t = sin.(x_t)
-	x_train = shuffle(x_t)
+	x_train = shuffle(x_t) # Los mezclamos aleatoriamente.
 	y_train = sin.(x_train)
 	return x_t, y_t, x_train, y_train 
 end;
@@ -454,8 +499,9 @@ La red se define encadenando una serie de capas:
 
 # ╔═╡ 4312e730-bf64-4081-bf37-6062c3c3acbd
 modelo_seno = Chain(
-	Dense(1 => 500, tanh),
-	Dense(500 => 1)
+	Dense(1 => 500, tanh), # 500 neuronas con ax+b (1000 parámetros)
+	Dense(500 => 1) # una neurona con a[1..500]x+b (501 parámetros)
+	#Dense(1 => 1) # La puedo obviar.
 )
 
 # ╔═╡ 8498d094-5069-4fb6-8d12-9f1721f9b4ac
@@ -532,9 +578,9 @@ Vamos a probar con una red con dos capas densamente conectadas, pero esta vez us
 
 # ╔═╡ 2b7ee756-8187-4176-b731-7bdfbcf2ec05
 modelo_seno_profundo = Chain(
-	Dense(1 => 3, tanh),
-	Dense(3 => 3, tanh),
-	Dense(3 => 1)
+	Dense(1 => 3, tanh), # 2 parámetros cada neurona
+	Dense(3 => 3, tanh), # 4 parámetros cada neurona
+	Dense(3 => 1) # 4 parámetros la única neurona
 )
 
 # ╔═╡ 4487a15e-2c7c-4aad-91af-5859d65c775c
@@ -545,14 +591,14 @@ La red tiene la siguiente estructura:
 1. Una capa intermedia con tres neuronas a la entrada y tres salidas hacia la siguente capa densamente conectada.
 1. Una capa de salida con una neurona.
 
-Importante, en este caso la red sólo tiene 22 parámetros que entrenar.
+Importante, en este caso la red sólo tiene 22 parámetros que entrenar, sensiblemente menos parámetros que la red anterior con una única capa.
 """
 
 # ╔═╡ 839d9885-b6f7-4c23-ae5f-8db14145c553
 md"""
 ## Entrenar la red
 
-Sólo nos queda definir el optimizador, y entrenar la red:
+Sólo nos queda definir el optimizador (Adam esta vez), y entrenar la red:
 """
 
 # ╔═╡ 13f55aab-0a02-4bc7-9b9a-8765c15586b8
@@ -595,7 +641,7 @@ howell = CSV.File(HTTP.get("https://raw.githubusercontent.com/AprendizajeAutomat
 md"""
 ## Ejemplo con los datos de Howell
 
-Vamos a dividir el cojunto de datos inicial en un conjunto de entrenamiento y otro de validación, para ver los buena que es la red:
+Vamos a dividir el cojunto de datos inicial en un conjunto de entrenamiento y otro de pruebas, para ver lo buena que es la red:
 """
 
 # ╔═╡ ab5c1498-7e07-4301-9de8-b1a08b7a5482
@@ -623,16 +669,16 @@ md"""
 Ahora creamos la red, el optimizador y definimos los datos:
 """
 
-# ╔═╡ 6b510711-b6a5-40b6-84da-0d463bb6f6c1
-red_howell = Chain(
-	Dense(size(X_entrenamiento_howell, 1) => 3, tanh),
-	Dense(3 => 3, tanh),
-	Dense(3 => 3, tanh),
-	Dense(3 => 1)
-)
-
-# ╔═╡ d48b0309-1d28-40ea-a848-7dee2496159e
-optimizador_howell = Flux.setup(Adam(), red_howell)
+# ╔═╡ 34f2c0d2-2f10-483c-867f-755d8a6b2011
+function crea_red(semilla)
+	Random.seed!(semilla) # Para que los pesos aleatorios iniciales sean los mismos.
+	Chain(
+		Dense(size(X_entrenamiento_howell, 1) => 3, tanh),
+		Dense(3 => 3, tanh),
+		Dense(3 => 3, tanh),
+		Dense(3 => 1)
+	)
+end
 
 # ╔═╡ 17fc15fd-1eda-4dae-ae51-e0b5610f0041
 datos_howell = [(X_entrenamiento_howell, y_entrenamiento_howell)]
@@ -645,18 +691,20 @@ Entrenamos la red:
 """
 
 # ╔═╡ 8f400ee4-3e73-4770-b39a-317df4ae9b0e
-function entrena()
+function entrena(perdidas, red, datos, optimizador, semilla)
+	Random.seed!(semilla)
 	mse = []
 	mse_validacion = []
 	with_logger(NullLogger()) do
 		for epoca in 1:50000
-			Flux.train!(perdidas, red_howell, datos_howell, optimizador_howell)
-			push!(mse, perdidas(red_howell, X_entrenamiento_howell, y_entrenamiento_howell))
-			push!(mse_validacion, perdidas(red_howell, X_validacion_howell, y_validacion_howell))
+			Flux.train!(perdidas, red, datos, optimizador)
+			push!(mse, perdidas(red, X_entrenamiento_howell, y_entrenamiento_howell))
+			push!(mse_validacion, perdidas(red, X_validacion_howell, y_validacion_howell))
+
 		end
 	end
-	@info perdidas(red_howell, X_entrenamiento_howell, y_entrenamiento_howell)
-	@info perdidas(red_howell, X_validacion_howell, y_validacion_howell)
+	@info perdidas(red, X_entrenamiento_howell, y_entrenamiento_howell)
+	@info perdidas(red, X_validacion_howell, y_validacion_howell)
 	(mse, mse_validacion)
 end;
 
@@ -668,11 +716,17 @@ Vemos los resultados:
 """
 
 # ╔═╡ 63a26003-f633-4d93-a135-369ae8d802c5
-mse, mse_validacion = entrena()
+begin
+	semilla = 66
+	red_howell = crea_red(semilla)
+	optimizador_howell = Flux.setup(Adam(), red_howell)
+	mse, mse_validacion = entrena(perdidas, red_howell, datos_howell, optimizador_howell, semilla)
+end
 
 # ╔═╡ bb922155-c271-49ff-9526-3d7a228ace37
 let
-	plot(mse, label="Entrenamiento", xlims = (35_000,50_000), ylims = (0, 100))
+	# plot(mse, label="Entrenamiento", xlims = (35_000,50_000), ylims = (0, 100))
+	plot(mse, label="Entrenamiento")
 	plot!(mse_validacion, label="Validación")
 end
 
@@ -746,7 +800,7 @@ Para que los experimentos sean reproducibles inicializamos la semilla del genera
 """
 
 # ╔═╡ 4320b284-f595-4408-920a-d93cbfae2116
-semilla = 2
+# semilla = 2
 
 # ╔═╡ 7a08c1e0-de42-4644-ab97-5bb3e5e07805
 Random.seed!(semilla)
@@ -3078,8 +3132,14 @@ version = "1.9.2+0"
 # ╠═bbbc0b92-185b-4126-b858-e94af0211a6c
 # ╠═d0e46bda-cd81-4717-87b1-e5ef283f6e7b
 # ╠═9d41b30b-afab-4f83-ae60-9fc50dea90b9
+# ╠═217fcf4e-f83e-4bbe-906c-cc1e1f44d7b9
+# ╠═0197bb9a-1410-4fa4-8750-bae1e71b971a
+# ╠═ced47da1-fbf0-4e7e-8695-1f9db7fc0bc2
+# ╠═080718d1-9de3-4435-8168-76de5b7570ec
 # ╠═3063a028-22e6-467f-82fb-139492ed4e6b
 # ╠═359e990e-41bc-43bc-9504-d520476ea035
+# ╠═c1d85e3c-51e9-45eb-b209-7da56905e6d5
+# ╠═924c5b93-cc37-40b6-aad5-67cc18421895
 # ╠═26ffe43c-fcda-4c52-be27-ce945f1084d9
 # ╠═aba74d40-c561-4492-a7a0-f49a69f6455e
 # ╠═a46f42c1-64a2-4a07-9ee7-e8517eb56dd8
@@ -3139,8 +3199,7 @@ version = "1.9.2+0"
 # ╠═06a400a3-9ca2-4038-be73-9be58ff22d94
 # ╠═96cf537d-eaf7-4790-962d-de6eb3922ef3
 # ╠═8f023a0e-94d9-4390-a048-3e815d13dd75
-# ╠═6b510711-b6a5-40b6-84da-0d463bb6f6c1
-# ╠═d48b0309-1d28-40ea-a848-7dee2496159e
+# ╠═34f2c0d2-2f10-483c-867f-755d8a6b2011
 # ╠═17fc15fd-1eda-4dae-ae51-e0b5610f0041
 # ╠═c3d0c723-0852-4365-9e4c-b64d95a1bcb8
 # ╠═8f400ee4-3e73-4770-b39a-317df4ae9b0e
