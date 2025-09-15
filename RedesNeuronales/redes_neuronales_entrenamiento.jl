@@ -24,7 +24,7 @@ using PlutoUI
 
 # ╔═╡ df43ffce-2be1-11f0-1bda-8d3f50a5cd86
 # html"""
-# <link rel="stylesheet" type="text/css" href="https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/mi_estilo.css" media="screen" />
+# <link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
 # """
 
 # ╔═╡ 8f9e676c-76c8-474b-ab0a-60424d8cb889
@@ -183,7 +183,7 @@ Algunas de estas funciones de activación se presentan en la siguiente sección.
 
 # ╔═╡ 82ce513b-1e2a-45e0-8d1e-255d9e33d5b9
 md"""
-!!! warning
+!!! warning Atencion
 
 Para tenerlo en cuenta más adelante:
 
@@ -797,7 +797,7 @@ PlutoUI = "~0.7.61"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.11.5"
+julia_version = "1.11.6"
 manifest_format = "2.0"
 project_hash = "6232d113ac6f21f619fe0e38e0cee80475be7053"
 
