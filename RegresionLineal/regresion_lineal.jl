@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.17
+# v0.20.8
 
 using Markdown
 using InteractiveUtils
@@ -95,6 +95,7 @@ md"""
 - Demostrar el fundamente del descenso de gradiente.
 - Razonar si la regularización es apropiada para un determinado problema.
 - Construir una solución de regresión (múltiple, polinómica).
+- Concer cómo implementar soluciones con Julia.
 """
 
 # ╔═╡ cda801a3-6b0c-49f0-afbd-798850b354ca
@@ -518,11 +519,11 @@ md"""
 # ╔═╡ 6518ba79-f3cc-4ccb-9935-fe037f256d4e
 md"""
 ## Paquetes en Julia
-Todos estos cálculos los hemos hecho con un poco de álgebra. Existen paquetes en Julia que nos facililtan estos cálculos, como por ejemplo, el paquete [**GLM**](https://juliastats.org/GLM.jl/stable/) (Generalised Linear Models)
+Todos estos cálculos los hemos hecho con un poco de álgebra. Existen paquetes en Julia que nos facilitan estos cálculos, como por ejemplo, el paquete [**GLM**](https://juliastats.org/GLM.jl/stable/) (Generalised Linear Models)
 """
 
 # ╔═╡ e3278b0e-ff00-4bc9-b06e-d2757a08f997
-regresion_glm = lm(@formula(height ~ weight), adultos)
+regresion_glm = lm(@formula(height ~ 1 + weight), adultos)
 
 # ╔═╡ 3a665608-f044-41a9-a619-7ed799457277
 histogram(residuals(regresion_glm))
@@ -631,7 +632,7 @@ El resultado, evidentemente, es el mismo:
 """
 
 # ╔═╡ db09d078-cbf5-442a-b819-a049f93cee06
-prediccion_mlj = MLJ.predict(modelo, extremos_df)
+prediccion_mlj = MLJ.predict(modelo, extremos_df);
 
 # ╔═╡ b9bfee39-4092-4c69-816c-ca830b94c935
 begin
@@ -672,7 +673,7 @@ La evaluación cruzada consiste en dividir el conjunto de datos inicial en un co
 # ╔═╡ 2da21951-935d-4ba8-9a3b-c2628a71a31e
 begin
 	cv = CV(nfolds = 10)
-	validacion_cruzada = MLJ.evaluate(regresor, select(adultos, :weight), adultos.height, resampling=cv, measure=rms)
+	validacion_cruzada = MLJ.evaluate(regresor, select(adultos, :weight), adultos.height, resampling=cv, measure=[rms])
 end
 
 # ╔═╡ 215eb03b-4c21-4321-bb3b-70bb68aace81
@@ -848,7 +849,7 @@ El paquete **GLM** también nos permite hacer regresión multivariada:
 """
 
 # ╔═╡ e4e29ff3-fc14-4966-8cfb-e8296a4a4bd1
-regresion_multivariada_glm = lm(@formula(height ~ weight + age + male), adultos)
+regresion_multivariada_glm = lm(@formula(height ~ 1 + weight + age + male), adultos)
 
 # ╔═╡ 14e10278-99fc-4932-aa52-6d02cf6ac7db
 md"""
@@ -1110,6 +1111,8 @@ end
 
 # ╔═╡ 7f60da0c-5876-47c0-9cf6-1bce1891d4f6
 md"""
+## Encontrar el mejor grado de un polinomio
+
 Las distintas medidas de bondad del ajuste no nos premiten rechazar la hipótesis nula: los residuos siguen una distribución normal.
 """
 
@@ -1119,8 +1122,18 @@ ShapiroWilkTest(residuals(regresion_grado3_glm))
 # ╔═╡ 0db3efc7-01e6-4d0b-bb52-4626faac179c
 OneSampleADTest(residuals(regresion_grado3_glm), Distributions.fit(Normal, residuals(regresion_grado3_glm)))
 
+# ╔═╡ a0eed74d-ef07-4bee-9045-b0035a5a6bdf
+md"""
+## Encontrar el mejor grado de un polinomio
+"""
+
 # ╔═╡ 1d383b64-a596-42ca-9eed-6ec35c7d61ea
 ApproximateOneSampleKSTest(residuals(regresion_grado3_glm), Distributions.fit(Normal, residuals(regresion_grado3_glm)))
+
+# ╔═╡ 38d88e06-764f-439f-a7e3-5253170a249f
+md"""
+## Encontrar el mejor grado de un polinomio
+"""
 
 # ╔═╡ dbbca94b-d3eb-40f2-b303-f40f537dbbd9
 md"""
@@ -1129,6 +1142,11 @@ El gráfico quantil-quantil corrobora la bondad del ajuste.
 
 # ╔═╡ 5cd0a735-6ab1-4467-aed0-591f876658a7
 qqnorm(residuals(regresion_grado3_glm))
+
+# ╔═╡ 90cef0bf-fc2f-4e0d-acd5-750456dd9bf9
+md"""
+## Encontrar el mejor grado de un polinomio
+"""
 
 # ╔═╡ 78f74061-afc3-44af-9753-3feeab77b889
 md"""
@@ -1350,9 +1368,6 @@ md"""
 Veamos un ejemplo sobre un subconjunto de nuestros datos cuando ajustamos a un polinomio con regularización Ridge:
 """
 
-# ╔═╡ 43f68ca8-dd38-4cee-a74f-fa6dfff9a872
-names(adultos)
-
 # ╔═╡ e6e771a2-d662-4fea-9b48-63421fd8b851
 @df adultos scatter(:weight, :height)
 
@@ -1459,7 +1474,7 @@ md"""
 En la regularización Lasso el término que se añade a la función de pérdidas es:
 
 $\mathcal{L}(\mathbf{\theta}) = \frac{1}{N} \sum_{i=1}^N \lvert y_i - h(\theta) \rvert ^2
-     1 + \lambda \sum_{j=1}^k \theta_j$
+     + \lambda \sum_{j=1}^k \theta_j$
 
 donde $k$ es el grado del polinomio. Fíjate en que no se incluye el parámetro de bias $\theta_0$ en la regularización.
 """
@@ -1601,6 +1616,7 @@ md"""
 - Hemos estudiado qué es la técnica de descenso del gradiente.
 - Hemos introducido la regularización para mejorar el rendimiento.
 - Es importante que compruebes que se cumplen las condiciones para aplicar regresión lineal: residuos distribuido según una gaussiana centrada en el 0.
+- Hemos visto algunos fragmentos de código Julia.
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -4028,7 +4044,7 @@ version = "1.4.1+2"
 # ╟─4b0609e8-cc0b-44e9-94e9-01c34301dfe7
 # ╟─4a71d082-f1ca-4582-8722-0d6ec6b67de4
 # ╟─94a22149-789c-4a25-b91f-23fc24e702fc
-# ╠═6e8cdc3d-aa37-4b66-84b2-6b1db9947d62
+# ╟─6e8cdc3d-aa37-4b66-84b2-6b1db9947d62
 # ╟─07c535e5-c9bb-4ecb-bcb4-391f257a91c3
 # ╟─b97dac76-fdb8-4da0-8295-0f8a9dc20cf3
 # ╟─e9069ed2-3a71-4206-b569-4f73bb97eb19
@@ -4042,15 +4058,15 @@ version = "1.4.1+2"
 # ╟─158f021b-5fa8-49be-a8df-6863a272e4e8
 # ╠═55211ee4-a8da-46b2-96f1-83fc170677ee
 # ╠═1661096e-713c-435a-b47d-278f454ad76b
-# ╠═9370af0f-ba8e-4126-8bd4-747a43b768e8
+# ╟─9370af0f-ba8e-4126-8bd4-747a43b768e8
 # ╟─c3976756-cf99-4092-86d2-994b34894bb7
 # ╠═70802a0d-d500-457c-9823-0bf99f23509e
 # ╟─354706f0-c7a2-49b6-be7d-5fe9d333aa30
-# ╟─b4ffd1ca-dc72-45fe-a6a4-b0f9569cec64
+# ╠═b4ffd1ca-dc72-45fe-a6a4-b0f9569cec64
 # ╠═1e051daa-f2db-447b-93b3-19c594fc0d66
 # ╠═4b2dfb5f-9319-4cd9-9e6c-69efab579681
 # ╟─0f85c1b1-ce14-4870-8943-efb72e9ec7d9
-# ╠═3282e035-d92a-4988-ae70-3562d408f09f
+# ╟─3282e035-d92a-4988-ae70-3562d408f09f
 # ╠═eefd48fc-ca9a-42fb-a321-53be6bf98381
 # ╠═ef313c53-798c-4e84-b6da-4d90ed49db51
 # ╟─14a01c6a-9c06-434d-b1b9-87be793c071a
@@ -4083,9 +4099,12 @@ version = "1.4.1+2"
 # ╟─7f60da0c-5876-47c0-9cf6-1bce1891d4f6
 # ╟─e0d5372d-d876-4e56-a090-bbe7158ae845
 # ╟─0db3efc7-01e6-4d0b-bb52-4626faac179c
+# ╟─a0eed74d-ef07-4bee-9045-b0035a5a6bdf
 # ╟─1d383b64-a596-42ca-9eed-6ec35c7d61ea
+# ╟─38d88e06-764f-439f-a7e3-5253170a249f
 # ╟─dbbca94b-d3eb-40f2-b303-f40f537dbbd9
 # ╟─5cd0a735-6ab1-4467-aed0-591f876658a7
+# ╟─90cef0bf-fc2f-4e0d-acd5-750456dd9bf9
 # ╟─78f74061-afc3-44af-9753-3feeab77b889
 # ╟─fa1025bf-df2c-4bcc-83d5-8f0d88a56e57
 # ╟─0984464e-7c1d-418b-b956-436744c84704
@@ -4106,7 +4125,6 @@ version = "1.4.1+2"
 # ╟─04301b0a-02f0-48b0-9a3b-60779ad99964
 # ╟─9539b216-c13f-4aed-ae82-d569f9a1ac7e
 # ╟─95da45a3-5cab-4323-b427-c6291b5b0191
-# ╟─43f68ca8-dd38-4cee-a74f-fa6dfff9a872
 # ╠═e6e771a2-d662-4fea-9b48-63421fd8b851
 # ╟─5975aea8-aac1-45b4-bdba-fbe818dff076
 # ╠═ee8c9183-ead1-4a95-8d2c-818979ae6a05
