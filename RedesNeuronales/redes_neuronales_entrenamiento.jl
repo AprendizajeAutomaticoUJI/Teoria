@@ -28,10 +28,13 @@ using PlutoUI
 # """
 
 # ╔═╡ 8f9e676c-76c8-474b-ab0a-60424d8cb889
-plotly()
+plotly();
 
 # ╔═╡ d696f0f6-e1ea-4b74-b877-0df4cd6b6e80
 TableOfContents(title="Contenidos", depth=1)
+
+# ╔═╡ bb10f84f-3a9c-4e20-a46b-e5bb7eeb1c00
+url_imagenes = "https://belmonte.uji.es/Docencia/IR2130/Teoria/RedesNeuronales/Imagenes/";
 
 # ╔═╡ fb1079c3-9b84-4465-ac1a-8d2b5c97a737
 md"""
@@ -68,7 +71,7 @@ El entrenamiento de las redes neuronales es muy delicado, sobre todo, cuando
 tienen muchas capas.
 
 Poco a poco se ha encontrado un serie de técnicas que hacen posible que se 
-puedan entrenar las redes neuronales.
+puedan entrenar las redes neuronales de un modo cada vez más eficiente y efectivo.
 
 En esta presentación se muestran algunos de los problemas más comunes 
 durante la fase de entrenamiento de una red neuronal profunda, y algunas de 
@@ -110,9 +113,9 @@ md"""
 
 # ╔═╡ 5250cf91-68f1-4798-a021-cc6cee8b77bd
 Resource(
-	"https://www3.uji.es/~belfern/Docencia/IR2130_imagenes/RedesNeuronales/funcion_perdidas_3d.png",
+	url_imagenes * "funcion_perdidas_3d.png",
 	:alt => "Función de pérdidas",
-	:width => 600
+	:width => 500
 )
 
 # ╔═╡ 7cbbb35f-40c9-498f-b729-fc084fc123b1
@@ -141,7 +144,7 @@ md"""
 
 Xavier Glorot y Yoshua Bengio publicaron un [trabajo](https://proceedings.mlr.press/v9/glorot10a/glorot10a.pdf) donde presentaban sus conclusiones sobre la influencia de la inicialización de los pesos de una red neuronal.
 
-Llegaron a la conclusión de que una buena estrategia es inicializar los pesos de cada capa de tal modo que sigan una distribución normal centrada en el origen y con desviación estándar: 
+Llegaron a la conclusión de que una buena estrategia es iniciar los pesos de cada capa de tal modo que sigan una distribución normal centrada en el origen y con desviación estándar: 
 
 $\sigma^2 = \frac{1}{(input+output)/2}$
 
@@ -161,7 +164,14 @@ Estas estrategias funcionan bien con las funciones de activación:
 
 * tanh.
 * sigmoide.
-* softmax
+* softmax = $\frac{e^{z_j}}{\sum_{k=1}^{N}e^{z_k}}$
+"""
+
+# ╔═╡ 82ce513b-1e2a-45e0-8d1e-255d9e33d5b9
+md"""
+!!! danger "Atención"
+
+Flux initialises convolutional layers and recurrent cells with **glorot_uniform** by default. Most layers accept a function as an **init** keyword, which replaces this default.
 """
 
 # ╔═╡ 8f3ffd98-aaf4-4913-b168-a53af6e26fae
@@ -181,15 +191,6 @@ funciona bien cuando las funciones de activación son:
 Algunas de estas funciones de activación se presentan en la siguiente sección.
 """
 
-# ╔═╡ 82ce513b-1e2a-45e0-8d1e-255d9e33d5b9
-md"""
-!!! warning Atencion
-
-Para tenerlo en cuenta más adelante:
-
-Flux initialises convolutional layers and recurrent cells with **glorot_uniform** by default. Most layers accept a function as an **init** keyword, which replaces this default. For example:
-"""
-
 # ╔═╡ fd2f4ccc-651f-4450-b209-5b24bdb0a77c
 md"""
 # Funciones de activación
@@ -199,14 +200,11 @@ md"""
 md"""
 ## Introducción
 
-Como ya sabemos, si sólo sumamos las entradas de una red neuronal multiplicadas 
-por un peso, la función que obtenemos a la salida sigue siendo lineal.
+Como ya sabemos, si sólo sumamos las entradas de una red neuronal multiplicadas por un peso, la función que obtenemos a la salida sigue siendo lineal.
 
 Las funciones de activación permiten tener salidas no lineales.
 
-La función sigmoide fue muy utilizada al inicio de la investigación en redes 
-neuronales profundas, pero, paulatinamente ha cedido el puesto a otras 
-funciones de activación que han demostrado mejor comportamiento en la práctica.
+La función sigmoide fue muy utilizada al inicio de la investigación en redes neuronales profundas, pero, paulatinamente ha cedido el puesto a otras funciones de activación que han demostrado mejor comportamiento en la práctica.
 """
 
 # ╔═╡ 5295ef71-d786-4fcd-bb31-17ce45e9ef66
@@ -219,7 +217,7 @@ $σ(x) = \frac{1}{1 + e^{-x}}$
 """
 
 # ╔═╡ ab963580-9df7-4b1f-aa51-1b1daf4c0f35
-plot(σ, xlabel="x", ylabel="σ", legend=false)
+plot(σ, xlabel="x", ylabel="σ", legend = false, size = (500, 300))
 
 # ╔═╡ 9b86bf39-44f3-4d68-ba2a-43172a6042b7
 md"""
@@ -230,14 +228,13 @@ Es una función _suave_ y derivable en todo $\mathbb{R}$.
 md"""
 ## Tangente hiperbólica
 
-La tangente hiperbólica es otra función comúnmente utilizada como función de 
-activación:
+La tangente hiperbólica es otra función utilizada como función de activación:
 
 $tanh(x) = \frac{e^x - e^{-x}}{e^x + e^{-x}}$
 """
 
 # ╔═╡ 55f16b63-6975-47fd-a302-4b6328ea64b3
-plot(tanh, xlabel="x", ylabel="Tangente hiperbólica", legend=false)
+plot(tanh, xlabel="x", ylabel="Tangente hiperbólica", legend = false, size = (500, 300))
 
 # ╔═╡ f2508f3e-3385-40e2-9946-37ef2b38d24b
 md"""
@@ -254,7 +251,7 @@ $ReLU(x) = max(0, x) = \frac{x + |x|}{2}$
 """
 
 # ╔═╡ 02be6027-17bd-41b2-bbc4-0fb1ef63a3f2
-plot(Flux.relu, xlabel="x", ylabel="ReLU", legend=false)
+plot(Flux.relu, xlabel="x", ylabel="ReLU", legend = false, size = (500, 300))
 
 # ╔═╡ beafdc22-eaa0-41ca-ac81-5eb8ee015185
 md"""
@@ -271,13 +268,13 @@ $\begin{equation}
 Leaky ReLU(x) = \\
 \begin{cases}
 x \quad \qquad if \quad x > 0, \\
-0.01x \quad if \quad x \leq 0
+αx \quad if \quad x \leq 0, α > 0
 \end{cases}
 \end{equation}$
 """
 
 # ╔═╡ 029c67cc-4bd8-4219-95db-ea348f2d1c1f
-plot(Flux.leakyrelu, xlabel="x", ylabel="LeakyReLU", legend=false)
+plot(x -> Flux.leakyrelu(x, 0.2), xlabel="x", ylabel="LeakyReLU", legend = false, size = (500, 300))
 
 # ╔═╡ dfa9d7a2-beda-4482-9710-8913dfb44134
 md"""
@@ -298,8 +295,7 @@ Mish $= x \cdot tanh(softplus(x))$
 
 Y algunas más.
 
-La función de activación **tanh** suele ser un buen principio. La función 
-**ReLU** funciona muy bien en la mayoría de los casos.
+La función de activación **tanh** suele ser un buen principio. La función **ReLU** funciona muy bien en la mayoría de los casos.
 
 Puedes encontrar todas la funciones de activación que hay implementadas en Flux en la [documentación](https://fluxml.ai/Flux.jl/stable/reference/models/activation/)
 """
@@ -313,14 +309,12 @@ md"""
 md"""
 ## Introducción
 
-En la presentación sobre regresión lineal vimos cómo utilizar la técnica de 
-descenso de gradiente para encontrar el mínimo de la función de pérdidas:
+En la presentación sobre regresión lineal vimos cómo utilizar la técnica de descenso de gradiente para encontrar el mínimo de la función de pérdidas:
 
 
-$\theta^{i+1} = \theta^i - \eta \nabla_\theta \mathcal{L}$
+$\theta^{i+1} \leftarrow \theta^i - \eta \nabla_\theta \mathcal{L}$
 
-Esta técnica siempre funciona, pero a veces puede ser _lenta_ es decir, se 
-pueden necesitar muchos pasos para acercarnos al mínimo.
+Esta técnica siempre funciona, pero a veces puede ser _lenta_ es decir, se pueden necesitar muchos pasos para acercarnos al mínimo.
 """
 
 # ╔═╡ e82394c8-5549-4f0b-8148-aceabcd6e01f
@@ -333,10 +327,7 @@ optimizador:
 * Rapidez de convergencia.
 * Comportamiento de la convergencia.
 
-Estas dos características son _antagónicas_ los optimizadores con un buen 
-comportamiento en la convergencia son, en general, lentos. Mientras que, 
-por el contrario, los algoritmos rápidos no se suelen comportan tan bien 
-en la convergencia.
+Estas dos características son _antagónicas_ los optimizadores con un buen comportamiento en la convergencia son, en general, lentos. Mientras que, por el contrario, los algoritmos rápidos no se suelen comportan tan bien en la convergencia.
 """
 
 # ╔═╡ f652d0a5-b914-49e0-a1ab-3ad0a0963e1e
@@ -344,14 +335,12 @@ md"""
 ## Momentum
 
 Han aparecido variación del descenso del gradiente 
-[(Boris Polyak)](https://www.researchgate.net/publication/243648538_Some_methods_of_speeding_up_the_convergence_of_iteration_methods)
-que necesitan un menor 
-número de pasos para alcanzar el mínimo de la función de pérdidas.
+[(Boris Polyak)](https://www.researchgate.net/publication/243648538_Some_methods_of_speeding_up_the_convergence_of_iteration_methods) que necesitan un menor número de pasos para alcanzar el mínimo de la función de pérdidas.
 
 $m^i = \beta m^{i-1} - \eta \nabla_\theta \mathcal{L}$
 $\theta^{i+1} = \theta^i + m^{i}$
 
-El incremento tiene en cuenta el gradiente el gradiente en el paso anterior.
+Con esta técnica de entrenamiento, el incremento tiene en cuenta el gradiente el gradiente en el paso anterior.
 
 Un valor _típico_ para $\beta = 0.9$.
 """
@@ -360,16 +349,12 @@ Un valor _típico_ para $\beta = 0.9$.
 md"""
 ## Nesterov Accelerated Gradient
 
-La [propuesta de Nesterov](https://hengshuaiyao.github.io/papers/nesterov83.pdf)
-es calcular el gradiente no en el punto actual sino 
-en un punto avanzado en la dirección del gradiente:
+La [propuesta de Nesterov](https://hengshuaiyao.github.io/papers/nesterov83.pdf) es calcular el gradiente no en el punto actual sino en un punto avanzado en la dirección del gradiente:
 
 $m^i = \beta m^{i-1} - \eta \nabla_\theta \mathcal{L(\theta + \beta m^{i-1})}$
 $\theta^{i+1} = \theta^i + m^{i}$
 
-Para que las expresiones sean más claras, a partir de este momento no voy a 
-mostrar el índice de paso de actualización $i$, en vez de ello, utilizaré 
-el símbolo $\leftarrow$ en vez de $=$.
+Para que las expresiones sean más claras, a partir de este momento no voy a mostrar el índice de paso de actualización $i$, en vez de ello, utilizaré el símbolo $\leftarrow$ en vez de $=$.
 """
 
 # ╔═╡ 0cc06ba9-501b-48ef-b216-dca5f67414c0
@@ -377,14 +362,12 @@ md"""
 ## AdaGrad
 
 Otro optimizador es
-[AdaGrad](https://jmlr.org/papers/volume12/duchi11a/duchi11a.pdf)
-que propone la siguiente actualización para los parámetros:
+[AdaGrad](https://jmlr.org/papers/volume12/duchi11a/duchi11a.pdf) que propone la siguiente actualización para los parámetros:
 
 $s \leftarrow s + \nabla_\theta \mathcal{L(\theta)} \otimes \mathcal{L(\theta)}$
 $\theta \leftarrow \theta - \eta \nabla_\theta \mathcal{L(\theta)} \oslash \sqrt{s + \epsilon}$
 
-Donde $\otimes$ es el producto componente a componente de dos vectores, y 
-$\oslash$ es la división componente a componente.
+Donde $\otimes$ es el producto componente a componente de dos vectores, y $\oslash$ es la división componente a componente.
 """
 
 # ╔═╡ f48329e3-28e7-436a-b9da-3bdc83ea10e4
@@ -402,14 +385,11 @@ $\hat{s} \leftarrow \frac{s}{1 - \beta_2^t}$
 $\theta \leftarrow \theta + \eta \hat{m} \otimes \sqrt{\hat{s} + \epsilon}$
 """
 
-# ╔═╡ e64c9c5b-5238-4eab-8078-08c54bd62a19
-md"""
-Puedes encontrar todos los optimizadores que hay implementados en Flux en la [documentación](https://fluxml.ai/Flux.jl/stable/reference/training/optimisers/).
-"""
-
 # ╔═╡ 1988fba8-e08f-4ac8-977a-d822b22fb899
 md"""
 ## Optimizadores
+
+Puedes encontrar todos los optimizadores que hay implementados en Flux en la [documentación](https://fluxml.ai/Flux.jl/stable/reference/training/optimisers/).
 
 Una tabla orientativa para selección el optimizador:
 
@@ -433,17 +413,11 @@ Extraído de _Hands-on machine learning with TensorFlow and Keras_
 md"""
 ## Normalización por lotes
 
-La [normalización por lotes (_Batch normalization_)](https://arxiv.org/pdf/1502.03167) 
-es otra técnica que intenta evitar el desvanecimiento/explosión del gradiente.
+La [normalización por lotes (_Batch normalization_)](https://arxiv.org/pdf/1502.03167)  es otra técnica que intenta evitar el desvanecimiento/explosión del gradiente.
 
-La idea es que antes (o después, según se mire) de una capa de la red neuronal,
-se añade otra capa que normaliza la entrada (o salida) de la capa para que
-estén centradas en cero y con $\sigma^2 = 1$.
+La idea es que antes (o después, según se mire) de una capa de la red neuronal, se añade otra capa que normaliza la entrada (o salida) de la capa para queestén centradas en cero y con $\sigma^2 = 1$.
 
-Para que durante el proceso de entrenamiento cada una de las capas de 
-normalización calculen los estadísticos $\mu$ y $\sigma$, es necesario que lo 
-haga sobre un subconjunto (batch) de los datos, de ahí el nombre de este 
-tipo de capa.
+Para que durante el proceso de entrenamiento cada una de las capas de normalización calculen los estadísticos $\mu$ y $\sigma$, es necesario que lo haga sobre un subconjunto (batch) de los datos, de ahí el nombre de este tipo de capa.
 
 ```.{julia}
 BatchNorm(neuronas, activacion)
@@ -456,25 +430,21 @@ Utilizaremos este tipo de capas cuando estudiemos las redes convolucionales.
 md"""
 ## Recorte del gradiente
 
-Otra técnica comúnmente utilizada para evitar la explosión del gradiente es, 
-simplemente, limitarlo para que no sobrepase un cierto umbral (_gradient 
-clipping_). 
+Otra técnica comúnmente utilizada para evitar la explosión del gradiente es, simplemente, limitarlo para que no sobrepase un cierto umbral (_gradient clipping_). 
 
 El recorte se activa al instanciar el optimizador, por ejemplo:
 
-```{.julia}
+```.julia
 clip = ClipGrad(1e-3)
 ```
 
 que se suele utilizar en combinación con un optimizador utilizando un **OptimiserChain**:
 
-```{.julia}
+```.julia
 opt = OptimiserChain(ClipGrad(1e-3), Adam(1e-3))
 ```
 
-En este caso, después de calcular los gradiente de una capa, si alguno de ellos 
-supera el umbral $1e-3$ se le asignará a ese gradiente en particular el valor 
-este umbral.
+En este caso, después de calcular los gradiente de una capa, si alguno de ellos supera el umbral $1e-3$ se le asignará a ese gradiente en particular el valor este umbral.
 """
 
 # ╔═╡ 4d4a1c19-a4df-43c6-af65-53dbf21a5bf5
@@ -486,26 +456,16 @@ md"""
 md"""
 ## Introducción
 
-En la presentación de regresión lineal se presentó la técnica de descenso de 
-gradiente. Recuerda que el término de la segunda derivada de la función de 
-pérdidas lo sustituimos por un valor constante: la **tasa de aprendizaje**.
+En la presentación de regresión lineal se mostró la técnica de descenso de gradiente. Recuerda que el término de la segunda derivada de la función de pérdidas lo sustituimos por un valor constante: la **tasa de aprendizaje**.
 
-También vimos lo delicado que es la elección de su valor, si la tasa de 
-aprendizaje es demasiado elevada puede que el algoritmo de descenso de 
-gradiente nunca converja; o si la tasa de aprendizaje es demasiado pequeña 
-puede que el descenso de gradiente necesite muchas iteraciones para alcanzar 
-el mínimo.
+También vimos lo delicado que es la elección de su valor, si la tasa de aprendizaje es demasiado elevada puede que el algoritmo de descenso de gradiente nunca converja; o si la tasa de aprendizaje es demasiado pequeña puede que el descenso de gradiente necesite muchas iteraciones para alcanzar el mínimo.
 """
 
 # ╔═╡ 28aafcb6-9294-433c-8bee-e634b0ee58ec
 md"""
 ## Introducción
 
-Muchas veces es más interesante definir una estrategia para ir adaptando el 
-valor de la tasa de aprendizaje al avance del aprendizaje de manera que, si 
-se puede avanzar rápidamente porque nos encontramos lejos de la solución, 
-le asignamos un valor alto, y conforme nos acercamos al mínimo vamos
-disminuyendo la tasa para que el descenso de gradiente converja.
+Muchas veces es más interesante definir una estrategia para ir adaptando el valor de la tasa de aprendizaje al avance del aprendizaje de manera que, si se puede avanzar rápidamente porque nos encontramos lejos de la solución, le asignamos un valor alto, y conforme nos acercamos al mínimo vamos disminuyendo la tasa para que el descenso de gradiente converja.
 
 Y esta estrategia la podemos añadir de modo combinado con el optimizador.
 
@@ -515,21 +475,14 @@ Veamos algunos ejemplos.
 # ╔═╡ b936e349-2b69-4e86-a7c2-5faa709052ab
 md"""
 ## Decaimiento en potencia
-La actualización de la tasa de aprendizaje se hace según la siguiente
-expresión (donde $\eta_0$ y d son hiperparámetros):
+
+La actualización de la tasa de aprendizaje se hace según la siguiente expresión (donde $\eta_0$ y d son hiperparámetros):
 
 $\eta(t) = \eta_0 d^{t-1}$
 """
 
-# ╔═╡ 3eebe1a5-250e-45b9-855d-e743c8e0abf6
-function plot_decay(start, decay)
-	t = 1:0.1:10
-	s = Exp(start = start, decay = decay)
-	plot(t, s.(t), xlabel="t", ylabel="Decamiento", xlim=(0,10), legend=false)
-end
-
-# ╔═╡ 35fa4c15-70a4-455b-8dbb-4535bf934721
-plot_decay(1e-6, 0.5)
+# ╔═╡ eeefc485-e198-4f17-9d4c-7c61e34fe229
+plot(x -> 1e-6 * 0.5 * exp(-x), 1:0.1:10, legend = false, size = (500, 350))
 
 # ╔═╡ 5b04ee1f-f136-4c29-a44f-a075bbb1376b
 md"""
@@ -537,7 +490,7 @@ md"""
 
 En julia lo utilizamos del siguiente modo:
 
-```{.julia}
+```.julia
 optimizador = Scheduler(Descent, Exp(start = 1e-2, decay = 0.8))
 ```
 
@@ -553,12 +506,9 @@ md"""
 md"""
 ## Introducción
 
-Como ya sabemos, durante la fase de entrenamiento el modelo creado puede 
-ajustar excesivamente los datos de entrenamiento (**overftting**), pero no 
-trabajar tan bien con nuevos datos.
+Como ya sabemos, durante la fase de entrenamiento el modelo creado puede ajustar excesivamente los datos de entrenamiento (**overftting**), pero no trabajar tan bien con nuevos datos.
 
-Para evitarlo, como ya hicimos en el caso de la regresión polinómica, 
-empleamos la regularización.
+Para evitarlo, como ya hicimos en el caso de la regresión polinómica, empleamos la regularización.
 """
 
 # ╔═╡ 8aef99fc-fe2b-4f3c-81ab-fcf2d62a3d26
@@ -567,19 +517,19 @@ md"""
 
 En julia es muy sencillo:
 
-```{.julia}
+```.julia
 optimizador = OptimiserChain(SignDecay(0.011), Descent())
 ```
 
 estamos aplicando regularización $L_1$ con SGD.
 
-```{.julia}
+```.julia
 optimizador = OptimiserChain(WeightDecay(0.01), Descent())
 ```
 
 estamos aplicando regularización $L_2$ con SGD.
 
-```{.julia}
+```.julia
 optimizador = OptimiserChain(SignDecay(0.01), WeightDecay(0.01), Descent())
 ```
 
@@ -590,17 +540,13 @@ estamos aplicando ambas regularizaciones con SGD.
 md"""
 ## Dropout
 
-Es [una idea](https://arxiv.org/pdf/1207.0580) muy sencilla que suele mejorar 
-el rendimiento de las redes neuronales y evitar el sobreajuste.
+Es [una idea](https://arxiv.org/pdf/1207.0580) muy sencilla que suele mejorar el rendimiento de las redes neuronales y evitar el sobreajuste.
 
 La idea es **desactivar** algunas neuronas, en toda la red. 
 
-En cada paso del 
-entrenamiento, se selecciona un porcentaje de neuronas de la rede y se 
-desactivan, es decir, se actúa como si no existiensen.
+En cada paso del entrenamiento, se selecciona un porcentaje de neuronas de la rede y se desactivan, es decir, se actúa como si no existiensen.
 
-En el siguiente paso, se elige otro conjunto, se desactiva y se sigue adelante 
-de este modo durante todo el entrenamiento de la red.
+En el siguiente paso, se elige otro conjunto, se desactiva y se sigue adelante de este modo durante todo el entrenamiento de la red.
 """
 
 # ╔═╡ f5bc89bb-68f6-46b2-99ca-2ea045407be5
@@ -609,7 +555,7 @@ md"""
 
 En julia es muy sencillo:
 
-```{.julia}
+```.julia
 Dropout(0.4)
 ```
 
@@ -625,11 +571,9 @@ md"""
 md"""
 ## Introducción
 
-Como ya hemos visto, Flux implementa muchas de las capas más utilizadas al 
-construir redes neuronales.
+Como ya hemos visto, Flux implementa muchas de las capas más utilizadas al construir redes neuronales.
 
-En las siguientes presentaciones veremos algunas otras capas que también tenemos 
-disponibles en Flux.
+En las siguientes presentaciones veremos algunas otras capas que también tenemos disponibles en Flux.
 
 Vamos a revisar las que hemos visto hasta ahora, y ejemplos de cómo utilizarlas.
 """
@@ -638,8 +582,7 @@ Vamos a revisar las que hemos visto hasta ahora, y ejemplos de cómo utilizarlas
 md"""
 ## Capas densas
 
-Una capa densa conecta la salida de una de sus neuronas con todas las neuronas 
-de la siguiente capa.
+Una capa densa conecta la salida de una de sus neuronas con todas las neuronas de la siguiente capa.
 
 ```{.julia}
 Dense(in => out, σ=identity; bias=true, init=glorot_uniform)
@@ -660,7 +603,7 @@ md"""
 
 Este fue el ejemplo que utilizamos para ajustar la función seno con un Perceptrón de una única capa:
 
-```{.julia}
+```.julia
 modelo_seno = Chain(
 	Dense(1 => 500, tanh),
 	Dense(500 => 1)
@@ -669,7 +612,7 @@ modelo_seno = Chain(
 
 y este es el ejemplo que utilizamos de un Perceptrón Multicapa:
 
-```{.julia}
+```.julia
 modelo_seno = Chain(
 	Dense(1 => 3, tanh),
 	Dense(3 => 3, tanh),
@@ -684,7 +627,7 @@ md"""
 
 Normaliza las entradas:
 
-```{.julia}
+```.julia
 modelo_seno = Chain(
 	Dense(1 => 3, tanh),
 	BatchNorm(3),
@@ -692,7 +635,7 @@ modelo_seno = Chain(
 )
 ```
 
-Normaliza las entradas antes de la segunda capa densa. El resultado es que se evita el desvanecimiento o la explosión del gradiente reduciendo el tiempo de entrenamiento y el sobre entrenamiento.
+Normaliza las entradas antes de la segunda capa densa. El resultado es que se evita el desvanecimiento o la explosión del gradiente reduciendo el tiempo de entrenamiento y el sobreentrenamiento.
 
 """
 
@@ -702,13 +645,13 @@ md"""
 
 **Desactivan** un porcentaje de neuronas durante la fase de entrenamiento:
 
-```{.julia}
+```.julia
 Dropout(0.2)
 ```
 
 El argumento es la fracción de neuronas que se desactivan.
 
-```{.julia}
+```.julia
 modelo_seno = Chain(
 	Dense(1 => 3, tanh),
 	Dropout(0.2),
@@ -747,8 +690,7 @@ problemas:
 
 1. Evitar inicializar los parámetros de la red de forma aleaotoria.
 1. Utilizar normalización por lotes.
-1. Utilizar funciones de activación alternativas a la función sigmoide y 
-tangente hiperbólica.
+1. Utilizar funciones de activación alternativas a la función sigmoide y tangente hiperbólica.
 1. Utilizar mejores optimizadores que el descenso estocástico de gradiente.
 1. Utilizar regularización dropout.
 """
@@ -757,8 +699,7 @@ tangente hiperbólica.
 md"""
 ## Resumen
 
-Es importante que aprecies que muchos de los resultados y técnicas que hemos 
-visto son muy recientes.
+Es importante que aprecies que muchos de los resultados y técnicas que hemos visto son muy recientes.
 
 La investigación en redes neuronales es un tema de gran actualidad.
 
@@ -2627,6 +2568,7 @@ version = "1.4.1+2"
 # ╠═29a782b7-174d-453a-8aa3-81fe5f507dc2
 # ╠═8f9e676c-76c8-474b-ab0a-60424d8cb889
 # ╠═d696f0f6-e1ea-4b74-b877-0df4cd6b6e80
+# ╠═bb10f84f-3a9c-4e20-a46b-e5bb7eeb1c00
 # ╠═fb1079c3-9b84-4465-ac1a-8d2b5c97a737
 # ╠═79f24aba-6558-4c1b-9a49-ec0aac882b7f
 # ╠═5e97581b-9ad9-4fa4-a3da-edd39a12b33c
@@ -2639,8 +2581,8 @@ version = "1.4.1+2"
 # ╠═811d9d9f-597e-4124-8f34-39db388ad3ca
 # ╠═d004b013-c9e7-46ee-9401-a71640195c8e
 # ╠═651dd381-f11c-47c7-b570-ecdaaea02736
-# ╠═8f3ffd98-aaf4-4913-b168-a53af6e26fae
 # ╠═82ce513b-1e2a-45e0-8d1e-255d9e33d5b9
+# ╠═8f3ffd98-aaf4-4913-b168-a53af6e26fae
 # ╠═fd2f4ccc-651f-4450-b209-5b24bdb0a77c
 # ╠═6f4c4720-fc74-401f-a0f3-8adc75b8864e
 # ╠═5295ef71-d786-4fcd-bb31-17ce45e9ef66
@@ -2663,7 +2605,6 @@ version = "1.4.1+2"
 # ╠═b8909385-43d3-45cb-8ea0-12f51a5fb0be
 # ╠═0cc06ba9-501b-48ef-b216-dca5f67414c0
 # ╠═f48329e3-28e7-436a-b9da-3bdc83ea10e4
-# ╠═e64c9c5b-5238-4eab-8078-08c54bd62a19
 # ╠═1988fba8-e08f-4ac8-977a-d822b22fb899
 # ╠═3044eeb0-5a72-475f-ab53-40113c3d3449
 # ╠═c8c1e960-08a5-47ea-90ee-322c7703f4df
@@ -2671,8 +2612,7 @@ version = "1.4.1+2"
 # ╠═fb2d1666-1100-43c9-9550-2978f150235d
 # ╠═28aafcb6-9294-433c-8bee-e634b0ee58ec
 # ╠═b936e349-2b69-4e86-a7c2-5faa709052ab
-# ╠═3eebe1a5-250e-45b9-855d-e743c8e0abf6
-# ╠═35fa4c15-70a4-455b-8dbb-4535bf934721
+# ╠═eeefc485-e198-4f17-9d4c-7c61e34fe229
 # ╠═5b04ee1f-f136-4c29-a44f-a075bbb1376b
 # ╠═1132a848-a855-4c8b-bf41-1ec22a216012
 # ╠═a3e2f24b-9275-4e18-918e-18fc7d2b23e0
