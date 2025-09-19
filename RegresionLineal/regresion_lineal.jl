@@ -523,7 +523,7 @@ Todos estos cálculos los hemos hecho con un poco de álgebra. Existen paquetes 
 """
 
 # ╔═╡ e3278b0e-ff00-4bc9-b06e-d2757a08f997
-regresion_glm = lm(@formula(height ~ 1 + weight), adultos)
+regresion_glm = lm(@formula(height ~ weight), adultos)
 
 # ╔═╡ 3a665608-f044-41a9-a619-7ed799457277
 histogram(residuals(regresion_glm))
