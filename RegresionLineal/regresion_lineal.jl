@@ -1034,7 +1034,7 @@ y_N \\
 
 # ╔═╡ 690417e7-50a6-401c-9ad9-1d42abc384a3
 md"""
-## Extensión de la regresión lineal
+## Encontrar el mejor grado del polinomio
 
 Probemos primero con un polinomio de grado 2:
 """
@@ -3957,7 +3957,7 @@ version = "1.4.1+2"
 # ╟─518c90c6-e42d-4c2c-bf1e-8892dac5e4a0
 # ╟─266e632b-30a5-4ae4-981f-8e2ab61e3232
 # ╟─d0fe37ee-bbc1-11ef-2f0c-4b6bc41d2c3a
-# ╟─2a8ae7fc-5eab-427a-974f-4e52017f040d
+# ╠═2a8ae7fc-5eab-427a-974f-4e52017f040d
 # ╟─cc81afb1-c73d-4e75-b572-21a70608dd9d
 # ╟─e709b44b-57b0-482d-bc11-93b91451d790
 # ╟─515ef8bd-82e3-4f94-8fbc-0626ed34e5b7
