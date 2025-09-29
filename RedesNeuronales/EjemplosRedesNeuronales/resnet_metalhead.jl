@@ -13,11 +13,11 @@ using Metalhead
 # ╔═╡ 4692ed25-5de8-4b99-8297-9bd0d7ff1267
 using Images
 
-# ╔═╡ 5705e454-67fa-463d-93c9-d92238ef2fe8
-using PlutoTeachingTools
+# ╔═╡ a27cbdc5-f892-462b-af00-22ece39c27a4
+using BSON
 
-# ╔═╡ 5a44a6d6-da8f-4875-adde-ceb702725578
-using PlutoUI
+# ╔═╡ 0f2fdf92-d0cd-431a-8fcd-c5af71e1f24a
+using HTTP
 
 # ╔═╡ ae87c424-993e-11f0-076e-c3eabc1132a9
 md"""
@@ -31,44 +31,107 @@ Vamos a probar a cargar la red ResNet, ya entrenada, y usarla para clasificar im
 Primera cargamos las bibliotecas que vamos a necesitar:
 """
 
-# ╔═╡ a38b97c2-36b9-43ff-930e-419ca2a63cf2
+# ╔═╡ edca420f-bbbd-458b-998e-38640438dcc5
 md"""
-Cargamos el modelo:
+Definimos una función de utilidad para cambiar el tamaño y representación de la imagen:
 """
 
-# ╔═╡ 33a774b3-dbb7-4fe2-8698-6b534de2cee0
-modelo = ResNet(18; pretrain = false)
+# ╔═╡ 9b4504fb-907c-42be-a8fc-929b12a6ce2f
+function preprocesa_imagen(imagen_original::Matrix{RGB{N0f8}})
+	imagen_escalada = Images.imresize(imagen_original, (224, 224))
+	imagen_float = Float32.(channelview(imagen_escalada))
+	imagen_whc = permutedims(imagen_float, (3, 2, 1))
+	imagen_procesada = Flux.unsqueeze(imagen_whc, 4)
+	return imagen_procesada
+end
 
-# ╔═╡ 210f1d72-a8bd-4600-b8f6-6d5db25ca41c
-Columns("Hola","Adios")
+# ╔═╡ a38b97c2-36b9-43ff-930e-419ca2a63cf2
+md"""
+Tenemos que dar un rodeo para cargar el modelo en Pluto.
 
-# ╔═╡ eb7159c2-be9b-425d-b6b0-b2ae9edb29ee
-Columns(Resource(
-	"https://belmonte.uji.es/imgs/uji.jpg",
-	:alt => "Logo UJI",
-	:width => 400
-),
-	   Resource(
-	"https://belmonte.uji.es/imgs/uji.jpg",
-	:alt => "Logo UJI",
-	:width => 400
-))
+Cargamos el modelo, el nombre tiene que ser **model**, porque cuando lo grabé con formato BSON le asigné ese nombre
+"""
+
+# ╔═╡ f990ce08-c73b-48f6-8d23-91caa5380352
+ruta_modelo = "https://belmonte.uji.es/Docencia/IR2130/Teoria/RedesNeuronales/Modelos/resnet18.bson"
+
+# ╔═╡ a695c411-ea85-410f-8cb5-4e89ccdec661
+modelo = BSON.load(download(ruta_modelo))[:model];
+# model = BSON.load("resnet18.bson")[:model] # Si la ruta es local
+
+# ╔═╡ 451c7cd4-9069-4564-896a-30d2921dadb9
+md"""
+Comprobamos que el tipo del modelo que hemos cargado es **ResNet**:
+"""
+
+# ╔═╡ d3c8dc80-286a-460a-a93e-a56363c3e8e8
+typeof(modelo)
+
+# ╔═╡ a0d66061-3c65-4315-b2c5-34db2986ec98
+md"""
+Ahora ya podemos pasar a utilizar el modelo para clasificar imágenes.
+
+Cargamos la imagen que queremos clasificar:
+"""
+
+# ╔═╡ 118a45f5-9a5c-41b8-abba-d68619d73336
+imagen_original = Images.load(download("https://belmonte.uji.es/Docencia/IR2130/Teoria/RedesNeuronales/Imagenes/puente.jpg"))
+
+# ╔═╡ 244138c1-ac3a-4d5a-95e9-c68a6ecd6623
+md"""
+La procesamos para que tenga el formato que espera ResNet:
+"""
+
+# ╔═╡ edd78433-c65e-4575-a73d-8073ed0866e5
+imagen_procesada = preprocesa_imagen(imagen_original);
+
+# ╔═╡ c9432bb5-ea7f-4e9f-900c-230ef0171788
+md"""
+Hacemos la predicción con el modelo. El resultado es un vector de probabilidades para cada una de las clases con las que ha sido entrenado el modelo.
+"""
+
+# ╔═╡ 9acd4e4b-17bb-46f6-8a30-9cf4dcf54ec5
+predicciones = modelo(imagen_procesada);
+
+# ╔═╡ ac611a99-1723-4c6d-b94f-e7b055c9009d
+md"""
+Nos quedamos con el índice de la probabilidad máxima:
+"""
+
+# ╔═╡ 01bd9103-2224-4e56-8c5c-51b23aa0bf4a
+indice_clase_probabilidad_maxima = argmax(predicciones)[1]
+
+# ╔═╡ b34958fa-5645-4a81-8e3e-845cdfee99b4
+md"""
+Cargamos las etiquetas del modelo, son 1.000 clases distintas:
+"""
+
+# ╔═╡ a2805b37-064c-41e9-9c99-f17eee17186b
+etiquetas = readlines(download("https://raw.githubusercontent.com/pytorch/hub/master/imagenet_classes.txt"));
+
+# ╔═╡ cea75fe0-2fe0-436f-80c5-89c00c3fc6fd
+md"""
+Accedemos a la etiqueta con máxima probabilidad:
+"""
+
+# ╔═╡ e4beaa2e-ddc3-4bd3-965b-597c3f751772
+etiquetas[indice_clase_probabilidad_maxima]
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
+BSON = "fbb218c0-5317-5bc6-957e-2ee96dd4b1f0"
 Flux = "587475ba-b771-5e3f-ad9e-33799f191a9c"
+HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 Images = "916415d5-f1e6-5110-898d-aaa5f9f070e0"
 Metalhead = "dbeba491-748d-5e0e-a39e-b530a07fa0cc"
-PlutoTeachingTools = "661c6b06-c737-4d37-b85c-46df65de6f69"
-PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 
 [compat]
+BSON = "~0.3.9"
 Flux = "~0.16.5"
+HTTP = "~1.10.17"
 Images = "~0.26.2"
 Metalhead = "~0.9.5"
-PlutoTeachingTools = "~0.4.2"
-PlutoUI = "~0.7.68"
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000002
@@ -77,7 +140,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.6"
 manifest_format = "2.0"
-project_hash = "fed1b99fafbba249a29418e821a1f818cc5d65e5"
+project_hash = "09c6c15d5cba33baf058eec232414ff6d4751830"
 
 [[deps.AbstractFFTs]]
 deps = ["LinearAlgebra"]
@@ -89,12 +152,6 @@ weakdeps = ["ChainRulesCore", "Test"]
     [deps.AbstractFFTs.extensions]
     AbstractFFTsChainRulesCoreExt = "ChainRulesCore"
     AbstractFFTsTestExt = "Test"
-
-[[deps.AbstractPlutoDingetjes]]
-deps = ["Pkg"]
-git-tree-sha1 = "6e1d2a35f2f90a4bc7c2ed98079b2ba09c35b83a"
-uuid = "6e696c72-6542-2067-7265-42206c756150"
-version = "1.3.2"
 
 [[deps.Accessors]]
 deps = ["CompositionsBase", "ConstructionBase", "Dates", "InverseFunctions", "MacroTools"]
@@ -256,6 +313,11 @@ git-tree-sha1 = "aebf55e6d7795e02ca500a689d326ac979aaf89e"
 uuid = "9718e550-a3fa-408a-8086-8db961cd8217"
 version = "0.1.1"
 
+[[deps.BitFlags]]
+git-tree-sha1 = "0691e34b3bb8be9307330f88d1a3c3f25466c24d"
+uuid = "d1d4a3ce-64b1-5f1a-9ba4-7e7e69966f35"
+version = "0.1.9"
+
 [[deps.BitTwiddlingConvenienceFunctions]]
 deps = ["Static"]
 git-tree-sha1 = "f21cfd4950cb9f0587d5067e69405ad2acd27b87"
@@ -312,6 +374,12 @@ deps = ["Distances", "LinearAlgebra", "NearestNeighbors", "Printf", "Random", "S
 git-tree-sha1 = "3e22db924e2945282e70c33b75d4dde8bfa44c94"
 uuid = "aaaa29a8-35af-508c-8bc3-b662a17a0fe5"
 version = "0.15.8"
+
+[[deps.CodecZlib]]
+deps = ["TranscodingStreams", "Zlib_jll"]
+git-tree-sha1 = "962834c22b66e32aa10f7611c08c8ca4e20749a9"
+uuid = "944b1d66-785c-5afd-91f1-9de20f533193"
+version = "0.7.8"
 
 [[deps.ColorSchemes]]
 deps = ["ColorTypes", "ColorVectorSpace", "Colors", "FixedPointNumbers", "PrecompileTools", "Random"]
@@ -384,6 +452,12 @@ weakdeps = ["InverseFunctions"]
 git-tree-sha1 = "52cb3ec90e8a8bea0e62e275ba577ad0f74821f7"
 uuid = "ed09eef8-17a6-5b46-8889-db040fac31e3"
 version = "0.3.2"
+
+[[deps.ConcurrentUtilities]]
+deps = ["Serialization", "Sockets"]
+git-tree-sha1 = "d9d26935a0bcffc87d2613ce14c527c99fc543fd"
+uuid = "f0e56b4a-5159-44fe-b623-3e5288b988bb"
+version = "2.5.0"
 
 [[deps.ConstructionBase]]
 git-tree-sha1 = "b4b092499347b18a015186eae3042f72267106cb"
@@ -498,6 +572,12 @@ weakdeps = ["Adapt"]
     [deps.EnzymeCore.extensions]
     AdaptExt = "Adapt"
 
+[[deps.ExceptionUnwrapping]]
+deps = ["Test"]
+git-tree-sha1 = "d36f682e590a83d63d1c7dbd287573764682d12a"
+uuid = "460bff9d-24e4-43bc-9d9f-a8973cb893f4"
+version = "0.1.11"
+
 [[deps.FFTViews]]
 deps = ["CustomUnitRanges", "FFTW"]
 git-tree-sha1 = "cbdf14d1e8c7c8aacbe8b19862e0179fd08321c2"
@@ -533,12 +613,10 @@ deps = ["Pkg", "Requires", "UUIDs"]
 git-tree-sha1 = "b66970a70db13f45b7e57fbda1736e1cf72174ea"
 uuid = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
 version = "1.17.0"
+weakdeps = ["HTTP"]
 
     [deps.FileIO.extensions]
     HTTPExt = "HTTP"
-
-    [deps.FileIO.weakdeps]
-    HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 
 [[deps.FileWatching]]
 uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
@@ -587,11 +665,6 @@ version = "0.16.5"
     MPI = "da04e1cc-30fd-572f-bb4f-1f8673147195"
     NCCL = "3fe64909-d7a1-4096-9b7d-7a0f12cf0f6b"
     cuDNN = "02a925ec-e4fe-4b08-9a7e-0d78e3d38ccd"
-
-[[deps.Format]]
-git-tree-sha1 = "9c68794ef81b08086aeb32eeaf33531668d5f5fc"
-uuid = "1fa38f19-a742-5d3f-a2b9-30dd87b9d5f8"
-version = "1.3.7"
 
 [[deps.ForwardDiff]]
 deps = ["CommonSubexpressions", "DiffResults", "DiffRules", "LinearAlgebra", "LogExpFunctions", "NaNMath", "Preferences", "Printf", "Random", "SpecialFunctions"]
@@ -644,6 +717,12 @@ git-tree-sha1 = "7a98c6502f4632dbe9fb1973a4244eaa3324e84d"
 uuid = "86223c79-3864-5bf0-83f7-82e725a168b6"
 version = "1.13.1"
 
+[[deps.HTTP]]
+deps = ["Base64", "CodecZlib", "ConcurrentUtilities", "Dates", "ExceptionUnwrapping", "Logging", "LoggingExtras", "MbedTLS", "NetworkOptions", "OpenSSL", "PrecompileTools", "Random", "SimpleBufferStream", "Sockets", "URIs", "UUIDs"]
+git-tree-sha1 = "ed5e9c58612c4e081aecdb6e1a479e18462e041e"
+uuid = "cd3eb016-35fb-5094-929b-558a96fad6f3"
+version = "1.10.17"
+
 [[deps.HashArrayMappedTries]]
 git-tree-sha1 = "2eaa69a7cab70a52b9687c8bf950a5a93ec895ae"
 uuid = "076d061b-32b6-4027-95e0-9a2c6f6d7e74"
@@ -660,24 +739,6 @@ deps = ["BitTwiddlingConvenienceFunctions", "IfElse", "Libdl", "Static"]
 git-tree-sha1 = "8e070b599339d622e9a081d17230d74a5c473293"
 uuid = "3e5b6fbb-0976-4d2c-9146-d79de83f2fb0"
 version = "0.1.17"
-
-[[deps.Hyperscript]]
-deps = ["Test"]
-git-tree-sha1 = "179267cfa5e712760cd43dcae385d7ea90cc25a4"
-uuid = "47d2ed2b-36de-50cf-bf87-49c2cf4b8b91"
-version = "0.0.5"
-
-[[deps.HypertextLiteral]]
-deps = ["Tricks"]
-git-tree-sha1 = "7134810b1afce04bbc1045ca1985fbe81ce17653"
-uuid = "ac1192a8-f4b3-4bfe-ba22-af5b92cd3ab2"
-version = "0.9.5"
-
-[[deps.IOCapture]]
-deps = ["Logging", "Random"]
-git-tree-sha1 = "b6d6bfdd7ce25b0f9b2f6b3dd56b2673a66c8770"
-uuid = "b5f81e59-6552-4d32-b1f0-c071b021bf89"
-version = "0.2.5"
 
 [[deps.IRTools]]
 deps = ["InteractiveUtils", "MacroTools"]
@@ -902,12 +963,6 @@ git-tree-sha1 = "0533e564aae234aff59ab625543145446d8b6ec2"
 uuid = "692b3bcd-3c85-4b1f-b108-f13ce0eb3210"
 version = "1.7.1"
 
-[[deps.JSON]]
-deps = ["Dates", "Mmap", "Parsers", "Unicode"]
-git-tree-sha1 = "31e996f0a15c7b280ba9f76636b3ff9e2ae58c9a"
-uuid = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
-version = "0.21.4"
-
 [[deps.JpegTurbo]]
 deps = ["CEnum", "FileIO", "ImageCore", "JpegTurbo_jll", "TOML"]
 git-tree-sha1 = "9496de8fb52c224a2e3f9ff403947674517317d9"
@@ -943,29 +998,6 @@ deps = ["Artifacts", "JLLWrappers", "Libdl"]
 git-tree-sha1 = "aaafe88dccbd957a8d82f7d05be9b69172e0cee3"
 uuid = "88015f11-f218-50d7-93a8-a6af411a945d"
 version = "4.0.1+0"
-
-[[deps.LaTeXStrings]]
-git-tree-sha1 = "dda21b8cbd6a6c40d9d02a73230f9d70fed6918c"
-uuid = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
-version = "1.4.0"
-
-[[deps.Latexify]]
-deps = ["Format", "Ghostscript_jll", "InteractiveUtils", "LaTeXStrings", "MacroTools", "Markdown", "OrderedCollections", "Requires"]
-git-tree-sha1 = "44f93c47f9cd6c7e431f2f2091fcba8f01cd7e8f"
-uuid = "23fbe1c1-3f47-55db-b15f-69d7ec21a316"
-version = "0.16.10"
-
-    [deps.Latexify.extensions]
-    DataFramesExt = "DataFrames"
-    SparseArraysExt = "SparseArrays"
-    SymEngineExt = "SymEngine"
-    TectonicExt = "tectonic_jll"
-
-    [deps.Latexify.weakdeps]
-    DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
-    SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
-    SymEngine = "123dc426-2d89-5057-bbad-38513e3affd8"
-    tectonic_jll = "d7dd28d6-a5e6-559c-9131-7eb760cdacc5"
 
 [[deps.LayoutPointers]]
 deps = ["ArrayInterface", "LinearAlgebra", "ManualMemory", "SIMDTypes", "Static", "StaticArrayInterface"]
@@ -1055,6 +1087,12 @@ version = "0.3.29"
 uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
 version = "1.11.0"
 
+[[deps.LoggingExtras]]
+deps = ["Dates", "Logging"]
+git-tree-sha1 = "f02b56007b064fbfddb4c9cd60161b6dd0f40df3"
+uuid = "e6f89c97-d47a-5376-807f-9c37f3926c36"
+version = "1.1.0"
+
 [[deps.LoopVectorization]]
 deps = ["ArrayInterface", "CPUSummary", "CloseOpenIntervals", "DocStringExtensions", "HostCPUFeatures", "IfElse", "LayoutPointers", "LinearAlgebra", "OffsetArrays", "PolyesterWeave", "PrecompileTools", "SIMDTypes", "SLEEFPirates", "Static", "StaticArrayInterface", "ThreadingUtilities", "UnPack", "VectorizationBase"]
 git-tree-sha1 = "e5afce7eaf5b5ca0d444bcb4dc4fd78c54cbbac0"
@@ -1065,11 +1103,6 @@ weakdeps = ["ChainRulesCore", "ForwardDiff", "SpecialFunctions"]
     [deps.LoopVectorization.extensions]
     ForwardDiffExt = ["ChainRulesCore", "ForwardDiff"]
     SpecialFunctionsExt = "SpecialFunctions"
-
-[[deps.MIMEs]]
-git-tree-sha1 = "c64d943587f7187e751162b3b84445bbbd79f691"
-uuid = "6c6e2e6c-3030-632d-7369-2d6c69616d65"
-version = "1.1.0"
 
 [[deps.MKL_jll]]
 deps = ["Artifacts", "IntelOpenMP_jll", "JLLWrappers", "LazyArtifacts", "Libdl", "oneTBB_jll"]
@@ -1159,6 +1192,12 @@ version = "0.4.2"
 deps = ["Base64"]
 uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
 version = "1.11.0"
+
+[[deps.MbedTLS]]
+deps = ["Dates", "MbedTLS_jll", "MozillaCACerts_jll", "NetworkOptions", "Random", "Sockets"]
+git-tree-sha1 = "c067a280ddc25f196b5e7df3877c6b226d390aaf"
+uuid = "739be429-bea8-5141-9913-cc70e7f3736d"
+version = "1.1.9"
 
 [[deps.MbedTLS_jll]]
 deps = ["Artifacts", "Libdl"]
@@ -1304,6 +1343,12 @@ deps = ["Artifacts", "Libdl"]
 uuid = "05823500-19ac-5b8b-9628-191a04bc5112"
 version = "0.8.5+0"
 
+[[deps.OpenSSL]]
+deps = ["BitFlags", "Dates", "MozillaCACerts_jll", "OpenSSL_jll", "Sockets"]
+git-tree-sha1 = "f1a7e086c677df53e064e0fdd2c9d0b0833e3f6e"
+uuid = "4d8831e6-92b7-49fb-bdf8-b643e874388c"
+version = "1.5.0"
+
 [[deps.OpenSSL_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
 git-tree-sha1 = "2ae7d4ddec2e13ad3bddf5c0796f7547cf682391"
@@ -1355,12 +1400,6 @@ git-tree-sha1 = "34c0e9ad262e5f7fc75b10a9952ca7692cfc5fbe"
 uuid = "d96e819e-fc66-5662-9728-84c9c7592b0a"
 version = "0.12.3"
 
-[[deps.Parsers]]
-deps = ["Dates", "PrecompileTools", "UUIDs"]
-git-tree-sha1 = "7d2f8f21da5db6a806faf7b9b292296da42b2810"
-uuid = "69de0a69-1ddd-5017-9359-2bf0b02dc9f0"
-version = "2.8.3"
-
 [[deps.PartialFunctions]]
 deps = ["MacroTools"]
 git-tree-sha1 = "ba0ea009d9f1e38162d016ca54627314b6d8aac8"
@@ -1381,18 +1420,6 @@ deps = ["Pkg"]
 git-tree-sha1 = "f9501cc0430a26bc3d156ae1b5b0c1b47af4d6da"
 uuid = "eebad327-c553-4316-9ea0-9fa01ccd7688"
 version = "0.3.3"
-
-[[deps.PlutoTeachingTools]]
-deps = ["Downloads", "HypertextLiteral", "Latexify", "Markdown", "PlutoUI"]
-git-tree-sha1 = "ce33e4fd343e43905a8416e6148de8c630101909"
-uuid = "661c6b06-c737-4d37-b85c-46df65de6f69"
-version = "0.4.2"
-
-[[deps.PlutoUI]]
-deps = ["AbstractPlutoDingetjes", "Base64", "ColorTypes", "Dates", "Downloads", "FixedPointNumbers", "Hyperscript", "HypertextLiteral", "IOCapture", "InteractiveUtils", "JSON", "Logging", "MIMEs", "Markdown", "Random", "Reexport", "URIs", "UUIDs"]
-git-tree-sha1 = "ec9e63bd098c50e4ad28e7cb95ca7a4860603298"
-uuid = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
-version = "0.7.68"
 
 [[deps.PolyesterWeave]]
 deps = ["BitTwiddlingConvenienceFunctions", "CPUSummary", "IfElse", "Static", "ThreadingUtilities"]
@@ -1579,6 +1606,11 @@ version = "1.11.0"
 git-tree-sha1 = "7f534ad62ab2bd48591bdeac81994ea8c445e4a5"
 uuid = "605ecd9f-84a6-4c9e-81e2-4798472b76a3"
 version = "0.1.0"
+
+[[deps.SimpleBufferStream]]
+git-tree-sha1 = "f305871d2f381d21527c770d4788c06c097c9bc1"
+uuid = "777ac1f9-54b0-4bf8-805c-2214025038e7"
+version = "1.2.0"
 
 [[deps.SimpleTraits]]
 deps = ["InteractiveUtils", "MacroTools"]
@@ -1801,11 +1833,6 @@ version = "0.4.85"
     OnlineStatsBase = "925886fa-5bf2-5e8e-b522-a9147a512338"
     Referenceables = "42d2dcc6-99eb-4e98-b66c-637b7d73030e"
 
-[[deps.Tricks]]
-git-tree-sha1 = "372b90fe551c019541fafc6ff034199dc19c8436"
-uuid = "410a4b4d-49e4-4fbc-ab6d-cb71b17b3775"
-version = "0.1.12"
-
 [[deps.URIs]]
 git-tree-sha1 = "bef26fb046d031353ef97a82e3fdb6afe7f21b1a"
 uuid = "5c2747f8-b7ea-4ff2-ba2e-563bfd36b1d4"
@@ -1978,16 +2005,31 @@ version = "17.4.0+2"
 """
 
 # ╔═╡ Cell order:
-# ╠═ae87c424-993e-11f0-076e-c3eabc1132a9
-# ╠═4b9df2f1-0cd0-4bf4-a044-e21ef86f9759
+# ╟─ae87c424-993e-11f0-076e-c3eabc1132a9
+# ╟─4b9df2f1-0cd0-4bf4-a044-e21ef86f9759
 # ╠═79a1c8cb-26b9-4bbd-ad95-bf32da0b58df
 # ╠═a63c8b7e-f224-44a7-9b8e-020b9d0dc413
 # ╠═4692ed25-5de8-4b99-8297-9bd0d7ff1267
-# ╠═5705e454-67fa-463d-93c9-d92238ef2fe8
-# ╠═5a44a6d6-da8f-4875-adde-ceb702725578
+# ╠═a27cbdc5-f892-462b-af00-22ece39c27a4
+# ╠═0f2fdf92-d0cd-431a-8fcd-c5af71e1f24a
+# ╟─edca420f-bbbd-458b-998e-38640438dcc5
+# ╠═9b4504fb-907c-42be-a8fc-929b12a6ce2f
 # ╠═a38b97c2-36b9-43ff-930e-419ca2a63cf2
-# ╠═33a774b3-dbb7-4fe2-8698-6b534de2cee0
-# ╠═210f1d72-a8bd-4600-b8f6-6d5db25ca41c
-# ╠═eb7159c2-be9b-425d-b6b0-b2ae9edb29ee
+# ╠═f990ce08-c73b-48f6-8d23-91caa5380352
+# ╠═a695c411-ea85-410f-8cb5-4e89ccdec661
+# ╟─451c7cd4-9069-4564-896a-30d2921dadb9
+# ╠═d3c8dc80-286a-460a-a93e-a56363c3e8e8
+# ╟─a0d66061-3c65-4315-b2c5-34db2986ec98
+# ╠═118a45f5-9a5c-41b8-abba-d68619d73336
+# ╠═244138c1-ac3a-4d5a-95e9-c68a6ecd6623
+# ╠═edd78433-c65e-4575-a73d-8073ed0866e5
+# ╟─c9432bb5-ea7f-4e9f-900c-230ef0171788
+# ╠═9acd4e4b-17bb-46f6-8a30-9cf4dcf54ec5
+# ╟─ac611a99-1723-4c6d-b94f-e7b055c9009d
+# ╠═01bd9103-2224-4e56-8c5c-51b23aa0bf4a
+# ╟─b34958fa-5645-4a81-8e3e-845cdfee99b4
+# ╠═a2805b37-064c-41e9-9c99-f17eee17186b
+# ╟─cea75fe0-2fe0-436f-80c5-89c00c3fc6fd
+# ╠═e4beaa2e-ddc3-4bd3-965b-597c3f751772
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

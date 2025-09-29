@@ -1,2 +1,4 @@
 * backup *
 *.html
+*.jld2
+*.bson
