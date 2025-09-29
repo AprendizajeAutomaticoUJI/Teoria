@@ -411,7 +411,7 @@ md"""
 
 Para instanciar una capa convolucional en Flux
 
-```.julia
+```julia
 Conv(filter, in => out, σ = identity;
      stride = 1, pad = 0, dilation = 1, groups = 1, [bias, init])
 
@@ -476,13 +476,13 @@ md"""
 
 Flux nos proporciona distintas capas de Pooling. Para utilizar polling máximo:
 
-```.julia
+```julia
 MaxPool((n,m))
 ```
 
 Para utilizar pooling promedio:
 
-```.julia
+```julia
 MeanPool((n,m))
 ```
 
@@ -552,7 +552,7 @@ md"""
 
 La implementación de la red utilizando Flux:
 
-```.julia
+```julia
 lenet5 = Chain(
 	Conv((5, 5), 1=>6, activacion),
 	MeanPool((2, 2)),
@@ -736,7 +736,7 @@ imágenes de validación y 100.000 imágenes de prueba.
 md"""
 ## Show me the code
 
-```.julia
+```julia
 # Cargamos el modelo con los parámetros pre-entrenados
 model = ResNet(18; pretrain=true)
 
@@ -813,7 +813,7 @@ md"""
 
 Primero, cargamos el modelo YOLO que vamos a utilizar:
 
-```.julia
+```julia
 function prepara_yolo()
     yolomod = YOLO.v7_416_COCO(batch=1, silent=true)
     batch = emptybatch(yolomod)
@@ -824,7 +824,7 @@ end
 
 Después preparamos la imagen:
 
-```.julia
+```julia
 function prepara_imagen(path, yolomod, batch)
     img = load(path)
     batch[:,:,:,1], padding = prepare_image(img, yolomod)
@@ -840,7 +840,7 @@ md"""
 
 Finalmente, hacemos la detección:
 
-```.julia
+```julia
 res = yolomod(batch, detect_thresh=0.5, overlap_thresh=0.8) 
 ```
 
@@ -908,19 +908,19 @@ md"""
 
 1. Cargar un modelo ya entrenado:
 
-```.julia
+```julia
 base_model = ResNet(18; pretrain=true)
 ```
 
 2. Extraer la parte de la red que se encarga de la extracción de características:
 
-```.julia
+```julia
 feature_extractor = base_model.layers[1]
 ```
 
 3. Congelar la parte de extracción de características, es la parte de la red que reaprovechamos:
 
-```.julia
+```julia
 Flux.freeze!(feature_extractor)
 ```
 """
@@ -931,7 +931,7 @@ md"""
 
 4. Crear una nueva capa con el número de clases que nos interesa:
 
-```.julia
+```julia
 num_new_classes = 10
 new_classifier_head = Chain(
     AdaptiveMeanPool((1,1)), 
@@ -942,7 +942,7 @@ new_classifier_head = Chain(
 
 5. Unir la nueva capa a la capa de extracción de características:
 
-```.julia
+```julia
 transfer_model = Chain(feature_extractor, new_classifier_head)
 ```
 
@@ -959,19 +959,19 @@ La aplicación de la técnica de **fine tunning** es l siguiente:
 
 1. Cargar un modelo ya entrenado:
 
-```.julia
+```julia
 base_model = ResNet(18; pretrain=true)
 ```
 
 2. Extraer la parte de la red que se encarga de la extracción de características:
 
-```.julia
+```julia
 feature_extractor = base_model.layers[1]
 ```
 
 3. Crear una nueva capa con el número de clases que nos interesa:
 
-```.julia
+```julia
 num_new_classes = 10
 new_classifier_head = Chain(
     AdaptiveMeanPool((1,1)), 
@@ -989,7 +989,7 @@ md"""
 
 5. **Descongelar** algunas capas de extracción de características, típicamente la última o los dos últimas antes de la capa de clasificación.
 
-```.julia
+```julia
 Flux.unfreeze!(finetune_model.layers[1][end]) # Descongelamos la última capa.
 ```
 
