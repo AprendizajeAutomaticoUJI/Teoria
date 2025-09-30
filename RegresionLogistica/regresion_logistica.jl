@@ -38,9 +38,9 @@ using MLJ
 using PlutoUI
 
 # ╔═╡ 67ff8652-f2c7-11ef-3967-593c57b25a22
-# html"""
-# <link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
-# """
+html"""
+<link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
+"""
 
 # ╔═╡ f4492566-e856-4fc1-b5f7-6897874cf19f
 import PlotlyBase
@@ -70,14 +70,15 @@ Grado en Inteligencia Robótica - Universitat Jaume I (UJI)
 Resource(
 	"https://belmonte.uji.es/imgs/uji.jpg",
 	:alt => "Logo UJI",
-	:width => 400
+	:width => 400,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ 4d219ec4-6bd6-45c1-9013-18c5806b274d
 md"""
 ## Introducción
 
-Aunque hablemos de regresión logística, realmente utilizamos este modelo para tareas de clasificación.
+Aunque hablemos de regresión logística, la tarea que se resuelve con la regresión logística es la clasificación.
 
 Empezaremos mostrando cómo aplicar la regresión logística cuando sólo tenemos dos clases, y queremos clasificar nuevas instancias como pertenecientes a alguna de las dos clases.
 
@@ -122,6 +123,7 @@ Donde $p(B|A)$ significa la probabilidad de $B$ condicionada a que se haya produ
 # ╔═╡ b5bc0dab-7d95-46fd-adc5-7ea2a8420d83
 md"""
 ## Teorema de Bayes
+
 Como los sucesos son intercambiables también podemos escribir:
 
 $p(B,A) = p(B) p(A|B)$
@@ -138,6 +140,7 @@ $p(A|B) = \frac{p(A) p(B|A)}{p(B)}$
 # ╔═╡ 9ff0ea90-8a75-46eb-814c-11fcef453cc9
 md"""
 ## Teorema de Bayes
+
 La expresión anterior es el teorema de Bayes:
 
 $p(A|B) = \frac{p(A) p(B|A)}{p(B)}$
@@ -149,8 +152,7 @@ Veamos un ejemplo para aclarar su significado.
 md"""
 ## Teorema de Bayes
 
-Supongamos que una persona se hace una prueba de covid-19 y le da positivo, 
-¿cuál es la probabilidad de que la persona tenga covid-19?
+Supongamos que una persona se hace una prueba de covid-19 y le da positivo, ¿cuál es la probabilidad de que la persona tenga covid-19?
 
 Si escribimos esta pregunta en forma de probabilidades 
 $p(covid|positiva)$ y aplicando el teorema de Bayes:
@@ -176,8 +178,7 @@ resultados de las pruebas son los siguientes:
 |**Real**|positiva |4950 |50   |
 |**Real**|negativa |100  |4900 |
 
-Además, la prevalencia de la covid es de 1 persona entre 1.000.
-
+Además, la prevalencia de la covid-19 es de 1 persona entre 1.000. Esto significa que si se toman 1.000 personas al azar, en promedio, una de esas 1.000 personas tendrá covid-19.
 """
 
 # ╔═╡ abde0c3a-7060-4b3e-a772-7a872c8d8c3a
@@ -205,14 +206,13 @@ $p(positiva) = 0.99 \cdot 0.001 + 0.02 \cdot 0.999 = 0.20079$
 # ╔═╡ cef7a0fa-9638-4ebb-b558-c1420dae089a
 md"""
 ## Teorema de Bayes
+
 Sustituyendo finalmente en la fórmula del teorema de Bayes:
 
 $p(covid|positiva) = \frac{p(covid) p(positiva|covid)}{p(positiva)} =$
 $\frac{0.99 \cdot 0.001}{0.20079} = 0.00493$
 
-Que se interpreta como: si tomamos una persona al azar, le hacemos la prueba 
-de covid-19 y da positivo, la probabilidad de que realmente tenga la enfermedad 
-es del 0.5%.
+Que se interpreta como: si tomamos una persona al azar, le hacemos la prueba de covid-19 y da positivo, la probabilidad de que realmente tenga la enfermedad es del 0.5%.
 """
 
 # ╔═╡ 6e897bc2-d623-4ab6-83d2-d7a82caef8c5
@@ -237,7 +237,7 @@ function carga_datos()
 	mujeres = select(data[data.male .== 0, :], Not(:male))
 	mujeres_adultas = mujeres[mujeres.age .> 17, :]
 	adultos, hombres, hombres_adultos, mujeres, mujeres_adultas
-end
+end;
 
 # ╔═╡ 336a8e44-150e-461f-a9c9-cc87c94ccccf
 adultos, hombres, hombres_adultos, mujeres, mujeres_adultas = carga_datos();
@@ -249,7 +249,7 @@ function grafica_peso_altura()
 	p2 = scatter(hombres_adultos.weight, hombres_adultos.height, xlabel="Peso", ylabel="Altura", title="Adultos", labels=false)
 	p2 = scatter!(mujeres_adultas.weight, mujeres_adultas.height, labels=false)
 	plot(p1, p2, size=(900,500))
-end
+end;
 
 # ╔═╡ daf598e0-ccb2-489a-8dcd-77e44e9c23fc
 grafica_peso_altura()
@@ -258,13 +258,9 @@ grafica_peso_altura()
 md"""
 ## Sexo a partir de peso y altura
 
-Parece que, a partir de la edad adulta (18 años), existen diferencias entre 
-hombres y mujeres si atendemos al peso y la altura, ojo!!! para el conjunto 
-de datos que estamos utilizando.
+Parece que, a partir de la edad adulta (18 años), existen diferencias entre hombres y mujeres si atendemos al peso y la altura, ojo!!! para el conjunto de datos que estamos utilizando.
 
-Ahora, vamos a intentar construir un clasificador que nos permita realizar 
-esa clasificación.
-
+Ahora, vamos a intentar construir un clasificador que nos permita realizar esa clasificación.
 """
 
 # ╔═╡ 239098fc-2202-493f-af15-6dcd85154103
@@ -274,21 +270,21 @@ md"""
 ## Conjunto de datos Howell
 Los datos ya los tenemos, son los del conjunto de datos de Howell.
 
-Afortunadamente, los datos están *limpios*, es decir, todas las muestras 
-contienen valores para todas las características, no hay datos duplicados, 
-etcétera.
+Afortunadamente, los datos están *limpios*, es decir, todas las muestras contienen valores para todas las características, no hay datos duplicados, etcétera.
 
-De nuevo, las conclusiones que extraigamos son válidas únicamente para ese 
-conjunto de datos.
+De nuevo, las conclusiones que extraigamos son válidas únicamente para ese conjunto de datos.
 """
 
 # ╔═╡ e2b69df9-227d-42b2-a10a-c230525b5a04
 md"""
 # Explorar los datos
+"""
 
+# ╔═╡ d30a158c-c577-4f3f-8804-d354f2cf6abc
+md"""
 ## Explorar los datos
-Antes de intentar utilizar algún algoritmo, es muy recomendable estudiar 
-los datos desde el punto de vista estadístico, por ejemplo:
+
+Antes de intentar utilizar algún algoritmo, es muy recomendable estudiar los datos desde el punto de vista estadístico, por ejemplo:
 
 1. ¿Los datos tienen alguna distribución conocida?
 1. ¿Existen correlaciones entre los datos?
@@ -309,15 +305,14 @@ function distribucionespesoalturaedad()
 	edad = plot(hombres_adultos.age, seriestype=:hist, alpha=0.5, labels=false, grid=false, xlabel="Edad", bins=0:10:100, ylabel="Número personas")
 	edad = plot!(mujeres_adultas.age, seriestype=:hist, alpha=0.5, labels=false, bins=0:10:100)
 	plot(peso, altura, edad, layout=(1,3), size=(900, 500))
-end
+end;
 
 # ╔═╡ 51f1622c-d0f7-430c-a2b7-e3ea5c2bbeae
 distribucionespesoalturaedad()
 
 # ╔═╡ 7a153f0b-a604-4cbc-9af1-911b247ebc7a
 md"""
-Quizás, las distribuciones de peso y altura sigan una distribución normal, es 
-lo que sabemos de datos poblacionales generales.
+Quizás, las distribuciones de peso y altura sigan una distribución normal, es lo que sabemos de datos poblacionales generales.
 """
 
 # ╔═╡ 752ea24a-ca1c-43fe-a98a-168643c8378b
@@ -328,20 +323,23 @@ md"""
 # ╔═╡ 92192af7-a787-4cd8-86a4-13b386b51f10
 function ajuste_normales()
 	hombres_peso = fit(Normal, hombres_adultos.weight)
-	# print(hombres_peso)
+	# println(hombres_peso)
 	plot(hombres_adultos.weight, seriestype="stephist", normalize=true, bins=30:3:70, label="Hombres", xlabel="Peso")
 	plot!(hombres_peso, label="Hombres")
 	mujeres_peso = fit(Normal, mujeres_adultas.weight)
+	# println(mujeres_peso)
 	plot!(mujeres_adultas.weight, seriestype="stephist", normalize=true, bins=30:3:70, label="Mujeres")
 	plot_peso = plot!(mujeres_peso, label="Mujeres")
 	hombres_altura = fit(Normal, hombres_adultos.height)
+	# println(hombres_altura)
 	plot(hombres_adultos.height, seriestype="stephist", normalize=true, bins=130:5:180, labels=false, xlabel="Altura")
 	plot!(hombres_altura, label="Hombres", labels=false)
 	mujeres_altura = fit(Normal, mujeres_adultas.height)
+	# println(mujeres_altura)
 	plot!(mujeres_adultas.height, seriestype="stephist", normalize=true, bins=130:5:180, labels=false)
 	plot_altura = plot!(mujeres_altura, labels=false)
 	plot(plot_peso, plot_altura, layout=(1,2), size=(900,500))
-end
+end;
 
 # ╔═╡ ad4a41b9-7a8c-4999-a88a-28f816ffb0ba
 ajuste_normales()
@@ -460,8 +458,7 @@ function contorno_normales()
 	contour(X, Y, pdf_hombres, color=:viridis, xlabel="Peso", ylabel="Altura", title="Covarianzas con el origen desplazado", legend=false, label="Hombres")
 	p2 = contour!(X, Y, pdf_mujeres, label="Mujeres")
 	plot(p1, p2, size=(900,500))
-end
-	
+end;
 
 # ╔═╡ bf361273-75aa-4620-b63d-a7e8f47f83c8
 contorno_normales()
@@ -493,17 +490,23 @@ md"""
 1. La correlación entre edad y género es muy pequeña.
 1. Las correlaciones entre peso y altura son parecidas entre hombres y mujeres.
 1. La matriz de covarianza (peso y altura) es parecida entre hombres y mujeres.
-1. Suponemos que la distribución peso-altura sigue una normal para hombres y mujeres.
+1. Suponemos que la distribución peso-altura sigue una distribución normal para hombres y mujeres.
+
+Todas estas conclusiones nos van a ser útiles en lo siguiente.
 """
 
 # ╔═╡ 2cd44fbd-46e9-4942-ac06-df9c5af1badc
 md"""
 # Preparar los datos
+"""
+
+# ╔═╡ a3ee5e5f-4ce4-4652-9cfd-5e3bb13460e1
+md"""
+## Preparar los datos
 
 Afortunadamente, esta base de datos ya está preparada. 
 
-La preparación de los datos es una tarea muy costosa en tiempo. La limpieza de 
-los datos implica, por ejemplo:
+La preparación de los datos es una tarea muy costosa en tiempo. La limpieza de los datos implica, por ejemplo:
 
 1. Eliminar datos duplicados.
 1. Eliminar datos que son erróneos.
@@ -517,12 +520,9 @@ md"""
 # El algoritmo de regresión logística para tareas de clasificación
 
 ## Clasificación con dos clases
-El problema de clasificar una persona de la base de datos Howell por género 
-es un problema con dos únicas clases. Para generalizar, vamos a llamar a estas 
-clases $C_1$ y $C_2$.
+El problema de clasificar una persona de la base de datos Howell por género es un problema con dos únicas clases. Para generalizar, vamos a llamar a estas clases $C_1$ y $C_2$.
 
-Utilizamos el teorema de Bayes para calcular la probabilidad de que una 
-muestra $x$ pertenezca a la clase $C_1$:
+Utilizamos el teorema de Bayes para calcular la probabilidad de que una muestra $x$ pertenezca a la clase $C_1$:
 
 $p(C_1|x) = \frac{p(C_1)p(x|C_1)}{p(C_1)p(x|C_1) + p(C_2)p(x|C_2)}$
 """
@@ -563,9 +563,7 @@ Ahora supongamos que:
 1. Las distribuciones de las variables en las clases $C_1$ y $C_2$ son gaussianas.
 1. Las correlaciones de las variables son iguales en las dos clases.
 
-Fíjate en que estas suposiciones son «validas» para los datos de Howell. Es 
-importante comprobar que nuestros datos cumplen estas dos condiciones si vamos 
-a aplicar la formulación siguiente.
+Fíjate en que estas suposiciones son «validas» para los datos de Howell. Es importante comprobar que nuestros datos cumplen estas dos condiciones si vamos a aplicar la formulación siguiente.
 """
 
 # ╔═╡ d48f86ef-1894-4f82-ab34-6b4553996902
@@ -577,21 +575,18 @@ La distribución gaussiana en D dimensiones es:
 $p(x|C_k) = \frac{1}{(2\pi)^{D/2}} \frac{1}{\lvert \Sigma \rvert^{1/2}} exp \Bigl \{ - \frac{1}{2} (x-\mu_k)^T \Sigma^{-1} (x-\mu_k) \Bigr \}$
 
 Donde $k$ es 1 ó 2 para indicar la clase, $\mu_k$ es la media de la clase $k$, 
-y $\Sigma$ la matriz de covarianza.
+y $\Sigma$ la matriz de covarianza, que estamos suponiendo que es la misma para las dos clases.
 """
 
 # ╔═╡ cd15154f-fc0f-41ba-a711-0236ffa9f04d
 md"""
 ## Clasificación con dos clases
 
-Si particularizamos para $k=1$ y $k=2$ y sustituimos en las formulas de la 
-sigmoide obtenemos:
+Si particularizamos para $k=1$ y $k=2$ y sustituimos en las formulas de la sigmoide obtenemos:
 
 $p(C_1|x) = \sigma(\theta^T x + \theta_0) = \sigma(\theta^T x)$
 
-Esto significa que si hacemos una transformación lineal sobre una muestra 
-$\theta^T x$ y sobre el resultado aplicamos la función 
-$\sigma(\theta^T x)$ obtenemos la probabilidad de que la muestra $x$.
+Esto significa que si hacemos una transformación lineal sobre una muestra $\theta^T x$ y sobre el resultado aplicamos la función $\sigma(\theta^T x)$ obtenemos la probabilidad de que la muestra $x$ pertenezca a la clase $C_1$.
 
 Nos queda por calcular los parámetros de la transformación.
 """
@@ -599,20 +594,20 @@ Nos queda por calcular los parámetros de la transformación.
 # ╔═╡ f057fb6c-af57-46c0-b712-06eed205dbc8
 md"""
 ## Clasificación con dos clases
+
 Los parámetros son:
 
 $\theta= \Sigma^{-1}(\mu_1 - \mu_2); \: \theta_0= -\frac{1}{2} \mu_1^T \Sigma^{-1} \mu_1 + \frac{1}{2} \mu_1^T \Sigma^{-1} \mu_1 + ln \frac{p(C_1)}{p(C_2)}$
 
-Donde los parámetros $\mu_1$, $\mu_2$ y $\Sigma$ los podemos obtener aplicando 
+Donde $\mu_1$, $\mu_2$ y $\Sigma$ los podemos obtener aplicando 
 el principio de máxima verosimilitud al conjunto de nuestros datos.
 """
 
 # ╔═╡ 0ab915b8-2d9d-4edf-9b26-a7783eb6326e
 md"""
 ## Clasificación con dos clases
-Si tomamos $p(C_1) = q$, y por lo tanto $p(C_2) = 1-q$ y definimos 
-$t_n = 1$ si la muestra pertenece a la clase $C_1$ y $t_n = 0$ si la muestra 
-pertenece a la clase $C_2$ y hacemos uso de la definición de probabilidad:
+
+Si tomamos $p(C_1) = q$, y por lo tanto $p(C_2) = 1-q$ y definimos $t_n = 1$ si la muestra pertenece a la clase $C_1$ y $t_n = 0$ si la muestra pertenece a la clase $C_2$ y hacemos uso de la definición de probabilidad:
 
 $p(x_n, C_1) = p(C_1) p(x_n|C_1) = q N(x_n|\mu_1 \Sigma)$
 $p(x_n, C_2) = p(C_2) p(x_n|C_2) = (1-q) N(x_n|\mu_2 \Sigma)$
@@ -626,35 +621,31 @@ $p(\pmb{t}|q, \mu_1, \mu_2, \Sigma) = \prod_{n=1}^N [q N(x_n|\mu_1, \Sigma)]^{t_
 md"""
 ## Clasificación con dos clases
 
-Si tomamos la derivada de la anterior expresión con respecto a $q$ e igualamos 
-a cero:
+Si tomamos logoritmos en la expresión anterior, derivamos con respecto a $q$, e igualamos a cero:
 
 $q = \frac{1}{N} \sum_{n=1}^N t_n = \frac{N_1}{N_1 + N_2} = \frac{N_1}{N}$
 $1 - q = \frac{N_2}{N}$
 
-Como intuitivamente se puede esperar la probabilidad de pertenecer a una clase 
-es la razón del número de miembros de esa clase sobre el total.
+Como intuitivamente se puede esperar, la probabilidad de pertenecer a una clase es la razón del número de miembros de esa clase sobre el total.
 """
 
 # ╔═╡ 72bfb2fd-7ff4-42a0-9bf1-1266fa1d86ba
 md"""
 ## Clasificación con dos clases
 
-Tomando derivadas con respecto a $\mu_1$, igualando a cero; y después con 
-respecto a $\mu_2$:
+Tomando derivadas con respecto a $\mu_1$ de la expresión al aplicar máxima verosimilitud, igualando a cero; y reptiendo lo mismo con respecto a $\mu_2$:
 
 $\mu_1 = \frac{1}{N} \sum_{n=1}^{N} x_n t_n$
 $\mu_2 = \frac{1}{N} \sum_{n=1}^{N} x_n (1-t_n)$
 
-La media para la clase $C_1$ está formada por la contribución de los miembros 
-de esa clase, y lo mismo para la clase $C_2$.
+La media para la clase $C_1$ está formada por la contribución de los miembros de esa clase, y lo mismo para la clase $C_2$.
 """
 
 # ╔═╡ 409db5f5-d986-4e5e-af5d-1de216cfba1d
 md"""
 ## Clasificación con dos clases
 
-Finalmente, tomando la derivada con respecto a $\Sigma$ e igualando a cero:
+Finalmente, tomando la derivada de la expresión al aplicar máxima verosimilitud, con respecto a $\Sigma$ e igualando a cero:
 
 $\Sigma = \frac{N_1}{N} S_1 + \frac{N_2}{N} S_2$
 
@@ -662,6 +653,8 @@ Donde:
 
 $S_1 = \frac{1}{N_1} \sum_{n \in C_1} (x_n - \mu_1)(x_n-\mu_1)^T$
 $S_2 = \frac{1}{N_2} \sum_{n \in C_2} (x_n - \mu_2)(x_n-\mu_2)^T$
+
+Es decir, la matriz de covarianzas es el promedio con pesos de las matrices de cada una de las clases.
 """
 
 # ╔═╡ 3cf08dc9-e14a-4b33-a31b-43e4d9494995
@@ -711,7 +704,7 @@ La biblioteca **MLJ** se utiliza creando una máquina donde se define el modelo 
 """
 
 # ╔═╡ 122c7f45-af9d-43a7-ba90-455b22196166
-maquina = fit!(machine(LogisticClassifier(), X, y))
+maquina = machine(LogisticClassifier(), X, y) |> fit!
 
 # ╔═╡ 7bded503-d16c-4a29-a041-6402b17396d1
 md"""
@@ -3138,136 +3131,138 @@ version = "1.4.1+2"
 """
 
 # ╔═╡ Cell order:
-# ╠═67ff8652-f2c7-11ef-3967-593c57b25a22
-# ╠═2a2b9587-6bb6-4f5e-811a-2bea4bba10cc
-# ╠═a8657eaa-905f-4b2f-845d-7ffe5d13e8e6
-# ╠═3fe74add-23e0-4ca9-aa83-1cb945388e10
-# ╠═ad7e997c-bdd5-4187-87cc-f2b2bed38d7c
-# ╠═f4492566-e856-4fc1-b5f7-6897874cf19f
-# ╠═3748086b-5bb8-409e-807e-9e8c8845cf03
-# ╠═f19c87ed-bfc5-4eca-b61b-5bca6bd8eb65
-# ╠═a4488176-5912-4879-afca-1b4112457dec
-# ╠═e6901419-169d-4400-b2a1-3bc01342ba59
-# ╠═58ac34c0-0a42-45ee-a830-fad4d5dd9d71
-# ╠═86baef7c-e1aa-4e24-b6e0-ed9b40761059
-# ╠═513b3406-a196-4c31-8d43-e9850c2908bb
-# ╠═018db6c4-5039-494a-b3be-60f436f0c4a5
-# ╠═6a690dd8-eb37-435e-ab77-989fb3c32006
-# ╠═2a86bff1-dda4-4412-9300-3d54330e7388
-# ╠═0d1ffc59-3f36-49e6-a0f4-c0c91fe9b5b8
-# ╠═95697151-e85c-42b3-8c92-cb206ed70e0b
-# ╠═987c2875-6ae9-43e9-b9be-aa560e644c8c
-# ╠═4d219ec4-6bd6-45c1-9013-18c5806b274d
-# ╠═ca2fe96c-0eb3-47c7-9537-a26ed3ab44e1
-# ╠═0d5bcada-a6a8-4bc1-8af6-6a2ee5a0729f
-# ╠═8fa5709e-e7da-48ba-9d44-357adf5459b6
-# ╠═4c30d44c-e54f-4676-8d55-b6438f62db50
-# ╠═b5bc0dab-7d95-46fd-adc5-7ea2a8420d83
-# ╠═9ff0ea90-8a75-46eb-814c-11fcef453cc9
-# ╠═8ce55806-3d06-43b5-a99f-d9aa90c74e48
-# ╠═be0cb678-d6e6-402b-952b-14f494b70df9
-# ╠═abde0c3a-7060-4b3e-a772-7a872c8d8c3a
-# ╠═cef7a0fa-9638-4ebb-b558-c1420dae089a
-# ╠═6e897bc2-d623-4ab6-83d2-d7a82caef8c5
-# ╠═abbc8c34-ccec-42ed-8039-64921395f126
-# ╠═11c9c78a-a2e1-4395-b174-e1577afd9970
-# ╠═336a8e44-150e-461f-a9c9-cc87c94ccccf
-# ╠═d0a45350-a28a-43ad-9009-0bb3ad91da86
-# ╠═daf598e0-ccb2-489a-8dcd-77e44e9c23fc
-# ╠═8addd58e-47c8-42bf-88cb-c9d33bc77ce9
-# ╠═239098fc-2202-493f-af15-6dcd85154103
-# ╠═e2b69df9-227d-42b2-a10a-c230525b5a04
-# ╠═ee9223fc-8d4d-45b5-8d19-9f0dfba5596f
-# ╠═63327e12-c31e-433f-b110-0b4a6acf0e8e
-# ╠═51f1622c-d0f7-430c-a2b7-e3ea5c2bbeae
-# ╠═7a153f0b-a604-4cbc-9af1-911b247ebc7a
-# ╠═752ea24a-ca1c-43fe-a98a-168643c8378b
-# ╠═92192af7-a787-4cd8-86a4-13b386b51f10
-# ╠═ad4a41b9-7a8c-4999-a88a-28f816ffb0ba
-# ╠═42362461-58bf-49b4-8199-c6bd3e0f2900
-# ╠═0bc95d3e-d681-4be0-8aaf-57758a11a22a
+# ╟─67ff8652-f2c7-11ef-3967-593c57b25a22
+# ╟─2a2b9587-6bb6-4f5e-811a-2bea4bba10cc
+# ╟─a8657eaa-905f-4b2f-845d-7ffe5d13e8e6
+# ╟─3fe74add-23e0-4ca9-aa83-1cb945388e10
+# ╟─ad7e997c-bdd5-4187-87cc-f2b2bed38d7c
+# ╟─f4492566-e856-4fc1-b5f7-6897874cf19f
+# ╟─3748086b-5bb8-409e-807e-9e8c8845cf03
+# ╟─f19c87ed-bfc5-4eca-b61b-5bca6bd8eb65
+# ╟─a4488176-5912-4879-afca-1b4112457dec
+# ╟─e6901419-169d-4400-b2a1-3bc01342ba59
+# ╟─58ac34c0-0a42-45ee-a830-fad4d5dd9d71
+# ╟─86baef7c-e1aa-4e24-b6e0-ed9b40761059
+# ╟─513b3406-a196-4c31-8d43-e9850c2908bb
+# ╟─018db6c4-5039-494a-b3be-60f436f0c4a5
+# ╟─6a690dd8-eb37-435e-ab77-989fb3c32006
+# ╟─2a86bff1-dda4-4412-9300-3d54330e7388
+# ╟─0d1ffc59-3f36-49e6-a0f4-c0c91fe9b5b8
+# ╟─95697151-e85c-42b3-8c92-cb206ed70e0b
+# ╟─987c2875-6ae9-43e9-b9be-aa560e644c8c
+# ╟─4d219ec4-6bd6-45c1-9013-18c5806b274d
+# ╟─ca2fe96c-0eb3-47c7-9537-a26ed3ab44e1
+# ╟─0d5bcada-a6a8-4bc1-8af6-6a2ee5a0729f
+# ╟─8fa5709e-e7da-48ba-9d44-357adf5459b6
+# ╟─4c30d44c-e54f-4676-8d55-b6438f62db50
+# ╟─b5bc0dab-7d95-46fd-adc5-7ea2a8420d83
+# ╟─9ff0ea90-8a75-46eb-814c-11fcef453cc9
+# ╟─8ce55806-3d06-43b5-a99f-d9aa90c74e48
+# ╟─be0cb678-d6e6-402b-952b-14f494b70df9
+# ╟─abde0c3a-7060-4b3e-a772-7a872c8d8c3a
+# ╟─cef7a0fa-9638-4ebb-b558-c1420dae089a
+# ╟─6e897bc2-d623-4ab6-83d2-d7a82caef8c5
+# ╟─abbc8c34-ccec-42ed-8039-64921395f126
+# ╟─11c9c78a-a2e1-4395-b174-e1577afd9970
+# ╟─336a8e44-150e-461f-a9c9-cc87c94ccccf
+# ╟─d0a45350-a28a-43ad-9009-0bb3ad91da86
+# ╟─daf598e0-ccb2-489a-8dcd-77e44e9c23fc
+# ╟─8addd58e-47c8-42bf-88cb-c9d33bc77ce9
+# ╟─239098fc-2202-493f-af15-6dcd85154103
+# ╟─e2b69df9-227d-42b2-a10a-c230525b5a04
+# ╟─d30a158c-c577-4f3f-8804-d354f2cf6abc
+# ╟─ee9223fc-8d4d-45b5-8d19-9f0dfba5596f
+# ╟─63327e12-c31e-433f-b110-0b4a6acf0e8e
+# ╟─51f1622c-d0f7-430c-a2b7-e3ea5c2bbeae
+# ╟─7a153f0b-a604-4cbc-9af1-911b247ebc7a
+# ╟─752ea24a-ca1c-43fe-a98a-168643c8378b
+# ╟─92192af7-a787-4cd8-86a4-13b386b51f10
+# ╟─ad4a41b9-7a8c-4999-a88a-28f816ffb0ba
+# ╟─42362461-58bf-49b4-8199-c6bd3e0f2900
+# ╟─0bc95d3e-d681-4be0-8aaf-57758a11a22a
 # ╠═9e5fa7a9-f7ad-4ab0-ad47-64bb777c584a
-# ╠═67333fdc-c200-4776-aafb-7947f6be05f9
+# ╟─67333fdc-c200-4776-aafb-7947f6be05f9
 # ╠═5f306070-918c-4491-992e-6d47307a9139
-# ╠═e7341d4c-624e-44d1-9ab4-b30bb6dfef4f
+# ╟─e7341d4c-624e-44d1-9ab4-b30bb6dfef4f
 # ╠═288ed03e-d9e7-41f3-9f91-b67bfda75b0c
-# ╠═369232ee-276b-4abb-a308-f3071cb0ffa5
+# ╟─369232ee-276b-4abb-a308-f3071cb0ffa5
 # ╠═7d3a83f1-27e6-487f-b85e-96bba7704550
-# ╠═8e6b402f-cd3e-41e0-9be5-41e939a817f5
-# ╠═b1f4000f-9fc1-4363-a3c2-f08be4348ac5
+# ╟─8e6b402f-cd3e-41e0-9be5-41e939a817f5
+# ╟─b1f4000f-9fc1-4363-a3c2-f08be4348ac5
 # ╠═b248e25c-0507-44df-98f7-af73b72f5be6
-# ╠═8e01180b-560c-4eb9-a28f-79e6034e7208
+# ╟─8e01180b-560c-4eb9-a28f-79e6034e7208
 # ╠═14bbf814-5254-4528-bcd0-6732aaf46b2c
-# ╠═3389b7e8-305a-4242-bae9-926f8bfa5ee8
+# ╟─3389b7e8-305a-4242-bae9-926f8bfa5ee8
 # ╠═c33a49ae-1c51-40cf-8b39-107fc942e362
-# ╠═ae448d10-e562-4a8f-899e-bc1484e63bf5
+# ╟─ae448d10-e562-4a8f-899e-bc1484e63bf5
 # ╠═240fc13e-a96b-4340-bdb3-cc367aab9650
 # ╠═f57559bd-d99b-43e8-b2dc-5cb75abf668e
 # ╠═e4e11601-94db-4642-af8f-9838d6ca2994
-# ╠═a21a7ad8-b71d-4053-8350-1748fd204250
-# ╠═3e814d0e-5fe0-475f-a488-40727787dd59
-# ╠═96ad543b-d968-4fb3-b358-92ea5197436c
-# ╠═bf361273-75aa-4620-b63d-a7e8f47f83c8
-# ╠═629bed62-cb21-481b-b24d-b123e16d607d
-# ╠═85cbdac8-a4c8-4a91-ba6d-90f0c55ba818
+# ╟─a21a7ad8-b71d-4053-8350-1748fd204250
+# ╟─3e814d0e-5fe0-475f-a488-40727787dd59
+# ╟─96ad543b-d968-4fb3-b358-92ea5197436c
+# ╟─bf361273-75aa-4620-b63d-a7e8f47f83c8
+# ╟─629bed62-cb21-481b-b24d-b123e16d607d
+# ╟─85cbdac8-a4c8-4a91-ba6d-90f0c55ba818
 # ╠═9458817b-d025-4f73-9c71-42fdb2bbd266
-# ╠═517c9b6c-d4b7-45c6-a916-12f92f07fb08
+# ╟─517c9b6c-d4b7-45c6-a916-12f92f07fb08
 # ╠═bc3c772e-578d-4fea-ad56-bc0b5598d43e
-# ╠═2cd44fbd-46e9-4942-ac06-df9c5af1badc
-# ╠═30f3a04d-fe07-4293-b457-e26299d216d9
-# ╠═97fe3b83-59a4-4474-bc53-a81a018518d4
-# ╠═441170ee-8d7f-4b36-ab2d-8075c4196b5d
+# ╟─2cd44fbd-46e9-4942-ac06-df9c5af1badc
+# ╟─a3ee5e5f-4ce4-4652-9cfd-5e3bb13460e1
+# ╟─30f3a04d-fe07-4293-b457-e26299d216d9
+# ╟─97fe3b83-59a4-4474-bc53-a81a018518d4
+# ╟─441170ee-8d7f-4b36-ab2d-8075c4196b5d
 # ╠═19db055b-db56-4f64-bab7-6f598c93e175
-# ╠═330e6f0f-f955-405d-8c66-ae9efa8d7e0a
-# ╠═8f6a1785-f5fc-4216-af16-8c84d46b5b40
-# ╠═d48f86ef-1894-4f82-ab34-6b4553996902
-# ╠═cd15154f-fc0f-41ba-a711-0236ffa9f04d
-# ╠═f057fb6c-af57-46c0-b712-06eed205dbc8
-# ╠═0ab915b8-2d9d-4edf-9b26-a7783eb6326e
-# ╠═97b78daf-0932-4950-bfe5-def83b79f199
-# ╠═72bfb2fd-7ff4-42a0-9bf1-1266fa1d86ba
-# ╠═409db5f5-d986-4e5e-af5d-1de216cfba1d
-# ╠═3cf08dc9-e14a-4b33-a31b-43e4d9494995
-# ╠═a3889151-f6b0-42a7-9251-14136107d5f7
+# ╟─330e6f0f-f955-405d-8c66-ae9efa8d7e0a
+# ╟─8f6a1785-f5fc-4216-af16-8c84d46b5b40
+# ╟─d48f86ef-1894-4f82-ab34-6b4553996902
+# ╟─cd15154f-fc0f-41ba-a711-0236ffa9f04d
+# ╟─f057fb6c-af57-46c0-b712-06eed205dbc8
+# ╟─0ab915b8-2d9d-4edf-9b26-a7783eb6326e
+# ╟─97b78daf-0932-4950-bfe5-def83b79f199
+# ╟─72bfb2fd-7ff4-42a0-9bf1-1266fa1d86ba
+# ╟─409db5f5-d986-4e5e-af5d-1de216cfba1d
+# ╟─3cf08dc9-e14a-4b33-a31b-43e4d9494995
+# ╟─a3889151-f6b0-42a7-9251-14136107d5f7
 # ╠═350afb0c-dc70-47f8-a393-ee462f01798f
-# ╠═83b5d2b4-ab18-461a-a291-a9790cb62af8
+# ╟─83b5d2b4-ab18-461a-a291-a9790cb62af8
 # ╠═46448798-4d11-45bd-9fce-a2c2d9118763
-# ╠═ac4e5b7b-3a3e-42fe-b059-dcff8fd91a62
+# ╟─ac4e5b7b-3a3e-42fe-b059-dcff8fd91a62
 # ╠═52abed5f-197b-4308-a875-1c351725358d
 # ╠═02f644b9-a877-4e91-9c4f-aff38a3dac2a
-# ╠═88992576-3631-4d79-8008-5778d0cd850b
-# ╠═ad633dbf-a0c1-4328-835e-a970dace06a8
+# ╟─88992576-3631-4d79-8008-5778d0cd850b
+# ╟─ad633dbf-a0c1-4328-835e-a970dace06a8
 # ╠═122c7f45-af9d-43a7-ba90-455b22196166
-# ╠═7bded503-d16c-4a29-a041-6402b17396d1
+# ╟─7bded503-d16c-4a29-a041-6402b17396d1
 # ╠═5a41f8da-a56e-4e1a-ad3c-815df8872d90
-# ╠═0e043d3c-96ec-402f-a0e1-ced01d5841ec
-# ╠═ef6f0e0d-3ebd-4a8a-aa28-c0d24b4b0382
+# ╟─0e043d3c-96ec-402f-a0e1-ced01d5841ec
+# ╟─ef6f0e0d-3ebd-4a8a-aa28-c0d24b4b0382
 # ╠═ee79aa91-420d-44a6-bc17-4a5a5f6e6231
-# ╠═f88330d0-7bf9-4366-bbf9-363ed7fe5cec
+# ╟─f88330d0-7bf9-4366-bbf9-363ed7fe5cec
 # ╠═c12c09f0-75db-4a40-a201-1bd8d69b482a
-# ╠═335a4475-f46a-4255-af6c-cce27f2cc693
-# ╠═c00f5e6e-cb0e-44d9-8fe9-41ed8da6eed3
+# ╟─335a4475-f46a-4255-af6c-cce27f2cc693
+# ╟─c00f5e6e-cb0e-44d9-8fe9-41ed8da6eed3
 # ╠═ececc102-a1d5-4669-8bea-6a3deabc540b
-# ╠═511ea9f7-d54f-46b4-b184-7bec2bfa274f
+# ╟─511ea9f7-d54f-46b4-b184-7bec2bfa274f
 # ╠═ce15f735-0e8a-47fe-90f3-d06fbc296b33
-# ╠═3e1e3253-4eee-4284-ac87-3de5d451495a
+# ╟─3e1e3253-4eee-4284-ac87-3de5d451495a
 # ╠═46bc179b-7c0e-4987-8a64-ecbd28847e80
-# ╠═400bd916-166c-4c3a-a2bc-1e244f05d742
-# ╠═efa6b1c3-e6aa-4e6b-b745-0595d36f59a8
+# ╟─400bd916-166c-4c3a-a2bc-1e244f05d742
+# ╟─efa6b1c3-e6aa-4e6b-b745-0595d36f59a8
 # ╠═fa8dc7ad-c6cb-4f69-8e5d-738bcc45354a
-# ╠═0c7b05ae-b4c9-475b-983a-29df7298cb11
+# ╟─0c7b05ae-b4c9-475b-983a-29df7298cb11
 # ╠═9c4ed964-c3b2-4ac3-833e-98af8e787b53
 # ╠═a963e81f-011c-4211-a2f6-b3fd24810196
-# ╠═98d486a3-cd4f-45a6-90c5-fbf650a713d8
-# ╠═4651681e-d16b-462b-b51c-bde9efb44eb6
+# ╟─98d486a3-cd4f-45a6-90c5-fbf650a713d8
+# ╟─4651681e-d16b-462b-b51c-bde9efb44eb6
 # ╠═b57f71a8-4cba-4afb-86c6-c8240e8fc49d
 # ╠═b9f24a63-4fc9-47da-b3cf-adce20b0cea3
 # ╠═70c6667b-64b1-4c24-ae3b-612bb89c5d0e
 # ╠═92acf800-30e8-4d06-bb3d-11db12498fcb
-# ╠═113481b8-5cdb-4f0a-a26d-2db2ec3eccec
+# ╟─113481b8-5cdb-4f0a-a26d-2db2ec3eccec
 # ╠═d2f46c79-ab68-4ca0-aef1-48d5f2e2edc4
 # ╠═b8b7f2c9-10ed-487f-9690-a4be2a245f0c
-# ╠═303bace0-02ac-4501-a76d-018adeb5714a
-# ╠═536fe5a2-395f-4cd9-9791-606ea6db96ed
+# ╟─303bace0-02ac-4501-a76d-018adeb5714a
+# ╟─536fe5a2-395f-4cd9-9791-606ea6db96ed
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

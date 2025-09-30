@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.13
+# v0.20.8
 
 using Markdown
 using InteractiveUtils
@@ -33,7 +33,7 @@ md"""
 Un proyecto de aprendizaje automático necesita de cierta organización previa antes de su inicio. 
 En particular, el uso de los datos debe ser claramente establecido.
 
-El desarrollo de proyectos aprendizaje automático es una fase continua de prueba y error, siempre hay espacio suficiente para probar nuevas idea.
+El desarrollo de proyectos de aprendizaje automático es una fase continua de prueba y error, siempre hay espacio suficiente para probar nuevas idea.
 
 Como en todo proyecto, es muy importante ir documentando todo el trabajo, así como las conclusiones que se van obteniendo.
 """
@@ -208,7 +208,7 @@ md"""
 ## Resumen
 
 - Probar varios modelos antes de decidirse por uno.
-- No realizar una ajuste de parámetros temprano porque puede sesgar la selección del modelo.
+- No realizar un ajuste de parámetros temprano porque puede sesgar la selección del modelo.
 - Si es posible, combinar más de una modelo en la solución final.
 - Anotar todas la ideas que vayan surgiendo.
 - Cuidar la presentación de los resultados.
