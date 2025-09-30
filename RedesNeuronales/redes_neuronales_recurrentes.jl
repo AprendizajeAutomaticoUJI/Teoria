@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.13
+# v0.20.8
 
 using Markdown
 using InteractiveUtils
@@ -28,6 +28,9 @@ using PlotlyKaleido
 # ╔═╡ a6b45206-f705-4f48-849d-aca4a0f183f6
 using PlutoUI
 
+# ╔═╡ 9f50ab63-f9ef-4d32-9062-e570aeac9906
+using PlutoTeachingTools
+
 # ╔═╡ 4fb47936-5f5b-42cb-99a0-1db519f34584
 using ShortCodes
 
@@ -37,13 +40,13 @@ using ShortCodes
 # """
 
 # ╔═╡ 7b73278e-bb13-44c8-9bcd-45ec39f679a1
-plotly()
+plotly();
 
 # ╔═╡ 2108a2d1-4d9f-4b16-ae3b-e1938c9ae606
 TableOfContents(title="Contenidos", depth=1)
 
 # ╔═╡ b14098b5-65a1-471b-becf-017c5c07d8b4
-imagenes = "https://belmonte.uji.es/Docencia/IR2130/Teoria/RedesNeuronales/Imagenes/"
+imagenes = "https://belmonte.uji.es/Docencia/IR2130/Teoria/RedesNeuronales/Imagenes/";
 
 # ╔═╡ 0a6c0ac8-4555-46b8-864b-6b6e42dce9de
 md"""
@@ -52,9 +55,15 @@ md"""
 Óscar Belmonte Fernández - IR2130 Aprendizaje Automático
 
 Grado en Inteligencia Robótica - Universitat Jaume I (UJI)
-
-![](https://belmonte.uji.es/imgs/uji.jpg)
 """
+
+# ╔═╡ d564cb7c-3866-4a0c-a8f6-b2265fc967e2
+Resource(
+	"https://belmonte.uji.es/imgs/uji.jpg",
+	:alt => "Logo UJI",
+	:width => 400,
+	:style => "display: block; margin: auto;",
+)
 
 # ╔═╡ 11ea5ad6-9c55-47ca-a65e-8342bef0d637
 md"""
@@ -62,8 +71,8 @@ md"""
 
 * Definir qué es una serie temporal, su componente de tendencia y su componente de estacionalidad.
 * Comparar las redes convolucionales con las redes recurrentes.
-* Construir una red recurrente (profunda) para la predicción de series temporales.
-* Construir una red LSTM (profunda) para la predicción de series temporales.
+* Construir una red recurrente para la predicción de series temporales.
+* Construir una red LSTM para la predicción de series temporales.
 * Relacionar las redes recurrentes y LSTM con otros modelos de aprendizaje.
 """
 
@@ -72,24 +81,22 @@ md"""
 # Introducción
 """
 
-# ╔═╡ 689dfd81-45d2-4371-80b8-ac5177bcc99a
-md"""
-## Introducción
-
-La dependencia entre los elementos de una secuencia es una característica que podemos encontrar en muchos conjuntos de datos.
-
-Algunos ejemplo son:
-"""
-
 # ╔═╡ f9e9e887-d961-490e-9f7a-ce1c177bf56b
 function descargaDatos()
 	url = "https://raw.githubusercontent.com/AprendizajeAutomaticoUJI/DataSets/refs/heads/master/co2.csv"
 	descarga = Downloads.download(url)
 	return CSV.File(descarga) |> DataFrame
-end
+end;
 
 # ╔═╡ ce3083be-6fca-428d-bc52-b0a7c2c4b81e
 co2 = descargaDatos();
+
+# ╔═╡ 689dfd81-45d2-4371-80b8-ac5177bcc99a
+md"""
+## Introducción
+
+La dependencia entre los elementos de una secuencia es una característica que podemos encontrar en muchos conjuntos de datos. El nivel de CO2 en un determinado punto depende del nivel de CO2 en el mismo punto en un instante anterior.
+"""
 
 # ╔═╡ bee2feec-b95a-4931-9b6e-a069841f5115
 plot_co2 = plot(co2.CO2,
@@ -99,13 +106,8 @@ plot_co2 = plot(co2.CO2,
 	 legends = false,
 	 xlabel = "Año",
 	 ylabel = "Concentración",
-	 # size = (800, 500)
+	 size = (600, 350)
 )
-
-# ╔═╡ f72ebe9c-3c40-4753-bef3-4e6bbf129164
-md"""
-El nivel de CO2 en un determinado punto depende del nivel de CO2 en el mismo punto en un instante anterior.
-"""
 
 # ╔═╡ ec6a877c-6e93-43dd-bc46-45957ada64b0
 md"""
@@ -124,7 +126,7 @@ md"""
 
 Otros ejemplos donde no existe (explicitamente) componente temporal son:
 
-* La siguiente letra dentro de una frase depende la secuencia de letrasanteriores.
+* La siguiente letra dentro de una frase depende la secuencia de letras anteriores.
 * La siguiente imagen en un vídeo depende de la secuencia anterior de imágenes.
 * Para traducir una palabra entre dos lenguas necesitamos todas las letras de la palabra.
 * La traducción de un texto entre dos lenguas se hace frase a frase.
@@ -148,12 +150,10 @@ first(co2, 5)
 # ╔═╡ fceba045-6717-4cdd-890e-f06a616162c5
 md"""
 ## Autocorrelación
-Muchas veces ocurre que los datos en una serie temporal están 
-auto-correlacionados, existe una correlación entre los datos y los mismos datos 
-desplazados en el tiempo.
 
-Dicho de otro modo, la autocorrelación es la correlación de los datos con ellos 
-mismos con un cierto desplazamiento temporal.
+Muchas veces ocurre que los datos en una serie temporal están auto-correlacionados, existe una correlación entre los datos y los mismos datos desplazados en el tiempo.
+
+Dicho de otro modo, la autocorrelación es la correlación de los datos con ellos mismos con un cierto desplazamiento temporal.
 
 En Julia podemos calcular la autocorrelación en una seri de datos con:
 
@@ -166,13 +166,6 @@ autorcor(serie_temporal, 0:9) # Los 10 primeros valores de autocorrelación.
 ```
 """
 
-# ╔═╡ 033e221a-223d-4ec5-8349-d1f9ed81b0db
-md"""
-## Autocorrelación
-
-Los diagramas de autocorrelación es una manera gráfica de mostrar la dependencia temporal de los datos.
-"""
-
 # ╔═╡ a52d1bc6-7fc3-4bde-bdca-7a199eeef413
 plot_autocorrelacion_co2 = plot(autocor(co2.CO2),
 	 seriestype = :scatter,
@@ -182,45 +175,18 @@ plot_autocorrelacion_co2 = plot(autocor(co2.CO2),
 	 legends = false
 );
 
+# ╔═╡ 033e221a-223d-4ec5-8349-d1f9ed81b0db
+md"""
+## Autocorrelación
+
+Los diagramas de autocorrelación son una manera gráfica de mostrar la dependencia temporal de los datos.
+"""
+
 # ╔═╡ 3f7622d2-b3c7-4fcc-abe3-2b8c21cf913d
 plot(
 	plot_co2, plot_autocorrelacion_co2,
-	size = (900, 500)
+	size = (900, 400)
 )
-
-# ╔═╡ 5a96c83a-0f2f-4a0b-8662-1effa9c84a55
-md"""
-## Autocorrelación
-
-Las series aleatorias de datos no presentan autocorrelación:
-"""
-
-# ╔═╡ d655ed85-d315-4314-9442-05487f58fc15
-serie_aleatoria = rand(100);
-
-# ╔═╡ 9b0f6243-2d29-467b-b5f7-3ac85e913369
-plot_serie_aleatoria = plot(
-	serie_aleatoria,
-	title = "Serie aleatoria de datos",
-	legends = false
-);
-
-# ╔═╡ 49ca96a5-6f07-497f-a4f5-2263955e2906
-md"""
-## Autocorrelación
-
-Las series temporales aleatorias no presentan autocorrelación.
-"""
-
-# ╔═╡ 4957ce9d-982b-4e04-affb-13a28e07acc1
-plot_serie_aleatoria_autocorrelacion = plot(
-	autocor(serie_aleatoria),
-	title = "Autocorrelación de una serie aleatoria de datos",
-	seriestype = :scatter,
-	ylabel = "Autocorrelación",
-	legends = false
-);
-
 
 # ╔═╡ c7f7b3e5-e0fb-41a1-8e60-79c17e5f96a9
 md"""
@@ -229,11 +195,31 @@ md"""
 Las series aleatorias no presentan autocorrelación.
 """
 
-# ╔═╡ cedf66fc-7391-46a5-aa4a-59a30bee6802
-plot(
-	plot_serie_aleatoria, plot_serie_aleatoria_autocorrelacion,
-	size = (1200, 500)
-)
+# ╔═╡ 5459494e-eca1-4c90-8246-94e5a1313f58
+function plot_serie_aleatoria()
+	serie_aleatoria = rand(100)
+	
+	plot_serie_aleatoria = plot(
+		serie_aleatoria,
+		title = "Serie aleatoria de datos",
+		legends = false
+	)
+	
+	plot_serie_aleatoria_autocorrelacion = plot(
+		autocor(serie_aleatoria),
+		title = "Autocorrelación de una serie aleatoria de datos",
+		seriestype = :scatter,
+		ylabel = "Autocorrelación",
+		legends = false
+	)
+	plot(
+		plot_serie_aleatoria, plot_serie_aleatoria_autocorrelacion,
+		size = (1200, 400)
+	)
+end;
+
+# ╔═╡ 58173b25-bbb2-489b-9b4b-3e6ef45bde74
+plot_serie_aleatoria()
 
 # ╔═╡ 667d4a6f-7992-47ea-91be-d5d5f9f16af2
 md"""
@@ -244,7 +230,7 @@ A veces, en las series temporales, se puede observar una componente de
 """
 
 # ╔═╡ e05fa291-80c1-488c-9773-6c8f1e617b16
-media_deslizante(serie, tamaño_ventana) = [sum(serie[i:i+tamaño_ventana-1])/(tamaño_ventana) for i ∈ 1:length(serie)-tamaño_ventana]
+media_deslizante(serie, tamaño_ventana) = [sum(serie[i:i+tamaño_ventana-1])/(tamaño_ventana) for i ∈ 1:length(serie)-tamaño_ventana];
 
 # ╔═╡ e52c93f3-41b4-4589-b8bf-61c370844703
 function plot_tendencia_esatacionalidad()
@@ -270,9 +256,9 @@ function plot_tendencia_esatacionalidad()
 	plot(
 		p1, p2,
 		layout = l,
-		size = (1200, 500)
+		size = (1200, 350)
 	)
-end
+end;
 
 # ╔═╡ 409f4ff2-3bfa-4b4e-baaf-8ef8f15bde6f
 plot_tendencia_esatacionalidad()
@@ -288,7 +274,7 @@ md"""
 
 El objetivo de las redes neuronales recurrentes es dar una salida a partir de una entrada, pero, al contrario que en el caso de las redes convolucionales, el tamaño de la entrada puede ser cualquiera, no es fijo.
 
-Recuerda que al trabajar con redes convolucionales todas las imágenes deben tener el mismo tamaño ancho x alto.
+Recuerda que al trabajar con redes convolucionales todas las imágenes deben tener el mismo tamaño (ancho x alto).
 """
 
 # ╔═╡ 977f84a3-4186-454b-bdf2-0bf7ceac826a
@@ -303,7 +289,6 @@ md"""
 Vamos a definir una secuencia como un conjunto ordenado con un número de elementos no determinado, podemos tener secuencias de un único elemento o de muchos elementos. Por ejemplo una secuencia temporal de datos puede tener cualquier tamaño, una frase puede tener cualquier número de letras.
 
 Los vectores los vamos a definir como un conjunto ordenado con un número de elementos fijo. Por ejemplo cuando clasificamos imágenes con una red convolucional, todas ellas tienen el mismo tamaño.
-
 """
 
 # ╔═╡ 61bdb024-5186-4188-9af0-0a8b3bb09b86
@@ -311,18 +296,19 @@ md"""
 ## Secuencias y vectores
 
 En este gráfico se muestran todas las combinaciones posible a la entrada y 
-a la salida:
+a la salida de una red recurrente:
 """
 
 # ╔═╡ 5f6ed735-ce31-4f4f-ba6f-3cfda53d6bb4
 Resource(
 	imagenes * "rnn_entrada_salida.png",
 	:alt => "Estructuras redes neuronales recurrentes",
-	:width => 900
+	:width => 900,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ e252d6e8-4bd6-4bce-8b44-9876ef1279c9
-md"""
+html"""
 Fuente: Andrej Karpathy
 """
 
@@ -335,7 +321,8 @@ md"""
 Resource(
 	imagenes * "one_to_many.png",
 	:alt => "Red recurrente uno a muchos",
-	:height => 300
+	:height => 300,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ 818edee3-24a0-4bb4-8864-918de5c0c385
@@ -352,7 +339,8 @@ md"""
 Resource(
 	imagenes * "many_to_one.png",
 	:alt => "Red recurrente muchos a uno",
-	:height => 300
+	:height => 300,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ 6a6a866b-35e0-46c3-942e-eb8fdb098c7d
@@ -369,7 +357,8 @@ md"""
 Resource(
 	imagenes * "many_to_many.png",
 	:alt => "Red recurrente muchos a muchos",
-	:height => 300
+	:height => 300,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ b64a78c7-e1e4-4e9d-ac78-c8639e150e73
@@ -386,31 +375,31 @@ md"""
 Resource(
 	imagenes * "many_to_many_2.png",
 	:alt => "Red recurrente muchos a muchos",
-	:height => 300
+	:height => 300,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ 82d64394-b3d5-4c48-a3bc-5f368ebabea4
 md"""
-Es una extensión del caso de vector a secuencia. Por ejemplo, presentamos una secuencia de imágenes a la red, y esta debe generar un texto para cada una de ellas. Imagina, por ejemplo, la interpretación de una película para personas sordas.
+Este caso es una extensión del caso de vector a secuencia. Por ejemplo, presentamos una secuencia de imágenes a la red, y esta debe generar un texto para cada una de ellas. Imagina, por ejemplo, la interpretación de una película para personas sordas.
 """
 
 # ╔═╡ ea3bd38c-b7be-49da-a7dc-27aabcf9c713
 md"""
 ## Arquitectura de las RNN
 
-La idea básica de las redes recurrentes es que cada neurona almacena un estado
-$h_t$ que se calcula a partir de la entrada $x_t$ y el estado anterior
-$h_{t-1}$ 
+La idea básica de las redes recurrentes es que cada neurona almacena un estado $h_t$ que se calcula a partir de la entrada $x_t$ y el estado anterior $h_{t-1}$ 
 """
 
 # ╔═╡ b2a54c24-afba-4318-bdfc-581a48ac89e8
 Resource(
 	imagenes * "rnn_wikipedia.png",
 	:alt => "Red recurrente muchos a muchos",
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ 76ff8c86-3718-4100-8559-7956cabcf748
-md"""
+html"""
 Fuente: Wikipedia By fdeloche - Own work, CC BY-SA 4.0,
 https://commons.wikimedia.org/w/index.php?curid=60109157 
 """
@@ -427,10 +416,11 @@ del tiempo.
 Resource(
 	imagenes * "rnn.gif",
 	:alt => "Despliegue de una red recurrente",
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ c7fdf81a-68cf-4ae4-935f-99abbe5852bf
-md"""
+html"""
 Fuente: Juan Sensio - https://www.juansensio.com/blog/034_rnn_intro
 """
 
@@ -442,8 +432,7 @@ La salida en $y_t$ se calcula en función  del estado oculto $h_{t}$:
 
 $y_t = f(W_{yh} h_t + b_y)$
 
-El estado oculto $h_t$ se calcula en función de la entrada $x_t$ y del estado 
-oculto anterior $h_{t-1}$:
+El estado oculto $h_t$ se calcula en función de la entrada $x_t$ y del estado oculto anterior $h_{t-1}$:
 
 $h_t = f(W_{hh} h_{t-1} + W_{hx} x_t + b_h)$
 
@@ -454,9 +443,7 @@ El estado oculto es la **memoria** de la neurona.
 md"""
 ## Arquitectura de las RNN
 
-En el proceso de entrenamiento, se ajustan tanto los pesos de la matriz que 
-calcula la salid $y_t$ como los pesos de las matrices que calculan el estado 
-oculto $h_t$.
+En el proceso de entrenamiento, se ajustan tanto los pesos de la matriz que calcula la salid $y_t$ como los pesos de las matrices que calculan el estado oculto $h_t$.
 
 Veamos como definir y entrenar redes recurrentes.
 """
@@ -471,6 +458,7 @@ La primera tarea es decidir qué tipo de red recurrente vamos a implementar:
 
 * One to many.
 * Many to one.
+* One to many.
 * Many to Many.
 
 En nuestro caso, a partir de una serie temporal de datos, queremos predecir cuál es el siguiente dato. Por lo tanto tenemos una estructura **many to one**.
@@ -485,7 +473,7 @@ en la serie.
 
 Vamos a empezar escalando los datos:
 
-```{.julia}
+```julia
 escalado = fit(UnitRangeTransform, co2_train)
 co2_train_escalado = Float32.(StatsBase.transform(escalado, co2_train))
 ```
@@ -493,7 +481,7 @@ co2_train_escalado = Float32.(StatsBase.transform(escalado, co2_train))
 Cada entrada de entrenamiento es una serie de 10 elementos de la serie temporal, 
 la salida es el siguiente dato en la serie:
 
-```{.text}
+```text
 [[0.03046482 0.05354899 0.05841709 0.06092965 0.07333543 0.09422111
   0.1048995  0.09170854 0.06171482 0.01303392]]  -->  0.0
 [[0.05354899 0.05841709 0.06092965 0.07333543 0.09422111 0.1048995
@@ -507,8 +495,7 @@ la salida es el siguiente dato en la serie:
 md"""
 ## Show me the code
 
-Ahora ya podemos construir la red, vamos a empezar con una red sencilla de 
-una única capa:
+Ahora ya podemos construir la red, vamos a empezar con una red sencilla de una única capa, y la entrenamos:
 
 ```julia
 tamaño = 10
@@ -517,8 +504,6 @@ rnn = Chain(
 	Dense(64 => 1)
 )
 ```
-
-La entrenamos:
 
 ```julia
 λ = 0.001
@@ -551,6 +536,7 @@ Resource(
 	imagenes * "rnn64_2000_perdidas.png",
 	:alt => "Resultado del entrenamiento",
 	:width => 600,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ c3aa482d-37d9-4a44-a65a-df51f987e966
@@ -577,7 +563,9 @@ y_desescalado = StatsBase.reconstruct(escalado, y') # Desacemos escalados
 Resource(
 	imagenes * "rnn64_2000_entrenamiento.png",
 	:alt => "Resultado sobre el conjunto de pruebas",
-	:width => 600,
+	:width => 500,
+	:height => 300,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ d7c54967-5a6e-4fbc-8689-5d6454a95275
@@ -599,11 +587,18 @@ rnn = Chain(
 La entrenamos con el mismo código que antes, y obtenemos:
 """
 
+# ╔═╡ 5d3df015-5d84-42d9-b04c-1b847f377d21
+md"""
+## Show me the code
+"""
+
 # ╔═╡ 986fa101-f14a-430e-bba6-a5c5786f648f
 Resource(
 	imagenes * "rnn128_2000_perdidas.png",
 	:alt => "Resultado del entrenamiento",
-	:width => 600,
+	:width => 500,
+	:height => 350,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ 7ac6fa90-2fe2-4a09-8a3d-f5c02c8a12f5
@@ -623,6 +618,7 @@ Resource(
 	imagenes * "rnn128_2000_entrenamiento.png",
 	:alt => "Resultado sobre el conjunto de pruebas",
 	:width => 600,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ f3de6610-6a40-493b-95cc-b8a44236d42d
@@ -634,16 +630,14 @@ md"""
 md"""
 ## El problema del desvanecimiento
 
-Si las secuencias que utilizamos en el entrenamiento son largas, la
-contribución de los primeros términos se _desvanece_:
+Si las secuencias que utilizamos en el entrenamiento son largas, lacontribución de los primeros términos se _desvanece_:
 
 $y_t = g(\_,h_t,\_)$
 $h_t = f(\_,h_{t-1},\_) \rightarrow y_t = g(f(\_,h_{t-1},\_))$
 $h_{t-1} = f(\_,h_{t-2},\_) \rightarrow y_t = g(f(f(\_,h_{t-2},\_)))$
 $h_{t-2} = f(\_,h_{t-3},\_) \rightarrow y_t = g(f(f(f(\_,h_{t-3},\_))))$
 
-El término $g(f(f(f(\_,h_{t-3},\_))))$ se va haciendo pequeño. La contribución 
-de los primeros valores de la serie tienen una contribución baja.
+El término $g(f(f(f(\_,h_{t-3},\_))))$ se va haciendo pequeño. La contribución de los primeros valores de la serie tienen una contribución baja.
 
 """
 
@@ -651,20 +645,25 @@ de los primeros valores de la serie tienen una contribución baja.
 md"""
 ## Arquitectura de la redes LSTM
 
-La solución de las redes LSTM es añadir, dentro de cada neurona, un conjunto 
-de puertas lógicas que añaden memoria a largo plazo.
+En este caso, es más conveniente utilizar redes LSTM - Long Short Term Memory. La idea de las redes LSTM es añadir, dentro de cada neurona, un conjunto de puertas lógicas que añaden memoria a largo plazo.
 """
 
 # ╔═╡ a751b25c-69ff-4263-a72b-f53994a2f688
 Resource(
 	imagenes * "lstm.png",
 	:alt => "Red recurrente muchos a muchos",
-	:width => 900
+	:width => 550,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ 722073ad-065d-4ee8-bae0-4475a03f402c
-md"""
+html"""
 Fuente: Hands-on machine learning... Aurélien Géron.
+"""
+
+# ╔═╡ 39a1bd3c-76e0-4f03-888b-8217a6bc866f
+md"""
+## Arquitectura de las redes LSTM
 """
 
 # ╔═╡ 21ef5c35-084f-45f9-b9dc-31e5794821fe
@@ -678,8 +677,7 @@ md"""
 md"""
 ## Arquitectura de la redes LSTM
 
-Las funciones $f,g,i,o$ dependen tanto del estado oculto $h_t$ como de la 
-entrada $x_t$.
+Las funciones $f,g,i,o$ dependen tanto del estado oculto $h_t$ como de la entrada $x_t$.
 
 $i_t = \sigma(W_{ih} h_{t-1} + W_{ix} x_t + b_i)$
 $f_t = \sigma(W_{fh} h_{t-1} + W_{fx} x_t + b_f)$
@@ -707,11 +705,17 @@ Hemos sustituido la capa recurrente por la LSTM.
 El código de entrenamiento vuelve a ser el mismo que ante, y el resultados que obtenemos es:
 """
 
+# ╔═╡ ce8adf49-25ce-4644-9420-921bdb8e9c28
+md"""
+## Show me the code
+"""
+
 # ╔═╡ c9fd4dae-5bd7-40be-b143-387f7f8ec02d
 Resource(
 	imagenes * "lstm64_2000_perdidas.png",
 	:alt => "Resultado del entrenamiento",
-	:width => 600,
+	:width => 550,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ 29e60920-bdde-4c06-8626-7b35e25330a7
@@ -729,6 +733,7 @@ Resource(
 	imagenes * "lstm64_2000_entrenamiento.png",
 	:alt => "Resultado del entrenamiento",
 	:width => 600,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ d0764e8b-98bc-4c5a-b7b5-be5adaca308e
@@ -764,6 +769,7 @@ Resource(
 	imagenes * "lstm128_2000_perdidas.png",
 	:alt => "Resultado del entrenamiento",
 	:width => 600,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ c19c0c27-4590-4f55-aebd-28ce85ccfc82
@@ -781,6 +787,7 @@ Resource(
 	imagenes * "lstm128_2000_entrenamiento.png",
 	:alt => "Resultado del entrenamiento",
 	:width => 600,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ 2b407461-7868-46ef-b081-fcc66183ee1d
@@ -818,7 +825,7 @@ md"""
 
 El modelo *Autoregresive Integrated Moving Averange (ARIMA)* permite trabajar con series no estacionarias.
 
-La idea básica de este modelo es que en el cálculo de la predicción también se introduce una media deslizante sobre los datos de la serie para eliminar la posible componente de tendencia de la serie.
+La idea básica de este modelo es que, en el cálculo de la predicción, también se introduce una media deslizante sobre los datos de la serie para eliminar la posible componente de tendencia de la serie.
 
 Algo parecido a lo que hemos hecho ad-hoc con la serie de datos de concentración de CO2
 
@@ -836,13 +843,17 @@ Las cadenas de Markov son un modelo que predice el siguiente valor en una secuen
 Resource(
 	imagenes * "cadena_markov.png",
 	:alt => "Cadena de Markov",
-	:width => 300
+	:width => 250,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ 222754d0-2196-4b8f-a3f2-f261aee492e6
 md"""
 **A** y **E** son los dos estados. Las flechas indican la probabilidad de las transiciones entre estados.
+"""
 
+# ╔═╡ 8997a275-1f23-4f3d-9285-3889aa2f1897
+html"""
 Joxemai4, CC BY-SA 3.0 <https://creativecommons.org/licenses/by-sa/3.0>, via Wikimedia Commons
 """
 
@@ -881,7 +892,14 @@ $\begin{bmatrix}
 
 Es decir, si partimos del estado **A**, el siguiente estado será **A** con un 60% de probabilidad y **B** con un 40% de probabilidad.
 
-Si queremos la probabilidad en el segundo instante, hacemos:
+
+"""
+
+# ╔═╡ 7a3bdcef-c0c7-4892-ab49-3c363945f08d
+md"""
+## Cadenas de Markov
+
+Si queremos calcular la probabilidad en el segundo instante, hacemos dos multiplicaciones, en la primera pasamos del estado inicia a las probabilidades en $t+1$ y con la segunda multiplicación de las probabilidades de $t+1$ a $t+2$:
 
 $\begin{bmatrix}
 0.6 & 0.7 \\
@@ -908,7 +926,7 @@ md"""
 
 Este tipo de matrices, cada una de sus columnas suman 1, tienen algunas propiedades interesantes, una de ellas es la de tener un estado estacionario. 
 
-Si multiplicamos infinitas veces a matriz por cualquier estado inicial de partida, llegamos a un estado que no varia, el estado estacionario.
+Si multiplicamos infinitas veces la matriz por cualquier estado inicial de partida, llegamos a un estado que es independiente del estado de partida. A este estado se le llama estado estacionario.
 
 $\begin{bmatrix}
 0.6 & 0.7 \\
@@ -936,7 +954,7 @@ $\begin{bmatrix}
 \end{bmatrix}$ 
 es autovector de la matriz con autovalor $\lambda=1$.
 
-Entrenar un modelo de cadena de Markov implica estimar la matriz de transición dada una cadena.
+Entrenar un modelo de cadena de Markov implica estimar la matriz de transición dada una cadena de entrada.
 """
 
 # ╔═╡ 50a25851-1f8b-48eb-8c04-410128ec5dae
@@ -950,7 +968,8 @@ En los modelo ocultos de Markov, no se conoce el estado en el que se encuentra e
 Resource(
 	imagenes * "hmm.png",
 	:alt => "Modelo oculto de Markov",
-	:width => 900
+	:width => 900,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ 8ace3ee2-f67a-4196-882a-d452dd22a69a
@@ -982,7 +1001,7 @@ md"""
 
 * La ventaja de las redes recurrentes es que pueden trabajar con vectores de entrada de cualquier tamaño.
 * Las redes recurrentes tienen múltiples aplicaciones, desde predecir el siguiente valor en una secuencia, hasta generar imágenes a partir de una descripción.
-* La novedad de las redes recurrentes es que añaden _estado_ a cada una de las neuronas. El estado se calcula en función de la entrada actual y el anterior estado.
+* La novedad de las redes recurrentes es que añaden _estado_ a cada una de las neuronas. El estado se calcula en función de la entrada actual y el estado anterior.
 """
 
 # ╔═╡ 05410453-8140-4c52-809a-c2775784b97c
@@ -991,6 +1010,7 @@ md"""
 
 * Sin embargo, para secuencias _largas_ la contribución de los primeros valores de la secuencia se desvanece.
 * Las redes LSTM tratan de evitar este desvanecimiento añadiendo una memoria a largo plazo, que se calcula en cada estado y se propaga a las siguientes estados.
+* Existen alternativas al estudio de las series temporales que no utilizan redes neuronales.
 """
 
 # ╔═╡ 223b0452-e58d-49f5-a14b-268ddb166369
@@ -1011,6 +1031,7 @@ Downloads = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
 PlotlyBase = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
 PlotlyKaleido = "f2990250-8cf9-495f-b13a-cce12b45703c"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
+PlutoTeachingTools = "661c6b06-c737-4d37-b85c-46df65de6f69"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 ShortCodes = "f62ebe17-55c5-4640-972f-b59c0dd11ccf"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
@@ -1021,6 +1042,7 @@ DataFrames = "~1.7.0"
 PlotlyBase = "~0.8.21"
 PlotlyKaleido = "~2.3.0"
 Plots = "~1.40.13"
+PlutoTeachingTools = "~0.4.2"
 PlutoUI = "~0.7.63"
 ShortCodes = "~0.3.6"
 StatsBase = "~0.34.5"
@@ -1032,7 +1054,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.6"
 manifest_format = "2.0"
-project_hash = "bea67467e1ac0739cc6d6b4d8362f345be0be706"
+project_hash = "b92276863e410fb252288a01633e86f45dac3f90"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -1759,6 +1781,12 @@ version = "1.40.13"
     ImageInTerminal = "d8c32880-2388-543b-8c61-d9f865259254"
     Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
+[[deps.PlutoTeachingTools]]
+deps = ["Downloads", "HypertextLiteral", "Latexify", "Markdown", "PlutoUI"]
+git-tree-sha1 = "ce33e4fd343e43905a8416e6148de8c630101909"
+uuid = "661c6b06-c737-4d37-b85c-46df65de6f69"
+version = "0.4.2"
+
 [[deps.PlutoUI]]
 deps = ["AbstractPlutoDingetjes", "Base64", "ColorTypes", "Dates", "FixedPointNumbers", "Hyperscript", "HypertextLiteral", "IOCapture", "InteractiveUtils", "JSON", "Logging", "MIMEs", "Markdown", "Random", "Reexport", "URIs", "UUIDs"]
 git-tree-sha1 = "3876f0ab0390136ae0b5e3f064a109b87fa1e56e"
@@ -2360,34 +2388,31 @@ version = "1.8.1+0"
 # ╠═63d96af8-7399-4c26-9221-9aa36731c239
 # ╠═ebd9c668-f9f5-48c7-8e9b-859f169ced79
 # ╠═a6b45206-f705-4f48-849d-aca4a0f183f6
+# ╠═9f50ab63-f9ef-4d32-9062-e570aeac9906
 # ╠═4fb47936-5f5b-42cb-99a0-1db519f34584
 # ╠═7b73278e-bb13-44c8-9bcd-45ec39f679a1
 # ╠═2108a2d1-4d9f-4b16-ae3b-e1938c9ae606
 # ╠═b14098b5-65a1-471b-becf-017c5c07d8b4
 # ╠═0a6c0ac8-4555-46b8-864b-6b6e42dce9de
+# ╠═d564cb7c-3866-4a0c-a8f6-b2265fc967e2
 # ╠═11ea5ad6-9c55-47ca-a65e-8342bef0d637
 # ╠═13a8cbd0-21e1-4ac7-ba10-383197bb6e0a
-# ╠═689dfd81-45d2-4371-80b8-ac5177bcc99a
 # ╠═f9e9e887-d961-490e-9f7a-ce1c177bf56b
 # ╠═ce3083be-6fca-428d-bc52-b0a7c2c4b81e
+# ╠═689dfd81-45d2-4371-80b8-ac5177bcc99a
 # ╠═bee2feec-b95a-4931-9b6e-a069841f5115
-# ╟─f72ebe9c-3c40-4753-bef3-4e6bbf129164
 # ╠═ec6a877c-6e93-43dd-bc46-45957ada64b0
 # ╠═7ede7d35-8858-49ba-9d16-3171214093ab
 # ╠═ca9add85-9ecf-45c7-bb4d-b10de4a7e8ba
-# ╟─14195e5d-7643-4efb-8535-561530ac2c91
-# ╟─870103c2-eac4-4438-a58f-7279e6f3b6fe
+# ╠═14195e5d-7643-4efb-8535-561530ac2c91
+# ╠═870103c2-eac4-4438-a58f-7279e6f3b6fe
 # ╠═fceba045-6717-4cdd-890e-f06a616162c5
-# ╟─033e221a-223d-4ec5-8349-d1f9ed81b0db
-# ╟─a52d1bc6-7fc3-4bde-bdca-7a199eeef413
+# ╠═a52d1bc6-7fc3-4bde-bdca-7a199eeef413
+# ╠═033e221a-223d-4ec5-8349-d1f9ed81b0db
 # ╠═3f7622d2-b3c7-4fcc-abe3-2b8c21cf913d
-# ╠═5a96c83a-0f2f-4a0b-8662-1effa9c84a55
-# ╠═d655ed85-d315-4314-9442-05487f58fc15
-# ╠═9b0f6243-2d29-467b-b5f7-3ac85e913369
-# ╠═49ca96a5-6f07-497f-a4f5-2263955e2906
-# ╠═4957ce9d-982b-4e04-affb-13a28e07acc1
 # ╠═c7f7b3e5-e0fb-41a1-8e60-79c17e5f96a9
-# ╠═cedf66fc-7391-46a5-aa4a-59a30bee6802
+# ╠═5459494e-eca1-4c90-8246-94e5a1313f58
+# ╠═58173b25-bbb2-489b-9b4b-3e6ef45bde74
 # ╠═667d4a6f-7992-47ea-91be-d5d5f9f16af2
 # ╠═e05fa291-80c1-488c-9773-6c8f1e617b16
 # ╠═e52c93f3-41b4-4589-b8bf-61c370844703
@@ -2428,6 +2453,7 @@ version = "1.8.1+0"
 # ╠═c718a23d-91df-4576-9039-16aed0894f50
 # ╠═2364115b-370d-4e2f-8de8-fcf9e7189f5c
 # ╠═d7c54967-5a6e-4fbc-8689-5d6454a95275
+# ╠═5d3df015-5d84-42d9-b04c-1b847f377d21
 # ╠═986fa101-f14a-430e-bba6-a5c5786f648f
 # ╠═7ac6fa90-2fe2-4a09-8a3d-f5c02c8a12f5
 # ╠═481e34c0-e245-4987-ae96-ca5b30a114ce
@@ -2437,9 +2463,11 @@ version = "1.8.1+0"
 # ╠═4c459fa3-50b5-4a14-952d-a21afd0841b9
 # ╠═a751b25c-69ff-4263-a72b-f53994a2f688
 # ╠═722073ad-065d-4ee8-bae0-4475a03f402c
+# ╠═39a1bd3c-76e0-4f03-888b-8217a6bc866f
 # ╠═21ef5c35-084f-45f9-b9dc-31e5794821fe
 # ╠═6111cb71-2f89-4185-9842-9fd690f7b875
 # ╠═a665581b-afd5-4846-8af2-e80a5aa2b044
+# ╠═ce8adf49-25ce-4644-9420-921bdb8e9c28
 # ╠═c9fd4dae-5bd7-40be-b143-387f7f8ec02d
 # ╠═29e60920-bdde-4c06-8626-7b35e25330a7
 # ╠═c3557873-9d05-432c-aa83-4394a85e4d54
@@ -2459,8 +2487,10 @@ version = "1.8.1+0"
 # ╠═d5d4f807-7e47-48eb-b828-27b43491a2c8
 # ╠═d262a18f-1482-44a1-821b-d5a7b5370f44
 # ╠═222754d0-2196-4b8f-a3f2-f261aee492e6
+# ╠═8997a275-1f23-4f3d-9285-3889aa2f1897
 # ╠═8bcc469e-d96c-4bab-a8de-fa5977d768f6
 # ╠═8e78cb8a-0d5d-4a91-b426-4e1058796a41
+# ╠═7a3bdcef-c0c7-4892-ab49-3c363945f08d
 # ╠═4a1845cd-e71a-4dbb-a5fc-c9b8d6df289a
 # ╠═d18d17da-ad30-45fd-8ea8-e2c965609e48
 # ╠═50a25851-1f8b-48eb-8c04-410128ec5dae

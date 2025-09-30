@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.13
+# v0.20.8
 
 using Markdown
 using InteractiveUtils
@@ -22,9 +22,15 @@ md"""
 Óscar Belmonte Fernández - IR2130 Aprendizaje Automático
 
 Grado en Inteligencia Robótica - Universitat Jaume I (UJI)
-
-![](https://ujiapps.uji.es/ade/rest/storage/63c07717-5208-4240-b688-aa6ff558b466?guest=true)
 """
+
+# ╔═╡ 1ec92e62-38e5-490e-8764-7c657d35c296
+Resource(
+	"https://belmonte.uji.es/imgs/uji.jpg",
+	:alt => "Logo UJI",
+	:width => 400,
+	:style => "display: block; margin: auto;",
+)
 
 # ╔═╡ 39a5d438-5034-49d6-9256-9fbe43fc9e01
 md"""
@@ -33,7 +39,7 @@ md"""
 Un proyecto de aprendizaje automático necesita de cierta organización previa antes de su inicio. 
 En particular, el uso de los datos debe ser claramente establecido.
 
-El desarrollo de proyectos aprendizaje automático es una fase continua de prueba y error, siempre hay espacio suficiente para probar nuevas idea.
+El desarrollo de proyectos de aprendizaje automático es una fase continua de prueba y error, siempre hay espacio suficiente para probar nuevas idea.
 
 Como en todo proyecto, es muy importante ir documentando todo el trabajo, así como las conclusiones que se van obteniendo.
 """
@@ -131,13 +137,7 @@ md"""
 1. Hacer pruebas rápidas para cada uno de los algoritmos seleccionados.
 1. Comprobar si se cumplen las condiciones *ideales* para los algoritmos seleccionados.
 1. Aplicar la/las métricas seleccionadas y registrar los resultados.
-"""
-
-# ╔═╡ eeb73f9a-c310-491c-8d11-3e4954302d59
-md"""
-## Identificar los algoritmos prometedores
-
-5. Añadir/eliminar características y repetir las pruebas.
+1. Añadir/eliminar características y repetir las pruebas.
 1. Seleccionar los algoritmos que dan mejores resultados para la siguiente fase.
 
 De nuevo, automatizar todos los proceso para que sea sencillo repetirlos si 
@@ -208,7 +208,7 @@ md"""
 ## Resumen
 
 - Probar varios modelos antes de decidirse por uno.
-- No realizar una ajuste de parámetros temprano porque puede sesgar la selección del modelo.
+- No realizar un ajuste de parámetros temprano porque puede sesgar la selección del modelo.
 - Si es posible, combinar más de una modelo en la solución final.
 - Anotar todas la ideas que vayan surgiendo.
 - Cuidar la presentación de los resultados.
@@ -509,6 +509,7 @@ version = "17.4.0+2"
 # ╟─0a611a39-2f34-4190-84ea-36791341ed75
 # ╟─8211d6e7-2da7-42dc-a03e-f7e8827d0bd4
 # ╟─2ba8182e-7607-4516-8c65-7f2b8362672f
+# ╟─1ec92e62-38e5-490e-8764-7c657d35c296
 # ╟─39a5d438-5034-49d6-9256-9fbe43fc9e01
 # ╟─276f4250-bd8c-408c-9cb0-0493f5f7b3fe
 # ╟─67b9cdd1-32b3-431b-9fe4-88fc39057eb0
@@ -522,7 +523,6 @@ version = "17.4.0+2"
 # ╟─27d4223e-66cb-4136-9d37-bb9cc704a0da
 # ╟─7bef6ea7-48f6-4491-9b16-e08a5597c101
 # ╟─7cdff43a-666f-4704-9ece-dbc81d0ab0c2
-# ╟─eeb73f9a-c310-491c-8d11-3e4954302d59
 # ╟─d119b883-aaa4-48c4-ab72-1c40913a04ce
 # ╟─bb0fa793-9662-4926-9eef-077d22963c15
 # ╟─5842c918-9ebf-4903-be1c-7f5377b66002

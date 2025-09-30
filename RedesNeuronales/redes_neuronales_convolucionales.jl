@@ -22,7 +22,7 @@ using ShortCodes
 TableOfContents(title="Contenidos", depth=1)
 
 # ╔═╡ f747d2c2-a8ec-46ab-9705-b11b3d48dfe1
-url_imagenes = "https://belmonte.uji.es/Docencia/IR2130/Teoria/RedesNeuronales/Imagenes/"
+url_imagenes = "https://belmonte.uji.es/Docencia/IR2130/Teoria/RedesNeuronales/Imagenes/";
 
 # ╔═╡ bc7e1700-5d03-4493-84d7-b96a7da32d1b
 md"""
@@ -102,16 +102,16 @@ Resource(
 md"""
 ## Introducción
 
-Utilizar redes densas en visión por computador es impracticable. El tamaño de una imagen, en píxeles, determina el número de neuronas (una neurona de entrada por cada píxel de la imagen) en la capa de entrada y posteriores.
+Hasta ahora, en los ejemplos de redes neuronales que hemos visto hemos utilizados capas densas. Sin embargo, utilizar redes con capas densas en visión por computador es impracticable. El tamaño de una imagen, en píxeles, determina el número de neuronas (una neurona de entrada por cada píxel de la imagen) en la capa de entrada y posteriores.
 
-El número de parámetros que es necesario entrenar sería muy elevado.
+El número de parámetros a entrenar sería muy elevado.
 """
 
 # ╔═╡ 799ac9d4-2151-4474-a98e-1476e8bb1033
 md"""
 ## Introducción
-Las redes neuronales convolucionales están _inspiradas_ en el funcionamiento 
-de la percepción de la visión:
+
+Por otro lado, las redes neuronales convolucionales están _inspiradas_ en el funcionamiento de la percepción de la visión:
 """
 
 # ╔═╡ a6aa59f8-f25f-402f-a9e7-9553235f7303
@@ -131,9 +131,9 @@ Las redes convolucionales proponen una solución basada en dos elementos:
 1. Utilizar convoluciones para **aprender** las características relevantes de las imágenes.
 1. Utilizar **pooling** para reducir el tamaño de las imágenes.
 
-Además, en muchos casos las últimas capas de una red convolucional están formadas por capas densas.
+Además, en muchos casos las últimas capas de una red convolucional, la que contienen menos neuronas, están formadas por capas densas.
 
-Esto permite utilizar redes neuronales en las tareas típicas de la visión por computador.
+Estos dos elementos permiten utilizar redes neuronales en las tareas típicas de la visión por computador.
 """
 
 # ╔═╡ 4e1c05fb-ebf4-4397-9ceb-838586369223
@@ -142,11 +142,11 @@ md"""
 
 Las tareas típicas dentro de la visión por computador son:
 
-* Clasificación de imágenes.
-* Ubicación de objetos dentro de una imagen.
-* Detección de objetos en una imagen.
-* Seguimiento de objetos en secuencias de imágens.
-* Segmentación semántica de los objetos de una imagen.
+* Clasificación de imágenes. Por ejemplo indicar si la imagen es de una persona, un coche o una señal de tráfico.
+* Detección de objetos en una imagen. Enumerar todos los objetos que aparecen en una imagen
+* Ubicación de objetos dentro de una imagen. Encuadrar cada uno de los objetos reconocidos en una imagen.
+* Seguimiento de objetos en secuencias de imágenes. Seguir un de terminado objeto (por ejemplo un coche) en un vídeo.
+* Segmentación semántica de los objetos de una imagen. Asignar a cada pixel de una imagen a cada uno de los objetos que se han reconocido.
 """
 
 # ╔═╡ d59746f5-4d77-45cc-b57e-f70c7bf12c2e
@@ -187,7 +187,7 @@ Encontrar todos los objetos dentro de una imagen:
 Resource(
 	url_imagenes * "gato_ubicado.png",
 	:alt => "Detección de objetos dentro de una imagen.",
-	:width => 300,
+	:width => 400,
 	:style => "display: block; margin: auto;",
 )
 
@@ -260,7 +260,7 @@ Columns(
 )
 
 # ╔═╡ 2a12e686-6cb7-40a8-9907-90a970ef175b
-md"""
+html"""
 Fuente: Vincent Dumoulin, Francesco Visin - A guide to convolution arithmetic for deep learning
 """
 
@@ -303,7 +303,7 @@ Resource(
 )
 
 # ╔═╡ 1ed0f5a2-754f-41ee-a362-6884c7ab20cf
-md"""
+html"""
 Fuente: https://towardsdatascience.com/a-comprehensive-guide-to-convolutional-neural-networks-the-eli5-way-3bd2b1164a53
 """
 
@@ -343,7 +343,7 @@ Columns(
 )
 
 # ╔═╡ 28b85f5d-ad91-4ac6-9874-552ae80fd5bf
-md"""
+html"""
 Fuente: Wikipedia
 """
 
@@ -351,7 +351,7 @@ Fuente: Wikipedia
 md"""
 ## Convoluciones
 
-Ejemplo de convolución que _resalta_ los bordes:
+Ejemplo de convolución que _resalta_ los bordes en una imagen:
 
 ```math
 \begin{equation}
@@ -382,8 +382,10 @@ Columns(
 )
 
 # ╔═╡ e6c81043-fc99-4367-9999-be72c91d9e5f
-md"""
+html"""
+<font-size = 2>
 Fuente: Wikipedia
+</font-size>
 """
 
 # ╔═╡ 1ea47d14-3d4e-4414-808a-ca6c0e6a4f89
@@ -409,7 +411,7 @@ md"""
 
 Para instanciar una capa convolucional en Flux
 
-```.julia
+```julia
 Conv(filter, in => out, σ = identity;
      stride = 1, pad = 0, dilation = 1, groups = 1, [bias, init])
 
@@ -430,7 +432,7 @@ md"""
 ## Show me the code
 
 **pad**: se añaden píxeles nulos para que la imagen de la salida sea 
-$ancho_{entrada}/salto$.
+``ancho_{entrada}/salto``.
 """
 
 # ╔═╡ c19b317f-e5c7-44bc-a802-a76f48f79355
@@ -442,13 +444,14 @@ Resource(
 )
 
 # ╔═╡ ecdc9b78-1779-4341-9d5f-f25761270f9a
-md"""
+html"""
 Fuente: Hands-on Machine Learning... Aurélien Gèron
 """
 
 # ╔═╡ b8d7a851-babb-4faf-b7a5-a3150b13a516
 md"""
 ## Pooling
+
 El número de parámetros que hay que entrenar crece al ir aplicando sucesivas capas convolucionales. Una manera de reducir el número de parámetros es aplicar capas de pooling tras las capas convolucionales:
 """
 
@@ -456,13 +459,13 @@ El número de parámetros que hay que entrenar crece al ir aplicando sucesivas c
 Resource(
 	url_imagenes * "pooling.png",
 	:alt => "Ejemplos de pooling máxio y promedio.",
-	:width => 500,
+	:width => 400,
 	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ 60c48cb2-29b1-4007-83ee-c8e282e03003
 md"""
-De cada una de las zonas recuadradas con un color diferente, se elige un representante para formar parte de la nueva imagen de tamaño reducido. En el ejemplo, pasamos de una imagen de tamaño 4x4 a tamaño 2x2.
+De cada una de las zonas recuadradas con un color diferente, se elige un representante para que forme parte de la nueva imagen de tamaño reducido. En el ejemplo, pasamos de una imagen de tamaño 4x4 a tamaño 2x2.
 
 Max pooling elige el valor más alto de cada recuadro. Average pooling elige el promedio de los píxeles del recuadro.
 """
@@ -473,13 +476,13 @@ md"""
 
 Flux nos proporciona distintas capas de Pooling. Para utilizar polling máximo:
 
-```.julia
+```julia
 MaxPool((n,m))
 ```
 
 Para utilizar pooling promedio:
 
-```.julia
+```julia
 MeanPool((n,m))
 ```
 
@@ -510,7 +513,10 @@ Resource(
 # ╔═╡ 96babbc2-f033-48e4-9349-68710bdfb067
 md"""
 Al final hay una estructura de capas totalmente conectadas.
+"""
 
+# ╔═╡ a4920e1e-1a26-4580-9f32-17b73e3faf4a
+html"""
 Fuente: Hands-on machine learning, Aurélien Géron.
 """
 
@@ -533,7 +539,10 @@ Resource(
 # ╔═╡ af5ae3f6-522c-4a9f-9ff8-9f73161dad9a
 md"""
 Las **Gaussian connections** del final son la activación **softmax**.
+"""
 
+# ╔═╡ aa1559b9-0b7f-4973-93a5-bbbdf4ea0ab0
+html"""
 Fuente: Yann LeCunn et al.
 """
 
@@ -541,9 +550,9 @@ Fuente: Yann LeCunn et al.
 md"""
 ## LeNet5
 
-La implementación de la red:
+La implementación de la red utilizando Flux:
 
-```.julia
+```julia
 lenet5 = Chain(
 	Conv((5, 5), 1=>6, activacion),
 	MeanPool((2, 2)),
@@ -573,7 +582,7 @@ Resource(
 )
 
 # ╔═╡ 43fdbfe8-d55c-4474-a358-fa82768e5db1
-md"""
+html"""
 Fuente: Wikipedia
 """
 
@@ -660,6 +669,13 @@ Resource(
 	:style => "display: block; margin: auto;",
 )
 
+# ╔═╡ 83ee5b2f-c44f-464b-b3c6-747ed061aad1
+md"""
+## LeNet5
+
+Este es el vídeo donde un joven LeCun y su equipo muestran cómo trabaja la rede neuronal.
+"""
+
 # ╔═╡ 528c23a5-3a0a-4fcc-99eb-90d9a01ff3df
 YouTube("FwFduRA_L6Q")
 
@@ -700,11 +716,16 @@ Resource(
 	:style => "display: block; margin: auto;",
 )
 
+# ╔═╡ 89386d4f-4d89-4868-917d-71a59f124018
+md"""
+## ResNet
+"""
+
 # ╔═╡ 9b38cde2-1c0a-4871-ab3a-874fca8ac403
 md"""
 ### Metalhead
 
-[Metalhead](https://fluxml.ai/Metalhead.jl/stable/) es una biblioteca en Julia que implementa algunos de los más conocidos algoritmos en visión por computador. Esta es la [lista de modelos](https://fluxml.ai/Metalhead.jl/0.8.0-DEV/README.html#available-models) implementados en Metalhead.
+[Metalhead](https://fluxml.ai/Metalhead.jl/stable/) es una biblioteca en Julia que implementa algunos de los algoritmos más conocidos en visión por computador. Esta es la [lista de modelos](https://fluxml.ai/Metalhead.jl/0.8.0-DEV/README.html#available-models) implementados en Metalhead.
 
 Los modelos de Metalhead se han entrenado con la base de datos [ImageNet](https://www.image-net.org/) que es un conjunto de datos con
 1.000 clases , 1.281.167 imágenes de entrenamiento, 50.000
@@ -715,7 +736,7 @@ imágenes de validación y 100.000 imágenes de prueba.
 md"""
 ## Show me the code
 
-```.julia
+```julia
 # Cargamos el modelo con los parámetros pre-entrenados
 model = ResNet(18; pretrain=true)
 
@@ -731,6 +752,8 @@ top_class_idx = argmax(probabilities)
 # Motramos resultados
 println("Predicted class: $(labels[top_class_idx]) with probability $(probabilities[top_class_idx])")
 ```
+
+En el [github](https://github.com/AprendizajeAutomaticoUJI/Teoria/blob/main/RedesNeuronales/EjemplosRedesNeuronales/resnet_metalhead.jl) de la asignatura tienes un ejemplo de cómo utiliar ResNet.
 """
 
 # ╔═╡ 9bbd7f5a-7279-42c4-977f-753cee52be32
@@ -781,7 +804,7 @@ ejecutar en dispositivos con hardware más modesto.
 Todas las versiones están entrenadas con el conjunto de datos 
 [COCO](https://cocodataset.org/#home).
 
-Afortunadamente, existe una implementación de YOLO en Julia, llamada [ObjectDetector.jl](https://github.com/r3tex/ObjectDetector.jl).
+Afortunadamente, existe una implementación de YOLO en Julia, llamada [ObjectDetector.jl](https://github.com/r3tex/ObjectDetector.jl), pero sólo implementa hasta la versión 7 de YOLO.
 """
 
 # ╔═╡ a5882dd9-f4d3-46c9-9096-743671bf13fb
@@ -790,7 +813,7 @@ md"""
 
 Primero, cargamos el modelo YOLO que vamos a utilizar:
 
-```.julia
+```julia
 function prepara_yolo()
     yolomod = YOLO.v7_416_COCO(batch=1, silent=true)
     batch = emptybatch(yolomod)
@@ -801,7 +824,7 @@ end
 
 Después preparamos la imagen:
 
-```.julia
+```julia
 function prepara_imagen(path, yolomod, batch)
     img = load(path)
     batch[:,:,:,1], padding = prepare_image(img, yolomod)
@@ -817,7 +840,7 @@ md"""
 
 Finalmente, hacemos la detección:
 
-```.julia
+```julia
 res = yolomod(batch, detect_thresh=0.5, overlap_thresh=0.8) 
 ```
 
@@ -835,7 +858,7 @@ En este caso ha detectado tres personas en la imagen.
 Resource(
 	url_imagenes * "familia2_yolo.png",
 	:alt => "Ejemplo detección YOLO",
-	:width => 900,
+	:width => 700,
 	:style => "display: block; margin: auto;",
 )
 
@@ -885,25 +908,30 @@ md"""
 
 1. Cargar un modelo ya entrenado:
 
-```.julia
+```julia
 base_model = ResNet(18; pretrain=true)
 ```
 
 2. Extraer la parte de la red que se encarga de la extracción de características:
 
-```.julia
+```julia
 feature_extractor = base_model.layers[1]
 ```
 
 3. Congelar la parte de extracción de características, es la parte de la red que reaprovechamos:
 
-```.julia
+```julia
 Flux.freeze!(feature_extractor)
 ```
+"""
+
+# ╔═╡ 037ea602-4198-46af-a471-89abda06ec7c
+md"""
+## Show me the code
 
 4. Crear una nueva capa con el número de clases que nos interesa:
 
-```.julia
+```julia
 num_new_classes = 10
 new_classifier_head = Chain(
     AdaptiveMeanPool((1,1)), 
@@ -914,7 +942,7 @@ new_classifier_head = Chain(
 
 5. Unir la nueva capa a la capa de extracción de características:
 
-```.julia
+```julia
 transfer_model = Chain(feature_extractor, new_classifier_head)
 ```
 
@@ -931,19 +959,19 @@ La aplicación de la técnica de **fine tunning** es l siguiente:
 
 1. Cargar un modelo ya entrenado:
 
-```.julia
+```julia
 base_model = ResNet(18; pretrain=true)
 ```
 
 2. Extraer la parte de la red que se encarga de la extracción de características:
 
-```.julia
+```julia
 feature_extractor = base_model.layers[1]
 ```
 
 3. Crear una nueva capa con el número de clases que nos interesa:
 
-```.julia
+```julia
 num_new_classes = 10
 new_classifier_head = Chain(
     AdaptiveMeanPool((1,1)), 
@@ -951,16 +979,21 @@ new_classifier_head = Chain(
     Dense(512, num_new_classes) # La última capa de extracción de características de ResNet tiene 512 neuronas.
 )
 ```
+"""
 
-5. Entrenar la red con nuestro conjunto de imágenes para que haga un ajuste inicial de la nueva capa de clasificación.
+# ╔═╡ c1b7b04e-eb0e-4893-82f0-837df1912cc1
+md"""
+## Show me the code
 
-6. **Descongelar** algunas capas de extracción de características, típicamente la última o los dos últimas antes de la capa de clasificación.
+4. Entrenar la red con nuestro conjunto de imágenes para que haga un ajuste inicial de la nueva capa de clasificación.
 
-```.julia
+5. **Descongelar** algunas capas de extracción de características, típicamente la última o los dos últimas antes de la capa de clasificación.
+
+```julia
 Flux.unfreeze!(finetune_model.layers[1][end]) # Descongelamos la última capa.
 ```
 
-7. Entrenar de nuevo con una tasa de aprendizaje pequeña $η = 10^{-4}$ ó $η = 10^{-5}$.
+6. Entrenar de nuevo con una tasa de aprendizaje pequeña $η = 10^{-4}$ ó $η = 10^{-5}$.
 """
 
 # ╔═╡ 6f25ccbb-039e-421a-88a0-0a5396b7987a
@@ -972,8 +1005,7 @@ md"""
     * Pooling.
 * Hemos revisado algunas de las arquitecturas más interesantes.
 * Hemos visto con detalle el trabajo con YOLO.
-* La transferencia de aprendizaje nos permite _adaptar_ redes existentes para 
-trabajar en problemas específicos.
+* La transferencia de aprendizaje nos permite _adaptar_ redes existentes para trabajar en problemas específicos.
 """
 
 # ╔═╡ ff26ee4a-8624-45d9-8bff-4f2b49c10c40
@@ -1410,7 +1442,7 @@ version = "17.4.0+2"
 # ╠═4e1c05fb-ebf4-4397-9ceb-838586369223
 # ╠═d59746f5-4d77-45cc-b57e-f70c7bf12c2e
 # ╠═ba6966b3-72d3-4a53-8a37-371a4ff65eaf
-# ╟─9f669593-4b2b-4eab-b33d-5d27aca05f2c
+# ╠═9f669593-4b2b-4eab-b33d-5d27aca05f2c
 # ╠═57dad7fb-d2cf-4063-a7df-1d66216ec1c6
 # ╠═eef3fbbe-99bc-435d-823b-9964c55cbc93
 # ╠═0eaa405e-3a79-4c17-b9ea-52b16c1be54b
@@ -1448,9 +1480,11 @@ version = "17.4.0+2"
 # ╠═574816f0-f6d9-4208-a1fd-12cabf07df40
 # ╠═3b3f8538-00ea-49ed-84ec-cff6934e6f27
 # ╠═96babbc2-f033-48e4-9349-68710bdfb067
+# ╠═a4920e1e-1a26-4580-9f32-17b73e3faf4a
 # ╠═410abb9f-56d4-4252-a353-4c1d550f36cd
 # ╠═14eabc76-22bc-4b7d-b26d-e0c18095056e
 # ╠═af5ae3f6-522c-4a9f-9ff8-9f73161dad9a
+# ╠═aa1559b9-0b7f-4973-93a5-bbbdf4ea0ab0
 # ╠═8692bcdf-059e-45d6-baab-1af4705a72d4
 # ╠═85382e11-cb0f-4e85-bb48-ec21714a230c
 # ╠═d01effc2-4200-499f-93d8-a5bb5638449c
@@ -1464,12 +1498,14 @@ version = "17.4.0+2"
 # ╠═180d751e-1486-4058-acaa-0e1859d76b36
 # ╠═d91c36f5-5aaa-4086-8bfb-384ec9a1a200
 # ╠═cca48072-8bd6-4993-aba2-d4e8861cb3a1
+# ╠═83ee5b2f-c44f-464b-b3c6-747ed061aad1
 # ╠═528c23a5-3a0a-4fcc-99eb-90d9a01ff3df
 # ╠═e35e23ec-fb8a-480b-9904-c0fd95e5fe73
 # ╠═348a29c8-c562-4158-a26c-da3b27cb4f84
 # ╠═f63ed416-2350-4790-b324-842a69fb429e
 # ╠═d2f9757f-68eb-4c4c-8589-4df4bafa830e
 # ╠═ffc23bf9-987f-4392-8671-f6a692d12926
+# ╠═89386d4f-4d89-4868-917d-71a59f124018
 # ╠═9b38cde2-1c0a-4871-ab3a-874fca8ac403
 # ╠═0c1094af-ddf9-4206-bb79-0a5146f792e1
 # ╠═9bbd7f5a-7279-42c4-977f-753cee52be32
@@ -1486,7 +1522,9 @@ version = "17.4.0+2"
 # ╠═ff881d8c-81f8-4a1f-afae-308d7289b601
 # ╠═8bbbf78b-7dfd-4bff-a95b-5a95052d6786
 # ╠═18b3310a-2571-4a4b-91f1-38a1fa047d56
+# ╠═037ea602-4198-46af-a471-89abda06ec7c
 # ╠═599634bc-09a5-4815-ae58-432211ea053d
+# ╠═c1b7b04e-eb0e-4893-82f0-837df1912cc1
 # ╠═6f25ccbb-039e-421a-88a0-0a5396b7987a
 # ╠═ff26ee4a-8624-45d9-8bff-4f2b49c10c40
 # ╟─00000000-0000-0000-0000-000000000001
