@@ -81,7 +81,7 @@ La regresión lineal simple se puede extender, de manera muy sencilla, a problem
 md"""
 ## Introducción
 
-Aunque existe una formula exacta para resolver problemas de regresión, estudiaremos la técnica del descenso de gradiente para encontrar la solución de la regresión lineal.
+Aunque existe una fórmula exacta para resolver problemas de regresión, estudiaremos la técnica del descenso de gradiente para encontrar la solución de la regresión lineal.
 
 Finalmente veremos qué es la regularización y qué problema nos ayuda a resolver.
 """
@@ -90,12 +90,12 @@ Finalmente veremos qué es la regularización y qué problema nos ayuda a resolv
 md"""
 ## Objetivos de Aprendizaje
 
-- Decidir cuando en un problema se puede emplear la regresión lineal.
+- Decidir cuándo en un problema se puede emplear la regresión lineal.
 - Estimar la bondad de un ajuste con regresión lineal.
-- Demostrar el fundamente del descenso de gradiente.
+- Demostrar el fundamento del descenso de gradiente.
 - Razonar si la regularización es apropiada para un determinado problema.
 - Construir una solución de regresión (múltiple, polinómica).
-- Concer cómo implementar soluciones con Julia.
+- Conocer cómo implementar soluciones con Julia.
 """
 
 # ╔═╡ cda801a3-6b0c-49f0-afbd-798850b354ca
@@ -336,7 +336,7 @@ md"""
 ## Varianza de los residuos
 Resulta interesante calcular el error del estimador.
 
-La varianza de los residuos es la contribución de la parte no linela del modelo $\epsilon \sim N(0,\sigma^2)$.
+La varianza de los residuos es la contribución de la parte no lineal del modelo $\epsilon \sim N(0,\sigma^2)$.
 
 Un estimador para la varianza de los residuos es:
 
@@ -450,7 +450,7 @@ ApproximateOneSampleKSTest(residuos, ajuste_residuos)
 
 # ╔═╡ f4c5fdba-5493-4240-93dd-86345c9adad7
 md"""
-En todos los casos el $p-valor > 0.05$ y por lo tanto no podemos rechazar que la distribución de los residuos no sea Normal.
+En todos los casos el $p-valor > 0.05$ y por lo tanto no podemos rechazar que la distribución de los residuos sea normal.
 """
 
 # ╔═╡ 90a3a2c0-4d45-40d9-9bdc-a966c628ba90
@@ -484,7 +484,7 @@ $$R^2 = 1 - \frac{SS_{res}}{SS_{tot}}$$
 La fracción $\frac{SS_{res}}{SS_{tot}}$ es la fracción de la varianza no 
 explicada por los datos.
 
-En nuestros caso $R^2 = 0.5696$ y la varianza no explicada es $0.4303$.
+En nuestro caso $R^2 = 0.5696$ y la varianza no explicada es $0.4303$.
 """
 
 # ╔═╡ caba4624-8388-43b9-a9bf-b0bb5ed27213
@@ -533,7 +533,7 @@ md"""
 ## Paquetes en Julia
 Vamos a ver el resultado de la regresión en una gráfica.
 
-Primera calculamos los extremos de la variable **weight**:
+Primero calculamos los extremos de la variable **weight**:
 """
 
 # ╔═╡ 58e0b3a9-9f2c-438f-ac4a-db490a3f6685
@@ -541,7 +541,7 @@ extremos = collect(extrema(adultos.weight)) # Usamos collect para convertir la t
 
 # ╔═╡ 7da174c6-91a4-4508-818f-6d35720df915
 md"""
-Construímos un DataFrame (**atención a la etiqueta de la columna**)
+Construimos un DataFrame (**atención a la etiqueta de la columna**)
 """
 
 # ╔═╡ 1da2e2e0-b1bd-4e86-b397-54f293a90c06
@@ -593,7 +593,7 @@ regresor = LinearRegressor()
 
 # ╔═╡ 19905308-9b52-4f49-a4e8-7212bc08fb0a
 md"""
-**MLJ** tiene una interfaz uniforme, trabajamos con todos los modelos de aprendizaje automático con los mismos pasos, creando una máquina que contine, el modelo, y los datos.
+**MLJ** tiene una interfaz uniforme, trabajamos con todos los modelos de aprendizaje automático con los mismos pasos, creando una máquina que contiene el modelo y los datos.
 """
 
 # ╔═╡ 57a30f20-7dc2-4c02-8621-32f03c5d5f71
@@ -611,7 +611,7 @@ MLJ.fit!(modelo)
 
 # ╔═╡ 8cab10cf-e7d4-42a9-b9b9-c6243ea80ec4
 md"""
-Depués de entrenar el modelo, podemos ver el valor de los parámetros:
+Después de entrenar el modelo, podemos ver el valor de los parámetros:
 """
 
 # ╔═╡ cb016b85-517d-4e28-ab73-60adab8007b5
@@ -667,7 +667,7 @@ de prueba*.
 md"""
 ## Evaluación cruzada
 
-La evaluación cruzada consiste en dividir el conjunto de datos inicial en un conjunto de entranamiento y otro de pruebas de manera aleatoria, repetidas veces. En cada repetición se crear un modelo con los datos de entrenameinto y se prueba con los datos de prueba, el resultados final es el promedio de todas las repeticiones.
+La evaluación cruzada consiste en dividir el conjunto de datos inicial en un conjunto de entrenamiento y otro de pruebas de manera aleatoria, repetidas veces. En cada repetición se crea un modelo con los datos de entrenamiento y se prueba con los datos de prueba, el resultado final es el promedio de todas las repeticiones.
 """
 
 # ╔═╡ 2da21951-935d-4ba8-9a3b-c2628a71a31e
@@ -686,13 +686,13 @@ de pérdidas:
 $\mathcal{L}(h_\mathbf{\theta}) = \frac{1}{N} \sum_{i=1}^N \lvert y_i - x_i\theta \rvert ^2$
 
 aparece de modo natural al asumir que los residuos están normalmente 
-distribuídos.
+distribuidos.
 """
 
 # ╔═╡ 878d4d09-9d5d-4d2b-9670-c7ae116ee5e9
 md"""
 ## Estimación de parámetros por máxima verosimilitud
-Hemos supuesto que los residuos siguen un distribución normal
+Hemos supuesto que los residuos siguen una distribución normal
 independientemente del punto donde calculamos la regresión, lo que significa
 suponer que:
 
@@ -712,7 +712,7 @@ probabilidad (iid: independientes e idénticamente distribuidas):
 $p(\mathbf{y}|\theta,\sigma^2) = \prod_{i=1}^N \frac{1}{\sqrt{2\pi\sigma^2}}
 e^{-\frac{(y_i-x_i\theta)^2}{2\sigma^2}}$
 
-donde hemos extendido el productorio a todas las muestas.
+donde hemos extendido el productorio a todas las muestras.
 """
 
 # ╔═╡ 4b0609e8-cc0b-44e9-94e9-01c34301dfe7
@@ -907,7 +907,7 @@ La prueba de Shapiro-Wilk no pasa. Veamos qué ocurre con las otras dos pruebas:
 
 # ╔═╡ 3282e035-d92a-4988-ae70-3562d408f09f
 md"""
-## Mormalidad de los residuos
+## Normalidad de los residuos
 """
 
 # ╔═╡ eefd48fc-ca9a-42fb-a321-53be6bf98381
@@ -972,7 +972,7 @@ Visualicemos todos los datos de nuestro conjunto, no sólo los datos de las pers
 """
 
 # ╔═╡ e3c90bb0-22fb-4853-ba20-c77dd87d0096
-scatter(data.weight, data.height, xlabel="weight", ylabel="height", title="Altura frente a peso en el cojunto Howell", legend=false, size=(900,400))
+scatter(data.weight, data.height, xlabel="weight", ylabel="height", title="Altura frente a peso en el conjunto Howell", legend=false, size=(900,400))
 
 # ╔═╡ f9f038a8-a3dd-4253-af34-0903d4b13216
 md"""
@@ -1113,7 +1113,7 @@ end
 md"""
 ## Encontrar el mejor grado de un polinomio
 
-Las distintas medidas de bondad del ajuste no nos premiten rechazar la hipótesis nula: los residuos siguen una distribución normal.
+Las distintas medidas de bondad del ajuste no nos permiten rechazar la hipótesis nula: los residuos siguen una distribución normal.
 """
 
 # ╔═╡ e0d5372d-d876-4e56-a090-bbe7158ae845
@@ -1311,7 +1311,7 @@ mínimo.
 md"""
 ## Descenso de gradiente estocástico
 
-Un técnica que se suele utilizar para acelerar el proceso de convergencia del 
+Una técnica que se suele utilizar para acelerar el proceso de convergencia del 
 descenso de gradiente es elegir aleatoriamente una única muestra del conjunto
 total en cada paso del descenso.
 
@@ -1375,7 +1375,7 @@ Veamos un ejemplo sobre un subconjunto de nuestros datos cuando ajustamos a un p
 md"""
 ## Modelos lineales regularizados: Ridge
 
-Vamos a tomar una muetra de los datos correspondientes a las personas adultas.
+Vamos a tomar una muestra de los datos correspondientes a las personas adultas.
 """
 
 # ╔═╡ ee8c9183-ead1-4a95-8d2c-818979ae6a05
@@ -1483,7 +1483,7 @@ donde $k$ es el grado del polinomio. Fíjate en que no se incluye el parámetro 
 md"""
 ## Modelos lineales regularizados: Lasso
 
-Para utilizar la regularización Lasso, el procedimiento es muy parecido a la regularización Ridge. Si embargo, hay que tener en cuenta que la regularización Lasso no tiene fórmula exacta y se utiliza descenso de gradiente, que funciona mejor si los datos están normalizados.
+Para utilizar la regularización Lasso, el procedimiento es muy parecido a la regularización Ridge. Sin embargo, hay que tener en cuenta que la regularización Lasso no tiene fórmula exacta y se utiliza descenso de gradiente, que funciona mejor si los datos están normalizados.
 """
 
 # ╔═╡ db473f0a-09ef-4e60-becf-10ddd49d34d4
@@ -1500,7 +1500,7 @@ y_normalizada = normalizador_y(muestra_y)
 
 # ╔═╡ 464df82b-298b-4424-9165-6b2e25ad0144
 md"""
-Definimos del máximo grado del polinomio:
+Definimos el máximo grado del polinomio:
 """
 
 # ╔═╡ 8908b623-0ee8-408e-a93a-c981ac9ebe07
@@ -1538,7 +1538,7 @@ regression_lasso = MLJLinearModels.fit(MLJLinearModels.LassoRegression(λ), pote
 
 # ╔═╡ 074845dc-c55d-464a-a0be-24986f7e470b
 md"""
-Obetenemos los valores del ajuste:
+Obtenemos los valores del ajuste:
 """
 
 # ╔═╡ c38dd6e8-0b2a-4926-a21f-b2fb8369d682
@@ -1580,7 +1580,7 @@ prediccion_normalizado = potencias_prediccion_normalizado * A_normalizado .+ b_n
 md"""
 ## Modelos lineales regularizados: Lasso
 
-Representamos los puntos de conjunto que queremos ajustar, y el polinomio ajustado mediante la regresión Lasso:
+Representamos los puntos del conjunto que queremos ajustar, y el polinomio ajustado mediante la regresión Lasso:
 """
 
 # ╔═╡ 3becbcf2-753c-4662-bc05-be7e625146b0
@@ -1615,7 +1615,7 @@ md"""
 - Hemos extendido la regresión lineal a modelos polinómicos.
 - Hemos estudiado qué es la técnica de descenso del gradiente.
 - Hemos introducido la regularización para mejorar el rendimiento.
-- Es importante que compruebes que se cumplen las condiciones para aplicar regresión lineal: residuos distribuido según una gaussiana centrada en el 0.
+- Es importante que compruebes que se cumplen las condiciones para aplicar regresión lineal: residuos distribuidos según una gaussiana centrada en el 0.
 - Hemos visto algunos fragmentos de código Julia.
 """
 
