@@ -483,13 +483,13 @@ Columns(
 	md"""
 	El problema tiene 16 estado posibles (uno por cada casilla), y las acciones que el agente puede tomar son 4.
 	
-	| | Izquierda | Abajo | Derecha | Arriba | 
-	|---|:-----------:|:---------:|:--------:|:-------:|
-	|**1**|      0     |  0       |    0    |  0     |
-	|**2**|     0      |     0    |      0  |     0  |
-	|**...**|    0       |    0     |  0      |    0 |
-	|**15**|      0     |    0     |    0    |    0   |
-	|**16**|       0    |   0      |     0   |   0    |
+	|       | Izquierda   | Abajo     | Derecha  | Arriba  | 
+	|-------|:-----------:|:---------:|:--------:|:-------:|
+	|**1**  |     0       |     0     |     0    |    0    |
+	|**2**  |     0       |     0     |     0    |    0    |
+	|**...**|     0       |     0     |     0    |    0    |
+	|**15** |     0       |     0     |     0    |    0    |
+	|**16** |     0       |     0     |     0    |    0    |
 	""";
 	widths = [30, 70]
 )
