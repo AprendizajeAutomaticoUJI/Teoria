@@ -61,7 +61,8 @@ Grado en Inteligencia Robótica - Universitat Jaume I (UJI)
 Resource(
 	"https://belmonte.uji.es/imgs/uji.jpg",
 	:alt => "Logo UJI",
-	:width => 400
+	:width => 400,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ 7fd1c6ad-a229-4123-bbeb-c4b55d5ffc31
@@ -182,7 +183,7 @@ Vamos a definir como **mejor solución** aquella línea que deja un mayor **marg
 md"""
 ## Hiperplano de separación entre dos clases
 
-Ya tenemos definido nuestro objetivo, encontrar el hiperplano de separación que deja el mayor margen entre las muestras de los dos conjuntos de datos.
+Ya tenemos definido nuestro objetivo, encontrar el hiperplano de separación en el conjunto de datos que deja el mayor margen entre las muestras de las dos clases.
 
 """
 
@@ -194,7 +195,8 @@ md"""
 # ╔═╡ 80ab3767-3a6f-4151-8c71-95b2290e40d0
 md"""
 ## Ecuación de la recta
-Los puntos de la recta que estamos buscando cumplen la siguiente ecuación:
+
+Los puntos de la recta (hiperplano) que estamos buscando cumplen la siguiente ecuación:
 
 $y(x) = \theta^T x + \theta_0 = 0$
 """
@@ -529,8 +531,7 @@ margen.
 1. Hemos partido de la ecuación de la recta.
 1. Hemos definido el criterio de clasificación de muestra positiva o negativa. 
 1. Hemos construido la Lagrangiana $\rightarrow$ problema de optimización.
-1. En la solución que encontramos sólo participan algunos de los datos 
-dentro de todo el conjunto.
+1. En la solución que encontramos sólo participan algunos de los datos dentro de todo el conjunto.
 """
 
 # ╔═╡ bbbe0d1c-acb9-4f69-9e38-8d5b89280c03
@@ -546,8 +547,7 @@ muestras, el entrenamiento puede ser lento.
 md"""
 ## Show me the code
 
-Después de la teoría, veamos cómo utilizar la implementación de MLJ
-(¿Qué es eso del kernel?).
+Después de la teoría, veamos cómo utilizar la implementación de MLJ.
 
 Primero cargamos la estructura para crear un SVM:
 """
@@ -562,6 +562,11 @@ Una vez cargada, la instanciamos indicando que queremos usar un kernell lineal:
 
 # ╔═╡ ca98f95a-f479-43e5-bbfd-f47123ebd27d
 modelo = SVC(kernel=LIBSVM.Kernel.Linear)
+
+# ╔═╡ 2b72cfbe-d119-46db-b5ad-8b23d9685e13
+md"""
+¿Qué es eso del kernerl?
+"""
 
 # ╔═╡ ba0a7a09-df29-4fac-b28f-b6319c88433c
 md"""
@@ -977,11 +982,11 @@ function visualizacion3d(datos)
 	x² = positivos.x .* positivos.x
 	y² = positivos.y .* positivos.y
 	xy = sqrt(2) .* positivos.x .* positivos.y
-	scatter(x², y², xy, label="Positivos")
+	scatter(x², y², xy, label="Positivos", markersize = 1, color = :blue)
 	x² = negativos.x .* negativos.x
 	y² = negativos.y .* negativos.y
 	xy = sqrt(2) .* negativos.x .* negativos.y
-	scatter!(x², y², xy, label="Negativos")
+	scatter!(x², y², xy, label="Negativos", markersize = 1, color = :red)
 end;
 
 # ╔═╡ dc253228-bc9b-4f3b-9e32-e425525d1f2b
@@ -1031,7 +1036,7 @@ $\phi(x_n^T) \phi(x_m)$
 Puede ocurrir que al transformar los vectores de partida lleguemos a un 
 espacio con muchas más dimensiones que el original, y el producto de los 
 vectores transformados sea impracticable (Ej: el kernel gaussiano transforma 
-un vector de dimensión n a un espacio de infinitas dimensiones).
+un vector de dimensión $n$ a un espacio de infinitas dimensiones).
 """
 
 # ╔═╡ 101a42d9-b3cf-48e8-b6a9-a66cdcb25937
@@ -3419,6 +3424,7 @@ version = "1.4.1+2"
 # ╠═643abb55-37d8-4277-a3e4-3883a85c5ee3
 # ╟─02be1603-d7bb-44bb-a2a6-371e417c046d
 # ╠═ca98f95a-f479-43e5-bbfd-f47123ebd27d
+# ╟─2b72cfbe-d119-46db-b5ad-8b23d9685e13
 # ╟─ba0a7a09-df29-4fac-b28f-b6319c88433c
 # ╟─f3a85143-8ca8-4372-8b47-4944f17be226
 # ╟─cbd7ba6e-2ac2-431c-a01c-f4e8017edd33
@@ -3475,7 +3481,7 @@ version = "1.4.1+2"
 # ╟─e1274616-d152-4b2e-9f71-c2cdc4f3cc1f
 # ╟─56c22652-b91c-4f9f-b814-5144ff3c80ec
 # ╟─c28301a5-b989-4448-8c5f-96d4164c35ba
-# ╠═bfa971c4-5352-40a6-92fd-eb0d8a0ac766
+# ╟─bfa971c4-5352-40a6-92fd-eb0d8a0ac766
 # ╟─9d9a7d17-e611-4405-bfc5-c1d11ef99622
 # ╟─8c21e423-4d94-49d4-befe-060bebd9db13
 # ╟─5ab964d3-fe4a-4caf-9b7b-f0ceb3d1e4f5
@@ -3485,7 +3491,7 @@ version = "1.4.1+2"
 # ╟─f1c240f7-ef5d-4296-923b-0243735112ba
 # ╟─5ac9e1ca-ddd9-40ef-bbc0-0b70c7bf00ff
 # ╟─d0bfc512-2b99-4654-af36-ff0565aeacb2
-# ╟─73e33858-0c2f-45a5-9063-be5417f860a0
+# ╠═73e33858-0c2f-45a5-9063-be5417f860a0
 # ╟─69168a15-aa7a-4951-8d47-bca2fce8b8bd
 # ╟─ac224512-fe67-44fc-bd0d-e0875a1a621e
 # ╟─92004858-7f72-41ee-affa-645f63be89c2
