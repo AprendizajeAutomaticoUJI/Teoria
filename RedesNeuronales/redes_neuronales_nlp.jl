@@ -1,8 +1,11 @@
 ### A Pluto.jl notebook ###
-# v0.20.13
+# v0.20.8
 
 using Markdown
 using InteractiveUtils
+
+# ╔═╡ 8da42b7b-7bc8-4bdc-9707-539209d79d1b
+using TextAnalysis
 
 # ╔═╡ efc09298-51f8-4013-9677-497b6de474be
 using PlutoUI
@@ -28,9 +31,15 @@ md"""
 Óscar Belmonte Fernández - IR2130 Aprendizaje Automático
 
 Grado en Inteligencia Robótica - Universitat Jaume I (UJI)
-
-![](https://belmonte.uji.es/imgs/uji.jpg)
 """
+
+# ╔═╡ 80774b7b-15eb-45a4-b220-c73bdb2da29b
+Resource(
+	"https://belmonte.uji.es/imgs/uji.jpg",
+	:alt => "Logo UJI",
+	:width => 400,
+	:style => "display: block; margin: auto;",
+)
 
 # ╔═╡ b72590de-c5d6-422d-8a7d-572cc3b1c3c3
 md"""
@@ -86,7 +95,6 @@ Antes de entrar con NLP, vamos a ver algunas técnicas relacionadas.
 md"""
 ## Bibliografía
 
-1. Hands-on machine learning, Aurélien Géron.
 1. [Deep Learning](http://www.deeplearningbook.org), Ian Goodfellow, Joshua Bengio and Aaron Courbille.
 """
 
@@ -98,19 +106,20 @@ md"""
 # ╔═╡ 2ea8cba5-3286-4d26-8bbe-76b7e1ba868f
 md"""
 ## Introducción
-El objetivo de un autoencoder es replicar la entrada en la salida pasando por 
-un espacio de menor dimensión que el espacio de partida:
+
+El objetivo de un autoencoder es replicar la entrada en la salida pasando por un espacio de menor dimensión que el espacio de partida:
 """
 
 # ╔═╡ 813ecbd6-74b8-4d26-a92d-c6098044e64c
 Resource(
 	imagenes * "autoencoder2.png",
 	:alt => "Estructuras redes neuronales recurrentes",
-	:width => 900
+	:width => 900,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ 116bf570-3a18-4789-b37c-18755c401f5d
-md"""
+html"""
 Fuente: https://lilianweng.github.io/posts/2018-08-12-vae/
 """
 
@@ -122,14 +131,15 @@ Lo que obtenemos en el espacio intermedio es una representación compacta de la 
 
 Fíjate en que el entrenamiento es no supervisado, sólo necesitamos muestras de entrenamiento, no es necesario que estén etiquetadas.
 
-Teóricamente, las funciones de entre las capas podrían ser tan potentes que conun espacio intermedio de dimensión 1 pudiésemos reconstruir la imagen original.Seria como si el autoencoder asignase un _índice_ que le permitiese recuperarla imagen inicial.
+Teóricamente, las funciones entre las capas podrían ser tan potentes que conun espacio intermedio de dimensión 1 pudiésemos reconstruir la imagen original. Seria como si el autoencoder asignase un _índice_ que le permitiese recuperarla imagen inicial.
 
-Afortunadamente, en la práctica, este caso no se da.
+Desafortunadamente, en la práctica, este caso no se da.
 """
 
 # ╔═╡ c0a6ed84-c2e1-4778-9698-3c1a346cc6bf
 md"""
 ## Introducción
+
 El trabajo de un autoencoder parece una tarea sencilla, pero tienen muchas aplicaciones:
 
 * Detectar anomalías.
@@ -141,6 +151,7 @@ El trabajo de un autoencoder parece una tarea sencilla, pero tienen muchas aplic
 # ╔═╡ e2c82807-91c9-422f-8c68-e9550d25f239
 md"""
 ## Detectar anomalías
+
 Entrenamos con un conjunto de muestras sin anomalías. Si al autoencoder llega un dato anómalo la codificación intermedia será incapaz de reconstruir el dato a la salida (gran diferencia entre entrada y salida), y es dato lo podemos considerar anómalo.
 """
 
@@ -148,11 +159,12 @@ Entrenamos con un conjunto de muestras sin anomalías. Si al autoencoder llega u
 Resource(
 	imagenes * "cern.png",
 	:alt => "CERN",
-	:width => 900
+	:width => 900,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ 1c8635e9-5f6e-4005-95d3-a3811498a179
-md"""
+html"""
 Fuente: CERN
 """
 
@@ -167,11 +179,12 @@ A partir de una imagen donde falta información, reconstruirla.
 Resource(
 	imagenes * "autoencoder_reconstruccion.png",
 	:alt => "Reconstruir imágenes",
-	:width => 900
+	:width => 900,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ 4d9883fe-1ead-4d07-ad35-5c8d935412b5
-md"""
+html"""
 Fuente: Hands-on machine learning - Aurélien Géron
 """
 
@@ -186,11 +199,12 @@ Limpiar imágenes con ruido.
 Resource(
 	imagenes * "denoising_autoencoder.png",
 	:alt => "Limpiar imágenes",
-	:width => 900
+	:width => 900,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ d2c96070-c07f-49c4-84f5-bebf7498b314
-md"""
+html"""
 Fuente: By neerajkrbansal1996 - https://github.com/neerajkrbansal1996/Denoising-autoencoder, CC0, https://commons.wikimedia.org/w/index.php?curid=128249938
 """
 
@@ -205,9 +219,11 @@ md"""
 
 La representación de palabras en un ordenador para realizar cálculos no es trivial.
 
-Usualmente, el primer paso suele ser trabajar con un vocabulario restringido en vez de con todas las palabras posible. La codificación de una palabra que no existe en el vocabulario se sustituye por un código **UNKNOWN**.
+Usualmente, el primer paso suele ser trabajar con un vocabulario restringido en vez de con todas las palabras posible del lenguaje. La codificación de una palabra que no existe en el vocabulario se sustituye por un código **UNKNOWN**. En la frase:
 
 _Puso cara de pasmo al oír la noticia_
+
+si la palabra **pasmo** no figura en el vocabulario que manejamos se sustituye por **UNKNOWN**.
 
 _Puso cara de **UNKNOWN** al oír la noticia_
 """
@@ -250,7 +266,9 @@ Cada palabra se representa por un vector de dimensión igual al número de palab
 Resource(
 	imagenes * "one_hot_encoding.webp",
 	:alt => "One hot encoding",
-	:width => 900
+	:width => 900,
+	:style => "display: block; margin: auto;",
+	
 )
 
 # ╔═╡ 87d0f2f2-eaea-4a7c-bca9-ceabab0da099
@@ -1014,25 +1032,33 @@ PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 ShortCodes = "f62ebe17-55c5-4640-972f-b59c0dd11ccf"
+TextAnalysis = "a2db99b7-8b79-58f8-94bf-bbc811eef33d"
 
 [compat]
 PlutoUI = "~0.7.68"
 ShortCodes = "~0.3.6"
+TextAnalysis = "~0.8.2"
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000002
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.11.6"
+julia_version = "1.11.7"
 manifest_format = "2.0"
-project_hash = "edde6983ca5ea77032cae4d208a4e9ee1f59c806"
+project_hash = "afc6e5481b635b74bcf8a71383dcb1a8dd6b5eec"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
 git-tree-sha1 = "6e1d2a35f2f90a4bc7c2ed98079b2ba09c35b83a"
 uuid = "6e696c72-6542-2067-7265-42206c756150"
 version = "1.3.2"
+
+[[deps.AliasTables]]
+deps = ["PtrArrays", "Random"]
+git-tree-sha1 = "9876e1e164b144ca45e9e3198d0b689cadfed9ff"
+uuid = "66dad0bd-aa9a-41b7-9441-69ab47430ed8"
+version = "1.1.3"
 
 [[deps.ArgTools]]
 uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
@@ -1045,6 +1071,11 @@ version = "1.11.0"
 [[deps.Base64]]
 uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
 version = "1.11.0"
+
+[[deps.BitFlags]]
+git-tree-sha1 = "0691e34b3bb8be9307330f88d1a3c3f25466c24d"
+uuid = "d1d4a3ce-64b1-5f1a-9ba4-7e7e69966f35"
+version = "0.1.9"
 
 [[deps.CodecZlib]]
 deps = ["TranscodingStreams", "Zlib_jll"]
@@ -1064,20 +1095,80 @@ version = "0.12.1"
     [deps.ColorTypes.weakdeps]
     StyledStrings = "f489334b-da3d-4c2e-b8f0-e476e12c162b"
 
+[[deps.Compat]]
+deps = ["TOML", "UUIDs"]
+git-tree-sha1 = "0037835448781bb46feb39866934e243886d756a"
+uuid = "34da2185-b29b-5c13-b0c7-acf172513d20"
+version = "4.18.0"
+weakdeps = ["Dates", "LinearAlgebra"]
+
+    [deps.Compat.extensions]
+    CompatLinearAlgebraExt = "LinearAlgebra"
+
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
 version = "1.1.1+0"
+
+[[deps.ConcurrentUtilities]]
+deps = ["Serialization", "Sockets"]
+git-tree-sha1 = "d9d26935a0bcffc87d2613ce14c527c99fc543fd"
+uuid = "f0e56b4a-5159-44fe-b623-3e5288b988bb"
+version = "2.5.0"
+
+[[deps.DataAPI]]
+git-tree-sha1 = "abe83f3a2f1b857aac70ef8b269080af17764bbe"
+uuid = "9a962f9c-6df0-11e9-0e5d-c546b8b5ee8a"
+version = "1.16.0"
+
+[[deps.DataDeps]]
+deps = ["HTTP", "Libdl", "Reexport", "SHA", "Scratch", "p7zip_jll"]
+git-tree-sha1 = "8ae085b71c462c2cb1cfedcb10c3c877ec6cf03f"
+uuid = "124859b0-ceae-595e-8997-d05f6a7a8dfe"
+version = "0.7.13"
+
+[[deps.DataStructures]]
+deps = ["Compat", "InteractiveUtils", "OrderedCollections"]
+git-tree-sha1 = "4e1fe97fdaed23e9dc21d4d664bea76b65fc50a0"
+uuid = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
+version = "0.18.22"
+
+[[deps.DataValueInterfaces]]
+git-tree-sha1 = "bfc1187b79289637fa0ef6d4436ebdfe6905cbd6"
+uuid = "e2d170a0-9d28-54be-80f0-106bbe20a464"
+version = "1.0.0"
 
 [[deps.Dates]]
 deps = ["Printf"]
 uuid = "ade2ca70-3891-5945-98fb-dc099432e06a"
 version = "1.11.0"
 
+[[deps.DelimitedFiles]]
+deps = ["Mmap"]
+git-tree-sha1 = "9e2f36d3c96a820c678f2f1f1782582fcf685bae"
+uuid = "8bb1440f-4735-579b-a4ab-409b98df4dab"
+version = "1.9.1"
+
+[[deps.Distributed]]
+deps = ["Random", "Serialization", "Sockets"]
+uuid = "8ba89e20-285c-5b6f-9357-94700520ee1b"
+version = "1.11.0"
+
+[[deps.DocStringExtensions]]
+git-tree-sha1 = "7442a5dfe1ebb773c29cc2962a8980f47221d76c"
+uuid = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
+version = "0.9.5"
+
 [[deps.Downloads]]
 deps = ["ArgTools", "FileWatching", "LibCURL", "NetworkOptions"]
 uuid = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
 version = "1.6.0"
+
+[[deps.ExceptionUnwrapping]]
+deps = ["Test"]
+git-tree-sha1 = "d36f682e590a83d63d1c7dbd287573764682d12a"
+uuid = "460bff9d-24e4-43bc-9d9f-a8973cb893f4"
+version = "0.1.11"
 
 [[deps.FileWatching]]
 uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
@@ -1088,6 +1179,18 @@ deps = ["Statistics"]
 git-tree-sha1 = "05882d6995ae5c12bb5f36dd2ed3f61c98cbb172"
 uuid = "53c48c17-4a7d-5ca2-90c5-79b7896eea93"
 version = "0.8.5"
+
+[[deps.HTML_Entities]]
+deps = ["RelocatableFolders", "StrTables"]
+git-tree-sha1 = "781d638b8892cd1a1e867f51863d8881c0a62834"
+uuid = "7693890a-d069-55fe-a829-b4a6d304f0ee"
+version = "1.0.2"
+
+[[deps.HTTP]]
+deps = ["Base64", "CodecZlib", "ConcurrentUtilities", "Dates", "ExceptionUnwrapping", "Logging", "LoggingExtras", "MbedTLS", "NetworkOptions", "OpenSSL", "PrecompileTools", "Random", "SimpleBufferStream", "Sockets", "URIs", "UUIDs"]
+git-tree-sha1 = "ed5e9c58612c4e081aecdb6e1a479e18462e041e"
+uuid = "cd3eb016-35fb-5094-929b-558a96fad6f3"
+version = "1.10.17"
 
 [[deps.Hyperscript]]
 deps = ["Test"]
@@ -1112,6 +1215,22 @@ deps = ["Markdown"]
 uuid = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 version = "1.11.0"
 
+[[deps.IrrationalConstants]]
+git-tree-sha1 = "e2222959fbc6c19554dc15174c81bf7bf3aa691c"
+uuid = "92d709cd-6900-40b7-9082-c6be49f344b6"
+version = "0.2.4"
+
+[[deps.IteratorInterfaceExtensions]]
+git-tree-sha1 = "a3f24677c21f5bbe9d2a714f95dcd58337fb2856"
+uuid = "82899510-4779-5014-852e-03e436cf321d"
+version = "1.0.0"
+
+[[deps.JLLWrappers]]
+deps = ["Artifacts", "Preferences"]
+git-tree-sha1 = "0533e564aae234aff59ab625543145446d8b6ec2"
+uuid = "692b3bcd-3c85-4b1f-b108-f13ce0eb3210"
+version = "1.7.1"
+
 [[deps.JSON]]
 deps = ["Dates", "Mmap", "Parsers", "Unicode"]
 git-tree-sha1 = "31e996f0a15c7b280ba9f76636b3ff9e2ae58c9a"
@@ -1129,6 +1248,12 @@ version = "1.14.3"
 
     [deps.JSON3.weakdeps]
     ArrowTypes = "31f734f8-188a-4ce0-8406-c8a06bd891cd"
+
+[[deps.Languages]]
+deps = ["InteractiveUtils", "JSON", "RelocatableFolders"]
+git-tree-sha1 = "0cf92ba8402f94c9f4db0ec156888ee8d299fcb8"
+uuid = "8ef0a80b-9436-5d2c-a485-80b904378c43"
+version = "0.4.6"
 
 [[deps.LibCURL]]
 deps = ["LibCURL_jll", "MozillaCACerts_jll"]
@@ -1164,9 +1289,31 @@ deps = ["Libdl", "OpenBLAS_jll", "libblastrampoline_jll"]
 uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 version = "1.11.0"
 
+[[deps.LogExpFunctions]]
+deps = ["DocStringExtensions", "IrrationalConstants", "LinearAlgebra"]
+git-tree-sha1 = "13ca9e2586b89836fd20cccf56e57e2b9ae7f38f"
+uuid = "2ab3a3ac-af41-5b50-aa03-7779005ae688"
+version = "0.3.29"
+
+    [deps.LogExpFunctions.extensions]
+    LogExpFunctionsChainRulesCoreExt = "ChainRulesCore"
+    LogExpFunctionsChangesOfVariablesExt = "ChangesOfVariables"
+    LogExpFunctionsInverseFunctionsExt = "InverseFunctions"
+
+    [deps.LogExpFunctions.weakdeps]
+    ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
+    ChangesOfVariables = "9e997f8a-9a97-42d5-a9f1-ce6bfc15e2c0"
+    InverseFunctions = "3587e190-3f89-42d0-90ee-14403ec27112"
+
 [[deps.Logging]]
 uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
 version = "1.11.0"
+
+[[deps.LoggingExtras]]
+deps = ["Dates", "Logging"]
+git-tree-sha1 = "f02b56007b064fbfddb4c9cd60161b6dd0f40df3"
+uuid = "e6f89c97-d47a-5376-807f-9c37f3926c36"
+version = "1.1.0"
 
 [[deps.MIMEs]]
 git-tree-sha1 = "c64d943587f7187e751162b3b84445bbbd79f691"
@@ -1183,6 +1330,12 @@ deps = ["Base64"]
 uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
 version = "1.11.0"
 
+[[deps.MbedTLS]]
+deps = ["Dates", "MbedTLS_jll", "MozillaCACerts_jll", "NetworkOptions", "Random", "Sockets"]
+git-tree-sha1 = "c067a280ddc25f196b5e7df3877c6b226d390aaf"
+uuid = "739be429-bea8-5141-9913-cc70e7f3736d"
+version = "1.1.9"
+
 [[deps.MbedTLS_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "c8ffd9c3-330d-5841-b78e-0817d7145fa1"
@@ -1193,6 +1346,12 @@ deps = ["MacroTools"]
 git-tree-sha1 = "2b1dfcba103de714d31c033b5dacc2e4a12c7caa"
 uuid = "c03570c3-d221-55d1-a50c-7939bbd78826"
 version = "0.4.4"
+
+[[deps.Missings]]
+deps = ["DataAPI"]
+git-tree-sha1 = "ec4f7fbeab05d7747bdf98eb74d130a2a2ed298d"
+uuid = "e1d29d7a-bbdc-5cf2-9ac0-f12de2c33e28"
+version = "1.2.0"
 
 [[deps.Mmap]]
 uuid = "a63ad114-7e13-5084-954f-fe012c677804"
@@ -1210,6 +1369,23 @@ version = "1.2.0"
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
 version = "0.3.27+1"
+
+[[deps.OpenSSL]]
+deps = ["BitFlags", "Dates", "MozillaCACerts_jll", "OpenSSL_jll", "Sockets"]
+git-tree-sha1 = "f1a7e086c677df53e064e0fdd2c9d0b0833e3f6e"
+uuid = "4d8831e6-92b7-49fb-bdf8-b643e874388c"
+version = "1.5.0"
+
+[[deps.OpenSSL_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "2ae7d4ddec2e13ad3bddf5c0796f7547cf682391"
+uuid = "458c3c95-2e84-50aa-8efc-19380b2a3a95"
+version = "3.5.2+0"
+
+[[deps.OrderedCollections]]
+git-tree-sha1 = "05868e21324cede2207c6f0f466b4bfef6d5e7ee"
+uuid = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
+version = "1.8.1"
 
 [[deps.Parsers]]
 deps = ["Dates", "PrecompileTools", "UUIDs"]
@@ -1251,6 +1427,17 @@ deps = ["Unicode"]
 uuid = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 version = "1.11.0"
 
+[[deps.ProgressMeter]]
+deps = ["Distributed", "Printf"]
+git-tree-sha1 = "fbb92c6c56b34e1a2c4c36058f68f332bec840e7"
+uuid = "92933f4c-e287-5a05-a399-4b506db050ca"
+version = "1.11.0"
+
+[[deps.PtrArrays]]
+git-tree-sha1 = "1d36ef11a9aaf1e8b74dacc6a731dd1de8fd493d"
+uuid = "43287f4e-b6f4-7ad1-bb20-aadabca52c3d"
+version = "1.3.0"
+
 [[deps.Random]]
 deps = ["SHA"]
 uuid = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
@@ -1261,9 +1448,21 @@ git-tree-sha1 = "45e428421666073eab6f2da5c9d310d99bb12f9b"
 uuid = "189a3867-3050-52da-a836-e630ba90ab69"
 version = "1.2.2"
 
+[[deps.RelocatableFolders]]
+deps = ["SHA", "Scratch"]
+git-tree-sha1 = "ffdaf70d81cf6ff22c2b6e733c900c3321cab864"
+uuid = "05181044-ff0b-4ac5-8273-598c1e38db00"
+version = "1.0.1"
+
 [[deps.SHA]]
 uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
 version = "0.7.0"
+
+[[deps.Scratch]]
+deps = ["Dates"]
+git-tree-sha1 = "9b81b8393e50b7d4e6d0a9f14e192294d3b7c109"
+uuid = "6c6a2e73-6563-6170-7368-637461726353"
+version = "1.3.0"
 
 [[deps.Serialization]]
 uuid = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
@@ -1275,17 +1474,65 @@ git-tree-sha1 = "5844ee60d9fd30a891d48bab77ac9e16791a0a57"
 uuid = "f62ebe17-55c5-4640-972f-b59c0dd11ccf"
 version = "0.3.6"
 
+[[deps.SimpleBufferStream]]
+git-tree-sha1 = "f305871d2f381d21527c770d4788c06c097c9bc1"
+uuid = "777ac1f9-54b0-4bf8-805c-2214025038e7"
+version = "1.2.0"
+
+[[deps.Snowball]]
+deps = ["Languages", "Snowball_jll", "WordTokenizers"]
+git-tree-sha1 = "8b466b16804ab8687f8d3a1b5312a0aa1b7d8b64"
+uuid = "fb8f903a-0164-4e73-9ffe-431110250c3b"
+version = "0.1.1"
+
+[[deps.Snowball_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "6ff3a185a583dca7265cbfcaae1da16aa3b6a962"
+uuid = "88f46535-a3c0-54f4-998e-4320a1339f51"
+version = "2.2.0+0"
+
+[[deps.Sockets]]
+uuid = "6462fe0b-24de-5631-8697-dd941f90decc"
+version = "1.11.0"
+
+[[deps.SortingAlgorithms]]
+deps = ["DataStructures"]
+git-tree-sha1 = "64d974c2e6fdf07f8155b5b2ca2ffa9069b608d9"
+uuid = "a2af1166-a08f-5f64-846c-94a0d3cef48c"
+version = "1.2.2"
+
+[[deps.SparseArrays]]
+deps = ["Libdl", "LinearAlgebra", "Random", "Serialization", "SuiteSparse_jll"]
+uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+version = "1.11.0"
+
 [[deps.Statistics]]
 deps = ["LinearAlgebra"]
 git-tree-sha1 = "ae3bb1eb3bba077cd276bc5cfc337cc65c3075c0"
 uuid = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 version = "1.11.1"
+weakdeps = ["SparseArrays"]
 
     [deps.Statistics.extensions]
     SparseArraysExt = ["SparseArrays"]
 
-    [deps.Statistics.weakdeps]
-    SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+[[deps.StatsAPI]]
+deps = ["LinearAlgebra"]
+git-tree-sha1 = "9d72a13a3f4dd3795a195ac5a44d7d6ff5f552ff"
+uuid = "82ae8749-77ed-4fe6-ae5f-f523153014b0"
+version = "1.7.1"
+
+[[deps.StatsBase]]
+deps = ["AliasTables", "DataAPI", "DataStructures", "LinearAlgebra", "LogExpFunctions", "Missings", "Printf", "Random", "SortingAlgorithms", "SparseArrays", "Statistics", "StatsAPI"]
+git-tree-sha1 = "2c962245732371acd51700dbb268af311bddd719"
+uuid = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
+version = "0.34.6"
+
+[[deps.StrTables]]
+deps = ["Dates"]
+git-tree-sha1 = "5998faae8c6308acc25c25896562a1e66a3bb038"
+uuid = "9700d1a9-a7c8-5760-9816-a99fda30bb8f"
+version = "1.0.1"
 
 [[deps.StructTypes]]
 deps = ["Dates", "UUIDs"]
@@ -1293,10 +1540,27 @@ git-tree-sha1 = "159331b30e94d7b11379037feeb9b690950cace8"
 uuid = "856f2bd8-1eba-4b0a-8007-ebc267875bd4"
 version = "1.11.0"
 
+[[deps.SuiteSparse_jll]]
+deps = ["Artifacts", "Libdl", "libblastrampoline_jll"]
+uuid = "bea87d4a-7f5b-5778-9afe-8cc45184846c"
+version = "7.7.0+0"
+
 [[deps.TOML]]
 deps = ["Dates"]
 uuid = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
 version = "1.0.3"
+
+[[deps.TableTraits]]
+deps = ["IteratorInterfaceExtensions"]
+git-tree-sha1 = "c06b2f539df1c6efa794486abfb6ed2022561a39"
+uuid = "3783bdb8-4a98-5b6b-af9a-565f29a5fe9c"
+version = "1.0.1"
+
+[[deps.Tables]]
+deps = ["DataAPI", "DataValueInterfaces", "IteratorInterfaceExtensions", "OrderedCollections", "TableTraits"]
+git-tree-sha1 = "f2c1efbc8f3a609aadf318094f8fc5204bdaf344"
+uuid = "bd369af6-aec1-5ad0-b16a-f7cc5008161c"
+version = "1.12.1"
 
 [[deps.Tar]]
 deps = ["ArgTools", "SHA"]
@@ -1307,6 +1571,12 @@ version = "1.10.0"
 deps = ["InteractiveUtils", "Logging", "Random", "Serialization"]
 uuid = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 version = "1.11.0"
+
+[[deps.TextAnalysis]]
+deps = ["DataStructures", "DelimitedFiles", "DocStringExtensions", "InteractiveUtils", "JSON", "Languages", "LinearAlgebra", "Printf", "ProgressMeter", "Random", "Serialization", "Snowball", "SparseArrays", "Statistics", "StatsBase", "Tables", "WordTokenizers"]
+git-tree-sha1 = "b2da9be079f3b4882bfe939a8c97c51a9cd03c59"
+uuid = "a2db99b7-8b79-58f8-94bf-bbc811eef33d"
+version = "0.8.2"
 
 [[deps.TranscodingStreams]]
 git-tree-sha1 = "0c45878dcfdcfa8480052b6ab162cdd138781742"
@@ -1332,6 +1602,12 @@ version = "1.11.0"
 uuid = "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
 version = "1.11.0"
 
+[[deps.WordTokenizers]]
+deps = ["DataDeps", "HTML_Entities", "StrTables", "Unicode"]
+git-tree-sha1 = "01dd4068c638da2431269f49a5964bf42ff6c9d2"
+uuid = "796a5d58-b03d-544a-977e-18100b691f6e"
+version = "0.5.6"
+
 [[deps.Zlib_jll]]
 deps = ["Libdl"]
 uuid = "83775a58-1f1d-513f-b197-d71354ab007a"
@@ -1355,11 +1631,13 @@ version = "17.4.0+2"
 
 # ╔═╡ Cell order:
 # ╠═c2fd34b8-66db-11f0-3efd-21960f239f79
+# ╠═8da42b7b-7bc8-4bdc-9707-539209d79d1b
 # ╠═efc09298-51f8-4013-9677-497b6de474be
 # ╠═367d5f39-3928-4709-8de9-2f4b1f046acd
 # ╠═2a803c80-dece-4f52-9898-1cc3ba15ebbc
 # ╠═e05614d4-5762-4839-b657-1c98b2054de4
 # ╠═9e00079f-b241-4c7a-9c24-b229e08428df
+# ╠═80774b7b-15eb-45a4-b220-c73bdb2da29b
 # ╠═b72590de-c5d6-422d-8a7d-572cc3b1c3c3
 # ╠═7128e86b-bdb9-4e7a-84ba-ee8682f8ae4f
 # ╠═1be76676-2de5-4df0-9e51-e95ce80c4ece
@@ -1383,7 +1661,7 @@ version = "17.4.0+2"
 # ╠═d2c96070-c07f-49c4-84f5-bebf7498b314
 # ╠═a1ff9ae5-a131-40c2-833a-4f17fb765d1b
 # ╠═22ec98af-c189-46ab-99a1-5cd8d51a77a2
-# ╠═28b7e493-acf2-49ce-a156-ce2b1bab2489
+# ╟─28b7e493-acf2-49ce-a156-ce2b1bab2489
 # ╠═c31ee640-cdba-4469-b755-a6406e101015
 # ╠═8c5cd066-9fa7-4c62-beed-e858d0f3a311
 # ╠═87d0f2f2-eaea-4a7c-bca9-ceabab0da099

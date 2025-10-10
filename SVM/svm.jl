@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.8
+# v0.20.19
 
 using Markdown
 using InteractiveUtils
@@ -629,16 +629,11 @@ function plot_datos_soporte(datos, vectores_soporte)
 	plot_soporte(vectores_soporte)
 end;
 
-# ╔═╡ c9290c7e-7e0e-49c5-b77b-b75596f6d7f5
-md"""
-## Show me the code
-"""
-
 # ╔═╡ 594b63ee-a145-4515-b8db-76ca02a68e94
 md"""
 ## Show me the code
 
-Y los mostrar en una gráfica
+Y los mostramos en una gráfica
 """
 
 # ╔═╡ ee2743f1-c6cb-4bec-935c-b70af7c28afe
@@ -944,7 +939,7 @@ md"""
 # ╔═╡ 73e33858-0c2f-45a5-9063-be5417f860a0
 function plot_datos_complicados(datos)
 	plot_datos(datos)
-	plot!(size=(400,400))
+	plot!(size=(600,600))
 end;
 
 # ╔═╡ 69168a15-aa7a-4951-8d47-bca2fce8b8bd
@@ -982,7 +977,7 @@ function visualizacion3d(datos)
 	x² = positivos.x .* positivos.x
 	y² = positivos.y .* positivos.y
 	xy = sqrt(2) .* positivos.x .* positivos.y
-	scatter(x², y², xy, label="Positivos", markersize = 1, color = :blue)
+	scatter(x², y², xy, label="Positivos", markersize = 1, color = :blue, size=(900,600))
 	x² = negativos.x .* negativos.x
 	y² = negativos.y .* negativos.y
 	xy = sqrt(2) .* negativos.x .* negativos.y
@@ -1164,7 +1159,7 @@ function plot_kernel_gaussiano(datos, maquina)
 	r = -3:0.02:3
 	plot_datos(datos_complicados)
 	plot_datos_soporte(datos_complicados, maquina_complicada.fitresult[1].SVs.X)
-	contour!(r, r, clase, f=true, nlev=2, alpha=0.0, cbar=false, size=(400,400))
+	contour!(r, r, clase, f=true, nlev=2, alpha=0.0, cbar=false, size=(600,600))
 end;
 
 # ╔═╡ 5a3c78c9-6cfa-4cde-8815-0260cf468c2e
@@ -1359,7 +1354,7 @@ begin
 	plot_datos(adultos)
 	plot_datos_soporte(adultos, maquina_howell_rbf.fitresult[1].SVs.X)
 	c(x, y) = clase(x, y, maquina_howell_rbf)
-	contour!(r1, r2, c, f=true, nlev=2, alpha=0.0, cbar=false, size=(400,400))
+	contour!(r1, r2, c, f=true, nlev=2, alpha=0.0, cbar=false, size=(700,500))
 end
 
 # ╔═╡ 0c14eae8-a69b-4b25-a226-1cc76204c6d7
@@ -3385,7 +3380,7 @@ version = "1.4.1+2"
 # ╟─27a66f32-3a6f-4ef3-a739-01b617c73cd8
 # ╟─8d94edc6-042e-4932-a7ed-57d71d6f56a2
 # ╟─74da6ee7-46e9-4150-87e2-581604591ea8
-# ╠═8bb58a9c-d947-4470-9348-f8dc6c4d3e11
+# ╟─8bb58a9c-d947-4470-9348-f8dc6c4d3e11
 # ╟─953e4a5d-1094-49cf-86df-736a4166ab00
 # ╟─131778f5-3927-4daf-a5f0-1e69e65bc773
 # ╟─bf8856f1-8e20-4288-9db8-906e12088412
@@ -3439,7 +3434,6 @@ version = "1.4.1+2"
 # ╠═2f645347-30ad-43e3-9439-b60ea0a33136
 # ╟─edffe592-e174-41a2-b697-279d4b7eda37
 # ╟─e7198063-24cf-4801-b196-02683a5e4e95
-# ╟─c9290c7e-7e0e-49c5-b77b-b75596f6d7f5
 # ╟─594b63ee-a145-4515-b8db-76ca02a68e94
 # ╟─ee2743f1-c6cb-4bec-935c-b70af7c28afe
 # ╟─83c7eeb3-55b5-4f8d-9206-a5ecb6a9fc72
@@ -3476,7 +3470,7 @@ version = "1.4.1+2"
 # ╟─18bfb1ef-db71-455a-ac0c-00fb6db43f59
 # ╟─52934098-0e3e-46e2-bc3d-d927d5c71dae
 # ╟─6aae73b0-9f59-422a-a7b2-9d2c97297229
-# ╟─79d9dfc6-9f8e-4fe9-953b-b11de1232adc
+# ╠═79d9dfc6-9f8e-4fe9-953b-b11de1232adc
 # ╟─263ebdd6-8461-4207-8fdd-4bca929edbd1
 # ╟─e1274616-d152-4b2e-9f71-c2cdc4f3cc1f
 # ╟─56c22652-b91c-4f9f-b814-5144ff3c80ec
@@ -3491,7 +3485,7 @@ version = "1.4.1+2"
 # ╟─f1c240f7-ef5d-4296-923b-0243735112ba
 # ╟─5ac9e1ca-ddd9-40ef-bbc0-0b70c7bf00ff
 # ╟─d0bfc512-2b99-4654-af36-ff0565aeacb2
-# ╠═73e33858-0c2f-45a5-9063-be5417f860a0
+# ╟─73e33858-0c2f-45a5-9063-be5417f860a0
 # ╟─69168a15-aa7a-4951-8d47-bca2fce8b8bd
 # ╟─ac224512-fe67-44fc-bd0d-e0875a1a621e
 # ╟─92004858-7f72-41ee-affa-645f63be89c2
