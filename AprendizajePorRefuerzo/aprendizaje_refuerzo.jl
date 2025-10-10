@@ -1,11 +1,14 @@
 ### A Pluto.jl notebook ###
-# v0.20.13
+# v0.20.8
 
 using Markdown
 using InteractiveUtils
 
 # ╔═╡ 646115db-9b69-482e-b0bf-fb287ed023c4
 using PlutoUI
+
+# ╔═╡ 80589f75-0e75-4171-9f8e-d08ecc8cdf67
+using PlutoTeachingTools
 
 # ╔═╡ 963761bd-4b3c-40cb-96fd-d004e9e1e94d
 using ShortCodes
@@ -28,15 +31,21 @@ md"""
 Óscar Belmonte Fernández - IR2130 Aprendizaje Automático
 
 Grado en Inteligencia Robótica - Universitat Jaume I (UJI)
-
-![](https://belmonte.uji.es/imgs/uji.jpg)
 """
+
+# ╔═╡ 49dde659-7259-44f8-9352-7b9a09a8a324
+Resource(
+	"https://belmonte.uji.es/imgs/uji.jpg",
+	:alt => "Logo UJI",
+	:width => 400,
+	:style => "display: block; margin: auto;",
+)
 
 # ╔═╡ 9344959d-aab8-4c21-96bd-7b0a16d6f068
 md"""
 ## Objetivos de aprendizaje
 
-- Interpretar cuales son las características particulares del aprendizaje automático.
+- Interpretar cuales son las características particulares del aprendizaje por refuerzo.
 - Resumir los conceptos de agente, estado, acción y recompensa.
 - Conectar cada uno de los conceptos anteriores con el proceso de aprendizaje.
 - Construir una solución utilizando el algoritmo Q-learning.
@@ -55,8 +64,8 @@ md"""
 md"""
 ## Bibliografía
 
-1. Hands-on machine learning, Aurélien Géron.
-1. [Reinforcement learning: An introduction](http://incompleteideas.net/book/the-book.html).
+1. [Reinforcement learning: An introduction](http://incompleteideas.net/book/the-book.html). Disponible on-line.
+1. [Grokking Deep Reinforcement Learning](https://cataleg.uji.es/permalink/34CVA_UJI/1nbr95r/alma991004764852306336). Antonio Morales. Maning Publications. 2020.
 """
 
 # ╔═╡ e65a18ad-9f34-4afc-a3c7-3f9f1bd346a1
@@ -95,16 +104,647 @@ En **aprendizaje por refuerzo** tenemos **estados** (dentro de un **entorno**), 
 Resource(
 	imagenes * "rl.png",
 	:alt => "Aprendizaje por refuerzo",
-	:width => 900
+	:width => 900,
+	:style => "display: block; margin: auto;",
 )
+
+# ╔═╡ a24c2f05-b7e1-4a27-b770-a66022306bdb
+html"""
+Fuente: Reinforcement learning: An introduction
+"""
+
+# ╔═╡ 3d047e1f-d2ee-464a-bb30-9ff08acaf3f4
+md"""
+## Introducción
+
+Estrategia en juegos:
+"""
+
+# ╔═╡ b0e55979-4466-47d6-8a75-39a6ca1a7192
+Columns(
+	md"Estrategia en juegos",
+	Resource(
+		imagenes * "alpha_go.png",
+		:alt => "Logo de Alpha Go",
+		:width => 400,
+		:style => "display: block; margin: auto;",
+	);
+	widths = [30, 70]
+)
+
+# ╔═╡ 539dcba5-102d-4c11-a400-94a6ca077b5b
+YouTube("WXuK6gekU1Y")
+
+# ╔═╡ 46d7f494-efff-40d2-a1bc-bca8ffd0cd9f
+md"""
+## Introducción
+"""
+
+# ╔═╡ 38115240-6cf5-47ab-bb91-94f8c5f37b4a
+Columns(
+	md"Plafinicación en robótica",
+	Resource(
+		imagenes * "robotics_rl.jpg",
+		:alt => "Planificación en robótica",
+		:width => 400,
+		:style => "display: block; margin: auto;",
+	);
+	widths = [30, 70]
+)
+
+# ╔═╡ 0d625f98-49c6-4cf3-baff-9c973145e484
+md"""
+## Introducción
+"""
+
+# ╔═╡ dfba5a6e-826f-49d4-ae8f-fa1b9b86158f
+Columns(
+	md"Medicina y salud",
+	Resource(
+		imagenes * "alpha_fold.png",
+		:alt => "Medicina y salud",
+		:width => 400,
+		:style => "display: block; margin: auto;",
+	);
+	widths = [30, 70]
+)
+
+# ╔═╡ b3ec2529-5127-4f4c-a221-07b1f665081b
+md"""
+## Introducción
+"""
+
+# ╔═╡ 39adf584-77e4-4109-9cf7-303615c2e638
+Columns(
+	md"Conducción autónoma",
+	Resource(
+		imagenes * "conduccion_autonoma.jpg",
+		:alt => "Conducción autónoma",
+		:width => 400,
+		:style => "display: block; margin: auto;",
+	);
+	widths = [30, 70]
+)
+
+# ╔═╡ 3551e3f8-8e24-413c-9947-0babb6910cfb
+md"""
+# Conceptos clave
+"""
+
+# ╔═╡ 4b07e8e5-524d-4e68-8a0d-f5cd7c47a894
+md"""
+## Agente, Acción, Estado y Recompensa
+
+El **agente** es quien decide qué acción tomar.
+"""
+
+# ╔═╡ 3a92bd3f-4d2a-41a9-9f77-70edf3fbf10c
+Columns(
+	Resource(
+		imagenes * "rl.png",
+		:alt => "Aprendizaje por refuerzo",
+		:width => 900,
+		:style => "display: block; margin: auto;",
+	),
+	md"""
+	El **agente** debe escoger la siguiente **acción** a llevar a cabo dependiendodel **estado** actual del **entorno** con el objetivo de maximizar la**recompensa**.
+	"""
+)
+
+# ╔═╡ b29b0b8c-ed15-49ea-95f5-6634a6d74178
+md"""
+$A = \{a_1, a_2,...,a_n\}$
+
+Representa el conjunto de posibles acciones.
+"""
+
+# ╔═╡ 7464261c-999c-4397-b411-bd07025a3beb
+md"""
+## Agente, Acción, Estado y Recompensa
+
+La secuencia de pasos durante el proceso de aprendizaje es:
+"""
+
+# ╔═╡ 10d98301-fc2d-4125-94a2-2ea7f3b42307
+Columns(
+	Resource(
+		imagenes * "rl.png",
+		:alt => "Aprendizaje por refuerzo",
+		:width => 900,
+		:style => "display: block; margin: auto;",
+	),
+	md"""
+	1. Se observa el estado del entorno.
+	1. Se realiza una acción.
+	1. Se obtiene una recompensa.
+	"""
+)
+
+# ╔═╡ 3d832db2-de0c-41e1-bf1e-cc0c152f4f98
+md"""
+$\{S_1, A_1, R_1, S_2, A_2, R_2,...,S_t,A_t,R_t\}$
+"""
+
+# ╔═╡ 0e3c3c29-76a2-4404-8fdb-8b442ce1eb9f
+md"""
+## Agente, Acción, Estado y Recompensa
+"""
+
+# ╔═╡ 8cbb1134-49b5-472c-aadb-1754230742ea
+Resource(
+	imagenes * "rl.png",
+	:alt => "Aprendizaje por refuerzo",
+	:width => 900,
+	:style => "display: block; margin: auto;",
+)
+
+# ╔═╡ 57e7e52c-5cef-463d-87ac-b0bb606ddfe9
+md"""
+Un detalle importante: observa que el entorno puede cambiar, si el agente es un jugador virtual de ajedrez, a cada movimiento del agente le sigue un movimientodel contrario.
+"""
+
+# ╔═╡ d17c48c8-259a-4ca9-97e7-c844370c52fe
+md"""
+## Agente, Acción, Estado y Recompensa
+
+Si el conjunto de estados, acciones y recompensas es finito, se conoce el 
+estado actual y la acción elegida, entonces, se puede calcular la probabilidad
+del siguiente estado y la recompensa obtenida.
+
+$p(s',r|s,a) = p(S_t=s', R_t=r | S_{t-1} = s, A_{t-1} = a)$
+
+Con la condición: $\sum\limits_{s' \in S} \sum\limits_{r \in R}^{} p(s',r|s,a) = 1$
+
+A esta elaboración matemática se la llama *procesos de decisión de Markov*.
+"""
+
+# ╔═╡ 5d78edeb-d092-459c-ad88-6345fb838350
+md"""
+## Agente, Acción, Estado y Recompensa
+
+Ejemplos de agente pueden ser:
+
+* Un coche autónomo.
+* Un robot en un entorno industrial.
+* Un dron.
+* Un jugador virtual de go o ajedrez.
+* Un personaje en un video juego.
+"""
+
+# ╔═╡ 7a1582ac-c323-48de-ba53-fad1ce12ea26
+Columns(
+	Resource(
+		imagenes * "drone.jpg",
+		:alt => "Drone",
+		:width => 400,
+		:style => "display: block; margin: auto;",
+	),
+	Resource(
+		imagenes * "robot_industrial.jpg",
+		:alt => "Robot industrial",
+		:width => 400,
+		:style => "display: block; margin: auto;",
+	)
+)
+
+# ╔═╡ 43e5877d-1cb7-4a6f-9331-e1ec7bf4ef8b
+html"""
+Fuente: Pexels.
+"""
+
+# ╔═╡ 79784c4f-b1c8-4ad7-ac1e-e9b2331f3663
+md"""
+## Episodios y Ganancia
+
+En casos como los de un coche autónomo, o un jugador virtual existe uno, o varios, estados finales. Un coche lleva a los pasajeros del punto de recogida al punto de entrega; un jugador virtual gana o pierde una partida, a este concepto lo llamaremos **episodio**.
+
+En esta caso resulta sencillo definir el concepto de **Ganancia** a futuro como la suma de las recompensas que obtiene el agente durante el episodio a partir de un cierto instante y hacia adelante:
+
+$G_t = R_{t+1} + R_{t+2} + ... + R_T$
+
+Donde $T$ es el tiempo final del episodio.
+"""
+
+# ╔═╡ 4e5ad759-e840-43c0-a342-ebf413a5fb2b
+md"""
+## Episodios y Ganancia
+
+Hay otros casos, como el de un robot en un ambiente industrial, donde no podemos identificar episodios, el agente está realizando de modo continuo acciones y la secuencia de acciones nunca acaba.
+
+En este caso, para acotar la ganancia para que no crezca hacia el infinito, se introduce el concepto de **factor de descuento**, que es una especie de decaimiento exponencial de la recompensa a futuro. 
+
+$G_t = R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + ... = 
+\sum_{k=0}^{\infty} \gamma^k R_{t+k+1}$
+
+Una analogía monetaria, 100 euros de hoy no tendrán el mismo valor dentro de 
+10 años, se habrán devaluado.
+"""
+
+# ╔═╡ cf4d406f-9570-4bf8-a266-9f6d7cac24ed
+md"""
+## Episodios y Ganancia
+
+El **factor de descuento** $\gamma$ también se utiliza cuando el espacio de estados es finito.
+
+El dominio suele ser $0 \leq \gamma \leq 1$, siendo un valor típico $\gamma =
+0.99$.
+"""
+
+# ╔═╡ 3d815877-88a7-44b6-b9df-8d329d1a7e3b
+md"""
+## Política
+
+La acción se escoge según cierta política $\pi$:
+
+$\pi: S \rightarrow A$
+
+La política $\pi$ puede ser:
+
+* **Determinista**, $a = \pi(s)$ la acción a escoger depende del estado actual.
+* **No determinista** $a = p(a|s)$, se escoge la acción según cierta probabilidad asignada a cada una de ellas.
+"""
+
+# ╔═╡ 1e7a508a-0745-46ad-bd0e-a53fe94d4ec7
+md"""
+## Función acción-valor
+
+Finalmente, lo que buscamos es encontrar una política que maximice la ganancia esperada a futuro:
+
+$q_\pi(s,a) = E_\pi(G_t|S_t = s, A_t = a)$
+
+Esta función se llama **función acción-valor para la política $\pi$**.
+
+El objetivo es maximizar la **función acción-valor** eligiendo la secuencia de acciones adecuada.
+"""
+
+# ╔═╡ c45243d4-456d-494b-b27b-1ea79d2e0b48
+md"""
+# El algoritmo Q-learning
+"""
+
+# ╔═╡ 63e07476-a0bb-4dc4-9f3d-5f315e9880de
+md"""
+## Función Q
+
+Una aproximación al óptimo de la **función acción-valor** es el algoritmo **Q-learning**:
+
+$Q(S_t,A_t) \leftarrow Q(S_t,A_t) + \alpha[ R_{t+1} + \gamma \max_{a \in A} Q(S_{t+1},a) - Q(S_t,A_t) ]$
+
+Donde $\alpha$ es la tasa de aprendizaje y $\gamma$ es el factor de descuento.
+
+La función $Q(s,a)$ es una medida de lo bueno que es estar en el estado $s$, y realizar la acción $a$; mide la _calidad_ (Q-uality) de la pareja estado-acción.
+"""
+
+# ╔═╡ f9c33887-db0e-4757-90b9-d6f91ccabf86
+md"""
+## Función Q
+
+$Q(S_t,A_t) \leftarrow Q(S_t,A_t) + \alpha[ R_{t+1} + \gamma \max_{a \in A} Q(S_{t+1},a) - Q(S_t,A_t) ]$
+
+$\gamma \max_{a \in A} Q(S_{t+1},a) \rightarrow$ mejor estado que se puede conseguir al realizar una acción $a \in A$ (con descuento).
+
+$R_{t+1} \rightarrow$ recompensa inmediata al realizar la acción $a \in A$.
+"""
+
+# ╔═╡ 7c118104-3aec-478c-a6f7-5bdee9defe76
+Columns(
+	Resource(
+		imagenes * "frozen_lake_estado_14.png",
+		:alt => "Lago helado",
+		# :width => 400,
+		:style => "display: block; margin: auto;",
+	),
+	md"""
+	**Ejemplo**
+	
+	En el estado mostrado (14), la mejor acción que puede tomar el elfo es moverse
+	hacia la derecha, por lo que la calidad (Q) de la pareja (estado=14,
+	acción=derecha) se incrementa.
+	""";
+	widths = [30, 70]
+)
+
+# ╔═╡ fb18dbd7-5223-45c7-bd20-d6c648c01c2b
+md"""
+## Función Q
+
+$Q(S_t,A_t) \leftarrow Q(S_t,A_t) + \alpha[ R_{t+1} + \gamma \max_{a \in A} Q(S_{t+1},a) - Q(S_t,A_t) ]$
+
+Fíjate en que la función $Q(S_t,A_t)$ se actualiza al elegir la mejor acción 
+$a$ en cada paso del aprendizaje.
+
+Un detalle muy interesante de esta función es que converge hacia el óptimo con 
+independencia de la política que utilicemos.
+"""
+
+# ╔═╡ dbd20ea5-091a-4f08-84e4-7639cf9339b5
+md"""
+## Función Q en espacios finitos
+
+Para ver cómo funciona el algoritmo **Q-learning** vamos a utilizar, inicialmente, un problema con un número de estados finito.
+"""
+
+# ╔═╡ a18f901f-9be6-49f0-aed5-5f0089fdf165
+Columns(
+	Resource(
+		imagenes * "frozen_lake.png",
+		:alt => "Lago helado",
+		# :width => 400,
+		:style => "display: block; margin: auto;",
+	),
+	md"""
+	**Lago Helado**:
+	
+	El agente debe llegar desde la posición de inicio hasta el regalo, si se alcanza 
+	el regalo, la recompensa es 1.
+	
+	Las posibles **acciones** son moverse a la izquierda, abajo, derecha, o arriba 
+	desde la posición actual.
+	
+	El juego acaba si se cae en un agujero, o si el número de acciones antes de 
+	alcanzar el regalo alcanza un límite, la recompensa es 0.
+	""";
+	widths = [30, 70]
+)
+
+# ╔═╡ d4dd8e39-baa8-4077-8f21-69d9de1c1b33
+md"""
+## Función Q en espacios finitos
+"""
+
+# ╔═╡ fb43650f-53e1-4af6-8f30-09389bd024dd
+Columns(
+	Resource(
+		imagenes * "frozen_lake.png",
+		:alt => "Lago helado",
+		# :width => 400,
+		:style => "display: block; margin: auto;",
+	),
+	md"""
+	El problema tiene 16 estado posibles (uno por cada casilla), y las acciones que el agente puede tomar son 4.
+	
+	|       | Izquierda   | Abajo     | Derecha  | Arriba  | 
+	|-------|:-----------:|:---------:|:--------:|:-------:|
+	|**1**  |     0       |     0     |     0    |    0    |
+	|**2**  |     0       |     0     |     0    |    0    |
+	|**...**|     0       |     0     |     0    |    0    |
+	|**15** |     0       |     0     |     0    |    0    |
+	|**16** |     0       |     0     |     0    |    0    |
+	""";
+	widths = [30, 70]
+)
+
+# ╔═╡ 5a45ca41-dcf4-4b38-9af7-a047378aeeff
+md"""
+Inicialmente la matriz está llena de ceros.
+"""
+
+# ╔═╡ d72fa66d-21df-402e-bfc4-0c4d3fddf646
+md"""
+## Función Q en espacios finitos
+"""
+
+# ╔═╡ 08c1a771-382a-445a-b430-19f28d58dfcf
+Columns(
+	Resource(
+		imagenes * "frozen_lake.png",
+		:alt => "Lago helado",
+		# :width => 400,
+		:style => "display: block; margin: auto;",
+	),
+	md"""
+	Nuestra tabla Q tiene 16 x 4 = 64 elementos.
+	
+	Si aplicamos el algoritmo:
+	```python
+	while not terminado:  
+	    accion = np.argmax(Q[estado,:])
+	    nuevo_estado, recompensa, terminado,_,_ = lago.step(accion)
+	    Q[estado, accion] += alfa * (recompensa + 
+	        gamma*np.max(Q[nuevo_estado,:]) - Q[estado, accion])
+	    estado = nuevo_estado
+	```
+	""";
+	widths = [25, 75]
+)
+
+# ╔═╡ 52c34bd3-9ac5-49dd-94ce-0d46e968d25c
+md"""
+```math
+Q(S_t,A_t) \leftarrow Q(S_t,A_t) + \alpha[ R_{t+1} + \gamma \max_{a \in A} Q(S_{t+1},a) - Q(S_t,A_t) ]
+```
+
+Veremos que, simplemente, el algoritmo no aprende. ¿Por qué?
+"""
+
+# ╔═╡ 0fed9fc3-8914-4570-971b-f53397e98070
+md"""
+## Función Q en espacios finitos
+
+El problema en esta expresión:
+
+```math
+Q(S_t,A_t) \leftarrow Q(S_t,A_t) + \alpha[ R_{t+1} + \gamma \max_{a \in A} Q(S_{t+1},a) - Q(S_t,A_t) ]
+```
+
+Está en esta parte:
+
+```math
+Q(S_t,A_t) \leftarrow  ... \max_{a \in A} Q(S_{t+1},a) ...
+```
+
+Como todas las posiciones de la tabla son **0**, nunca se actualiza la tabla, dicho de otro modo, el algoritmo no _aprende_.
+"""
+
+# ╔═╡ 46198f73-8966-43ff-9878-13de4cca96d9
+md"""
+## Función Q en espacios finitos
+
+Este problema se conoce con el nombre de *Dilema de exploración frente a explotación*.
+
+Si siempre queremos explotar (maximizar) el resultado, puede que nunca exploremos nueva soluciones que nos pueden acercar al óptimo.
+
+¿Cómo lo solucionamos?
+"""
+
+# ╔═╡ 0e7bcdd9-eb1e-4099-bd54-fad2c3992b4b
+md"""
+## Función Q en espacios finitos
+
+Introduciendo un factor de exploración en el algoritmo.
+
+```python
+def selecciona_accion(estado):
+    if rng.random() < epsilon: 
+        accion = lago.action_space.sample()
+    else:
+        accion = np.argmax(Q[estado, :])
+
+    return accion
+```
+
+Y la introducimos en el algoritmo Q:
+
+```python
+while not terminado:  
+    accion = selecciona_accion(estado)
+    nuevo_estado, recompensa, terminado, _, _ = lago.step(accion)
+    Q[estado, accion] += alfa * (recompensa + gamma*np.max(Q[nuevo_estado,:]) - 
+        Q[estado, accion])
+    estado = nuevo_estado
+
+epsilon = max(epsilon - epsilon_decay, 0)
+```
+"""
+
+# ╔═╡ 5ffc2df3-9fc7-4e54-aca3-1145f5f09b72
+md"""
+## Función Q en espacios finitos
+
+A esta técnica se le llama **Q-learning $\epsilon$ - voraz**
+
+El valor inicial de $\epsilon$ puede ser $1$ y decaer en cada episodio de aprendizaje con alguna tasa $\epsilon$-decay $=0.00001$.
+
+Al principio la política es de exploración, y cuando la tabla **Q** ya contiene algunos valores, $\epsilon$ ha decaído de manera que se pasa a la fase de explotación.
+"""
+
+# ╔═╡ 34a29918-675d-4d18-bf2c-728166acc9aa
+md"""
+## Función Q en espacios finitos
+
+Con esta mejora, el algoritmo ya es capaz de aprender, y encontrar la solución:
+"""
+
+# ╔═╡ fb24292b-4737-4f9f-a5b6-0c4a0d85bf53
+Columns(
+	Resource(
+		imagenes * "lago_helado.gif",
+		:alt => "Lago helado",
+		# :width => 400,
+		:style => "display: block; margin: auto;",
+	),
+	md"""
+	Fíjate en que no hay una única solución posible ya que la fase de exploración es estocástica.
+	""";
+	widths = [30, 70]
+)
+
+# ╔═╡ 1ea8f988-ef7b-485c-a901-d172f0f88471
+md"""
+Veamos ahora cómo podemos tratar el caso de entornos con espacios de estados continuo.
+"""
+
+# ╔═╡ a5afa66c-7447-454d-b0a8-03dba7fb1bbd
+md"""
+## Función Q en espacios continuos
+
+Hay casos en los que el espacio de estados no es continuo.
+"""
+
+# ╔═╡ 9ba9044e-3f77-4a48-a9ac-df196bd77f96
+Columns(
+	Resource(
+		imagenes * "cartpole.gif",
+		:alt => "Péndulo invertido",
+		# :width => 400,
+		:style => "display: block; margin: auto;",
+	),
+	md"""
+	**Cartpole**: Hay que mantener el bastón en la vertical, sin que se caiga.
+
+	El espacio de estado está formado por la posición de la base, su velocidad, el ángulo que forma el bastón con la vertical, y la velocidad angular.
+
+	Todas las variables de este espacio son continuas.
+	""";
+	widths = [35, 65]
+)
+
+# ╔═╡ 6c6dbb72-61be-4e6f-93b1-73a15eae1646
+md"""
+¿Cómo procedemos?
+"""
+
+# ╔═╡ 29d0e749-6072-4888-8fc8-eae42a6b7f06
+md"""
+## Función Q en espacios continuos
+
+Discretizamos el espacio, convertimos las variables continuas en discreta sobre un número suficiente de valores posibles (densidad).
+"""
+
+# ╔═╡ a235da3d-a99f-41c4-a9f6-47a8e975fbb5
+Columns(
+	Resource(
+		imagenes * "cartpole.gif",
+		:alt => "Péndulo invertido",
+		# :width => 400,
+		:style => "display: block; margin: auto;",
+	),
+	md"""
+	```python
+	espacio_posiciones = np.linspace(-2.4, 2.4, 10)
+	espacio_velocidades = np.linspace(-4, 4, 10)
+	espacio_angulos = np.linspace(-.2095, .2095, 10)
+	espacio_velocidad_angular = np.linspace(-4, 4, 10)
+	```
+	Y, a partir de este momento, procedemos de igual forma que lo hemos hecho en el 
+	caso discreto.
+	""";
+	widths = [35, 65]
+)
+
+# ╔═╡ 0cffafb0-a1d3-453f-a366-5cbf5b5f12da
+md"""
+Detalle importante, la matriz Q en este caso tiene 10 x 10 x 10 x 10 = 10.000 posiciones.
+"""
+
+# ╔═╡ fc6453cd-0a0e-4e4a-9601-962dc62b58cb
+md"""
+## Función Q en espacios continuos
+
+Cuando el espacio de estados es muy grande, la aproximación con tablas Q no se puede aplicar.
+
+Pero, podemos aplicar redes neuronales para ayudar en la resolución.
+"""
+
+# ╔═╡ 43bb1241-f83c-4566-8a26-cd990807471f
+md"""
+# Resumen
+"""
+
+# ╔═╡ 3831b6c1-d605-4d6b-b3ab-4dc8def26432
+md"""
+## Resumen
+
+1. El aprendizaje por refuerzo no parte de un conjunto de datos de entrenamiento.
+1. Los conceptos clave son el agente, los estados, las acciones y las recompensas.
+1. El objetivo de los algoritmos de aprendizaje automático es maximizar la recompensa a futuro.
+"""
+
+# ╔═╡ e4463d7c-68d4-4f4f-9ba5-694c81054d20
+md"""
+## Resumen
+
+4. Un algoritmo que se aproxima al óptimo del máximo de recompensa a futuro es el algoritmo **Q-learning**.
+1. **Q-learning** tiene una aplicación directa en el caso de entornos discretos, pero si los queremos aplicar a entornos continuos, debemos discretizar los espacios de estados.
+"""
+
+# ╔═╡ fffa4aac-a902-4f8b-9e92-1cc52e49b017
+md"""
+## Referencias
+
+1. [Reinforcement learning at MIT.](https://www.youtube.com/watch?v=8JVRbHAVCws)
+1. [Gymnasium.](https://gymnasium.farama.org/)
+"""
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
+PlutoTeachingTools = "661c6b06-c737-4d37-b85c-46df65de6f69"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 ShortCodes = "f62ebe17-55c5-4640-972f-b59c0dd11ccf"
 
 [compat]
+PlutoTeachingTools = "~0.4.6"
 PlutoUI = "~0.7.68"
 ShortCodes = "~0.3.6"
 """
@@ -113,9 +753,9 @@ ShortCodes = "~0.3.6"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.11.6"
+julia_version = "1.11.7"
 manifest_format = "2.0"
-project_hash = "edde6983ca5ea77032cae4d208a4e9ee1f59c806"
+project_hash = "9b540884ff5b6861aaf7638c9ce366e7907747c2"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -178,6 +818,17 @@ git-tree-sha1 = "05882d6995ae5c12bb5f36dd2ed3f61c98cbb172"
 uuid = "53c48c17-4a7d-5ca2-90c5-79b7896eea93"
 version = "0.8.5"
 
+[[deps.Format]]
+git-tree-sha1 = "9c68794ef81b08086aeb32eeaf33531668d5f5fc"
+uuid = "1fa38f19-a742-5d3f-a2b9-30dd87b9d5f8"
+version = "1.3.7"
+
+[[deps.Ghostscript_jll]]
+deps = ["Artifacts", "JLLWrappers", "JpegTurbo_jll", "Libdl", "Zlib_jll"]
+git-tree-sha1 = "38044a04637976140074d0b0621c1edf0eb531fd"
+uuid = "61579ee1-b43e-5ca0-a5da-69d92c66a64b"
+version = "9.55.1+0"
+
 [[deps.Hyperscript]]
 deps = ["Test"]
 git-tree-sha1 = "179267cfa5e712760cd43dcae385d7ea90cc25a4"
@@ -201,6 +852,12 @@ deps = ["Markdown"]
 uuid = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 version = "1.11.0"
 
+[[deps.JLLWrappers]]
+deps = ["Artifacts", "Preferences"]
+git-tree-sha1 = "0533e564aae234aff59ab625543145446d8b6ec2"
+uuid = "692b3bcd-3c85-4b1f-b108-f13ce0eb3210"
+version = "1.7.1"
+
 [[deps.JSON]]
 deps = ["Dates", "Mmap", "Parsers", "Unicode"]
 git-tree-sha1 = "31e996f0a15c7b280ba9f76636b3ff9e2ae58c9a"
@@ -218,6 +875,35 @@ version = "1.14.3"
 
     [deps.JSON3.weakdeps]
     ArrowTypes = "31f734f8-188a-4ce0-8406-c8a06bd891cd"
+
+[[deps.JpegTurbo_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "4255f0032eafd6451d707a51d5f0248b8a165e4d"
+uuid = "aacddb02-875f-59d6-b918-886e6ef4fbf8"
+version = "3.1.3+0"
+
+[[deps.LaTeXStrings]]
+git-tree-sha1 = "dda21b8cbd6a6c40d9d02a73230f9d70fed6918c"
+uuid = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
+version = "1.4.0"
+
+[[deps.Latexify]]
+deps = ["Format", "Ghostscript_jll", "InteractiveUtils", "LaTeXStrings", "MacroTools", "Markdown", "OrderedCollections", "Requires"]
+git-tree-sha1 = "44f93c47f9cd6c7e431f2f2091fcba8f01cd7e8f"
+uuid = "23fbe1c1-3f47-55db-b15f-69d7ec21a316"
+version = "0.16.10"
+
+    [deps.Latexify.extensions]
+    DataFramesExt = "DataFrames"
+    SparseArraysExt = "SparseArrays"
+    SymEngineExt = "SymEngine"
+    TectonicExt = "tectonic_jll"
+
+    [deps.Latexify.weakdeps]
+    DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+    SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+    SymEngine = "123dc426-2d89-5057-bbad-38513e3affd8"
+    tectonic_jll = "d7dd28d6-a5e6-559c-9131-7eb760cdacc5"
 
 [[deps.LibCURL]]
 deps = ["LibCURL_jll", "MozillaCACerts_jll"]
@@ -300,6 +986,11 @@ deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
 version = "0.3.27+1"
 
+[[deps.OrderedCollections]]
+git-tree-sha1 = "05868e21324cede2207c6f0f466b4bfef6d5e7ee"
+uuid = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
+version = "1.8.1"
+
 [[deps.Parsers]]
 deps = ["Dates", "PrecompileTools", "UUIDs"]
 git-tree-sha1 = "7d2f8f21da5db6a806faf7b9b292296da42b2810"
@@ -316,6 +1007,12 @@ version = "1.11.0"
 
     [deps.Pkg.weakdeps]
     REPL = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
+
+[[deps.PlutoTeachingTools]]
+deps = ["Downloads", "HypertextLiteral", "Latexify", "Markdown", "PlutoUI"]
+git-tree-sha1 = "dacc8be63916b078b592806acd13bb5e5137d7e9"
+uuid = "661c6b06-c737-4d37-b85c-46df65de6f69"
+version = "0.4.6"
 
 [[deps.PlutoUI]]
 deps = ["AbstractPlutoDingetjes", "Base64", "ColorTypes", "Dates", "Downloads", "FixedPointNumbers", "Hyperscript", "HypertextLiteral", "IOCapture", "InteractiveUtils", "JSON", "Logging", "MIMEs", "Markdown", "Random", "Reexport", "URIs", "UUIDs"]
@@ -349,6 +1046,12 @@ version = "1.11.0"
 git-tree-sha1 = "45e428421666073eab6f2da5c9d310d99bb12f9b"
 uuid = "189a3867-3050-52da-a836-e630ba90ab69"
 version = "1.2.2"
+
+[[deps.Requires]]
+deps = ["UUIDs"]
+git-tree-sha1 = "62389eeff14780bfe55195b7204c0d8738436d64"
+uuid = "ae029012-a4dd-5104-9daa-d747884805df"
+version = "1.3.1"
 
 [[deps.SHA]]
 uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
@@ -445,10 +1148,12 @@ version = "17.4.0+2"
 # ╔═╡ Cell order:
 # ╠═f722bfd0-66eb-11f0-01ea-7b434238558a
 # ╠═646115db-9b69-482e-b0bf-fb287ed023c4
+# ╠═80589f75-0e75-4171-9f8e-d08ecc8cdf67
 # ╠═963761bd-4b3c-40cb-96fd-d004e9e1e94d
 # ╠═913974f6-4c99-4f2e-be95-9a66c8fce004
 # ╠═25e87a36-ca03-4497-9571-165f9f9ce5e0
 # ╠═270a45a5-bfb3-47a4-b5fb-981cb9343af1
+# ╠═49dde659-7259-44f8-9352-7b9a09a8a324
 # ╠═9344959d-aab8-4c21-96bd-7b0a16d6f068
 # ╠═9bb76759-af68-4f85-8276-b99cabae0857
 # ╠═19069594-b31c-47fa-9e58-ba183fae3409
@@ -457,5 +1162,65 @@ version = "17.4.0+2"
 # ╠═322740c2-ad9e-4335-bb12-bf71006de7a1
 # ╠═bc67e92a-4c09-4104-882f-632db5972747
 # ╠═0d30181c-687b-472a-92a1-4d60016596c6
+# ╠═a24c2f05-b7e1-4a27-b770-a66022306bdb
+# ╟─3d047e1f-d2ee-464a-bb30-9ff08acaf3f4
+# ╠═b0e55979-4466-47d6-8a75-39a6ca1a7192
+# ╠═539dcba5-102d-4c11-a400-94a6ca077b5b
+# ╠═46d7f494-efff-40d2-a1bc-bca8ffd0cd9f
+# ╠═38115240-6cf5-47ab-bb91-94f8c5f37b4a
+# ╠═0d625f98-49c6-4cf3-baff-9c973145e484
+# ╠═dfba5a6e-826f-49d4-ae8f-fa1b9b86158f
+# ╠═b3ec2529-5127-4f4c-a221-07b1f665081b
+# ╠═39adf584-77e4-4109-9cf7-303615c2e638
+# ╠═3551e3f8-8e24-413c-9947-0babb6910cfb
+# ╠═4b07e8e5-524d-4e68-8a0d-f5cd7c47a894
+# ╠═3a92bd3f-4d2a-41a9-9f77-70edf3fbf10c
+# ╠═b29b0b8c-ed15-49ea-95f5-6634a6d74178
+# ╠═7464261c-999c-4397-b411-bd07025a3beb
+# ╠═10d98301-fc2d-4125-94a2-2ea7f3b42307
+# ╠═3d832db2-de0c-41e1-bf1e-cc0c152f4f98
+# ╠═0e3c3c29-76a2-4404-8fdb-8b442ce1eb9f
+# ╠═8cbb1134-49b5-472c-aadb-1754230742ea
+# ╠═57e7e52c-5cef-463d-87ac-b0bb606ddfe9
+# ╠═d17c48c8-259a-4ca9-97e7-c844370c52fe
+# ╠═5d78edeb-d092-459c-ad88-6345fb838350
+# ╠═7a1582ac-c323-48de-ba53-fad1ce12ea26
+# ╠═43e5877d-1cb7-4a6f-9331-e1ec7bf4ef8b
+# ╠═79784c4f-b1c8-4ad7-ac1e-e9b2331f3663
+# ╠═4e5ad759-e840-43c0-a342-ebf413a5fb2b
+# ╠═cf4d406f-9570-4bf8-a266-9f6d7cac24ed
+# ╠═3d815877-88a7-44b6-b9df-8d329d1a7e3b
+# ╠═1e7a508a-0745-46ad-bd0e-a53fe94d4ec7
+# ╠═c45243d4-456d-494b-b27b-1ea79d2e0b48
+# ╠═63e07476-a0bb-4dc4-9f3d-5f315e9880de
+# ╠═f9c33887-db0e-4757-90b9-d6f91ccabf86
+# ╠═7c118104-3aec-478c-a6f7-5bdee9defe76
+# ╠═fb18dbd7-5223-45c7-bd20-d6c648c01c2b
+# ╠═dbd20ea5-091a-4f08-84e4-7639cf9339b5
+# ╠═a18f901f-9be6-49f0-aed5-5f0089fdf165
+# ╠═d4dd8e39-baa8-4077-8f21-69d9de1c1b33
+# ╠═fb43650f-53e1-4af6-8f30-09389bd024dd
+# ╠═5a45ca41-dcf4-4b38-9af7-a047378aeeff
+# ╠═d72fa66d-21df-402e-bfc4-0c4d3fddf646
+# ╠═08c1a771-382a-445a-b430-19f28d58dfcf
+# ╠═52c34bd3-9ac5-49dd-94ce-0d46e968d25c
+# ╠═0fed9fc3-8914-4570-971b-f53397e98070
+# ╠═46198f73-8966-43ff-9878-13de4cca96d9
+# ╠═0e7bcdd9-eb1e-4099-bd54-fad2c3992b4b
+# ╠═5ffc2df3-9fc7-4e54-aca3-1145f5f09b72
+# ╠═34a29918-675d-4d18-bf2c-728166acc9aa
+# ╠═fb24292b-4737-4f9f-a5b6-0c4a0d85bf53
+# ╠═1ea8f988-ef7b-485c-a901-d172f0f88471
+# ╠═a5afa66c-7447-454d-b0a8-03dba7fb1bbd
+# ╠═9ba9044e-3f77-4a48-a9ac-df196bd77f96
+# ╠═6c6dbb72-61be-4e6f-93b1-73a15eae1646
+# ╠═29d0e749-6072-4888-8fc8-eae42a6b7f06
+# ╠═a235da3d-a99f-41c4-a9f6-47a8e975fbb5
+# ╠═0cffafb0-a1d3-453f-a366-5cbf5b5f12da
+# ╠═fc6453cd-0a0e-4e4a-9601-962dc62b58cb
+# ╠═43bb1241-f83c-4566-8a26-cd990807471f
+# ╠═3831b6c1-d605-4d6b-b3ab-4dc8def26432
+# ╠═e4463d7c-68d4-4f4f-9ba5-694c81054d20
+# ╠═fffa4aac-a902-4f8b-9e92-1cc52e49b017
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
