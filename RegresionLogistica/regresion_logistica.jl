@@ -217,7 +217,7 @@ Que se interpreta como: si tomamos una persona al azar, le hacemos la prueba de 
 
 # ╔═╡ 6e897bc2-d623-4ab6-83d2-d7a82caef8c5
 md"""
-# Definir del problema
+# Definir el problema
 """
 
 # ╔═╡ abbc8c34-ccec-42ed-8039-64921395f126
@@ -478,7 +478,7 @@ BartlettTest(Matrix(select(hombres_adultos, Not(:age))), Matrix(select(mujeres_a
 
 # ╔═╡ 517c9b6c-d4b7-45c6-a916-12f92f07fb08
 md"""
-A la vista del p-valor de esta prueba, podemos considerar que las matrices de covarianzas de hombre y mujeres para peso y altura se *parece lo suficiente*.
+A la vista del p-valor de esta prueba, podemos considerar que las matrices de covarianzas de hombres y mujeres para peso y altura se *parecen lo suficiente*.
 """
 
 # ╔═╡ bc3c772e-578d-4fea-ad56-bc0b5598d43e
@@ -597,7 +597,7 @@ md"""
 
 Los parámetros son:
 
-$\theta= \Sigma^{-1}(\mu_1 - \mu_2); \: \theta_0= -\frac{1}{2} \mu_1^T \Sigma^{-1} \mu_1 + \frac{1}{2} \mu_1^T \Sigma^{-1} \mu_1 + ln \frac{p(C_1)}{p(C_2)}$
+$\theta= \Sigma^{-1}(\mu_1 - \mu_2); \: \theta_0= -\frac{1}{2} \mu_1^T \Sigma^{-1} \mu_1 + \frac{1}{2} \mu_2^T \Sigma^{-1} \mu_2 + ln \frac{p(C_1)}{p(C_2)}$
 
 Donde $\mu_1$, $\mu_2$ y $\Sigma$ los podemos obtener aplicando 
 el principio de máxima verosimilitud al conjunto de nuestros datos.
@@ -609,8 +609,8 @@ md"""
 
 Si tomamos $p(C_1) = q$, y por lo tanto $p(C_2) = 1-q$ y definimos $t_n = 1$ si la muestra pertenece a la clase $C_1$ y $t_n = 0$ si la muestra pertenece a la clase $C_2$ y hacemos uso de la definición de probabilidad:
 
-$p(x_n, C_1) = p(C_1) p(x_n|C_1) = q N(x_n|\mu_1 \Sigma)$
-$p(x_n, C_2) = p(C_2) p(x_n|C_2) = (1-q) N(x_n|\mu_2 \Sigma)$
+$p(x_n, C_1) = p(C_1) p(x_n|C_1) = q N(x_n|\mu_1, \Sigma)$
+$p(x_n, C_2) = p(C_2) p(x_n|C_2) = (1-q) N(x_n|\mu_2, \Sigma)$
 
 Y aplicamos el principio de máxima verosimilitud a nuestro conjunto de datos:
 
@@ -621,7 +621,7 @@ $p(\pmb{t}|q, \mu_1, \mu_2, \Sigma) = \prod_{n=1}^N [q N(x_n|\mu_1, \Sigma)]^{t_
 md"""
 ## Clasificación con dos clases
 
-Si tomamos logoritmos en la expresión anterior, derivamos con respecto a $q$, e igualamos a cero:
+Si tomamos logaritmos en la expresión anterior, derivamos con respecto a $q$, e igualamos a cero:
 
 $q = \frac{1}{N} \sum_{n=1}^N t_n = \frac{N_1}{N_1 + N_2} = \frac{N_1}{N}$
 $1 - q = \frac{N_2}{N}$
@@ -633,7 +633,7 @@ Como intuitivamente se puede esperar, la probabilidad de pertenecer a una clase 
 md"""
 ## Clasificación con dos clases
 
-Tomando derivadas con respecto a $\mu_1$ de la expresión al aplicar máxima verosimilitud, igualando a cero; y reptiendo lo mismo con respecto a $\mu_2$:
+Tomando derivadas con respecto a $\mu_1$ de la expresión al aplicar máxima verosimilitud, igualando a cero; y repitiendo lo mismo con respecto a $\mu_2$:
 
 $\mu_1 = \frac{1}{N} \sum_{n=1}^{N} x_n t_n$
 $\mu_2 = \frac{1}{N} \sum_{n=1}^{N} x_n (1-t_n)$
@@ -784,11 +784,11 @@ evaluate!(
 
 # ╔═╡ 0c7b05ae-b4c9-475b-983a-29df7298cb11
 md"""
-## Apliación a los datos de Howell
+## Aplicación a los datos de Howell
 
 Para finalizar, vamos a visualizar cómo se distribuyen los datos transformados sobre la sigmoide. Esto aclara qué está haciendo el clasificador.
 
-Creamos matrices para hombres y mujers con las columnas de peso, altura y añadios una tercera columna para bias:
+Creamos matrices para hombres y mujeres con las columnas de peso, altura y añadimos una tercera columna para bias:
 """
 
 # ╔═╡ 9c4ed964-c3b2-4ac3-833e-98af8e787b53
