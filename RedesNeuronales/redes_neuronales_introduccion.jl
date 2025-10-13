@@ -16,6 +16,9 @@ using HTTP
 # ╔═╡ ee78d551-2259-4955-b934-c60d3453706c
 using PlutoUI
 
+# ╔═╡ 5f2b85eb-2db3-4d6a-8970-1d2120feb897
+using PlutoTeachingTools
+
 # ╔═╡ a7c9f0c1-e76a-460c-a31a-3d2b42ca3118
 using MLJ: partition, ConfusionMatrix
 
@@ -61,18 +64,19 @@ url_imagenes = "https://belmonte.uji.es/Docencia/IR2130/Teoria/RedesNeuronales/I
 Resource(
 	"https://belmonte.uji.es/imgs/uji.jpg",
 	:alt => "Logo UJI",
-	:width => 400
+	:width => 400,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ 0ebbbc1b-066d-4c2b-8ad0-2165a145d5f1
 md"""
 ## Introducción
 
-Las redes neuronales son modelos de aprendizaje automático muy potentes, pero costosos de entrenar.
+Las redes neuronales son modelos de aprendizaje automático muy potentes, pero computacionalmente costosos de entrenar.
 
-Su entrenamiento se basa en el algoritmo de retropropagación, que es un una combinación del algoritmo de descenso de gradiente y de la regla de la cadena.
+Su entrenamiento se basa en el algoritmo de retropropagación, que es un una combinación del algoritmo de descenso de gradiente y de la regla de la cadena de las derivadas.
 
-Las redes neuronales pueden resolver tanto problemas supervisados como no supervisados. Además se pueden utilizar tanto en tareas de clasificación como de regresión.
+Las redes neuronales pueden resolver tanto problemas supervisados (clasificación o regresión) como no supervisados.
 """
 
 # ╔═╡ 5b797826-439b-48ce-a293-03534db1f2a9
@@ -105,6 +109,7 @@ md"""
 1. [Dive into deep learning](https://d2l.ai/index.html), Aston Zhang et al.
 1. Christopher M. Bishop. Pattern Recognition and Machine Learning. Springer-Verlag New York Inc.; 2006.
 1. Christopher M. Bishop and Hugh Bishop. Deep learning : foundations and concepts. Springer. 2024.
+1. [Alice's adventures in differential wonderland](https://www.sscardapane.it/assets/alice/Alice_book_volume_1.pdf)
 """
 
 # ╔═╡ 0a89e6b8-46c1-4dfc-b11e-6373dc743ec4
@@ -117,56 +122,56 @@ md"""
 Resource(
 	url_imagenes * "neuronas_Ramon_Cajal.jpg",
 	:alt => "Neuronas vistas al microcopio por Santiago Ramón y Cajal",
-	:width => 300
+	:width => 300,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ 20b5ac11-a251-48e7-bfe2-252d8a4b1fe9
 md"""
-Neuronas vista al microscopio dibujadas por Santiago Ramón y Cajal.
+Neuronas vista al microscopio y dibujadas por Santiago Ramón y Cajal.
 """
 
 # ╔═╡ fd15e146-5c83-406b-a056-fc1fba51ffc2
 md"""
 ## Bases biológicas de las NN
 
-La fisiología del cerebro nos muetra que una neurona recibe señal de otras neuronas a través de la dendrita, y, en caso de que se active, envía señal a otras neuronas a través del axón. Si la neurona no se activa, la señal no se enviará a otras neuronas.
+La fisiología del cerebro nos muetra que una neurona recibe señales de otras neuronas a través de su dendrita, y, en caso de que la neurona se active, envía una señal a otras neuronas a través su axón. Si la neurona no se activa, la señal no se enviará a otras neuronas.
 """
 
 # ╔═╡ 3e361edb-a6fc-4c26-8c91-f44eec0a6a6c
 Resource(
 	url_imagenes * "neurona_real.jpg",
 	:alt => "Neurona",
-	:width => 500
+	:width => 500,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ 0f6e55dd-d1e4-4833-8c3f-a6390daff2a5
 html"""
 <font-size = 2>
 Diseñado por Freepik (https://www.freepik.es)
-</font-size>
 """
 
 # ╔═╡ 8796c632-7302-4213-be40-67e7b11f5a35
 md"""
 ## Bases biológicas de las NN
 
-No exite contacto físico entre las neuronas (este descubrimiento le valió el Nobel de Medicina a Santiago Ramón y Cajal en 1906), la señal «salta» de una neuroa a otra.
+Un detalla muy importante es que no exite contacto físico entre las neuronas (este descubrimiento le valió el Nobel de Medicina a Santiago Ramón y Cajal en 1906), la señal «salta» de una neuroa a otra.
 """
 
 # ╔═╡ b64fa92a-dfc8-4049-a069-9a1c4f61b65c
 Resource(
 	url_imagenes * "sinapsis.png",
 	:alt => "Neurona",
-	:width => 500
+	:width => 500,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ 135e5c27-0f1a-46a5-9997-254c6547ff1e
 html"""
-<font-size = 2>
 By The original uploader was Nrets at English Wikipedia. - Transferred from
 en.wikipedia to Commons., CC BY-SA 3.0,
 https://commons.wikimedia.org/w/index.php?curid=2006912
-</font-size>
 """
 
 # ╔═╡ 5e36d267-f394-4b53-a29e-b68a297113a1
@@ -181,47 +186,57 @@ Las redes neuronales artificiales están inspiradas en las redes neuronales. Una
 Resource(
 	url_imagenes * "neurona.png",
 	:alt => "Una neurona artificial.",
-	:width => 600
+	:width => 600,
+	:style => "display: block; margin: auto;",
 )
+
+# ╔═╡ 36345070-15e7-4b4f-89b6-ac6a7abf070c
+md"""
+La red neuronal en el centro de la imagen recibe señales de las neuronas $x_1, x_2 ... x_n$, y si activa, emite una señal (hacia la izquierda en la imagen) que llegará a otras neuronas con las que esté conectada.
+"""
 
 # ╔═╡ cabcaec7-3fca-4ea9-929f-0d3f3e6843a2
 md"""
 ## Estructura de una neurona artificial
 
-¿Qué ocurre dentro de una neurona artificial? Cada seña de entrada se multiplica por un peso y se añade un **bias**. Fíjate en que esta operación es lineal. El resultado del cálculo pasa («salta») a la siguiente neurona.
+¿Qué ocurre dentro de una neurona artificial? Cada seña de entrada se multiplica por un peso se suma al resto de entrada multiplicada y al resultado se le añade un **bias**. Fíjate en que esta operación es lineal (multiplicaciones y sumas, no hay potencias). El resultado del cálculo pasa («salta») a la siguiente neurona.
 """
 
 # ╔═╡ df53f204-76e8-43f7-858f-48c5f8f78eeb
 Resource(
 	url_imagenes * "activacion.png",
 	:alt => "Activación de una neurona artificial.",
-	:width => 600
+	:width => 600,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ c3685572-264d-48d9-aee6-142ae90576b3
 md"""
 ## Estructura de una neurona artificial
 
-Ya que las operaciones dentro de una neurona son lineales, aunque **apilemos** varias capas de neuronas el resultado seguirá siendo lineal con respecto de los valores de entrada (_Demostración_).
+Ya que las operaciones dentro de una neurona son lineales, aunque **apilemos** varias capas de neuronas el resultado seguirá siendo lineal con respecto a los valores de entrada (_Demostración_).
 """
 
 # ╔═╡ bbbc0b92-185b-4126-b858-e94af0211a6c
 Resource(
 	url_imagenes * "sin_funcion_activacion.png",
 	:alt => "Red sin función de activación.",
-	:width => 600
+	:width => 600,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ d0e46bda-cd81-4717-87b1-e5ef283f6e7b
 md"""
-De este modo solo podremos *resolver* problema lineales (regresón lineal, o clasificación con fronteras lineales), pero no podremos resolver problemas más complejos, por ejemplo la función XOR. Es necesario introducir la **no linearidad** de otro modo.
+De este modo solo podremos *resolver* problema lineales (regresón lineal, o clasificación con fronteras lineales), pero no podremos resolver problemas más complejos, por ejemplo la función XOR.
+
+Es necesario introducir la **no linearidad** de otro modo.
 """
 
 # ╔═╡ 9d41b30b-afab-4f83-ae60-9fc50dea90b9
 md"""
 ## Estructura de una neurona artificial
 
-La función de activación es el ingrediente que introduce la no-linearidad en las redes neuronales. Al resultado de la operación lineal le aplico una función no lineal.
+La función de activación es el ingrediente que introduce la no-linearidad en las redes neuronales. Al resultado de la operación lineal se le aplica una función no lineal.
 
 La función de activación más sencilla es la función de Heaviside o función esaclón:
 """
@@ -236,11 +251,13 @@ function escalon(x, a)
 end;
 
 # ╔═╡ 0197bb9a-1410-4fa4-8750-bae1e71b971a
+Columns(
 plot(x -> escalon(x, 0), title = "Función de Heaviside o escalón", legends = false, size = (400,200))
+)
 
 # ╔═╡ ced47da1-fbf0-4e7e-8695-1f9db7fc0bc2
 md"""
-El problema on la función escalón es que no es derivable en x = 0 (para el ejemplo mostrado).
+El problema con la función escalón es que no es continua ni derivable en x = 0 (para el ejemplo mostrado).
 """
 
 # ╔═╡ 080718d1-9de3-4435-8168-76de5b7570ec
@@ -254,7 +271,8 @@ Como ya sabemos, el algoritmo de descenso de gradiente utiliza la derivada de la
 Resource(
 	url_imagenes * "funcion_activacion.png",
 	:alt => "Neurona con función de activación.",
-	:width => 300
+	:width => 300,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ 359e990e-41bc-43bc-9504-d520476ea035
@@ -288,14 +306,13 @@ El perceptron (Rosenblatt, 1958) fue la primera propuesta de algoritmo inspirado
 Resource(
 	url_imagenes * "perceptron.png",
 	:alt => "Perceptron.",
-	:height => 250
+	:height => 250,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ a46f42c1-64a2-4a07-9ee7-e8517eb56dd8
 html"""
-<font-size = 2>
 Fuente: https://www.deep-mind.org/2023/03/26/the-universal-approximation-theorem/
-</font-size>
 """
 
 # ╔═╡ aab30f28-b671-45f8-bea1-b637351ad432
@@ -314,14 +331,13 @@ El siguiente paso fue añadir sucesivas capas para mejorar los resultados de las
 Resource(
 	url_imagenes * "estructura_red_neuronal.png",
 	:alt => "Estructura de una red neuronal.",
-	:width => 300
+	:width => 300,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ 8e144c0b-8ae4-4865-931f-a52afa55965d
 html"""
-<font-size = 2>
 Fuente: https://www.deep-mind.org/2023/03/26/the-universal-approximation-theorem/
-</font-size>
 """
 
 # ╔═╡ 53e3d912-fb70-4501-817d-e8568bea9b81
@@ -394,7 +410,7 @@ Para realizar el ajuste de los pesos de la red necesitamos, entre otros, los sig
 
 1. Elegir unos **buenos** pesos aleatorios iniciales.
 1. Elegir la función de activación.
-1. Elegir un optimizador adecuado.
+1. Elegir un optimizador adecuado para el descenso de gradiente.
 
 Además de la propia arquitectura de la red y otros hiperparámetros en la etapa de entrenamiento.
 """
@@ -424,6 +440,8 @@ por una red neuronal (puntos) con una única capa y 800 neuronas.
 Resource(
 	url_imagenes * "ajuste_cuadrado.png",
 	:alt => "Ajuste de la función cuadrado.",
+	:width => 500,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ dccb64be-ee47-495d-ab9a-439f0eafb4b0
@@ -437,6 +455,8 @@ Este otro ejemplo muestra el caso de la función $f(x) = seno(x)$. De nuevo los 
 Resource(
 	url_imagenes * "ajuste_seno.png",
 	:alt => "Ajuste de la función seno.",
+	:width => 500,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ a8c7d8c1-f9e1-448d-8832-82f4e6df33b7
@@ -455,9 +475,8 @@ using Flux
 
 # ╔═╡ 7827ecab-178e-4286-9482-b787b95e949f
 md"""
-## Pasos para el entrenamiento de la red
+## Pasos para el entrenamiento de la red neuronal
 
-Los pasos para crear y entrenar una red son:
 
 1. Definir la arquitectura de la red.
 1. Definir los siguientes componentes del entrenamiento:
@@ -468,7 +487,7 @@ Los pasos para crear y entrenar una red son:
 
 # ╔═╡ 57174712-848c-4868-89f3-5f6b67953312
 md"""
-## Crear la red
+## Arquitectura de la red
 
 Como ejemplo, vamos a crear una red que ajuste los datos de la función seno:
 """
@@ -490,7 +509,7 @@ scatter(x_train[1,:], y_train[1,:], title="Función seno", legends=false)
 
 # ╔═╡ d0a3a855-bc5f-4c84-b735-80a8ac71d94c
 md"""
-## Crear la red
+## Arquitectura de la red
 
 La red se define encadenando una serie de capas:
 """
@@ -515,7 +534,7 @@ Importante, la red tiene 1501 parámetros que entrenar.
 
 # ╔═╡ 3a9b314f-7181-4e1e-9b87-e41d8b3bb49e
 md"""
-## Crear la red
+## Optimizador y función de pérdidas
 
 Ahora creamos el optimizador que vamos a utilizar, la métrica que va a usar el optimizador, y preparamos los datos:
 """
@@ -525,7 +544,7 @@ optimizador = Flux.setup(Adam(0.05), modelo_seno);
 
 # ╔═╡ df3f2655-66a2-4bf4-852b-c9574c2d2748
 md"""
-El optimizador que usamos en Adam con una tasa de aprendizaje $η = 0.05$
+El optimizador que usamos en Adam, veremos más adelante cómo funciona este optimizador, con una tasa de aprendizaje $η = 0.05$
 """
 
 # ╔═╡ 5883dec1-c9e2-4b1a-b53d-f87f85f30db2
@@ -585,16 +604,17 @@ modelo_seno_profundo = Chain(
 md"""
 La red tiene la siguiente estructura:
 
-1. La capa de entrada con una neurona a la entrada y tres salidas hacia la siguiente capa densamente conectada (cada neurona de entradas se conecta con todas las neuronas de la siguiente capa)
+1. La capa de entrada con una neurona a la entrada y tres salidas hacia la siguiente capa densamente conectada (cada neurona de entradas se conecta a cada una de las neuronas de la siguiente capa)
 1. Una capa intermedia con tres neuronas a la entrada y tres salidas hacia la siguente capa densamente conectada.
-1. Una capa de salida con una neurona.
+1. Una capa de salida con una neurona y sin función que activación.
 """
 
 # ╔═╡ 839d9885-b6f7-4c23-ae5f-8db14145c553
 md"""
 ## Entrenar la red
+!!! important "Importante"
 
-Importante, en este caso la red sólo tiene 22 parámetros que entrenar, sensiblemente menos parámetros que la red anterior con una única capa.
+En este caso la red sólo tiene 22 parámetros que entrenar, sensiblemente menos parámetros que la red anterior con una única capa.
 
 Sólo nos queda definir el optimizador (Adam esta vez), y entrenar la red:
 """
@@ -690,7 +710,7 @@ datos_howell = [(X_entrenamiento_howell, y_entrenamiento_howell)];
 md"""
 ## Ejemplo con los datos de Howell
 
-Entrenamos la red:
+Definimos una función para entrenar la red:
 """
 
 # ╔═╡ 8f400ee4-3e73-4770-b39a-317df4ae9b0e
@@ -715,7 +735,7 @@ end;
 md"""
 ## Ejemplo con los datos de Howell
 
-Vemos los resultados:
+Entrenamos la red y vemos los resultados:
 """
 
 # ╔═╡ 63a26003-f633-4d93-a135-369ae8d802c5
@@ -726,18 +746,20 @@ begin
 	mse, mse_validacion = entrena(perdidas, red_howell, datos_howell, optimizador_howell, semilla)
 end
 
-# ╔═╡ bb922155-c271-49ff-9526-3d7a228ace37
+# ╔═╡ 3c2883e8-a6cc-44ec-9f83-d72b77cab7ca
 let
-	# plot(mse, label="Entrenamiento", xlims = (35_000,50_000), ylims = (0, 100))
-	plot(mse, label="Entrenamiento", size = (500, 300))
-	plot!(mse_validacion, label="Validación")
+	plot(mse, label="Entrenamiento", size = (500, 300), title = "Todas las épocas")
+	plot_total = plot!(mse_validacion, label="Validación")
+	plot(mse, label="Entrenamiento", xlims = (35_000,50_000), ylims = (0, 100), title = "Épocas finales")
+	plot_final = plot!(mse_validacion, label="Validación")
+	plot(plot_total, plot_final, layout = (1,2), size = (1200, 400))
 end
 
 # ╔═╡ 7ac53bef-54ba-4a4b-9a99-de6423249572
 md"""
 ## Ejemplo con los datos de Howell
 
-Este es el ajuste:
+Este es el ajuste. Parece que hay dos ramas. Vamos a visualizar los datos por sexo.
 """
 
 # ╔═╡ ff74834b-f674-4ec9-a1d0-5422dd228915
@@ -770,7 +792,7 @@ let
 
 	scatter(entrenamiento_howell[entrenamiento_howell.male.==0, :weight], entrenamiento_howell[entrenamiento_howell.male.==0, :height], label="Mujeres", color=:green)
 	p2 = scatter!(entrenamiento_howell[entrenamiento_howell.male.==0, :weight], red_howell(X_howell_mujeres)[1,:], label="Mujeres ajuste", color=:magenta, xlabel="Peso", ylabel="Altura")
-	plot(p, p1, p2, layout=l, size=(800, 450))
+	plot(p, p1, p2, layout=l, size=(1200, 450))
 end
 
 # ╔═╡ 3584250c-f199-4c27-ba22-d359b245b02c
@@ -918,7 +940,7 @@ Entrenamos la red:
 # ╔═╡ e98382a3-5a96-4d4c-8748-97231231393a
 function entrena_clasificacion!(perdidas, red, datos, optimizador)
 	with_logger(NullLogger()) do
-		for epoca in 1:5000
+		for epoca in 1:5_000
 			Flux.train!(perdidas, red, datos, optimizador)
 		end
 	end
@@ -940,13 +962,13 @@ Mostramos la matriz de confusión:
 # ╔═╡ f15af338-b9bf-40f4-ba5c-9922550a9482
 MLJ.confusion_matrix(Flux.onecold(y_prueba_clasificacion, 0:1), Flux.onecold(red_clasificacion(X_prueba_normalizada), 0:1))
 
-# ╔═╡ 7626e1b9-e312-4e96-9ee1-925d80ae0cb3
-md"""
-Calculamos la precisión de la red creada sobre los datos de prueba:
-"""
-
 # ╔═╡ b06be04c-f11b-4a15-89f1-7e05326996fe
-MLJ.accuracy(Flux.onecold(red_clasificacion(X_prueba_normalizada), 0:1), Flux.onecold(y_prueba_clasificacion, 0:1))
+precision = MLJ.accuracy(Flux.onecold(red_clasificacion(X_prueba_normalizada), 0:1), Flux.onecold(y_prueba_clasificacion, 0:1));
+
+# ╔═╡ eed264a8-1b9f-416f-897c-a26efadb4b75
+md"""
+La precisión de la red es $precision
+"""
 
 # ╔═╡ bb87c341-2e49-43c1-a93d-4ded2ca0a3a8
 md"""
@@ -978,7 +1000,6 @@ Algunas referencias interesantes
 1. [Las redes neuronales son aproximadores universales.](https://www.deep-mind.org/2023/03/26/the-universal-approximation-theorem/)
 1. [¿Qué es una red neuronal?](https://www.youtube.com/watch?v=jKCQsndqEGQ)
 1. [Neural networks.](https://www.youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi)
-1. [Alpha Go.](https://www.youtube.com/watch?v=WXuK6gekU1Y)
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -992,6 +1013,7 @@ Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
 MLJ = "add582a8-e3ab-11e8-2d5e-e98b27df1bc7"
 Normalization = "be38d6a3-8366-4a42-ad57-222272b5bbe7"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
+PlutoTeachingTools = "661c6b06-c737-4d37-b85c-46df65de6f69"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
@@ -1003,6 +1025,7 @@ HTTP = "~1.10.17"
 MLJ = "~0.20.9"
 Normalization = "~0.9.0"
 Plots = "~1.40.19"
+PlutoTeachingTools = "~0.4.2"
 PlutoUI = "~0.7.71"
 """
 
@@ -1010,9 +1033,9 @@ PlutoUI = "~0.7.71"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.11.6"
+julia_version = "1.11.7"
 manifest_format = "2.0"
-project_hash = "e21e21c4edb4bab69fd506a227ef5fca4b784961"
+project_hash = "e480056408b406384cedbb84cba8f3c7ef27b637"
 
 [[deps.ARFFFiles]]
 deps = ["CategoricalArrays", "Dates", "Parsers", "Tables"]
@@ -2311,6 +2334,12 @@ version = "1.40.19"
     ImageInTerminal = "d8c32880-2388-543b-8c61-d9f865259254"
     Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
+[[deps.PlutoTeachingTools]]
+deps = ["Downloads", "HypertextLiteral", "Latexify", "Markdown", "PlutoUI"]
+git-tree-sha1 = "ce33e4fd343e43905a8416e6148de8c630101909"
+uuid = "661c6b06-c737-4d37-b85c-46df65de6f69"
+version = "0.4.2"
+
 [[deps.PlutoUI]]
 deps = ["AbstractPlutoDingetjes", "Base64", "ColorTypes", "Dates", "Downloads", "FixedPointNumbers", "Hyperscript", "HypertextLiteral", "IOCapture", "InteractiveUtils", "JSON", "Logging", "MIMEs", "Markdown", "Random", "Reexport", "URIs", "UUIDs"]
 git-tree-sha1 = "8329a3a4f75e178c11c1ce2342778bcbbbfa7e3c"
@@ -3115,6 +3144,7 @@ version = "1.9.2+0"
 # ╠═aa6d92eb-7a97-4084-bfc7-8474b34a2c71
 # ╠═8bf751cf-2510-4748-8697-2e3177013785
 # ╠═ee78d551-2259-4955-b934-c60d3453706c
+# ╠═5f2b85eb-2db3-4d6a-8970-1d2120feb897
 # ╠═a7c9f0c1-e76a-460c-a31a-3d2b42ca3118
 # ╠═5e06e76f-68de-4e65-9fe9-66040dca0932
 # ╠═6020693f-5639-4408-ab53-9845658eadba
@@ -3141,6 +3171,7 @@ version = "1.9.2+0"
 # ╠═135e5c27-0f1a-46a5-9997-254c6547ff1e
 # ╠═5e36d267-f394-4b53-a29e-b68a297113a1
 # ╠═4d082d8e-7b85-4e94-91b4-0e550ccd9458
+# ╠═36345070-15e7-4b4f-89b6-ac6a7abf070c
 # ╠═cabcaec7-3fca-4ea9-929f-0d3f3e6843a2
 # ╠═df53f204-76e8-43f7-858f-48c5f8f78eeb
 # ╠═c3685572-264d-48d9-aee6-142ae90576b3
@@ -3221,7 +3252,7 @@ version = "1.9.2+0"
 # ╠═8f400ee4-3e73-4770-b39a-317df4ae9b0e
 # ╠═855f71e1-105d-4082-9097-8587de06ce45
 # ╠═63a26003-f633-4d93-a135-369ae8d802c5
-# ╠═bb922155-c271-49ff-9526-3d7a228ace37
+# ╠═3c2883e8-a6cc-44ec-9f83-d72b77cab7ca
 # ╠═7ac53bef-54ba-4a4b-9a99-de6423249572
 # ╠═ff74834b-f674-4ec9-a1d0-5422dd228915
 # ╠═d5ec1fbe-138d-4da1-83de-95dd1565dac7
@@ -3260,8 +3291,8 @@ version = "1.9.2+0"
 # ╠═3156227d-ad46-49f5-8540-128267f03954
 # ╠═c3c1cb31-fac1-4758-a60e-e5231b046d81
 # ╠═f15af338-b9bf-40f4-ba5c-9922550a9482
-# ╠═7626e1b9-e312-4e96-9ee1-925d80ae0cb3
 # ╠═b06be04c-f11b-4a15-89f1-7e05326996fe
+# ╠═eed264a8-1b9f-416f-897c-a26efadb4b75
 # ╠═bb87c341-2e49-43c1-a93d-4ded2ca0a3a8
 # ╠═63e06ba9-d51d-4748-81d6-06bc379c2d2e
 # ╠═33873026-0946-4887-b3c7-25128377f3eb
