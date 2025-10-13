@@ -10,6 +10,9 @@ using TextAnalysis
 # ╔═╡ e5176a48-b4b5-425a-9ad3-50efdc67936e
 using Languages
 
+# ╔═╡ 671e1287-b996-4170-905d-1aaccab537a9
+using Embeddings
+
 # ╔═╡ ab1372da-e112-4f44-b305-182c0733399b
 frase1 = StringDocument("En esta asignatura.")
 
@@ -54,13 +57,26 @@ m.column_indices
 # ╔═╡ 63e468af-87a6-4d92-95c7-4828b8eec32e
 m.dtm
 
+# ╔═╡ 4572a0c4-a894-478b-8be1-442decd5ecc8
+md"""
+# Cargar un embedding ya entrenado:
+"""
+
+# ╔═╡ 172dc140-0cda-4f06-8f40-4d2e6e663762
+language_files(FastText_Text{:es})
+
+# ╔═╡ 7486303b-0e25-420d-857a-ad4090022bf2
+embedding = load_embeddings(FastText_Text{:es})
+
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
+Embeddings = "c5bfea45-b7f1-5224-a596-15500f5db411"
 Languages = "8ef0a80b-9436-5d2c-a485-80b904378c43"
 TextAnalysis = "a2db99b7-8b79-58f8-94bf-bbc811eef33d"
 
 [compat]
+Embeddings = "~0.4.6"
 Languages = "~0.4.6"
 TextAnalysis = "~0.8.2"
 """
@@ -71,7 +87,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.7"
 manifest_format = "2.0"
-project_hash = "5ccbc851945fae54737416aa30ed3aba0d828aeb"
+project_hash = "80605e38d5421857ff654f24f484308d97ed43b4"
 
 [[deps.AliasTables]]
 deps = ["PtrArrays", "Random"]
@@ -86,6 +102,11 @@ version = "1.1.2"
 [[deps.Artifacts]]
 uuid = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
 version = "1.11.0"
+
+[[deps.AutoHashEquals]]
+git-tree-sha1 = "45bb6705d93be619b81451bb2006b7ee5d4e4453"
+uuid = "15f4f7f2-30c1-5605-9d31-71845cf9641f"
+version = "0.2.0"
 
 [[deps.Base64]]
 uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
@@ -171,6 +192,12 @@ deps = ["ArgTools", "FileWatching", "LibCURL", "NetworkOptions"]
 uuid = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
 version = "1.6.0"
 
+[[deps.Embeddings]]
+deps = ["AutoHashEquals", "DataDeps", "GoogleDrive", "PrecompileTools", "Statistics"]
+git-tree-sha1 = "eb8ab2e2d972100fc42a86845076e01fdc0d55b4"
+uuid = "c5bfea45-b7f1-5224-a596-15500f5db411"
+version = "0.4.6"
+
 [[deps.ExceptionUnwrapping]]
 deps = ["Test"]
 git-tree-sha1 = "d36f682e590a83d63d1c7dbd287573764682d12a"
@@ -180,6 +207,12 @@ version = "0.1.11"
 [[deps.FileWatching]]
 uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
 version = "1.11.0"
+
+[[deps.GoogleDrive]]
+deps = ["DataDeps", "Dates", "Downloads", "HTTP", "Random"]
+git-tree-sha1 = "f916ded6fdb10109f9cdb7a4b2c77feafc8e24e5"
+uuid = "91feb7a0-3508-11ea-1e8e-afea2c1c9a19"
+version = "0.1.3"
 
 [[deps.HTML_Entities]]
 deps = ["RelocatableFolders", "StrTables"]
@@ -564,6 +597,7 @@ version = "17.4.0+2"
 # ╔═╡ Cell order:
 # ╠═83e2d5c8-a293-11f0-3468-2da9c85dc1ea
 # ╠═e5176a48-b4b5-425a-9ad3-50efdc67936e
+# ╠═671e1287-b996-4170-905d-1aaccab537a9
 # ╠═ab1372da-e112-4f44-b305-182c0733399b
 # ╠═1b04c9d7-6417-493a-8563-85763dede9d2
 # ╠═fcf0bc7d-87e4-4039-8db7-b3f46a7507ab
@@ -577,5 +611,8 @@ version = "17.4.0+2"
 # ╠═225b407c-8629-46d2-9c8e-98c3d37e0875
 # ╠═7ce04208-c804-4ea6-9fc8-e5a32e32183b
 # ╠═63e468af-87a6-4d92-95c7-4828b8eec32e
+# ╠═4572a0c4-a894-478b-8be1-442decd5ecc8
+# ╠═172dc140-0cda-4f06-8f40-4d2e6e663762
+# ╠═7486303b-0e25-420d-857a-ad4090022bf2
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

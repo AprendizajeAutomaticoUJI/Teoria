@@ -228,33 +228,6 @@ si la palabra **pasmo** no figura en el vocabulario que manejamos se sustituye p
 _Puso cara de **UNKNOWN** al oír la noticia_
 """
 
-# ╔═╡ 28b7e493-acf2-49ce-a156-ce2b1bab2489
-md"""
-## Vectorización de texto
-
-Para la creación del vocabulario a partir de un corpus:
-
-```{.python}
-corpus = ["En esta asignatura", "La asignatura que se ha presentado"]
-vectorizador = tf.keras.layers.TextVectorization()
-vectorizador.adapt(corpus)
-print(vectorizador.get_vocabulary())
-
-['', '[UNK]', 'asignatura', 'se', 'que', 'presentado', 'la', 'ha', 'esta', 'en']
-
-
-vectorizador(["La asignatura que estamos viendo", "Esta asignatura"])
-
-<tf.Tensor: shape=(2, 5), dtype=int64, numpy=
-array([[6, 2, 4, 1, 1],
-       [8, 2, 0, 0, 0]])>
-```
-
-Hay dos códigos especiales: (1) indica que la palabra no pertenece al vocabulario, 
-(0) indica _no hay palabra_.
-
-"""
-
 # ╔═╡ c31ee640-cdba-4469-b755-a6406e101015
 md"""
 ## One-hot encoding
@@ -293,9 +266,9 @@ capitales .== permutedims(capitales)
 md"""
 ## Embeddings
 
-Los embeddings son una aplicación de los autoencoders cuando la información con la que estamos trabajando es texto.
+Los embeddings son el cojunto de técnicas que se utilizan en NLP para representar texto (palabras, frases, parte de un texto en general) como vectores de números que los algoritmos de aprendizaje automático pueden manejar.
 
-La idea base es intentar reducir la dimensionalidad del espacio de partida (número de palabras en el vocabulario), a un espacio que mantenga la información y se más fácil de manejar.
+Para conseguir representaciones de texto (embeddings) lo más compactas posibles, se intentar reducir la dimensionalidad del espacio de partida (número de palabras en el vocabulario), a un espacio que mantenga la información y se más fácil de manejar.
 
 El espacio de partida en esta caso en utilizar codificación _one-hot encoding_.
 """
@@ -309,7 +282,8 @@ md"""
 Resource(
 	imagenes * "one_hot_encoding2.png",
 	:alt => "One hot encoding",
-	:width => 900
+	:width => 900,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ bafdc086-0b06-4f33-8fbe-a8933c82ee47
@@ -328,7 +302,8 @@ md"""
 Resource(
 	imagenes * "autoencoder.png",
 	:alt => "Autoencoder",
-	:width => 500
+	:width => 500,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ 92c5efbe-6148-4813-8e28-ddd73808b6e1
@@ -340,7 +315,7 @@ En **h** vamos a tener una representación _densa_ de la información en el espa
 md"""
 ## Embeddings
 
-En **Juia** existe una capa para crear embeddings:
+En **Julia** existe una capa para crear embeddings:
 
 ```julia
 Embedding(tam_vocabulario => tam_embedding)
@@ -362,7 +337,8 @@ md"""
 Resource(
 	imagenes * "cbow.png",
 	:alt => "Continuous bag of words",
-	:width => 500
+	:width => 500,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ 732ca76c-97ee-4762-9cd5-cd76752391f5
@@ -385,7 +361,8 @@ md"""
 Resource(
 	imagenes * "skip_gram.png",
 	:alt => "Skip-gram",
-	:width => 500
+	:width => 500,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ be14b504-bf76-4053-8098-71c791108151
@@ -559,7 +536,7 @@ md"""
 
 De manera análoga a la predicción del siguiente valor en secuencias de datos temporales, para generar texto podemos utilizar redes recurrentes (RNN).
 
-Durante el entrenamiento vamos proporcionando a la red secuencias de letras como entrada, y debe predecir la siguiente letra, que se proporciona a la salida.
+Durante el entrenamiento vamos proporcionando a la red secuencias de letras como entrada, y la red debe predecir la siguiente letra, que se proporciona a la salida.
 
 En este caso podemos utilizar una variación de las RNN, las Gated Recurrent Units (GRU).
 """
@@ -575,7 +552,8 @@ Las celdas (neuronas) GRU (Gated Recurrent Unit) son una mejora de las neuronas 
 Resource(
 	imagenes * "gru.png",
 	:alt => "Gated recurrent unit",
-	:width => 500
+	:width => 500,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ 92307ff3-745e-41ef-8491-cf6306fc9a64
@@ -629,7 +607,8 @@ md"""
 Resource(
 	imagenes * "analisis_sentimientos.png",
 	:alt => "Análisis de sentimientos",
-	:width => 500
+	:width => 500,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ 4e5b4466-587a-44f5-85c4-561c454e2100
@@ -699,7 +678,8 @@ Durante la fase de entrenamiento.
 Resource(
 	imagenes * "nlp_rnn.png",
 	:alt => "Traducción automática",
-	:width => 500
+	:width => 500,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ 81b23354-0862-4226-a2e9-26a9ceb700e2
@@ -718,7 +698,8 @@ Durante la fase de traducción.
 Resource(
 	imagenes * "nlp_rnn_decoder.png",
 	:alt => "Fase de traducción",
-	:width => 500
+	:width => 500,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ cb4da7e6-eb30-4369-9c6d-60e21bf7256c
@@ -737,7 +718,8 @@ Durante la fase de traducción.
 Resource(
 	imagenes * "rnn_traduccion.png",
 	:alt => "Fase de traducción",
-	:width => 500
+	:width => 500,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ 140b7a93-4bd6-44a3-baaf-562d364b916d
@@ -756,7 +738,8 @@ Una mejora de la arquitectura anterior son las redes bidireccionales:
 Resource(
 	imagenes * "rnn_bidireccional.png",
 	:alt => "Fase de traducción",
-	:width => 500
+	:width => 500,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ fbf000ab-aca2-4fb7-8b3f-ef6791ad7cc1
@@ -790,7 +773,8 @@ Los dos componentes interesante son los bloques de atención (Attention).
 Resource(
 	imagenes * "transformer.png",
 	:alt => "Transformers",
-	:height => 500
+	:height => 500,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ b5add997-923c-4827-b1a6-0e513d981480
@@ -807,7 +791,8 @@ md"""
 Resource(
 	imagenes * "transformer2.png",
 	:alt => "Transformers",
-	:width => 900
+	:width => 900,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ 4f4e0350-1e9e-4d30-b428-4336f6cb4f7a
@@ -1661,7 +1646,6 @@ version = "17.4.0+2"
 # ╠═d2c96070-c07f-49c4-84f5-bebf7498b314
 # ╠═a1ff9ae5-a131-40c2-833a-4f17fb765d1b
 # ╠═22ec98af-c189-46ab-99a1-5cd8d51a77a2
-# ╟─28b7e493-acf2-49ce-a156-ce2b1bab2489
 # ╠═c31ee640-cdba-4469-b755-a6406e101015
 # ╠═8c5cd066-9fa7-4c62-beed-e858d0f3a311
 # ╠═87d0f2f2-eaea-4a7c-bca9-ceabab0da099
