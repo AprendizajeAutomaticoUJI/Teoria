@@ -26,9 +26,9 @@ using PlutoUI
 using LinearAlgebra: norm
 
 # ╔═╡ 50449444-1f95-11f0-3642-89804cc4dc84
-# html"""
-# <link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
-# """
+html"""
+<link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
+"""
 
 # ╔═╡ e83b5f25-3fd0-4b85-8295-f1b4eafa8770
 import PlotlyBase
@@ -3352,7 +3352,7 @@ version = "1.4.1+2"
 """
 
 # ╔═╡ Cell order:
-# ╠═50449444-1f95-11f0-3642-89804cc4dc84
+# ╟─50449444-1f95-11f0-3642-89804cc4dc84
 # ╟─b9df5cb5-cc3c-400e-9834-875e23b659ed
 # ╟─57948b1c-2937-475a-977f-cff1f5a45ebe
 # ╟─9420c5df-1b5c-4185-b7c1-f4c1de794b39

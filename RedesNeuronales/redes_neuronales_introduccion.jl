@@ -41,9 +41,9 @@ using MLJ
 using Normalization
 
 # ╔═╡ d5fd2304-0353-11f0-29d8-3158c4dbe8dd
-# html"""
-# <link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
-# """
+html"""
+<link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
+"""
 
 # ╔═╡ 785309b6-ddfc-4e99-9699-63f60e73a787
 TableOfContents(title = "Contenidos", depth=1)
@@ -57,9 +57,6 @@ md"""
 Grado en Inteligencia Robótica - Universitat Jaume I (UJI)
 """
 
-# ╔═╡ 0b5df837-5a80-43c6-b3ce-a1554d550776
-url_imagenes = "https://belmonte.uji.es/Docencia/IR2130/Teoria/RedesNeuronales/Imagenes/";
-
 # ╔═╡ 389b8656-6da2-46b5-93e9-41232c727120
 Resource(
 	"https://belmonte.uji.es/imgs/uji.jpg",
@@ -67,6 +64,9 @@ Resource(
 	:width => 400,
 	:style => "display: block; margin: auto;",
 )
+
+# ╔═╡ 0b5df837-5a80-43c6-b3ce-a1554d550776
+url_imagenes = "https://belmonte.uji.es/Docencia/IR2130/Teoria/RedesNeuronales/Imagenes/";
 
 # ╔═╡ 0ebbbc1b-066d-4c2b-8ad0-2165a145d5f1
 md"""
@@ -252,7 +252,7 @@ end;
 
 # ╔═╡ 0197bb9a-1410-4fa4-8750-bae1e71b971a
 Columns(
-plot(x -> escalon(x, 0), title = "Función de Heaviside o escalón", legends = false, size = (400,200))
+plot(x -> escalon(x, 0), title = "Función de Heaviside o escalón", legends = false, size = (500,300))
 )
 
 # ╔═╡ ced47da1-fbf0-4e7e-8695-1f9db7fc0bc2
@@ -289,7 +289,7 @@ sigmoide(x, ω) = 1 / (1 + exp(-ω*x));
 
 # ╔═╡ 924c5b93-cc37-40b6-aad5-67cc18421895
 begin 
-	plot(x -> escalon(x, 0), width = 2, label = "Escalón", size = (400, 300))
+	plot(x -> escalon(x, 0), width = 2, label = "Escalón", size = (600, 400))
 	plot!(x -> sigmoide(x, 1), label = "Sigmoide ω=1")
 	plot!(x -> sigmoide(x, 5), label = "Sigmoide ω=5")
 	plot!(x -> sigmoide(x, 10), label = "Sigmoide ω=10")
@@ -317,7 +317,7 @@ Fuente: https://www.deep-mind.org/2023/03/26/the-universal-approximation-theorem
 
 # ╔═╡ aab30f28-b671-45f8-bea1-b637351ad432
 md"""
-Aunque esta arquitectura es muy sencilla, permite hacer tareas simples de clasificación.
+Aunque esta arquitectura es muy sencilla, permite hacer tareas simples de clasificación. Una curiosidad, Rosenblatt entrenaba el perceptron a mano, ajustando los pesos hasta que resolvía un problema particular.
 """
 
 # ╔═╡ 089c0310-259c-4158-b49f-10b25969beac
@@ -354,7 +354,7 @@ El problema con estas redes es:
 1. Si se conocen los pesos de la red es muy sencillo calcular la salida.
 1. Calcular los pesos para que la red ajuste las salidas a partir de las entradas es muy complicado.
 
-La solución al cálculo de los pesos de la red es el algoritmo de retro **propagación (back propagation)**. El algoritmo llamado **back propagation** fue aplicado en la década de 1980 para entrenar redes neuronales, en particular MLP.
+La solución al cálculo de los pesos de la red es el algoritmo de **retro propagación (back propagation)**. El algoritmo llamado **back propagation** fue aplicado en la década de 1980 para entrenar redes neuronales, en particular MLP.
 """
 
 # ╔═╡ 1474cc4c-b3e4-4e14-9af8-11d05f1a8584
@@ -410,7 +410,7 @@ Para realizar el ajuste de los pesos de la red necesitamos, entre otros, los sig
 
 1. Elegir unos **buenos** pesos aleatorios iniciales.
 1. Elegir la función de activación.
-1. Elegir un optimizador adecuado para el descenso de gradiente.
+1. Elegir un optimizador (estrategia) adecuado para el descenso de gradiente.
 
 Además de la propia arquitectura de la red y otros hiperparámetros en la etapa de entrenamiento.
 """
@@ -440,7 +440,7 @@ por una red neuronal (puntos) con una única capa y 800 neuronas.
 Resource(
 	url_imagenes * "ajuste_cuadrado.png",
 	:alt => "Ajuste de la función cuadrado.",
-	:width => 500,
+	:width => 600,
 	:style => "display: block; margin: auto;",
 )
 
@@ -455,7 +455,7 @@ Este otro ejemplo muestra el caso de la función $f(x) = seno(x)$. De nuevo los 
 Resource(
 	url_imagenes * "ajuste_seno.png",
 	:alt => "Ajuste de la función seno.",
-	:width => 500,
+	:width => 600,
 	:style => "display: block; margin: auto;",
 )
 
@@ -471,6 +471,8 @@ Para usar Flux, debemos importarla de este modo:
 ```julia
 using Flux
 ```
+
+Una vez que tenemos esta biblioteca disponible, ya podemos empezar a construir y entrenar redes neuronales.
 """
 
 # ╔═╡ 7827ecab-178e-4286-9482-b787b95e949f
@@ -525,7 +527,8 @@ modelo_seno = Chain(
 md"""
 La red tiene la siguiente estructura:
 
-1. La capa de entrada con una neurona a la entrada y qunientas salidas hacia la siguiente capa densamente conectada (cada neurona de entradas se conecta con todas las neuronas de la siguiente capa)
+1. La capa de entrada con una neurona a la entrada y quinientas salidas hacia la siguiente capa densamente conectada (cada neurona de entradas se conecta con todas las neuronas de la siguiente capa)
+1. La función de activación elegida es tanh.
 1. Una capa intermedia con quinientas neuronas a la entrada y una salida hacia la siguente capa densamente conectada.
 1. Una capa de salida con una neurona.
 
@@ -536,7 +539,7 @@ Importante, la red tiene 1501 parámetros que entrenar.
 md"""
 ## Optimizador y función de pérdidas
 
-Ahora creamos el optimizador que vamos a utilizar, la métrica que va a usar el optimizador, y preparamos los datos:
+Ahora creamos el optimizador (estrategia para el descenso del gradiente) que vamos a utilizar, la métrica que va a usar el optimizador, y preparamos los datos:
 """
 
 # ╔═╡ 8d12a618-19cd-4777-91e5-bf36c9490c17
@@ -544,15 +547,17 @@ optimizador = Flux.setup(Adam(0.05), modelo_seno);
 
 # ╔═╡ df3f2655-66a2-4bf4-852b-c9574c2d2748
 md"""
-El optimizador que usamos en Adam, veremos más adelante cómo funciona este optimizador, con una tasa de aprendizaje $η = 0.05$
+El optimizador que usamos en Adam, veremos más adelante cómo funciona este optimizador, con una tasa de aprendizaje $η = 0.05$.
+
+La función de pérdidas que utilizamos es mean squared error.
 """
 
 # ╔═╡ 5883dec1-c9e2-4b1a-b53d-f87f85f30db2
 perdidas(modelo, X, y) = Flux.Losses.mse(modelo(X), y);
 
-# ╔═╡ 05545fc6-a8fe-4c25-8d80-abad3447e6ee
+# ╔═╡ 97be269f-3ceb-40ab-a7ed-55e6d5159bf3
 md"""
-La función de pérdidas que utilizamos es mean squared error.
+También, preparamos los datos de entrenamiento tal y como los espera la función de entrenamiento.
 """
 
 # ╔═╡ 5da5c8fa-a0e8-4f0d-8eaf-4fd0b2c00ed4
@@ -579,10 +584,12 @@ begin
 end
 
 # ╔═╡ 209d3b9a-67db-4b28-804a-393aaa2e64e9
-"MSE: ", perdidas(modelo_seno, x_train, y_train)
+perdidas_seno = perdidas(modelo_seno, x_train, y_train);
 
 # ╔═╡ a05f8886-30fe-4a08-861a-b730709032d9
 md"""
+Las pérdidas del modelo al final del entrenamiento son: $perdidas_seno
+
 El ajuste es no está nada mal.
 """
 
@@ -605,6 +612,7 @@ md"""
 La red tiene la siguiente estructura:
 
 1. La capa de entrada con una neurona a la entrada y tres salidas hacia la siguiente capa densamente conectada (cada neurona de entradas se conecta a cada una de las neuronas de la siguiente capa)
+1. La función de activación es tanh.
 1. Una capa intermedia con tres neuronas a la entrada y tres salidas hacia la siguente capa densamente conectada.
 1. Una capa de salida con una neurona y sin función que activación.
 """
@@ -641,18 +649,18 @@ begin
 end
 
 # ╔═╡ a306ffcd-5f77-4082-891d-0fbe202f8181
-perdidas(modelo_seno_profundo, x_train, y_train)
+perdidas_seno_2capas = perdidas(modelo_seno_profundo, x_train, y_train);
 
 # ╔═╡ fb46d3c7-e9d5-466e-b0dc-851d6da3c755
 md"""
-El ajuste es incluso un poco mejor.
+En este caso el error del ajuste es: $perdidas_seno_2capas.
 """
 
 # ╔═╡ 28882d51-20d8-4fa8-8ebd-0dc3e3198af0
 md"""
 ## Ejemplo con los datos de Howell
 
-Vamos a probar con los datos de la base de datos de Howell. Empezamos, como en el ejemplo de regresión polinomial, intentado ajustar el valor de peso a partir de la altura.
+Vamos a probar con los datos de la base de datos de Howell. Empezamos, como en el ejemplo de regresión polinomial, intentado ajustar el valor de peso a partir del resto de características.
 
 Primero leemos los datos:
 """
@@ -673,17 +681,29 @@ caracteristicas = [:weight, :age, :male]
 # ╔═╡ 792ae261-d6a5-4efc-b395-54538fe5c167
 entrenamiento_howell, validacion_howell = partition(howell, 0.8, rng=123)
 
+# ╔═╡ 30af2fe5-65ae-4206-aa32-298098d911af
+md"""
+## Ejemplo con los datos de Howell
+
+Defino los datos de entrenamiento:
+"""
+
 # ╔═╡ b2d8ab25-73e2-45d0-81d8-5de3b34ea2ba
 X_entrenamiento_howell = Float32.(Matrix(entrenamiento_howell[:, caracteristicas])')
 
 # ╔═╡ 4363ae8d-ecc6-41fa-aa5d-6373aa281dcb
 y_entrenamiento_howell = Float32.(entrenamiento_howell.height')
 
+# ╔═╡ ba5061db-24fd-44b2-b467-f65a652d7623
+md"""
+Defino los datos de pruebas:
+"""
+
 # ╔═╡ 06a400a3-9ca2-4038-be73-9be58ff22d94
-X_validacion_howell = Float32.(Matrix(validacion_howell[:, caracteristicas])')
+X_prueba_howell = Float32.(Matrix(validacion_howell[:, caracteristicas])')
 
 # ╔═╡ 96cf537d-eaf7-4790-962d-de6eb3922ef3
-y_validacion_howell = Float32.(validacion_howell.height')
+y_prueba_howell = Float32.(validacion_howell.height')
 
 # ╔═╡ 8f023a0e-94d9-4390-a048-3e815d13dd75
 md"""
@@ -702,6 +722,11 @@ function crea_red(semilla)
 		Dense(3 => 1)
 	)
 end
+
+# ╔═╡ dea1bee7-17ab-498e-8cb3-3a4bfa752bb4
+md"""
+Agrupamos los datos tal y como los espera la función de entrenamiento:
+"""
 
 # ╔═╡ 17fc15fd-1eda-4dae-ae51-e0b5610f0041
 datos_howell = [(X_entrenamiento_howell, y_entrenamiento_howell)];
@@ -722,12 +747,10 @@ function entrena(perdidas, red, datos, optimizador, semilla)
 		for epoca in 1:50000
 			Flux.train!(perdidas, red, datos, optimizador)
 			push!(mse, perdidas(red, X_entrenamiento_howell, y_entrenamiento_howell))
-			push!(mse_validacion, perdidas(red, X_validacion_howell, y_validacion_howell))
+			push!(mse_validacion, perdidas(red, X_prueba_howell, y_prueba_howell))
 
 		end
 	end
-	@info perdidas(red, X_entrenamiento_howell, y_entrenamiento_howell)
-	@info perdidas(red, X_validacion_howell, y_validacion_howell)
 	(mse, mse_validacion)
 end;
 
@@ -744,7 +767,7 @@ begin
 	red_howell = crea_red(semilla)
 	optimizador_howell = Flux.setup(Adam(), red_howell)
 	mse, mse_validacion = entrena(perdidas, red_howell, datos_howell, optimizador_howell, semilla)
-end
+end;
 
 # ╔═╡ 3c2883e8-a6cc-44ec-9f83-d72b77cab7ca
 let
@@ -825,10 +848,12 @@ Para que los experimentos sean reproducibles inicializamos la semilla del genera
 """
 
 # ╔═╡ 7a08c1e0-de42-4644-ab97-5bb3e5e07805
-Random.seed!(semilla)
+Random.seed!(semilla);
 
 # ╔═╡ b5f9fccd-8d35-4406-aaf8-7064ef512c92
 md"""
+## Clasificación con NN
+
 Dividimos el conjunto de datos para entrenamiento y prueba:
 """
 
@@ -920,17 +945,27 @@ Detalles:
 md"""
 ## Clasificación con NN
 
-Definimos el optimizador, la función de pérdidas y los datos:
+Definimos el optimizador:
 """
 
 # ╔═╡ df83a14f-1c98-4e04-bf21-d922fb11cc70
-optimizador_clasificacion = Flux.setup(Adam(0.001), red_clasificacion)
+optimizador_clasificacion = Flux.setup(Adam(0.001), red_clasificacion);
+
+# ╔═╡ c474f7b6-ca2c-4abb-a716-3f393b378a2a
+md"""
+La función de pérdidas:
+"""
 
 # ╔═╡ 014f2d31-8084-4720-bec1-aef01454dfb7
-perdidas_clasificacion(modelo, X, y) = Flux.Losses.logitbinarycrossentropy(modelo(X), y)
+perdidas_clasificacion(modelo, X, y) = Flux.Losses.logitbinarycrossentropy(modelo(X), y);
+
+# ╔═╡ 4dca0d84-6266-4a25-b72c-b08de812c339
+md"""
+Y estructuramos los datos tal y como lo espera la función de entrenamiento:
+"""
 
 # ╔═╡ d55aee49-7914-4a6e-a0cd-704af123c20b
-datos_clasificacion = [(X_entrenamiento_normalizada, y_entrenamiento_clasificacion)]
+datos_clasificacion = [(X_entrenamiento_normalizada, y_entrenamiento_clasificacion)];
 
 # ╔═╡ 5dfda864-7b57-4b85-b583-24b21c7d7b70
 md"""
@@ -956,7 +991,7 @@ md"""
 
 # ╔═╡ c3c1cb31-fac1-4758-a60e-e5231b046d81
 md"""
-Mostramos la matriz de confusión:
+Esta es la matriz de confusión que obtenemos después de entrenar la red:
 """
 
 # ╔═╡ f15af338-b9bf-40f4-ba5c-9922550a9482
@@ -967,7 +1002,9 @@ precision = MLJ.accuracy(Flux.onecold(red_clasificacion(X_prueba_normalizada), 0
 
 # ╔═╡ eed264a8-1b9f-416f-897c-a26efadb4b75
 md"""
-La precisión de la red es $precision
+La precisión de la red es $precision.
+
+No está nada mal.
 """
 
 # ╔═╡ bb87c341-2e49-43c1-a93d-4ded2ca0a3a8
@@ -978,16 +1015,11 @@ md"""
 * Las redes neuronales (profundas) están inspiradas en el funcionamiento de las  neuronas (conexiones, funciones de activación, etc.).
 * Las redes neuronales están formadas por capas de neuronas interconectadas  entre ellas.
 * El entrenamiento de una red implica calcular los pesos entre las conexiones  de las neuronas.
-"""
-
-# ╔═╡ 63e06ba9-d51d-4748-81d6-06bc379c2d2e
-md"""
-## Resumen
-
 * Las redes neuronales son aproximadores universales.
 * Las redes neuronales se pueden utilizar tanto para problemas de regresión como de clasificación.
 * Las redes neuronales son susceptibles al sobreajuste de los pesos.
 * Las redes neuronales se entrenan con la técnica de retro propagación, que se puede resumir en regla de la cadena más descenso de gradiente.
+
 """
 
 # ╔═╡ 33873026-0946-4887-b3c7-25128377f3eb
@@ -3139,162 +3171,166 @@ version = "1.9.2+0"
 """
 
 # ╔═╡ Cell order:
-# ╠═d5fd2304-0353-11f0-29d8-3158c4dbe8dd
-# ╠═c23ebe0f-016e-4a0a-aa7d-b0308bf5d99a
-# ╠═aa6d92eb-7a97-4084-bfc7-8474b34a2c71
-# ╠═8bf751cf-2510-4748-8697-2e3177013785
-# ╠═ee78d551-2259-4955-b934-c60d3453706c
-# ╠═5f2b85eb-2db3-4d6a-8970-1d2120feb897
-# ╠═a7c9f0c1-e76a-460c-a31a-3d2b42ca3118
-# ╠═5e06e76f-68de-4e65-9fe9-66040dca0932
-# ╠═6020693f-5639-4408-ab53-9845658eadba
-# ╠═6aa62fa1-f7e1-4bd2-8e4c-f6ab51c05490
-# ╠═a3d7c6fd-07a4-4280-9170-167c17299e91
-# ╠═b844f3ab-c048-4df9-9f01-0b8748ebbb1e
-# ╠═0a3d364a-af50-435f-b094-ff392acfa922
-# ╠═785309b6-ddfc-4e99-9699-63f60e73a787
-# ╠═7899e0e7-744a-46bf-a6ff-9a42e15bcdb4
-# ╠═0b5df837-5a80-43c6-b3ce-a1554d550776
-# ╠═389b8656-6da2-46b5-93e9-41232c727120
-# ╠═0ebbbc1b-066d-4c2b-8ad0-2165a145d5f1
-# ╠═5b797826-439b-48ce-a293-03534db1f2a9
-# ╠═f65234a5-1af3-48de-be23-a6c3050b79a6
-# ╠═ce3edc15-c454-4419-8619-5d800aed2d5c
-# ╠═0a89e6b8-46c1-4dfc-b11e-6373dc743ec4
-# ╠═770f2494-be6f-4c6b-aa9b-687241c0f62a
-# ╠═20b5ac11-a251-48e7-bfe2-252d8a4b1fe9
-# ╠═fd15e146-5c83-406b-a056-fc1fba51ffc2
-# ╠═3e361edb-a6fc-4c26-8c91-f44eec0a6a6c
-# ╠═0f6e55dd-d1e4-4833-8c3f-a6390daff2a5
-# ╠═8796c632-7302-4213-be40-67e7b11f5a35
-# ╠═b64fa92a-dfc8-4049-a069-9a1c4f61b65c
-# ╠═135e5c27-0f1a-46a5-9997-254c6547ff1e
-# ╠═5e36d267-f394-4b53-a29e-b68a297113a1
-# ╠═4d082d8e-7b85-4e94-91b4-0e550ccd9458
-# ╠═36345070-15e7-4b4f-89b6-ac6a7abf070c
-# ╠═cabcaec7-3fca-4ea9-929f-0d3f3e6843a2
-# ╠═df53f204-76e8-43f7-858f-48c5f8f78eeb
-# ╠═c3685572-264d-48d9-aee6-142ae90576b3
-# ╠═bbbc0b92-185b-4126-b858-e94af0211a6c
-# ╠═d0e46bda-cd81-4717-87b1-e5ef283f6e7b
-# ╠═9d41b30b-afab-4f83-ae60-9fc50dea90b9
-# ╠═217fcf4e-f83e-4bbe-906c-cc1e1f44d7b9
-# ╠═0197bb9a-1410-4fa4-8750-bae1e71b971a
-# ╠═ced47da1-fbf0-4e7e-8695-1f9db7fc0bc2
-# ╠═080718d1-9de3-4435-8168-76de5b7570ec
-# ╠═3063a028-22e6-467f-82fb-139492ed4e6b
-# ╠═359e990e-41bc-43bc-9504-d520476ea035
+# ╟─d5fd2304-0353-11f0-29d8-3158c4dbe8dd
+# ╟─c23ebe0f-016e-4a0a-aa7d-b0308bf5d99a
+# ╟─aa6d92eb-7a97-4084-bfc7-8474b34a2c71
+# ╟─8bf751cf-2510-4748-8697-2e3177013785
+# ╟─ee78d551-2259-4955-b934-c60d3453706c
+# ╟─5f2b85eb-2db3-4d6a-8970-1d2120feb897
+# ╟─a7c9f0c1-e76a-460c-a31a-3d2b42ca3118
+# ╟─5e06e76f-68de-4e65-9fe9-66040dca0932
+# ╟─6020693f-5639-4408-ab53-9845658eadba
+# ╟─6aa62fa1-f7e1-4bd2-8e4c-f6ab51c05490
+# ╟─a3d7c6fd-07a4-4280-9170-167c17299e91
+# ╟─b844f3ab-c048-4df9-9f01-0b8748ebbb1e
+# ╟─0a3d364a-af50-435f-b094-ff392acfa922
+# ╟─785309b6-ddfc-4e99-9699-63f60e73a787
+# ╟─7899e0e7-744a-46bf-a6ff-9a42e15bcdb4
+# ╟─389b8656-6da2-46b5-93e9-41232c727120
+# ╟─0b5df837-5a80-43c6-b3ce-a1554d550776
+# ╟─0ebbbc1b-066d-4c2b-8ad0-2165a145d5f1
+# ╟─5b797826-439b-48ce-a293-03534db1f2a9
+# ╟─f65234a5-1af3-48de-be23-a6c3050b79a6
+# ╟─ce3edc15-c454-4419-8619-5d800aed2d5c
+# ╟─0a89e6b8-46c1-4dfc-b11e-6373dc743ec4
+# ╟─770f2494-be6f-4c6b-aa9b-687241c0f62a
+# ╟─20b5ac11-a251-48e7-bfe2-252d8a4b1fe9
+# ╟─fd15e146-5c83-406b-a056-fc1fba51ffc2
+# ╟─3e361edb-a6fc-4c26-8c91-f44eec0a6a6c
+# ╟─0f6e55dd-d1e4-4833-8c3f-a6390daff2a5
+# ╟─8796c632-7302-4213-be40-67e7b11f5a35
+# ╟─b64fa92a-dfc8-4049-a069-9a1c4f61b65c
+# ╟─135e5c27-0f1a-46a5-9997-254c6547ff1e
+# ╟─5e36d267-f394-4b53-a29e-b68a297113a1
+# ╟─4d082d8e-7b85-4e94-91b4-0e550ccd9458
+# ╟─36345070-15e7-4b4f-89b6-ac6a7abf070c
+# ╟─cabcaec7-3fca-4ea9-929f-0d3f3e6843a2
+# ╟─df53f204-76e8-43f7-858f-48c5f8f78eeb
+# ╟─c3685572-264d-48d9-aee6-142ae90576b3
+# ╟─bbbc0b92-185b-4126-b858-e94af0211a6c
+# ╟─d0e46bda-cd81-4717-87b1-e5ef283f6e7b
+# ╟─9d41b30b-afab-4f83-ae60-9fc50dea90b9
+# ╟─217fcf4e-f83e-4bbe-906c-cc1e1f44d7b9
+# ╟─0197bb9a-1410-4fa4-8750-bae1e71b971a
+# ╟─ced47da1-fbf0-4e7e-8695-1f9db7fc0bc2
+# ╟─080718d1-9de3-4435-8168-76de5b7570ec
+# ╟─3063a028-22e6-467f-82fb-139492ed4e6b
+# ╟─359e990e-41bc-43bc-9504-d520476ea035
 # ╠═c1d85e3c-51e9-45eb-b209-7da56905e6d5
-# ╠═924c5b93-cc37-40b6-aad5-67cc18421895
-# ╠═26ffe43c-fcda-4c52-be27-ce945f1084d9
-# ╠═aba74d40-c561-4492-a7a0-f49a69f6455e
-# ╠═a46f42c1-64a2-4a07-9ee7-e8517eb56dd8
-# ╠═aab30f28-b671-45f8-bea1-b637351ad432
-# ╠═089c0310-259c-4158-b49f-10b25969beac
-# ╠═b6e330c6-8285-4f5b-a933-7c5a35f1fbab
-# ╠═8e144c0b-8ae4-4865-931f-a52afa55965d
-# ╠═53e3d912-fb70-4501-817d-e8568bea9b81
-# ╠═b4e00721-1b78-4cda-a26e-474d4fa4230a
-# ╠═1474cc4c-b3e4-4e14-9af8-11d05f1a8584
-# ╠═e365ac10-8744-41e6-a550-861e60108782
-# ╠═f08f7c50-0b54-4c0d-b65a-b0389d41d2a9
-# ╠═1a52c360-1fb4-49df-a0f2-8a75f0f981d8
-# ╠═0a978bc5-bf88-4702-90ac-821604054683
-# ╠═e4619111-2f92-4b45-8ab8-9fb9f8157f6f
-# ╠═c05393f4-df33-4945-9d20-3f92d8938588
-# ╠═3dd87947-6800-4529-b057-3be85f454e21
-# ╠═595a9bb4-a6f5-4862-b405-3bd7edd735ce
-# ╠═dccb64be-ee47-495d-ab9a-439f0eafb4b0
-# ╠═c86d2d32-bcaa-4a7f-ae07-60d7dd777003
-# ╠═a8c7d8c1-f9e1-448d-8832-82f4e6df33b7
-# ╠═7827ecab-178e-4286-9482-b787b95e949f
-# ╠═57174712-848c-4868-89f3-5f6b67953312
+# ╟─924c5b93-cc37-40b6-aad5-67cc18421895
+# ╟─26ffe43c-fcda-4c52-be27-ce945f1084d9
+# ╟─aba74d40-c561-4492-a7a0-f49a69f6455e
+# ╟─a46f42c1-64a2-4a07-9ee7-e8517eb56dd8
+# ╟─aab30f28-b671-45f8-bea1-b637351ad432
+# ╟─089c0310-259c-4158-b49f-10b25969beac
+# ╟─b6e330c6-8285-4f5b-a933-7c5a35f1fbab
+# ╟─8e144c0b-8ae4-4865-931f-a52afa55965d
+# ╟─53e3d912-fb70-4501-817d-e8568bea9b81
+# ╟─b4e00721-1b78-4cda-a26e-474d4fa4230a
+# ╟─1474cc4c-b3e4-4e14-9af8-11d05f1a8584
+# ╟─e365ac10-8744-41e6-a550-861e60108782
+# ╟─f08f7c50-0b54-4c0d-b65a-b0389d41d2a9
+# ╟─1a52c360-1fb4-49df-a0f2-8a75f0f981d8
+# ╟─0a978bc5-bf88-4702-90ac-821604054683
+# ╟─e4619111-2f92-4b45-8ab8-9fb9f8157f6f
+# ╟─c05393f4-df33-4945-9d20-3f92d8938588
+# ╟─3dd87947-6800-4529-b057-3be85f454e21
+# ╟─595a9bb4-a6f5-4862-b405-3bd7edd735ce
+# ╟─dccb64be-ee47-495d-ab9a-439f0eafb4b0
+# ╟─c86d2d32-bcaa-4a7f-ae07-60d7dd777003
+# ╟─a8c7d8c1-f9e1-448d-8832-82f4e6df33b7
+# ╟─7827ecab-178e-4286-9482-b787b95e949f
+# ╟─57174712-848c-4868-89f3-5f6b67953312
 # ╠═9143e7f3-ddbd-4757-a202-7c7b7f4c7468
 # ╠═cce25fb8-c343-4866-80fa-d2d9714d9731
 # ╠═aa6459b3-3e45-4951-8279-54a4c72bf99c
-# ╠═d0a3a855-bc5f-4c84-b735-80a8ac71d94c
+# ╟─d0a3a855-bc5f-4c84-b735-80a8ac71d94c
 # ╠═4312e730-bf64-4081-bf37-6062c3c3acbd
-# ╠═8498d094-5069-4fb6-8d12-9f1721f9b4ac
-# ╠═3a9b314f-7181-4e1e-9b87-e41d8b3bb49e
+# ╟─8498d094-5069-4fb6-8d12-9f1721f9b4ac
+# ╟─3a9b314f-7181-4e1e-9b87-e41d8b3bb49e
 # ╠═8d12a618-19cd-4777-91e5-bf36c9490c17
-# ╠═df3f2655-66a2-4bf4-852b-c9574c2d2748
+# ╟─df3f2655-66a2-4bf4-852b-c9574c2d2748
 # ╠═5883dec1-c9e2-4b1a-b53d-f87f85f30db2
-# ╠═05545fc6-a8fe-4c25-8d80-abad3447e6ee
+# ╟─97be269f-3ceb-40ab-a7ed-55e6d5159bf3
 # ╠═5da5c8fa-a0e8-4f0d-8eaf-4fd0b2c00ed4
-# ╠═0f9f1ef8-a591-45ce-8c97-507144441660
+# ╟─0f9f1ef8-a591-45ce-8c97-507144441660
 # ╠═5b9f4efc-8917-4a9b-bba7-5c5477bf4cbf
-# ╠═07bb71de-f226-40fb-b735-73863bf0688e
+# ╟─07bb71de-f226-40fb-b735-73863bf0688e
 # ╠═209d3b9a-67db-4b28-804a-393aaa2e64e9
-# ╠═a05f8886-30fe-4a08-861a-b730709032d9
-# ╠═7f9436bf-06ab-41fb-a435-61f815b6787e
+# ╟─a05f8886-30fe-4a08-861a-b730709032d9
+# ╟─7f9436bf-06ab-41fb-a435-61f815b6787e
 # ╠═2b7ee756-8187-4176-b731-7bdfbcf2ec05
-# ╠═4487a15e-2c7c-4aad-91af-5859d65c775c
-# ╠═839d9885-b6f7-4c23-ae5f-8db14145c553
+# ╟─4487a15e-2c7c-4aad-91af-5859d65c775c
+# ╟─839d9885-b6f7-4c23-ae5f-8db14145c553
 # ╠═13f55aab-0a02-4bc7-9b9a-8765c15586b8
-# ╠═4a6db645-3282-40e2-a822-f159b79c183b
+# ╟─4a6db645-3282-40e2-a822-f159b79c183b
 # ╠═398910d5-be33-49a4-a761-8bcbcd872eb8
-# ╠═af5c6a1f-5053-49a4-a2de-7bc7139f58bb
+# ╟─af5c6a1f-5053-49a4-a2de-7bc7139f58bb
 # ╠═a306ffcd-5f77-4082-891d-0fbe202f8181
-# ╠═fb46d3c7-e9d5-466e-b0dc-851d6da3c755
-# ╠═28882d51-20d8-4fa8-8ebd-0dc3e3198af0
+# ╟─fb46d3c7-e9d5-466e-b0dc-851d6da3c755
+# ╟─28882d51-20d8-4fa8-8ebd-0dc3e3198af0
 # ╠═2468a791-2cdb-4ace-9037-c68f828e3608
-# ╠═24e3d668-c6fd-475b-8eae-afed0343123e
+# ╟─24e3d668-c6fd-475b-8eae-afed0343123e
 # ╠═ab5c1498-7e07-4301-9de8-b1a08b7a5482
 # ╠═792ae261-d6a5-4efc-b395-54538fe5c167
+# ╟─30af2fe5-65ae-4206-aa32-298098d911af
 # ╠═b2d8ab25-73e2-45d0-81d8-5de3b34ea2ba
 # ╠═4363ae8d-ecc6-41fa-aa5d-6373aa281dcb
+# ╟─ba5061db-24fd-44b2-b467-f65a652d7623
 # ╠═06a400a3-9ca2-4038-be73-9be58ff22d94
 # ╠═96cf537d-eaf7-4790-962d-de6eb3922ef3
-# ╠═8f023a0e-94d9-4390-a048-3e815d13dd75
+# ╟─8f023a0e-94d9-4390-a048-3e815d13dd75
 # ╠═34f2c0d2-2f10-483c-867f-755d8a6b2011
+# ╟─dea1bee7-17ab-498e-8cb3-3a4bfa752bb4
 # ╠═17fc15fd-1eda-4dae-ae51-e0b5610f0041
-# ╠═c3d0c723-0852-4365-9e4c-b64d95a1bcb8
+# ╟─c3d0c723-0852-4365-9e4c-b64d95a1bcb8
 # ╠═8f400ee4-3e73-4770-b39a-317df4ae9b0e
-# ╠═855f71e1-105d-4082-9097-8587de06ce45
+# ╟─855f71e1-105d-4082-9097-8587de06ce45
 # ╠═63a26003-f633-4d93-a135-369ae8d802c5
 # ╠═3c2883e8-a6cc-44ec-9f83-d72b77cab7ca
-# ╠═7ac53bef-54ba-4a4b-9a99-de6423249572
+# ╟─7ac53bef-54ba-4a4b-9a99-de6423249572
 # ╠═ff74834b-f674-4ec9-a1d0-5422dd228915
-# ╠═d5ec1fbe-138d-4da1-83de-95dd1565dac7
-# ╠═5f28926b-f7a4-4a6f-a37d-d59fbd1c01c5
-# ╠═3584250c-f199-4c27-ba22-d359b245b02c
-# ╠═e67aa374-2ad6-42ab-8127-5658a8236363
-# ╠═ed7fc6a7-6f89-4d88-92aa-ec96e9171c6a
+# ╟─d5ec1fbe-138d-4da1-83de-95dd1565dac7
+# ╟─5f28926b-f7a4-4a6f-a37d-d59fbd1c01c5
+# ╟─3584250c-f199-4c27-ba22-d359b245b02c
+# ╟─e67aa374-2ad6-42ab-8127-5658a8236363
+# ╟─ed7fc6a7-6f89-4d88-92aa-ec96e9171c6a
 # ╠═fd9766e3-4a9f-4746-b695-c2b20b192897
-# ╠═75a7fc03-26fc-458d-bb0e-e0ed26b0ff65
+# ╟─75a7fc03-26fc-458d-bb0e-e0ed26b0ff65
 # ╠═7a08c1e0-de42-4644-ab97-5bb3e5e07805
-# ╠═b5f9fccd-8d35-4406-aaf8-7064ef512c92
+# ╟─b5f9fccd-8d35-4406-aaf8-7064ef512c92
 # ╠═6e0c2dc5-0037-480f-9b47-0ef951a0af86
-# ╠═237e0af0-7abd-4d0d-82a5-be590e3a0555
+# ╟─237e0af0-7abd-4d0d-82a5-be590e3a0555
 # ╠═f03bcd24-fb92-45f7-8489-0901ec8714b2
-# ╠═a4d9101a-99c0-4949-b8bb-e440a74c3193
+# ╟─a4d9101a-99c0-4949-b8bb-e440a74c3193
 # ╠═c25f9730-f107-4cc3-a517-542b17e58901
 # ╠═7b180556-ecd3-480f-bb1b-7adb84f91ccf
-# ╠═517e1381-a094-4d13-aadc-c75787ef9091
-# ╠═fb6b3f31-c188-4c82-bc15-996fd909bfcf
+# ╟─517e1381-a094-4d13-aadc-c75787ef9091
+# ╟─fb6b3f31-c188-4c82-bc15-996fd909bfcf
 # ╠═fa68f129-609d-442f-8d9d-06e3a0bc5bb7
 # ╠═7af6e33b-b9cf-4428-b457-0fbc7f0c5eb0
 # ╠═015c2a61-f7b4-41d9-81c7-85299de42a52
-# ╠═71dd85c1-e743-4641-9522-8904da9fa04e
+# ╟─71dd85c1-e743-4641-9522-8904da9fa04e
 # ╠═1859f9ea-cb27-4acb-a2bf-b7dd63fa47eb
 # ╠═de7228bc-fc1c-4540-a0fb-89b80aaca8fe
-# ╠═152393b0-d3cc-461e-a1a1-c0b2050c957e
+# ╟─152393b0-d3cc-461e-a1a1-c0b2050c957e
 # ╠═03c5c00b-a013-4730-bae3-b028649c5714
-# ╠═21ad8727-1da3-4ee0-a93c-b874b415b3d6
-# ╠═56817bd3-041c-41a2-806d-ddca6ecce036
+# ╟─21ad8727-1da3-4ee0-a93c-b874b415b3d6
+# ╟─56817bd3-041c-41a2-806d-ddca6ecce036
 # ╠═df83a14f-1c98-4e04-bf21-d922fb11cc70
+# ╟─c474f7b6-ca2c-4abb-a716-3f393b378a2a
 # ╠═014f2d31-8084-4720-bec1-aef01454dfb7
+# ╟─4dca0d84-6266-4a25-b72c-b08de812c339
 # ╠═d55aee49-7914-4a6e-a0cd-704af123c20b
-# ╠═5dfda864-7b57-4b85-b583-24b21c7d7b70
+# ╟─5dfda864-7b57-4b85-b583-24b21c7d7b70
 # ╠═e98382a3-5a96-4d4c-8748-97231231393a
 # ╠═00719c6c-41dd-47d2-9c66-e9169bada27c
-# ╠═3156227d-ad46-49f5-8540-128267f03954
-# ╠═c3c1cb31-fac1-4758-a60e-e5231b046d81
+# ╟─3156227d-ad46-49f5-8540-128267f03954
+# ╟─c3c1cb31-fac1-4758-a60e-e5231b046d81
 # ╠═f15af338-b9bf-40f4-ba5c-9922550a9482
 # ╠═b06be04c-f11b-4a15-89f1-7e05326996fe
-# ╠═eed264a8-1b9f-416f-897c-a26efadb4b75
-# ╠═bb87c341-2e49-43c1-a93d-4ded2ca0a3a8
-# ╠═63e06ba9-d51d-4748-81d6-06bc379c2d2e
-# ╠═33873026-0946-4887-b3c7-25128377f3eb
+# ╟─eed264a8-1b9f-416f-897c-a26efadb4b75
+# ╟─bb87c341-2e49-43c1-a93d-4ded2ca0a3a8
+# ╟─33873026-0946-4887-b3c7-25128377f3eb
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
