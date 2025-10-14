@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.19
+# v0.20.8
 
 using Markdown
 using InteractiveUtils
@@ -26,9 +26,9 @@ using PlutoUI
 using LinearAlgebra: norm
 
 # ╔═╡ 50449444-1f95-11f0-3642-89804cc4dc84
-# html"""
-# <link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
-# """
+html"""
+<link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
+"""
 
 # ╔═╡ e83b5f25-3fd0-4b85-8295-f1b4eafa8770
 import PlotlyBase
@@ -994,7 +994,7 @@ md"""
 Por otro lado, esta es la lagrangiana que hemos minimizado:
 
 $L(\alpha_n) = -\frac{1}{2} \sum_{n=1}^N \sum_{m=1}^N \alpha_n \alpha_m t_n t_m 
-x_n^T x_m + \sum_{n=1}^N \alpha_n$
+\boxed{x_n^T x_m} + \sum_{n=1}^N \alpha_n$
 
 El punto importante es que aparecen términos del producto escalar de dos 
 puntos del conjunto de entrenamiento $x_n^T, x_m$, con:
@@ -1247,13 +1247,13 @@ Estimamos la clase de los datos de prueba:
 # ╔═╡ b1c6dd76-0e10-4361-9549-5de0d2ad3a7e
 ŷ_howell = predict(maquina_howell, rows=prueba_howell)
 
+# ╔═╡ a3976136-6172-4283-8343-2ac5d42e71d5
+howell_lineal_mal_calsificadas = misclassification_rate(ŷ_howell, adultos[prueba_howell, :clase]);
+
 # ╔═╡ a3014ff8-729c-46d1-aa13-0be2490e22d5
 md"""
-La ratio de muestras mal clasificadas:
+La ratio de muestras mal clasificadas $howell_lineal_mal_calsificadas:
 """
-
-# ╔═╡ a3976136-6172-4283-8343-2ac5d42e71d5
-misclassification_rate(ŷ_howell, adultos[prueba_howell, :clase])
 
 # ╔═╡ 1dc1e60e-d51d-493e-8cf2-a076cb114ca1
 md"""
@@ -1329,13 +1329,13 @@ Mostramos la matriz de confusión, es muy parecida al caso lineal:
 # ╔═╡ 0185a95b-4e1e-432c-9241-3a7cd70e5d05
 confusion_matrix(ŷ_howell_rbf, adultos[prueba_howell, :clase])
 
+# ╔═╡ ff333f42-9a30-4d38-ac92-e95e1e73f72a
+howell_gaussiano_mal_clasificadas = misclassification_rate(ŷ_howell_rbf, adultos[prueba_howell, :clase]);
+
 # ╔═╡ 7ec54078-3007-4ac3-b213-4c5bcf7b1176
 md"""
-La ratio de muestras mal clasificadas:
+La ratio de muestras mal clasificadas $howell_gaussiano_mal_clasificadas:
 """
-
-# ╔═╡ ff333f42-9a30-4d38-ac92-e95e1e73f72a
-misclassification_rate(ŷ_howell_rbf, adultos[prueba_howell, :clase])
 
 # ╔═╡ ea0413eb-4c66-41ae-ac66-cdbac6129d7f
 md"""
@@ -3352,7 +3352,7 @@ version = "1.4.1+2"
 """
 
 # ╔═╡ Cell order:
-# ╠═50449444-1f95-11f0-3642-89804cc4dc84
+# ╟─50449444-1f95-11f0-3642-89804cc4dc84
 # ╟─b9df5cb5-cc3c-400e-9834-875e23b659ed
 # ╟─57948b1c-2937-475a-977f-cff1f5a45ebe
 # ╟─9420c5df-1b5c-4185-b7c1-f4c1de794b39
@@ -3527,8 +3527,8 @@ version = "1.4.1+2"
 # ╟─556ee6ee-f3a7-4122-8189-626f057d4f79
 # ╟─28bdecaf-7954-4329-a3c5-d48c0e42e463
 # ╠═b1c6dd76-0e10-4361-9549-5de0d2ad3a7e
-# ╟─a3014ff8-729c-46d1-aa13-0be2490e22d5
 # ╠═a3976136-6172-4283-8343-2ac5d42e71d5
+# ╟─a3014ff8-729c-46d1-aa13-0be2490e22d5
 # ╟─1dc1e60e-d51d-493e-8cf2-a076cb114ca1
 # ╟─a85d5c45-90da-4a27-9a45-e154244078db
 # ╟─f439edae-4570-4498-be4e-49831864f239
@@ -3545,8 +3545,8 @@ version = "1.4.1+2"
 # ╠═a70d2ea4-612f-4832-a55d-fe51d894631e
 # ╟─7245d4bf-9ae9-42c4-b217-45ef3ad5daf1
 # ╠═0185a95b-4e1e-432c-9241-3a7cd70e5d05
-# ╟─7ec54078-3007-4ac3-b213-4c5bcf7b1176
 # ╠═ff333f42-9a30-4d38-ac92-e95e1e73f72a
+# ╟─7ec54078-3007-4ac3-b213-4c5bcf7b1176
 # ╟─ea0413eb-4c66-41ae-ac66-cdbac6129d7f
 # ╟─08018313-909f-4050-91aa-58af6d5a7245
 # ╟─c89e1126-3b58-4acc-95b9-21105077300a
