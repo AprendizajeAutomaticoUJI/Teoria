@@ -403,14 +403,14 @@ md"""
 
 En Julia podemos trabajar con embeddings utilizando el paquete **Embeddings**, que dispone de embeddings ya entrenados, algunos de ellos en español y catalán.
 
-```{.julia}
+```julia
 using Embeddings
 
 # Para conocer los embeddings que tenemos disponibles
 language_files(FastText_Text{:es})
 ```
 
-```{.shell}
+```shell
 4-element Vector{String}:
  "FastText es CommonCrawl Text/cc.es.300.vec"
  "FastText es Wiki Text/wiki.es.vec"
@@ -430,7 +430,7 @@ md"""
 
 Para obtener el vector de embedding de una palabra en el diccionario puedes utilizar el código de ejemplo que encuentras en la documentación del paquete:
 
-```{.julia}
+```julia
 diccionario = Dict(palabra => indice for (indice, palabra) in enumerate(español.vocab))
 
 function obten_embedding(palabra)
@@ -450,7 +450,7 @@ md"""
 ## Show me the code
 Vamos a calcular el concepto de reina a partir de los conceptos mujer, rey, hombre, y calcular la distancia coseno entre el vector del embedding para reina y el calculado:
 
-```{.julia}
+```julia
 rey = obten_embedding("rey")
 reina = obten_embedding("reina")
 hombre = obten_embedding("hombre")
@@ -464,7 +464,7 @@ coseno(rey, rey2)
 
 Obtenemos:
 
-```{.shell}
+```shell
 0.7006942f0 (45 grados)
 0.6734288f0 (47 grados)
 ```
@@ -475,7 +475,7 @@ md"""
 ## Show me the code
 Vamos a calcular el concepto de gatos a partir de los conceptos perro, perros y gato, y calcular la distancia coseno entre el vector del embedding para gatos y el calculado:
 
-```{.julia}
+```julia
 perro = obten_embedding("perro")
 gato = obten_embedding("gato")
 perros = obten_embedding("perros")
@@ -487,7 +487,7 @@ coseno(gatos, gatos2)
 
 Obtenemos:
 
-```{.shell}
+```shell
 0.88137954f0 (28 grados)
 ```
 """
@@ -498,7 +498,7 @@ md"""
 
 Finalmente vamos a calcular el concepto de pluralidad a partir de perros y gatos, y compararlos:
 
-```{.julia}
+```julia
 pluralidad_gato = gatos - gato
 pluralidad_perro = perros - perro
 
@@ -507,7 +507,7 @@ coseno(pluralidad_gato, pluralidad_perro)
 
 Obtenemos:
 
-```{.shell}
+```shell
 0.86211735f0 (30 grados)
 ```
 """
@@ -572,7 +572,26 @@ model.compile(loss="sparse_categorical_crossentropy", optimizer="nadam",
               metrics=["accuracy"])
 ```
 
-Fíjate en que, en este caso, el embedding se va construyendo en el proceso de entrenamiento de la red.
+```julia
+modelo = Chain(
+		GRU(entrada => 128),
+		GRU(128 => 64),
+		GRU(64 => 32),
+		Dense(32 => salida),
+		softmax
+	)
+```
+
+Y luego lo entrenamos:
+
+```julia
+function perdidas(modelo, X, y)
+	Flux.reset!(modelo)
+	Flux.Losses.crossentropy(modelo(X), y)
+end
+
+
+```
 """
 
 # ╔═╡ 99437b1f-f38d-40ce-bd43-d071669cef2f
