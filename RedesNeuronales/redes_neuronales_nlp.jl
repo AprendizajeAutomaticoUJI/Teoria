@@ -562,16 +562,6 @@ md"""
 
 Crear una red para generar texto con GRU es relativamente sencillo:
 
-```{.python}
-modelo = tf.keras.Sequential([
-    tf.keras.layers.Embedding(input_dim=letras, output_dim=dimension),
-    tf.keras.layers.GRU(128, return_sequences=True),
-    tf.keras.layers.Dense(letras, activation="softmax")
-])
-model.compile(loss="sparse_categorical_crossentropy", optimizer="nadam",
-              metrics=["accuracy"])
-```
-
 ```julia
 modelo = Chain(
 		GRU(entrada => 128),
@@ -582,15 +572,34 @@ modelo = Chain(
 	)
 ```
 
-Y luego lo entrenamos:
+!!! important "Detalle muy importante"
+	En la función de pérdidas debemos resetear el modelo antes de calcular las pérdidas, como en el siguiente fragmento de código:
+	
+	```julia
+	function perdidas(modelo, X, y)
+		Flux.reset!(modelo)
+		Flux.Losses.crossentropy(modelo(X), y)
+	end
+	```
+"""
+
+# ╔═╡ 2c260879-39ef-4d74-bc19-d1175a43cbad
+md"""
+## Generación de texto
+
+El siguiente paso es entrenar la red:
 
 ```julia
-function perdidas(modelo, X, y)
-	Flux.reset!(modelo)
-	Flux.Losses.crossentropy(modelo(X), y)
+function entrena_modelo(modelo, Xtrain, ytrain, λ, epocas)
+	datos = [(Xtrain, ytrain)] # Preparamos los datos
+    optimizador = Flux.setup(Adam(λ), modelo) # Instanciamos el optimizador
+    perdidas_entrenamiento = [] # Para visualizar el entrenamiento
+    @showprogress for epoca ∈ 1:epocas
+        train!(perdidas, modelo, datos, optimizador)
+        push!(perdidas_entrenamiento, perdidas(modelo, Xtrain, ytrain))
+    end
+    return perdidas_entrenamiento
 end
-
-
 ```
 """
 
@@ -601,13 +610,70 @@ md"""
 Una vez entrenada la red, si le proporcionamos un texto inicial de partida, la red irá añadiendo carácter a carácter hasta alcanzar el carácter especial **<EOF>** final.
 
 El estilo del texto generado coincidirá con el del texto utilizado para entrenar la red.
+"""
 
-Además, podemos hacer *transfer learning*, si tenemos una red entrenada, podemos reentrenarla utilizando la misma técnica que empleamos con redes convolucionales:
+# ╔═╡ d58c35e7-cb7a-4cd9-b2fa-25001f756179
+md"""
+## Generación de texto
+
+Cuando la red neuronal empieza a tener una tamaño considerable (medido en número de parámetros de la red) empieza a ser necesario utilizar hardware especializado, típicamente tarjetas gráficas.
+
+Además, cuando el conjunto de entrenamiento es muy grande (muchos texto o textos muy largos en nuestro ejemplo), también se hace necesario realizar el entrenamiento utilizando fragmentos de datos *batches* en inglés.
+
+Para usar la tarjeta gráfica de nuestro equipo debemos utilizar la biblioteca CUDA:
+
+```julia
+using CUDA
+```
+
+Una vez creados el modelo lo enviamos a la tarjeta:
+
+```julia
+modelo = Chain(
+		GRU(entrada => 128),
+		GRU(128 => 64),
+		GRU(64 => 32),
+		Dense(32 => salida),
+		softmax
+	) |> gpu
+```
+
+y hacemos lo mismo con los datos
+
+```julia
+Xtrain = Xtrain |> gpu
+ytrain = ytrain |> gpu
+
+```
+"""
+
+# ╔═╡ 7ddde7cb-517a-427b-9818-f040c45b7204
+md"""
+## Generación de texto
+
+El último paso es indicar que el entrenamiento se va a hacer por lotes:
+
+```julia
+function entrena_modelo(modelo, Xtrain, ytrain, λ, epocas, tamaño_lote)
+    lotes = Flux.DataLoader((Xtrain, ytrain), shuffle = true, batchsize = tamaño_lote)
+    optimizador = Flux.setup(Adam(λ), modelo)
+    perdidas_entrenamiento = []
+    @showprogress for epoca ∈ 1:epocas
+        train!(perdidas, modelo, lotes, optimizador)
+        push!(perdidas_entrenamiento, perdidas(modelo, Xtrain, ytrain))
+    end
+    return perdidas_entrenamiento
+end
+```
 """
 
 # ╔═╡ b167c50a-38dd-4485-aabb-9a5e97ded2b4
 md"""
 ## Generación de texto
+
+Los modelo LLM son muy costosos de entrenar, por lo que han surgido técnicas que permiten aprovechar un modelo sin necesidad de entrenarlo desde cero.
+
+Una de estas técnicas es *transfer learning*. Si tenemos una red entrenada, podemos reentrenarla utilizando la misma técnica que empleamos con redes convolucionales:
 
 1. Utilizar una arquitectura inicial ya entrenada.
 1. Eliminar las capas más cercanas a la salida y sustituirlas por nuevas capas adaptadas a nuestro problema.
@@ -1698,7 +1764,10 @@ version = "17.4.0+2"
 # ╠═a601d1f6-50e8-460c-8b00-33c67ea535b6
 # ╠═547eda5f-ba82-41d7-b9d6-0160813fb3f8
 # ╠═92307ff3-745e-41ef-8491-cf6306fc9a64
+# ╠═2c260879-39ef-4d74-bc19-d1175a43cbad
 # ╠═99437b1f-f38d-40ce-bd43-d071669cef2f
+# ╠═d58c35e7-cb7a-4cd9-b2fa-25001f756179
+# ╠═7ddde7cb-517a-427b-9818-f040c45b7204
 # ╠═b167c50a-38dd-4485-aabb-9a5e97ded2b4
 # ╠═8ef6df12-63ca-4544-8df9-14bb4c944319
 # ╠═f6bf7355-4d41-4d5b-8034-492871b67b7c
