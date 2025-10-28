@@ -22,10 +22,13 @@ using PlotlyKaleido
 # ╔═╡ 29a782b7-174d-453a-8aa3-81fe5f507dc2
 using PlutoUI
 
+# ╔═╡ 1b20f4e3-cf2a-4cbf-b1d9-ad090acf19be
+using PlutoTeachingTools
+
 # ╔═╡ df43ffce-2be1-11f0-1bda-8d3f50a5cd86
-# html"""
-# <link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
-# """
+html"""
+<link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
+"""
 
 # ╔═╡ 8f9e676c-76c8-474b-ab0a-60424d8cb889
 plotly();
@@ -43,9 +46,15 @@ md"""
 Óscar Belmonte Fernández - IR2130 Aprendizaje Automático
 
 Grado en Inteligencia Robótica - Universitat Jaume I (UJI)
-
-![](https://ujiapps.uji.es/ade/rest/storage/63c07717-5208-4240-b688-aa6ff558b466?guest=true)
 """
+
+# ╔═╡ 81edc5f0-8524-4bc3-81b4-783b5573231f
+Resource(
+	"https://belmonte.uji.es/imgs/uji.jpg",
+	:alt => "Logo UJI",
+	:width => 400,
+	:style => "display: block; margin: auto;",
+)
 
 # ╔═╡ 79f24aba-6558-4c1b-9a49-ec0aac882b7f
 md"""
@@ -86,13 +95,7 @@ md"""
 1. Decidir qué función de activación utilizar en función de sus características.
 1. Decidir qué optimizador utilizar basándose en las características de cada uno de ellos.
 1. Decidir si es necesario utilizar una estrategia de actualización de la tasa de aprendizaje y elegir la más adecuada.
-"""
-
-# ╔═╡ 8c42a26d-d559-4db9-9032-3669d0735870
-md"""
-## Objetivos de aprendizaje
-
-5. Decidir si es necesario utilizar regularización.
+1. Decidir si es necesario utilizar regularización.
 1. Elegir el tipo de capa más adecuada en cada caso.
 """
 
@@ -131,7 +134,7 @@ md"""
 
 Como ya sabemos, para encontrar un mínimo utilizamos la técnica de descenso de gradiente, que depende del punto desde el que se inicie la búsqueda.
 
-Además, la técnicas de retro propagación del gradiente es muy sensible a los valores de los pesos.
+Además, la técnicas de retropropagación del gradiente es muy sensible a los valores de los pesos.
 
 Todo ellos hace que sea complicado entrenar una red neuronal.
 
@@ -148,7 +151,7 @@ Llegaron a la conclusión de que una buena estrategia es iniciar los pesos de ca
 
 $\sigma^2 = \frac{1}{(input+output)/2}$
 
-Donde _input_ es el número de conexiones de entrada en la capa, y _out_ el número de conexiones de salida en la capa.
+Donde _input_ es el número de conexiones de entrada en la capa, y _out_ el número de conexiones de salida de la capa.
 
 """
 
@@ -169,6 +172,8 @@ Estas estrategias funcionan bien con las funciones de activación:
 
 # ╔═╡ 82ce513b-1e2a-45e0-8d1e-255d9e33d5b9
 md"""
+## Inizialización de Xavier Glorot y Yoshua Bengio
+
 !!! danger "Atención"
 
 Flux initialises convolutional layers and recurrent cells with **glorot_uniform** by default. Most layers accept a function as an **init** keyword, which replaces this default.
@@ -217,12 +222,12 @@ $σ(x) = \frac{1}{1 + e^{-x}}$
 """
 
 # ╔═╡ ab963580-9df7-4b1f-aa51-1b1daf4c0f35
-plot(σ, xlabel="x", ylabel="σ", legend = false, size = (500, 300))
-
-# ╔═╡ 9b86bf39-44f3-4d68-ba2a-43172a6042b7
-md"""
-Es una función _suave_ y derivable en todo $\mathbb{R}$.
-"""
+Columns(
+	plot(σ, xlabel="x", ylabel="σ", legend = false, size = (500, 300)),
+	md"""
+	Es una función _suave_ y derivable en todo $\mathbb{R}$.
+	"""
+)
 
 # ╔═╡ c6828162-a386-41c8-be5b-6e07500f9165
 md"""
@@ -234,12 +239,12 @@ $tanh(x) = \frac{e^x - e^{-x}}{e^x + e^{-x}}$
 """
 
 # ╔═╡ 55f16b63-6975-47fd-a302-4b6328ea64b3
-plot(tanh, xlabel="x", ylabel="Tangente hiperbólica", legend = false, size = (500, 300))
-
-# ╔═╡ f2508f3e-3385-40e2-9946-37ef2b38d24b
-md"""
-También es una función continua y derivable en todo $\mathbb{R}$.
-"""
+Columns(
+	plot(tanh, xlabel="x", ylabel="Tangente hiperbólica", legend = false, size = (500, 300)),
+	md"""
+	También es una función continua y derivable en todo $\mathbb{R}$.
+	"""
+)
 
 # ╔═╡ ff84dc4f-b7b8-4f88-aae3-560f804b4d53
 md"""
@@ -251,12 +256,12 @@ $ReLU(x) = max(0, x) = \frac{x + |x|}{2}$
 """
 
 # ╔═╡ 02be6027-17bd-41b2-bbc4-0fb1ef63a3f2
-plot(Flux.relu, xlabel="x", ylabel="ReLU", legend = false, size = (500, 300))
-
-# ╔═╡ beafdc22-eaa0-41ca-ac81-5eb8ee015185
-md"""
-La función ReLU es continua, y derivable en todos los puntos excepto en el cero.
-"""
+Columns(
+	plot(Flux.relu, xlabel="x", ylabel="ReLU", legend = false, size = (500, 300)),
+	md"""
+	La función ReLU es continua, y derivable en todos los puntos excepto en el cero.
+	"""
+)
 
 # ╔═╡ 06248358-ab2e-4d67-a4ca-86581b53163e
 md"""
@@ -274,12 +279,12 @@ x \quad \qquad if \quad x > 0, \\
 """
 
 # ╔═╡ 029c67cc-4bd8-4219-95db-ea348f2d1c1f
-plot(x -> Flux.leakyrelu(x, 0.2), xlabel="x", ylabel="LeakyReLU", legend = false, size = (500, 300))
-
-# ╔═╡ dfa9d7a2-beda-4482-9710-8913dfb44134
-md"""
-Evita que el gradiente decaiga rápidamente en la retro propagación.
-"""
+Columns(
+	plot(x -> Flux.leakyrelu(x, 0.2), xlabel="x", ylabel="LeakyReLU", legend = false, size = (500, 300)),
+	md"""
+	Evita que el gradiente decaiga rápidamente en la retropropagación.
+	"""
+)
 
 # ╔═╡ a12cab4d-37b5-442c-8362-58f3aa09e003
 md"""
@@ -334,8 +339,7 @@ Estas dos características son _antagónicas_ los optimizadores con un buen comp
 md"""
 ## Momentum
 
-Han aparecido variación del descenso del gradiente 
-[(Boris Polyak)](https://www.researchgate.net/publication/243648538_Some_methods_of_speeding_up_the_convergence_of_iteration_methods) que necesitan un menor número de pasos para alcanzar el mínimo de la función de pérdidas.
+Han aparecido variaciones del descenso del gradiente. Una de ellas es la de [Boris Polyak](https://www.researchgate.net/publication/243648538_Some_methods_of_speeding_up_the_convergence_of_iteration_methods) que necesita un menor número de pasos para alcanzar el mínimo de la función de pérdidas.
 
 $m^i = \beta m^{i-1} - \eta \nabla_\theta \mathcal{L}$
 $\theta^{i+1} = \theta^i + m^{i}$
@@ -415,7 +419,7 @@ md"""
 
 La [normalización por lotes (_Batch normalization_)](https://arxiv.org/pdf/1502.03167)  es otra técnica que intenta evitar el desvanecimiento/explosión del gradiente.
 
-La idea es que antes (o después, según se mire) de una capa de la red neuronal, se añade otra capa que normaliza la entrada (o salida) de la capa para queestén centradas en cero y con $\sigma^2 = 1$.
+La idea es que antes (o después, según se mire) de una capa de la red neuronal, se añade otra capa que normaliza la entrada (o salida) de la capa para que queden centradas en cero y con $\sigma^2 = 1$.
 
 Para que durante el proceso de entrenamiento cada una de las capas de normalización calculen los estadísticos $\mu$ y $\sigma$, es necesario que lo haga sobre un subconjunto (batch) de los datos, de ahí el nombre de este tipo de capa.
 
@@ -465,7 +469,7 @@ También vimos lo delicado que es la elección de su valor, si la tasa de aprend
 md"""
 ## Introducción
 
-Muchas veces es más interesante definir una estrategia para ir adaptando el valor de la tasa de aprendizaje al avance del aprendizaje de manera que, si se puede avanzar rápidamente porque nos encontramos lejos de la solución, le asignamos un valor alto, y conforme nos acercamos al mínimo vamos disminuyendo la tasa para que el descenso de gradiente converja.
+Muchas veces es más interesante definir una estrategia para ir adaptando el valor de la tasa de aprendizaje al avance del aprendizaje de manera que, si se puede avanzar rápidamente porque nos encontramos lejos de la solución, asignamos un valor alto a la tasa de aprendizaje, y conforme nos acercamos al mínimo vamos disminuyendo la tasa de aprendizaje para que el descenso de gradiente converja.
 
 Y esta estrategia la podemos añadir de modo combinado con el optimizador.
 
@@ -477,12 +481,15 @@ md"""
 ## Decaimiento en potencia
 
 La actualización de la tasa de aprendizaje se hace según la siguiente expresión (donde $\eta_0$ y d son hiperparámetros):
-
-$\eta(t) = \eta_0 d^{t-1}$
 """
 
 # ╔═╡ eeefc485-e198-4f17-9d4c-7c61e34fe229
-plot(x -> 1e-6 * 0.5 * exp(-x), 1:0.1:10, legend = false, size = (500, 350))
+Columns(
+	md"""
+	$\eta(t) = \eta_0 d^{t-1}$
+	""",
+	plot(x -> 1e-6 * 0.5 * exp(-x), 1:0.1:10, legend = false, size = (700, 350))
+)
 
 # ╔═╡ 5b04ee1f-f136-4c29-a44f-a075bbb1376b
 md"""
@@ -490,7 +497,7 @@ md"""
 
 En julia lo utilizamos del siguiente modo:
 
-```.julia
+```julia
 optimizador = Scheduler(Descent, Exp(start = 1e-2, decay = 0.8))
 ```
 
@@ -506,7 +513,7 @@ md"""
 md"""
 ## Introducción
 
-Como ya sabemos, durante la fase de entrenamiento el modelo creado puede ajustar excesivamente los datos de entrenamiento (**overftting**), pero no trabajar tan bien con nuevos datos.
+Como ya sabemos, durante la fase de entrenamiento el modelo creado puede ajustar excesivamente los datos de entrenamiento (**overftting**), pero puede no trabajar tan bien con nuevos datos.
 
 Para evitarlo, como ya hicimos en el caso de la regresión polinómica, empleamos la regularización.
 """
@@ -544,7 +551,7 @@ Es [una idea](https://arxiv.org/pdf/1207.0580) muy sencilla que suele mejorar el
 
 La idea es **desactivar** algunas neuronas, en toda la red. 
 
-En cada paso del entrenamiento, se selecciona un porcentaje de neuronas de la rede y se desactivan, es decir, se actúa como si no existiensen.
+En cada paso del entrenamiento, se selecciona un porcentaje de neuronas de la red y se desactivan, es decir, se actúa como si no existiensen.
 
 En el siguiente paso, se elige otro conjunto, se desactiva y se sigue adelante de este modo durante todo el entrenamiento de la red.
 """
@@ -553,7 +560,7 @@ En el siguiente paso, se elige otro conjunto, se desactiva y se sigue adelante d
 md"""
 ## Dropout
 
-En julia es muy sencillo:
+En julia es muy sencillo, basta con incluir una capa como la siguiente:
 
 ```.julia
 Dropout(0.4)
@@ -723,6 +730,7 @@ ParameterSchedulers = "d7d3b36b-41b8-4d0d-a2bf-768c6151755e"
 PlotlyBase = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
 PlotlyKaleido = "f2990250-8cf9-495f-b13a-cce12b45703c"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
+PlutoTeachingTools = "661c6b06-c737-4d37-b85c-46df65de6f69"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 
 [compat]
@@ -731,6 +739,7 @@ ParameterSchedulers = "~0.4.3"
 PlotlyBase = "~0.8.19"
 PlotlyKaleido = "~2.2.6"
 Plots = "~1.40.12"
+PlutoTeachingTools = "~0.4.2"
 PlutoUI = "~0.7.61"
 """
 
@@ -738,9 +747,9 @@ PlutoUI = "~0.7.61"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.11.6"
+julia_version = "1.11.7"
 manifest_format = "2.0"
-project_hash = "6232d113ac6f21f619fe0e38e0cee80475be7053"
+project_hash = "5139db81aba693c3511c5df5f50843e3b4fead41"
 
 [[deps.AbstractFFTs]]
 deps = ["LinearAlgebra"]
@@ -1862,6 +1871,12 @@ version = "1.40.12"
     ImageInTerminal = "d8c32880-2388-543b-8c61-d9f865259254"
     Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
+[[deps.PlutoTeachingTools]]
+deps = ["Downloads", "HypertextLiteral", "Latexify", "Markdown", "PlutoUI"]
+git-tree-sha1 = "ce33e4fd343e43905a8416e6148de8c630101909"
+uuid = "661c6b06-c737-4d37-b85c-46df65de6f69"
+version = "0.4.2"
+
 [[deps.PlutoUI]]
 deps = ["AbstractPlutoDingetjes", "Base64", "ColorTypes", "Dates", "FixedPointNumbers", "Hyperscript", "HypertextLiteral", "IOCapture", "InteractiveUtils", "JSON", "Logging", "MIMEs", "Markdown", "Random", "Reexport", "URIs", "UUIDs"]
 git-tree-sha1 = "7e71a55b87222942f0f9337be62e26b1f103d3e4"
@@ -2559,76 +2574,73 @@ version = "1.4.1+2"
 """
 
 # ╔═╡ Cell order:
-# ╠═df43ffce-2be1-11f0-1bda-8d3f50a5cd86
-# ╠═791aa17b-6568-4482-a873-059bcb5ae495
-# ╠═e2047545-ec0a-4a45-804d-d288ccbb6821
-# ╠═d23ddd1e-462c-4729-b981-1c9a0cd0c51a
-# ╠═ef0e2a6e-61df-449a-86aa-6c87f63012b3
-# ╠═81e2d1e0-6828-4b27-84a5-db17b530af4e
-# ╠═29a782b7-174d-453a-8aa3-81fe5f507dc2
-# ╠═8f9e676c-76c8-474b-ab0a-60424d8cb889
-# ╠═d696f0f6-e1ea-4b74-b877-0df4cd6b6e80
-# ╠═bb10f84f-3a9c-4e20-a46b-e5bb7eeb1c00
-# ╠═fb1079c3-9b84-4465-ac1a-8d2b5c97a737
-# ╠═79f24aba-6558-4c1b-9a49-ec0aac882b7f
-# ╠═5e97581b-9ad9-4fa4-a3da-edd39a12b33c
-# ╠═ac626f1a-9734-4411-b53d-d9fd1e052107
-# ╠═8c42a26d-d559-4db9-9032-3669d0735870
-# ╠═45377114-9651-434f-bdd3-d4e55fa687b0
-# ╠═80dff863-f6fd-4387-8b6a-dc070fded37d
-# ╠═5250cf91-68f1-4798-a021-cc6cee8b77bd
-# ╠═7cbbb35f-40c9-498f-b729-fc084fc123b1
-# ╠═811d9d9f-597e-4124-8f34-39db388ad3ca
-# ╠═d004b013-c9e7-46ee-9401-a71640195c8e
-# ╠═651dd381-f11c-47c7-b570-ecdaaea02736
-# ╠═82ce513b-1e2a-45e0-8d1e-255d9e33d5b9
-# ╠═8f3ffd98-aaf4-4913-b168-a53af6e26fae
-# ╠═fd2f4ccc-651f-4450-b209-5b24bdb0a77c
-# ╠═6f4c4720-fc74-401f-a0f3-8adc75b8864e
-# ╠═5295ef71-d786-4fcd-bb31-17ce45e9ef66
+# ╟─df43ffce-2be1-11f0-1bda-8d3f50a5cd86
+# ╟─791aa17b-6568-4482-a873-059bcb5ae495
+# ╟─e2047545-ec0a-4a45-804d-d288ccbb6821
+# ╟─d23ddd1e-462c-4729-b981-1c9a0cd0c51a
+# ╟─ef0e2a6e-61df-449a-86aa-6c87f63012b3
+# ╟─81e2d1e0-6828-4b27-84a5-db17b530af4e
+# ╟─29a782b7-174d-453a-8aa3-81fe5f507dc2
+# ╟─1b20f4e3-cf2a-4cbf-b1d9-ad090acf19be
+# ╟─8f9e676c-76c8-474b-ab0a-60424d8cb889
+# ╟─d696f0f6-e1ea-4b74-b877-0df4cd6b6e80
+# ╟─bb10f84f-3a9c-4e20-a46b-e5bb7eeb1c00
+# ╟─fb1079c3-9b84-4465-ac1a-8d2b5c97a737
+# ╟─81edc5f0-8524-4bc3-81b4-783b5573231f
+# ╟─79f24aba-6558-4c1b-9a49-ec0aac882b7f
+# ╟─5e97581b-9ad9-4fa4-a3da-edd39a12b33c
+# ╟─ac626f1a-9734-4411-b53d-d9fd1e052107
+# ╟─45377114-9651-434f-bdd3-d4e55fa687b0
+# ╟─80dff863-f6fd-4387-8b6a-dc070fded37d
+# ╟─5250cf91-68f1-4798-a021-cc6cee8b77bd
+# ╟─7cbbb35f-40c9-498f-b729-fc084fc123b1
+# ╟─811d9d9f-597e-4124-8f34-39db388ad3ca
+# ╟─d004b013-c9e7-46ee-9401-a71640195c8e
+# ╟─651dd381-f11c-47c7-b570-ecdaaea02736
+# ╟─82ce513b-1e2a-45e0-8d1e-255d9e33d5b9
+# ╟─8f3ffd98-aaf4-4913-b168-a53af6e26fae
+# ╟─fd2f4ccc-651f-4450-b209-5b24bdb0a77c
+# ╟─6f4c4720-fc74-401f-a0f3-8adc75b8864e
+# ╟─5295ef71-d786-4fcd-bb31-17ce45e9ef66
 # ╠═ab963580-9df7-4b1f-aa51-1b1daf4c0f35
-# ╠═9b86bf39-44f3-4d68-ba2a-43172a6042b7
-# ╠═c6828162-a386-41c8-be5b-6e07500f9165
-# ╠═55f16b63-6975-47fd-a302-4b6328ea64b3
-# ╠═f2508f3e-3385-40e2-9946-37ef2b38d24b
-# ╠═ff84dc4f-b7b8-4f88-aae3-560f804b4d53
-# ╠═02be6027-17bd-41b2-bbc4-0fb1ef63a3f2
-# ╠═beafdc22-eaa0-41ca-ac81-5eb8ee015185
-# ╠═06248358-ab2e-4d67-a4ca-86581b53163e
-# ╠═029c67cc-4bd8-4219-95db-ea348f2d1c1f
-# ╠═dfa9d7a2-beda-4482-9710-8913dfb44134
-# ╠═a12cab4d-37b5-442c-8362-58f3aa09e003
-# ╠═85b3566b-4760-430d-9643-950ed7d772c5
-# ╠═5604ad1a-fcc4-4d07-977d-334577badf12
-# ╠═e82394c8-5549-4f0b-8148-aceabcd6e01f
-# ╠═f652d0a5-b914-49e0-a1ab-3ad0a0963e1e
-# ╠═b8909385-43d3-45cb-8ea0-12f51a5fb0be
-# ╠═0cc06ba9-501b-48ef-b216-dca5f67414c0
-# ╠═f48329e3-28e7-436a-b9da-3bdc83ea10e4
-# ╠═1988fba8-e08f-4ac8-977a-d822b22fb899
-# ╠═3044eeb0-5a72-475f-ab53-40113c3d3449
-# ╠═c8c1e960-08a5-47ea-90ee-322c7703f4df
-# ╠═4d4a1c19-a4df-43c6-af65-53dbf21a5bf5
-# ╠═fb2d1666-1100-43c9-9550-2978f150235d
-# ╠═28aafcb6-9294-433c-8bee-e634b0ee58ec
-# ╠═b936e349-2b69-4e86-a7c2-5faa709052ab
-# ╠═eeefc485-e198-4f17-9d4c-7c61e34fe229
-# ╠═5b04ee1f-f136-4c29-a44f-a075bbb1376b
-# ╠═1132a848-a855-4c8b-bf41-1ec22a216012
-# ╠═a3e2f24b-9275-4e18-918e-18fc7d2b23e0
-# ╠═8aef99fc-fe2b-4f3c-81ab-fcf2d62a3d26
-# ╠═c87c39d7-fbc7-43dc-9eaa-55bc37bc3be1
-# ╠═f5bc89bb-68f6-46b2-99ca-2ea045407be5
-# ╠═e04486c9-b22e-496c-8ea2-e737bdfb3a5e
-# ╠═c6b3c409-8aab-4748-9f24-c00719c494de
-# ╠═1fa7817d-dbd1-42ff-af84-d72aa18c981a
-# ╠═16e100d9-145a-4d50-9f95-acb4e8ab8a3f
-# ╠═b424f4c0-3a65-45b2-aa95-326eb00180c8
-# ╠═53eaee3b-d022-4cae-acc6-d982b83c2d2d
-# ╠═d72df279-51b9-4df0-bf36-6c610c91e0a1
-# ╠═8026d340-a5c3-4b7d-954f-d36fe2f5dbd5
-# ╠═06801c1f-e27c-4abd-910f-9055159f3716
-# ╠═23c6e0f5-dd40-42de-8861-5b3627832a71
-# ╠═d534d906-f2b4-45e2-9071-58b693bed2a4
+# ╟─c6828162-a386-41c8-be5b-6e07500f9165
+# ╟─55f16b63-6975-47fd-a302-4b6328ea64b3
+# ╟─ff84dc4f-b7b8-4f88-aae3-560f804b4d53
+# ╟─02be6027-17bd-41b2-bbc4-0fb1ef63a3f2
+# ╟─06248358-ab2e-4d67-a4ca-86581b53163e
+# ╟─029c67cc-4bd8-4219-95db-ea348f2d1c1f
+# ╟─a12cab4d-37b5-442c-8362-58f3aa09e003
+# ╟─85b3566b-4760-430d-9643-950ed7d772c5
+# ╟─5604ad1a-fcc4-4d07-977d-334577badf12
+# ╟─e82394c8-5549-4f0b-8148-aceabcd6e01f
+# ╟─f652d0a5-b914-49e0-a1ab-3ad0a0963e1e
+# ╟─b8909385-43d3-45cb-8ea0-12f51a5fb0be
+# ╟─0cc06ba9-501b-48ef-b216-dca5f67414c0
+# ╟─f48329e3-28e7-436a-b9da-3bdc83ea10e4
+# ╟─1988fba8-e08f-4ac8-977a-d822b22fb899
+# ╟─3044eeb0-5a72-475f-ab53-40113c3d3449
+# ╟─c8c1e960-08a5-47ea-90ee-322c7703f4df
+# ╟─4d4a1c19-a4df-43c6-af65-53dbf21a5bf5
+# ╟─fb2d1666-1100-43c9-9550-2978f150235d
+# ╟─28aafcb6-9294-433c-8bee-e634b0ee58ec
+# ╟─b936e349-2b69-4e86-a7c2-5faa709052ab
+# ╟─eeefc485-e198-4f17-9d4c-7c61e34fe229
+# ╟─5b04ee1f-f136-4c29-a44f-a075bbb1376b
+# ╟─1132a848-a855-4c8b-bf41-1ec22a216012
+# ╟─a3e2f24b-9275-4e18-918e-18fc7d2b23e0
+# ╟─8aef99fc-fe2b-4f3c-81ab-fcf2d62a3d26
+# ╟─c87c39d7-fbc7-43dc-9eaa-55bc37bc3be1
+# ╟─f5bc89bb-68f6-46b2-99ca-2ea045407be5
+# ╟─e04486c9-b22e-496c-8ea2-e737bdfb3a5e
+# ╟─c6b3c409-8aab-4748-9f24-c00719c494de
+# ╟─1fa7817d-dbd1-42ff-af84-d72aa18c981a
+# ╟─16e100d9-145a-4d50-9f95-acb4e8ab8a3f
+# ╟─b424f4c0-3a65-45b2-aa95-326eb00180c8
+# ╟─53eaee3b-d022-4cae-acc6-d982b83c2d2d
+# ╟─d72df279-51b9-4df0-bf36-6c610c91e0a1
+# ╟─8026d340-a5c3-4b7d-954f-d36fe2f5dbd5
+# ╟─06801c1f-e27c-4abd-910f-9055159f3716
+# ╟─23c6e0f5-dd40-42de-8861-5b3627832a71
+# ╟─d534d906-f2b4-45e2-9071-58b693bed2a4
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
