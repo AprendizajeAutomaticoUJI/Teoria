@@ -28,7 +28,7 @@ md"""
 md"""
 Vamos a probar a cargar la red ResNet, ya entrenada, y usarla para clasificar imágenes.
 
-Primera cargamos las bibliotecas que vamos a necesitar:
+Primero cargamos las bibliotecas que vamos a necesitar:
 """
 
 # ╔═╡ edca420f-bbbd-458b-998e-38640438dcc5
@@ -138,7 +138,7 @@ Metalhead = "~0.9.5"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.11.6"
+julia_version = "1.11.7"
 manifest_format = "2.0"
 project_hash = "09c6c15d5cba33baf058eec232414ff6d4751830"
 
@@ -1993,7 +1993,7 @@ uuid = "8e850ede-7688-5339-a07c-302acd2aaf8d"
 version = "1.59.0+0"
 
 [[deps.oneTBB_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl"]
+deps = ["Artifacts", "JLLWrappers", "LazyArtifacts", "Libdl"]
 git-tree-sha1 = "d5a767a3bb77135a99e433afe0eb14cd7f6914c3"
 uuid = "1317d2d5-d96f-522e-a858-c73665f53c3e"
 version = "2022.0.0+0"
@@ -2014,14 +2014,14 @@ version = "17.4.0+2"
 # ╠═0f2fdf92-d0cd-431a-8fcd-c5af71e1f24a
 # ╟─edca420f-bbbd-458b-998e-38640438dcc5
 # ╠═9b4504fb-907c-42be-a8fc-929b12a6ce2f
-# ╠═a38b97c2-36b9-43ff-930e-419ca2a63cf2
+# ╟─a38b97c2-36b9-43ff-930e-419ca2a63cf2
 # ╠═f990ce08-c73b-48f6-8d23-91caa5380352
 # ╠═a695c411-ea85-410f-8cb5-4e89ccdec661
 # ╟─451c7cd4-9069-4564-896a-30d2921dadb9
 # ╠═d3c8dc80-286a-460a-a93e-a56363c3e8e8
 # ╟─a0d66061-3c65-4315-b2c5-34db2986ec98
 # ╠═118a45f5-9a5c-41b8-abba-d68619d73336
-# ╠═244138c1-ac3a-4d5a-95e9-c68a6ecd6623
+# ╟─244138c1-ac3a-4d5a-95e9-c68a6ecd6623
 # ╠═edd78433-c65e-4575-a73d-8073ed0866e5
 # ╟─c9432bb5-ea7f-4e9f-900c-230ef0171788
 # ╠═9acd4e4b-17bb-46f6-8a30-9cf4dcf54ec5

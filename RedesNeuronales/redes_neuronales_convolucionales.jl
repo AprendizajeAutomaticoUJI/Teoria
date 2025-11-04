@@ -14,9 +14,9 @@ using PlutoTeachingTools
 using ShortCodes
 
 # ╔═╡ 17163d32-2fd3-11f0-053d-7b01c1dc1e5d
-# html"""
-# <link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
-# """
+html"""
+<link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
+"""
 
 # ╔═╡ 98925bf9-6cfa-4046-b0c7-de0a0ad286ad
 TableOfContents(title="Contenidos", depth=1)
@@ -47,7 +47,7 @@ md"""
 
 * Las redes neuronales convolucionales están inspiradas en cómo funciona la visión humana.
 * Las redes convolucionales trabajan con imágenes, aunque se pueden utilizar en otros ámbitos.
-* Las redes convolucionales son capaces de «reconocer» la relación entre regiones de una imagen, también entre secuencias temporales de imágenes si lo que se analiza es unasecuencia de vídeo.
+* Las redes convolucionales son capaces de «reconocer» la relación entre regiones de una imagen, también entre secuencias temporales de imágenes si lo que se analiza es una secuencia de vídeo.
 """
 
 # ╔═╡ d8736fb8-a6a9-4e4d-bd28-509b2fdb6336
@@ -102,7 +102,7 @@ Resource(
 md"""
 ## Introducción
 
-Hasta ahora, en los ejemplos de redes neuronales que hemos visto hemos utilizados capas densas. Sin embargo, utilizar redes con capas densas en visión por computador es impracticable. El tamaño de una imagen, en píxeles, determina el número de neuronas (una neurona de entrada por cada píxel de la imagen) en la capa de entrada y posteriores.
+Hasta ahora, en los ejemplos de redes neuronales que hemos visto, hemos utilizados capas densas. Sin embargo, utilizar redes con capas densas en visión por computador es impracticable. El tamaño de una imagen, en píxeles, determina el número de neuronas en la capa de entrada y posteriores (una neurona de entrada por cada píxel de la imagen).
 
 El número de parámetros a entrenar sería muy elevado.
 """
@@ -131,7 +131,7 @@ Las redes convolucionales proponen una solución basada en dos elementos:
 1. Utilizar convoluciones para **aprender** las características relevantes de las imágenes.
 1. Utilizar **pooling** para reducir el tamaño de las imágenes.
 
-Además, en muchos casos las últimas capas de una red convolucional, la que contienen menos neuronas, están formadas por capas densas.
+Además, en muchos casos las últimas capas de una red convolucional, las que contienen menos neuronas, están formadas por capas densas.
 
 Estos dos elementos permiten utilizar redes neuronales en las tareas típicas de la visión por computador.
 """
@@ -145,8 +145,8 @@ Las tareas típicas dentro de la visión por computador son:
 * Clasificación de imágenes. Por ejemplo indicar si la imagen es de una persona, un coche o una señal de tráfico.
 * Detección de objetos en una imagen. Enumerar todos los objetos que aparecen en una imagen
 * Ubicación de objetos dentro de una imagen. Encuadrar cada uno de los objetos reconocidos en una imagen.
-* Seguimiento de objetos en secuencias de imágenes. Seguir un de terminado objeto (por ejemplo un coche) en un vídeo.
-* Segmentación semántica de los objetos de una imagen. Asignar a cada pixel de una imagen a cada uno de los objetos que se han reconocido.
+* Seguimiento de objetos en secuencias de imágenes. Seguir un determinado objeto (por ejemplo un coche) en un vídeo.
+* Segmentación semántica de los objetos de una imagen. Asignar cada pixel de una imagen a cada uno de los objetos que se han reconocido en la imagen.
 """
 
 # ╔═╡ d59746f5-4d77-45cc-b57e-f70c7bf12c2e
@@ -765,13 +765,11 @@ md"""
 md"""
 ## YOLO
 
-You Only Look Once (YOLO) es una red convolucional con un gran desempeño en 
-muchas de la tareas típicas en visión por computador.
+You Only Look Once (YOLO) es una red convolucional con un gran desempeño en muchas de la tareas típicas en visión por computador.
 
 YOLO es mantenida por la empresa [Ultralytics](https://www.ultralytics.com/es).
 
-Este es el [artículo](https://arxiv.org/abs/1506.02640) donde se presentó esta 
-arquitectura de red neuronal.
+Este es el [artículo](https://arxiv.org/abs/1506.02640) donde se presentó esta arquitectura de red neuronal.
 """
 
 # ╔═╡ 85c037d0-c584-4cfe-a3af-726810a9660e
@@ -792,17 +790,11 @@ Resource(
 # ╔═╡ 6915ef51-2ea5-4705-bc52-42c89205b48a
 md"""
 ## YOLO
-Una de la novedades de YOLO es que a la salida propociona la caja envolvente 
-de los objetos detectados, así como la probabilidad de su clasificación, y 
-también es capaz de realizar segmentación semántica.
+Una de la novedades de YOLO es que a la salida propociona la caja envolvente de los objetos detectados, así como la probabilidad de su clasificación, y también es capaz de realizar segmentación semántica.
 
-YOLO se presenta en varias versiones, basándose en el número de parámetros 
-presente en la red (tamaño). Las versiones más pequeñas tienen en desempeño 
-más bajo que las versiones grandes, pero, como contrapartida, se pueden 
-ejecutar en dispositivos con hardware más modesto.
+YOLO se presenta en varias versiones, basándose en el número de parámetros presente en la red (tamaño). Las versiones más pequeñas tienen un desempeño más bajo que las versiones grandes, pero, como contrapartida, se pueden ejecutar en dispositivos con hardware más modesto.
 
-Todas las versiones están entrenadas con el conjunto de datos 
-[COCO](https://cocodataset.org/#home).
+Todas las versiones están entrenadas con el conjunto de datos [COCO](https://cocodataset.org/#home).
 
 Afortunadamente, existe una implementación de YOLO en Julia, llamada [ObjectDetector.jl](https://github.com/r3tex/ObjectDetector.jl), pero sólo implementa hasta la versión 7 de YOLO.
 """
@@ -883,7 +875,7 @@ Entrenar una red neuronal desde cero es una tarea muy costosa. Estos son algunos
 * Se necesita tiempo de entrenamiento.
 * Se necesita energía para alimentar el hardware.
 
-Sin embargo, existe un _atajo_ para poder (re)entrenar redes convolucionales ya existentes sobre nuevos conjuntos de datos para tareas  específicas.
+Sin embargo, existe un _atajo_ para poder (re)entrenar redes convolucionales, ya existentes, sobre nuevos conjuntos de datos, para tareas  específicas.
 
 """
 
@@ -918,7 +910,7 @@ base_model = ResNet(18; pretrain=true)
 feature_extractor = base_model.layers[1]
 ```
 
-3. Congelar la parte de extracción de características, es la parte de la red que reaprovechamos:
+3. *Congelar* la parte de extracción de características, es la parte de la red que reaprovechamos:
 
 ```julia
 Flux.freeze!(feature_extractor)
@@ -953,9 +945,9 @@ transfer_model = Chain(feature_extractor, new_classifier_head)
 md"""
 ## Show me the code
 
-Exise otra opción, llamada **fine tunning**, en la que se ajusta no sólo la capa de clasificación, sino algunas capas cercanas a la de clasfificación. La idea es re-entrenar algunas de las capas de extracción de características para que se ajusten a nuestro nuevo conjunto de datos.
+Exise otra opción, llamada **fine tunning**, en la que se ajusta no sólo la capa de clasificación, sino algunas capas cercanas a la de clasificación. La idea es re-entrenar algunas de las capas de extracción de características para que se ajusten a nuestro nuevo conjunto de datos.
 
-La aplicación de la técnica de **fine tunning** es l siguiente:
+La aplicación de la técnica de **fine tunning** es el siguiente:
 
 1. Cargar un modelo ya entrenado:
 
@@ -987,7 +979,7 @@ md"""
 
 4. Entrenar la red con nuestro conjunto de imágenes para que haga un ajuste inicial de la nueva capa de clasificación.
 
-5. **Descongelar** algunas capas de extracción de características, típicamente la última o los dos últimas antes de la capa de clasificación.
+5. *Descongelar* algunas capas de extracción de características, típicamente la última o los dos últimas antes de la capa de clasificación.
 
 ```julia
 Flux.unfreeze!(finetune_model.layers[1][end]) # Descongelamos la última capa.
@@ -1033,7 +1025,7 @@ ShortCodes = "~0.3.6"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.11.6"
+julia_version = "1.11.7"
 manifest_format = "2.0"
 project_hash = "299d90740f0db39673c4630d62054ffc32c79e3b"
 
@@ -1420,112 +1412,112 @@ version = "17.4.0+2"
 """
 
 # ╔═╡ Cell order:
-# ╠═17163d32-2fd3-11f0-053d-7b01c1dc1e5d
-# ╠═49bc4ae1-cc37-4de1-8616-d5bd2cc740ad
-# ╠═2537da9f-b15c-448f-805b-8ea2e6bd5996
-# ╠═98d86666-f5c0-4389-8b8c-79291db1b57d
-# ╠═98925bf9-6cfa-4046-b0c7-de0a0ad286ad
-# ╠═f747d2c2-a8ec-46ab-9705-b11b3d48dfe1
-# ╠═bc7e1700-5d03-4493-84d7-b96a7da32d1b
-# ╠═ab845847-31e8-49e6-bab2-d8aad2bc6e51
-# ╠═c2db677d-1029-47ff-ac13-309d586ecc69
-# ╠═d8736fb8-a6a9-4e4d-bd28-509b2fdb6336
-# ╠═ce478b27-9250-41ff-898b-c887aa166ed3
-# ╠═7900f0f7-3ec0-434e-a6a8-2b6f381d3328
-# ╠═a0bbbc75-a852-47cf-88d5-982d03eb5c06
-# ╠═50a1c924-0a84-4cf0-99b7-476cb4b4afe7
-# ╠═8bdb7e0f-dece-4b09-a4e1-f32ee3f7601f
-# ╠═0dd08d60-2b9d-41d0-bcc8-927853f7c962
-# ╠═799ac9d4-2151-4474-a98e-1476e8bb1033
-# ╠═a6aa59f8-f25f-402f-a9e7-9553235f7303
-# ╠═ee29cc12-7007-4f16-88a0-1dd4ed894e78
-# ╠═4e1c05fb-ebf4-4397-9ceb-838586369223
-# ╠═d59746f5-4d77-45cc-b57e-f70c7bf12c2e
-# ╠═ba6966b3-72d3-4a53-8a37-371a4ff65eaf
-# ╠═9f669593-4b2b-4eab-b33d-5d27aca05f2c
-# ╠═57dad7fb-d2cf-4063-a7df-1d66216ec1c6
-# ╠═eef3fbbe-99bc-435d-823b-9964c55cbc93
-# ╠═0eaa405e-3a79-4c17-b9ea-52b16c1be54b
-# ╠═b35d2727-4270-495d-9cc8-b60db5ebce48
-# ╠═60734849-05bb-4c6a-a8e3-9bde5ab210b4
-# ╠═6d895aff-98da-485a-9a4e-43f9862a5630
-# ╠═1b8609a0-11b8-4695-9de2-bc87dbc7ec92
-# ╠═fa2e68a3-2921-4694-a203-79d63c744a73
-# ╠═96ada7c9-c5d1-48b9-a76f-bcc41cee12a7
-# ╠═ab9c62de-7781-4876-a2cc-7a42c501b447
-# ╠═b7fb90d0-e601-44fe-9490-fd9fa89e6e31
-# ╠═2a12e686-6cb7-40a8-9907-90a970ef175b
-# ╠═4f342e4f-8cb2-4888-a238-ae4e024ad881
-# ╠═0a008000-3033-4dd6-8bc4-bfcba76bc5d7
-# ╠═9d24e406-7115-4879-9541-09db6339fd49
-# ╠═34ca8253-22af-480e-8aba-9071bf85fd1c
-# ╠═1ed0f5a2-754f-41ee-a362-6884c7ab20cf
-# ╠═22d64831-55af-4883-8013-91d7d1aed6f0
-# ╠═48d90adc-5dda-47b4-8703-48783f3284c0
-# ╠═28b85f5d-ad91-4ac6-9874-552ae80fd5bf
-# ╠═47934a59-a752-4b5c-9ac3-ca603aa6a639
-# ╠═e77701ee-8989-48b2-9150-b93a230267fb
-# ╠═e6c81043-fc99-4367-9999-be72c91d9e5f
-# ╠═1ea47d14-3d4e-4414-808a-ca6c0e6a4f89
-# ╠═2df53044-e390-43dc-b7f0-c34f7bd523c0
-# ╠═80727712-f9a7-44c4-9996-bd6d15f6819c
-# ╠═0da704ef-90ea-43ff-ac22-7c84d84c0ed0
-# ╠═c19b317f-e5c7-44bc-a802-a76f48f79355
-# ╠═ecdc9b78-1779-4341-9d5f-f25761270f9a
-# ╠═b8d7a851-babb-4faf-b7a5-a3150b13a516
-# ╠═eb7e1c09-f662-4870-8e22-c91124512eaf
-# ╠═60c48cb2-29b1-4007-83ee-c8e282e03003
-# ╠═5e47956e-2e46-44c0-bf55-74e030139565
-# ╠═8aea4bec-4f53-406b-8880-ce00746d08ec
-# ╠═574816f0-f6d9-4208-a1fd-12cabf07df40
-# ╠═3b3f8538-00ea-49ed-84ec-cff6934e6f27
-# ╠═96babbc2-f033-48e4-9349-68710bdfb067
-# ╠═a4920e1e-1a26-4580-9f32-17b73e3faf4a
-# ╠═410abb9f-56d4-4252-a353-4c1d550f36cd
-# ╠═14eabc76-22bc-4b7d-b26d-e0c18095056e
-# ╠═af5ae3f6-522c-4a9f-9ff8-9f73161dad9a
-# ╠═aa1559b9-0b7f-4973-93a5-bbbdf4ea0ab0
-# ╠═8692bcdf-059e-45d6-baab-1af4705a72d4
-# ╠═85382e11-cb0f-4e85-bb48-ec21714a230c
-# ╠═d01effc2-4200-499f-93d8-a5bb5638449c
-# ╠═43fdbfe8-d55c-4474-a358-fa82768e5db1
-# ╠═d23085f7-1f1e-4abf-8c96-a64a08988328
-# ╠═a072564c-33a9-4141-8df0-1fa926a4702c
-# ╠═fda8f26d-087b-406c-9cc1-c63b9d8bd1a5
-# ╠═72ec224f-54ca-4acb-a4d1-c3f9881cf299
-# ╠═ed9d8902-ddd6-4099-9861-ca8a242e2d4b
-# ╠═793035a9-f596-491d-bfd9-ed418c171b7d
-# ╠═180d751e-1486-4058-acaa-0e1859d76b36
-# ╠═d91c36f5-5aaa-4086-8bfb-384ec9a1a200
-# ╠═cca48072-8bd6-4993-aba2-d4e8861cb3a1
-# ╠═83ee5b2f-c44f-464b-b3c6-747ed061aad1
-# ╠═528c23a5-3a0a-4fcc-99eb-90d9a01ff3df
-# ╠═e35e23ec-fb8a-480b-9904-c0fd95e5fe73
-# ╠═348a29c8-c562-4158-a26c-da3b27cb4f84
-# ╠═f63ed416-2350-4790-b324-842a69fb429e
-# ╠═d2f9757f-68eb-4c4c-8589-4df4bafa830e
-# ╠═ffc23bf9-987f-4392-8671-f6a692d12926
-# ╠═89386d4f-4d89-4868-917d-71a59f124018
-# ╠═9b38cde2-1c0a-4871-ab3a-874fca8ac403
-# ╠═0c1094af-ddf9-4206-bb79-0a5146f792e1
-# ╠═9bbd7f5a-7279-42c4-977f-753cee52be32
-# ╠═bea79739-21ec-4ccf-9f55-af442c1dba7f
-# ╠═85c037d0-c584-4cfe-a3af-726810a9660e
-# ╠═5db3fc14-31c7-40f6-abe3-f2ee3f4f0bf7
-# ╠═6915ef51-2ea5-4705-bc52-42c89205b48a
-# ╠═a5882dd9-f4d3-46c9-9096-743671bf13fb
-# ╠═63b7fefa-729a-45b0-9ebf-754769d77e08
-# ╠═0c1fb2c7-987f-4a2f-8b63-488e6c177de6
-# ╠═035068e5-3257-4d09-b063-dcfc836d214f
-# ╠═350e7132-8200-4a1d-8d4e-98316373dc53
-# ╠═e9cfe0c6-9a57-49b5-953f-448e3d4ee0db
-# ╠═ff881d8c-81f8-4a1f-afae-308d7289b601
-# ╠═8bbbf78b-7dfd-4bff-a95b-5a95052d6786
-# ╠═18b3310a-2571-4a4b-91f1-38a1fa047d56
-# ╠═037ea602-4198-46af-a471-89abda06ec7c
-# ╠═599634bc-09a5-4815-ae58-432211ea053d
-# ╠═c1b7b04e-eb0e-4893-82f0-837df1912cc1
-# ╠═6f25ccbb-039e-421a-88a0-0a5396b7987a
-# ╠═ff26ee4a-8624-45d9-8bff-4f2b49c10c40
+# ╟─17163d32-2fd3-11f0-053d-7b01c1dc1e5d
+# ╟─49bc4ae1-cc37-4de1-8616-d5bd2cc740ad
+# ╟─2537da9f-b15c-448f-805b-8ea2e6bd5996
+# ╟─98d86666-f5c0-4389-8b8c-79291db1b57d
+# ╟─98925bf9-6cfa-4046-b0c7-de0a0ad286ad
+# ╟─f747d2c2-a8ec-46ab-9705-b11b3d48dfe1
+# ╟─bc7e1700-5d03-4493-84d7-b96a7da32d1b
+# ╟─ab845847-31e8-49e6-bab2-d8aad2bc6e51
+# ╟─c2db677d-1029-47ff-ac13-309d586ecc69
+# ╟─d8736fb8-a6a9-4e4d-bd28-509b2fdb6336
+# ╟─ce478b27-9250-41ff-898b-c887aa166ed3
+# ╟─7900f0f7-3ec0-434e-a6a8-2b6f381d3328
+# ╟─a0bbbc75-a852-47cf-88d5-982d03eb5c06
+# ╟─50a1c924-0a84-4cf0-99b7-476cb4b4afe7
+# ╟─8bdb7e0f-dece-4b09-a4e1-f32ee3f7601f
+# ╟─0dd08d60-2b9d-41d0-bcc8-927853f7c962
+# ╟─799ac9d4-2151-4474-a98e-1476e8bb1033
+# ╟─a6aa59f8-f25f-402f-a9e7-9553235f7303
+# ╟─ee29cc12-7007-4f16-88a0-1dd4ed894e78
+# ╟─4e1c05fb-ebf4-4397-9ceb-838586369223
+# ╟─d59746f5-4d77-45cc-b57e-f70c7bf12c2e
+# ╟─ba6966b3-72d3-4a53-8a37-371a4ff65eaf
+# ╟─9f669593-4b2b-4eab-b33d-5d27aca05f2c
+# ╟─57dad7fb-d2cf-4063-a7df-1d66216ec1c6
+# ╟─eef3fbbe-99bc-435d-823b-9964c55cbc93
+# ╟─0eaa405e-3a79-4c17-b9ea-52b16c1be54b
+# ╟─b35d2727-4270-495d-9cc8-b60db5ebce48
+# ╟─60734849-05bb-4c6a-a8e3-9bde5ab210b4
+# ╟─6d895aff-98da-485a-9a4e-43f9862a5630
+# ╟─1b8609a0-11b8-4695-9de2-bc87dbc7ec92
+# ╟─fa2e68a3-2921-4694-a203-79d63c744a73
+# ╟─96ada7c9-c5d1-48b9-a76f-bcc41cee12a7
+# ╟─ab9c62de-7781-4876-a2cc-7a42c501b447
+# ╟─b7fb90d0-e601-44fe-9490-fd9fa89e6e31
+# ╟─2a12e686-6cb7-40a8-9907-90a970ef175b
+# ╟─4f342e4f-8cb2-4888-a238-ae4e024ad881
+# ╟─0a008000-3033-4dd6-8bc4-bfcba76bc5d7
+# ╟─9d24e406-7115-4879-9541-09db6339fd49
+# ╟─34ca8253-22af-480e-8aba-9071bf85fd1c
+# ╟─1ed0f5a2-754f-41ee-a362-6884c7ab20cf
+# ╟─22d64831-55af-4883-8013-91d7d1aed6f0
+# ╟─48d90adc-5dda-47b4-8703-48783f3284c0
+# ╟─28b85f5d-ad91-4ac6-9874-552ae80fd5bf
+# ╟─47934a59-a752-4b5c-9ac3-ca603aa6a639
+# ╟─e77701ee-8989-48b2-9150-b93a230267fb
+# ╟─e6c81043-fc99-4367-9999-be72c91d9e5f
+# ╟─1ea47d14-3d4e-4414-808a-ca6c0e6a4f89
+# ╟─2df53044-e390-43dc-b7f0-c34f7bd523c0
+# ╟─80727712-f9a7-44c4-9996-bd6d15f6819c
+# ╟─0da704ef-90ea-43ff-ac22-7c84d84c0ed0
+# ╟─c19b317f-e5c7-44bc-a802-a76f48f79355
+# ╟─ecdc9b78-1779-4341-9d5f-f25761270f9a
+# ╟─b8d7a851-babb-4faf-b7a5-a3150b13a516
+# ╟─eb7e1c09-f662-4870-8e22-c91124512eaf
+# ╟─60c48cb2-29b1-4007-83ee-c8e282e03003
+# ╟─5e47956e-2e46-44c0-bf55-74e030139565
+# ╟─8aea4bec-4f53-406b-8880-ce00746d08ec
+# ╟─574816f0-f6d9-4208-a1fd-12cabf07df40
+# ╟─3b3f8538-00ea-49ed-84ec-cff6934e6f27
+# ╟─96babbc2-f033-48e4-9349-68710bdfb067
+# ╟─a4920e1e-1a26-4580-9f32-17b73e3faf4a
+# ╟─410abb9f-56d4-4252-a353-4c1d550f36cd
+# ╟─14eabc76-22bc-4b7d-b26d-e0c18095056e
+# ╟─af5ae3f6-522c-4a9f-9ff8-9f73161dad9a
+# ╟─aa1559b9-0b7f-4973-93a5-bbbdf4ea0ab0
+# ╟─8692bcdf-059e-45d6-baab-1af4705a72d4
+# ╟─85382e11-cb0f-4e85-bb48-ec21714a230c
+# ╟─d01effc2-4200-499f-93d8-a5bb5638449c
+# ╟─43fdbfe8-d55c-4474-a358-fa82768e5db1
+# ╟─d23085f7-1f1e-4abf-8c96-a64a08988328
+# ╟─a072564c-33a9-4141-8df0-1fa926a4702c
+# ╟─fda8f26d-087b-406c-9cc1-c63b9d8bd1a5
+# ╟─72ec224f-54ca-4acb-a4d1-c3f9881cf299
+# ╟─ed9d8902-ddd6-4099-9861-ca8a242e2d4b
+# ╟─793035a9-f596-491d-bfd9-ed418c171b7d
+# ╟─180d751e-1486-4058-acaa-0e1859d76b36
+# ╟─d91c36f5-5aaa-4086-8bfb-384ec9a1a200
+# ╟─cca48072-8bd6-4993-aba2-d4e8861cb3a1
+# ╟─83ee5b2f-c44f-464b-b3c6-747ed061aad1
+# ╟─528c23a5-3a0a-4fcc-99eb-90d9a01ff3df
+# ╟─e35e23ec-fb8a-480b-9904-c0fd95e5fe73
+# ╟─348a29c8-c562-4158-a26c-da3b27cb4f84
+# ╟─f63ed416-2350-4790-b324-842a69fb429e
+# ╟─d2f9757f-68eb-4c4c-8589-4df4bafa830e
+# ╟─ffc23bf9-987f-4392-8671-f6a692d12926
+# ╟─89386d4f-4d89-4868-917d-71a59f124018
+# ╟─9b38cde2-1c0a-4871-ab3a-874fca8ac403
+# ╟─0c1094af-ddf9-4206-bb79-0a5146f792e1
+# ╟─9bbd7f5a-7279-42c4-977f-753cee52be32
+# ╟─bea79739-21ec-4ccf-9f55-af442c1dba7f
+# ╟─85c037d0-c584-4cfe-a3af-726810a9660e
+# ╟─5db3fc14-31c7-40f6-abe3-f2ee3f4f0bf7
+# ╟─6915ef51-2ea5-4705-bc52-42c89205b48a
+# ╟─a5882dd9-f4d3-46c9-9096-743671bf13fb
+# ╟─63b7fefa-729a-45b0-9ebf-754769d77e08
+# ╟─0c1fb2c7-987f-4a2f-8b63-488e6c177de6
+# ╟─035068e5-3257-4d09-b063-dcfc836d214f
+# ╟─350e7132-8200-4a1d-8d4e-98316373dc53
+# ╟─e9cfe0c6-9a57-49b5-953f-448e3d4ee0db
+# ╟─ff881d8c-81f8-4a1f-afae-308d7289b601
+# ╟─8bbbf78b-7dfd-4bff-a95b-5a95052d6786
+# ╟─18b3310a-2571-4a4b-91f1-38a1fa047d56
+# ╟─037ea602-4198-46af-a471-89abda06ec7c
+# ╟─599634bc-09a5-4815-ae58-432211ea053d
+# ╟─c1b7b04e-eb0e-4893-82f0-837df1912cc1
+# ╟─6f25ccbb-039e-421a-88a0-0a5396b7987a
+# ╟─ff26ee4a-8624-45d9-8bff-4f2b49c10c40
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
