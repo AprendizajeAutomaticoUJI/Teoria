@@ -25,6 +25,19 @@ using Logging
 # ╔═╡ 2c7a3fe5-b68a-44a5-9ac3-a0e173dcdc0c
 using MLJ: confusion_matrix
 
+# ╔═╡ 28377904-399b-469a-88ce-cf18c902818c
+using CUDA
+
+# ╔═╡ f54cb805-8bde-4530-8a1a-d796240745d0
+using cuDNN
+
+# ╔═╡ e1708291-f4ab-43e4-9ca5-9cc688fe5d71
+if CUDA.functional() # Comprobamos si hay tarjeta nvidia disponibles
+	dispositivo = gpu # si la hay, la elegimos como dispositivo
+else
+	dispositivo = cpu # si no, seleccionamos cpu
+end
+
 # ╔═╡ 697e204c-051b-4e5c-b791-68e073fa29f1
 datos_entrenamiento = MLDatasets.MNIST()
 
@@ -35,7 +48,7 @@ datos_prueba = MLDatasets.MNIST(split = :test)
 function carga_datos(data::MNIST=datos_entrenamiento; batchsize::Int=64)
 	x4dim = reshape(data.features, 28, 28, 1, :)
 	yhot = Flux.onehotbatch(data.targets, 0:9)
-    Flux.DataLoader((x4dim, yhot); batchsize, shuffle=true)
+    Flux.DataLoader((x4dim, yhot); batchsize, shuffle=true) |> dispositivo
 end
 
 # ╔═╡ 03f72ab5-19b1-48fc-81a9-fa5b3278fa31
@@ -45,95 +58,107 @@ carga_datos()
 activacion = tanh
 
 # ╔═╡ cbea0c17-94cd-40fc-939a-a368040a8974
-lenet5 = Chain(
-	Conv((5, 5), 1=>6, activacion),
-	MeanPool((2, 2)),
-    Conv((5, 5), 6=>16, activacion),
-	MeanPool((2, 2)),
-    Flux.flatten,
-    Dense(256 => 120, activacion),
-    Dense(120 => 84, activacion), 
-    Dense(84 => 10),
-)
+function crea_modelo()
+	Chain(
+		Conv((5, 5), 1=>6, activacion),
+		MeanPool((2, 2)),
+	    Conv((5, 5), 6=>16, activacion),
+		MeanPool((2, 2)),
+	    Flux.flatten,
+	    Dense(256 => 120, activacion),
+	    Dense(120 => 84, activacion), 
+	    Dense(84 => 10),
+	) |> dispositivo
+end
 
 # ╔═╡ 3e42a6d9-b277-449f-a28f-0e377457fe5d
-function loss_and_accuracy(model, data::MNIST=datos_entrenamiento)
-    (x,y) = only(carga_datos(data; batchsize=length(data)))  # make one big batch
+function perdidas_precision(model, data::MNIST=datos_entrenamiento)
+    (x,y) = only(carga_datos(data; batchsize=length(data)))
     ŷ = model(x)
-    loss = Flux.logitcrossentropy(ŷ, y)  # did not include softmax in the model
+    loss = Flux.logitcrossentropy(ŷ, y)
     acc = round(100 * mean(Flux.onecold(ŷ) .== Flux.onecold(y)); digits=2)
-    (; loss, acc)  # return a NamedTuple
+    (; loss, acc)  # tupla con nombres
 end
 
 # ╔═╡ 70f29d81-c9b1-45c6-aab4-6b4a5178f8e4
 hiperparametros = (;
-    eta = 3e-4,     # learning rate
-    lambda = 1e-2,  # for weight decay
+    eta = 3e-4, # tasa de aprendizaje
+    lambda = 1e-2,  # decaimiento exponencial
     batchsize = 128,
-    epochs = 20,
+    epocas = 20,
 )
 
 # ╔═╡ d8b33d65-02aa-4a6d-8331-d124f25ff13b
-function entrena(settings)
+function crea_y_entrena(settings)
+	lenet5 = crea_modelo()
     # regla_optimizacion = OptimiserChain(WeightDecay(hiperparametros.lambda), Adam(hiperparametros.eta))
     # regla_optimizacion = Adam(hiperparametros.eta)
     regla_optimizacion = Descent(hiperparametros.lambda)
     optimizador = Flux.setup(regla_optimizacion, lenet5);
 	perdidas(lenet5, X, y) = Flux.Losses.logitcrossentropy(lenet5(X), y);
 	train_log = []
-		for epoca in 1:settings.epochs
+	with_logger(NullLogger()) do
+		for epoca in 1:settings.epocas
 			@time for (x, y) in carga_datos(batchsize=settings.batchsize)
 				Flux.train!(perdidas, lenet5, [(x,y)], optimizador);
 			end
-			loss, acc = loss_and_accuracy(lenet5)
-			test_loss, test_acc = loss_and_accuracy(lenet5, datos_prueba)
+			loss, acc = perdidas_precision(lenet5)
+			test_loss, test_acc = perdidas_precision(lenet5, datos_prueba)
 			@info "logging:" epoca acc test_acc
 			nt = (; epoca, loss, acc, test_loss, test_acc)
 			push!(train_log, nt)
 		end
-	return train_log
+	end
+	return lenet5, train_log
 end
 
 # ╔═╡ 12a1df8c-a987-4c9a-bd5f-d5fe7504b081
-train_log = entrena(hiperparametros)
+lenet5, train_log = crea_y_entrena(hiperparametros)
+
+# ╔═╡ 83cfe305-9929-4500-bb41-5b4a973b6ba2
+md"""
+**Precisión de los datos de prueba al final del entrenamiento: $(train_log[end].test_acc)**
+"""
 
 # ╔═╡ bd787423-31d7-4563-9d89-a8def38e6acd
 xtest, ytest = only(carga_datos(datos_prueba, batchsize=length(datos_prueba)));
 
 # ╔═╡ 249ac1bb-8eff-40e7-b328-0a25df7aa194
-ypredict = Flux.onecold(softmax(lenet5(xtest)), 0:9)
+ypredict = Flux.onecold(softmax(lenet5(xtest)), 0:9);
 
 # ╔═╡ 3b0a718d-e7bc-459a-b330-796f9fdf2b4c
-yreal = Flux.onecold(ytest, 0:9)
+yreal = Flux.onecold(ytest, 0:9);
 
 # ╔═╡ c7f7b1bb-26d2-4f63-a5be-530e79c6a6f7
-confusion_matrix(ypredict, yreal)
+confusion_matrix(ypredict |> cpu, yreal |> cpu)
 
 # ╔═╡ 7ae4374d-7722-4585-bb43-7bd27bc3a4ab
 let
 	plot([x.acc for x in train_log], 
-	    title="Evolución de la precisión durante el entrenamiento de LeNet5
-	    <br> Tanh + SGD",
-	    xlabel="Épocas",
-	    ylabel="Precisión",
-	    label="Conjunto entrenamiento", 
-	    legend=:bottomright)
+	    title = "Evolución de la precisión durante el entrenamiento de LeNet5 Tanh + SGD",
+	    xlabel = "Épocas",
+	    ylabel = "Precisión",
+	    label = "Conjunto entrenamiento", 
+	    legend = :bottomright,
+		size = (900, 500))
 	plot!([x.test_acc for x in train_log], 
 	    label="Conjunto prueba")
 end
 
 # ╔═╡ c044c37e-fa3b-4d83-a9d0-2976629576d8
 let
-	plot([x.loss for x in train_log], label="Loss")
-	plot!([x.test_loss for x in train_log], label="Test loss")
+	plot([x.loss for x in train_log],
+		 title = "Evolución de la función de pérdidas",
+		 label = "Perdidas cj. entrenamiento",
+		 size = (900, 500)
+		)
+	plot!([x.test_loss for x in train_log], label="Pérdidas cj. prueba")
 end
-
-# ╔═╡ 9b244d85-6d1e-46a4-9675-9778fa23cddb
-
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
+CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
 Flux = "587475ba-b771-5e3f-ad9e-33799f191a9c"
 ImageCore = "a09fc81d-aa75-5fe9-8630-4744c3626534"
 Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
@@ -141,13 +166,16 @@ MLDatasets = "eb30cadb-4394-5ae3-aed4-317e484a6458"
 MLJ = "add582a8-e3ab-11e8-2d5e-e98b27df1bc7"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
+cuDNN = "02a925ec-e4fe-4b08-9a7e-0d78e3d38ccd"
 
 [compat]
+CUDA = "~5.8.5"
 Flux = "~0.16.5"
 ImageCore = "~0.10.5"
 MLDatasets = "~0.7.18"
 MLJ = "~0.21.0"
 Plots = "~1.40.20"
+cuDNN = "~1.4.5"
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000002
@@ -156,7 +184,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.7"
 manifest_format = "2.0"
-project_hash = "cb660e9d73c03e45635a289cce02a535b5f982bc"
+project_hash = "45b5d580ac4fed169c25508b67a9db7a307c4b80"
 
 [[deps.ARFFFiles]]
 deps = ["CategoricalArrays", "Dates", "Parsers", "Tables"]
@@ -318,11 +346,64 @@ git-tree-sha1 = "1b96ea4a01afe0ea4090c5c8039690672dd13f2e"
 uuid = "6e34b625-4abd-537c-b88f-471c36dfa7a0"
 version = "1.0.9+0"
 
+[[deps.CEnum]]
+git-tree-sha1 = "389ad5c84de1ae7cf0e28e381131c98ea87d54fc"
+uuid = "fa961155-64e5-5f13-b03f-caf6b980ea82"
+version = "0.5.0"
+
 [[deps.CSV]]
 deps = ["CodecZlib", "Dates", "FilePathsBase", "InlineStrings", "Mmap", "Parsers", "PooledArrays", "PrecompileTools", "SentinelArrays", "Tables", "Unicode", "WeakRefStrings", "WorkerUtilities"]
 git-tree-sha1 = "deddd8725e5e1cc49ee205a1964256043720a6c3"
 uuid = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 version = "0.10.15"
+
+[[deps.CUDA]]
+deps = ["AbstractFFTs", "Adapt", "BFloat16s", "CEnum", "CUDA_Compiler_jll", "CUDA_Driver_jll", "CUDA_Runtime_Discovery", "CUDA_Runtime_jll", "Crayons", "DataFrames", "ExprTools", "GPUArrays", "GPUCompiler", "GPUToolbox", "KernelAbstractions", "LLVM", "LLVMLoopInfo", "LazyArtifacts", "Libdl", "LinearAlgebra", "Logging", "NVTX", "Preferences", "PrettyTables", "Printf", "Random", "Random123", "RandomNumbers", "Reexport", "Requires", "SparseArrays", "StaticArrays", "Statistics", "demumble_jll"]
+git-tree-sha1 = "224c078c40f7cbd98f393d1722953f3a7f24a3ca"
+uuid = "052768ef-5323-5732-b1bb-66c8b64840ba"
+version = "5.8.5"
+
+    [deps.CUDA.extensions]
+    ChainRulesCoreExt = "ChainRulesCore"
+    EnzymeCoreExt = "EnzymeCore"
+    SparseMatricesCSRExt = "SparseMatricesCSR"
+    SpecialFunctionsExt = "SpecialFunctions"
+
+    [deps.CUDA.weakdeps]
+    ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
+    EnzymeCore = "f151be2c-9106-41f4-ab19-57ee4f262869"
+    SparseMatricesCSR = "a0a7dd2c-ebf4-11e9-1f05-cf50bc540ca1"
+    SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
+
+[[deps.CUDA_Compiler_jll]]
+deps = ["Artifacts", "CUDA_Driver_jll", "CUDA_Runtime_jll", "JLLWrappers", "LazyArtifacts", "Libdl", "TOML"]
+git-tree-sha1 = "68bac021c5d511fe39c2f4306cc9623a6626dbb4"
+uuid = "d1e2174e-dfdc-576e-b43e-73b79eb1aca8"
+version = "0.2.2+0"
+
+[[deps.CUDA_Driver_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "2023be0b10c56d259ea84a94dbfc021aa452f2c6"
+uuid = "4ee394cb-3365-5eb0-8335-949819d2adfc"
+version = "13.0.2+0"
+
+[[deps.CUDA_Runtime_Discovery]]
+deps = ["Libdl"]
+git-tree-sha1 = "f9a521f52d236fe49f1028d69e549e7f2644bb72"
+uuid = "1af6417a-86b4-443c-805f-a4643ffb695f"
+version = "1.0.0"
+
+[[deps.CUDA_Runtime_jll]]
+deps = ["Artifacts", "CUDA_Driver_jll", "JLLWrappers", "LazyArtifacts", "Libdl", "TOML"]
+git-tree-sha1 = "92cd84e2b760e471d647153ea5efc5789fc5e8b2"
+uuid = "76a88914-d11a-5bdc-97e0-2f5a05c973a2"
+version = "0.19.2+0"
+
+[[deps.CUDNN_jll]]
+deps = ["Artifacts", "CUDA_Runtime_jll", "JLLWrappers", "LazyArtifacts", "Libdl", "TOML"]
+git-tree-sha1 = "cf92130f820a5c92607e2a333d2d86d9bf30a694"
+uuid = "62b44479-cb7b-5706-934f-f13b2eb2e645"
+version = "9.13.0+0"
 
 [[deps.Cairo_jll]]
 deps = ["Artifacts", "Bzip2_jll", "CompilerSupportLibraries_jll", "Fontconfig_jll", "FreeType2_jll", "Glib_jll", "JLLWrappers", "LZO_jll", "Libdl", "Pixman_jll", "Xorg_libXext_jll", "Xorg_libXrender_jll", "Zlib_jll", "libpng_jll"]
@@ -635,6 +716,11 @@ git-tree-sha1 = "27af30de8b5445644e8ffe3bcb0d72049c089cf1"
 uuid = "2e619515-83b5-522b-bb60-26c02a35a201"
 version = "2.7.3+0"
 
+[[deps.ExprTools]]
+git-tree-sha1 = "27415f162e6028e81c72b82ef756bf321213b6ec"
+uuid = "e2ba6199-217a-4e67-a87a-7c52f15ade04"
+version = "0.1.10"
+
 [[deps.FFMPEG]]
 deps = ["FFMPEG_jll"]
 git-tree-sha1 = "95ecf07c2eea562b5adbd0696af6db62c0f52560"
@@ -780,11 +866,33 @@ git-tree-sha1 = "fcb0584ff34e25155876418979d4c8971243bb89"
 uuid = "0656b61e-2033-5cc2-a64a-77c0f6c09b89"
 version = "3.4.0+2"
 
+[[deps.GPUArrays]]
+deps = ["Adapt", "GPUArraysCore", "KernelAbstractions", "LLVM", "LinearAlgebra", "Printf", "Random", "Reexport", "ScopedValues", "Serialization", "Statistics"]
+git-tree-sha1 = "8ddb438e956891a63a5367d7fab61550fc720026"
+uuid = "0c68f7d7-f131-5f86-a1c3-88cf8149b2d7"
+version = "11.2.6"
+weakdeps = ["JLD2"]
+
+    [deps.GPUArrays.extensions]
+    JLD2Ext = "JLD2"
+
 [[deps.GPUArraysCore]]
 deps = ["Adapt"]
 git-tree-sha1 = "83cf05ab16a73219e5f6bd1bdfa9848fa24ac627"
 uuid = "46192b85-c4d5-4398-a991-12ede77f4527"
 version = "0.2.0"
+
+[[deps.GPUCompiler]]
+deps = ["ExprTools", "InteractiveUtils", "LLVM", "Libdl", "Logging", "PrecompileTools", "Preferences", "Scratch", "Serialization", "TOML", "Tracy", "UUIDs"]
+git-tree-sha1 = "9a8b92a457f55165923fcfe48997b7b93b712fca"
+uuid = "61eb1bfa-7361-4325-ad38-22787b887f55"
+version = "1.7.2"
+
+[[deps.GPUToolbox]]
+deps = ["LLVM"]
+git-tree-sha1 = "5bfe837129bf49e2e049b4f1517546055cc16a93"
+uuid = "096a3bc2-3ced-46d0-87f4-dd12716f4bfc"
+version = "0.3.0"
 
 [[deps.GR]]
 deps = ["Artifacts", "Base64", "DelimitedFiles", "Downloads", "GR_jll", "HTTP", "JSON", "Libdl", "LinearAlgebra", "Preferences", "Printf", "Qt6Wayland_jll", "Random", "Serialization", "Sockets", "TOML", "Tar", "Test", "p7zip_jll"]
@@ -1015,6 +1123,12 @@ git-tree-sha1 = "4255f0032eafd6451d707a51d5f0248b8a165e4d"
 uuid = "aacddb02-875f-59d6-b918-886e6ef4fbf8"
 version = "3.1.3+0"
 
+[[deps.JuliaNVTXCallbacks_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "af433a10f3942e882d3c671aacb203e006a5808f"
+uuid = "9c1d0b0a-7046-5b2e-a33f-ea22f176ac7e"
+version = "0.2.1+0"
+
 [[deps.JuliaVariables]]
 deps = ["MLStyle", "NameResolution"]
 git-tree-sha1 = "49fb3cb53362ddadb4415e9b73926d6b40709e70"
@@ -1044,6 +1158,27 @@ deps = ["Artifacts", "JLLWrappers", "Libdl"]
 git-tree-sha1 = "aaafe88dccbd957a8d82f7d05be9b69172e0cee3"
 uuid = "88015f11-f218-50d7-93a8-a6af411a945d"
 version = "4.0.1+0"
+
+[[deps.LLVM]]
+deps = ["CEnum", "LLVMExtra_jll", "Libdl", "Preferences", "Printf", "Unicode"]
+git-tree-sha1 = "ce8614210409eaa54ed5968f4b50aa96da7ae543"
+uuid = "929cbde3-209d-540e-8aea-75f648917ca0"
+version = "9.4.4"
+weakdeps = ["BFloat16s"]
+
+    [deps.LLVM.extensions]
+    BFloat16sExt = "BFloat16s"
+
+[[deps.LLVMExtra_jll]]
+deps = ["Artifacts", "JLLWrappers", "LazyArtifacts", "Libdl", "TOML"]
+git-tree-sha1 = "8e76807afb59ebb833e9b131ebf1a8c006510f33"
+uuid = "dad2f222-ce93-54a1-a47d-0025e8a3acab"
+version = "0.0.38+0"
+
+[[deps.LLVMLoopInfo]]
+git-tree-sha1 = "2e5c102cfc41f48ae4740c7eca7743cc7e7b75ea"
+uuid = "8b046642-f1f6-4319-8d3c-209ddc03c586"
+version = "1.0.0"
 
 [[deps.LLVMOpenMP_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -1125,6 +1260,12 @@ version = "1.7.2+0"
 deps = ["Artifacts", "Libdl", "MbedTLS_jll"]
 uuid = "29816b5a-b9ab-546f-933c-edad1886dfa8"
 version = "1.11.0+1"
+
+[[deps.LibTracyClient_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "d2bc4e1034b2d43076b50f0e34ea094c2cb0a717"
+uuid = "ad6e5548-8b26-5c9f-8ef3-ef0ad883f3a5"
+version = "0.9.1+6"
 
 [[deps.Libdl]]
 uuid = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
@@ -1453,6 +1594,18 @@ git-tree-sha1 = "60a8e272fe0c5079363b28b0953831e2dd7b7e6f"
 uuid = "15e1cf62-19b3-5cfa-8e77-841668bca605"
 version = "0.4.3"
 
+[[deps.NVTX]]
+deps = ["Colors", "JuliaNVTXCallbacks_jll", "Libdl", "NVTX_jll"]
+git-tree-sha1 = "6b573a3e66decc7fc747afd1edbf083ff78c813a"
+uuid = "5da4648a-3479-48b8-97b9-01cb529c0a1f"
+version = "1.0.1"
+
+[[deps.NVTX_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "af2232f69447494514c25742ba1503ec7e9877fe"
+uuid = "e98f9f5b-d649-5603-91fd-7774390e6439"
+version = "3.2.2+0"
+
 [[deps.NaNMath]]
 deps = ["OpenLibm_jll"]
 git-tree-sha1 = "9b8215b1ee9e78a293f99797cd31375471b2bcae"
@@ -1763,6 +1916,18 @@ deps = ["SHA"]
 uuid = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 version = "1.11.0"
 
+[[deps.Random123]]
+deps = ["Random", "RandomNumbers"]
+git-tree-sha1 = "dbe5fd0b334694e905cb9fda73cd8554333c46e2"
+uuid = "74087812-796a-5b5d-8853-05524746bad3"
+version = "1.7.1"
+
+[[deps.RandomNumbers]]
+deps = ["Random"]
+git-tree-sha1 = "c6ec94d2aaba1ab2ff983052cf6a606ca5985902"
+uuid = "e6cf234a-135c-5ec9-84dd-332b85af5143"
+version = "1.6.0"
+
 [[deps.RealDot]]
 deps = ["LinearAlgebra"]
 git-tree-sha1 = "9f0a1b71baaf7650f4fa8a1d168c7fb6ee41f0c9"
@@ -2009,14 +2174,11 @@ deps = ["LinearAlgebra", "PackageExtensionCompat"]
 git-tree-sha1 = "425158c52aa58d42593be6861befadf8b2541e9b"
 uuid = "4db3bf67-4bd7-4b4e-b153-31dc3fb37143"
 version = "0.4.1"
+weakdeps = ["CUDA", "PtrArrays"]
 
     [deps.StridedViews.extensions]
     StridedViewsCUDAExt = "CUDA"
     StridedViewsPtrArraysExt = "PtrArrays"
-
-    [deps.StridedViews.weakdeps]
-    CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
-    PtrArrays = "43287f4e-b6f4-7ad1-bb20-aadabca52c3d"
 
 [[deps.StringEncodings]]
 deps = ["Libiconv_jll"]
@@ -2102,6 +2264,18 @@ deps = ["InteractiveUtils", "Logging", "Random", "Serialization"]
 uuid = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 version = "1.11.0"
 
+[[deps.Tracy]]
+deps = ["ExprTools", "LibTracyClient_jll", "Libdl"]
+git-tree-sha1 = "73e3ff50fd3990874c59fef0f35d10644a1487bc"
+uuid = "e689c965-62c8-4b79-b2c5-8359227902fd"
+version = "0.1.6"
+
+    [deps.Tracy.extensions]
+    TracyProfilerExt = "TracyProfiler_jll"
+
+    [deps.Tracy.weakdeps]
+    TracyProfiler_jll = "0c351ed6-8a68-550e-8b79-de6f926da83c"
+
 [[deps.TranscodingStreams]]
 git-tree-sha1 = "0c45878dcfdcfa8480052b6ab162cdd138781742"
 uuid = "3bb67fe8-82b1-5028-8e26-92a6c54297fa"
@@ -2183,12 +2357,10 @@ version = "1.7.0"
 git-tree-sha1 = "b13c4edda90890e5b04ba24e20a310fbe6f249ff"
 uuid = "013be700-e6cd-48c3-b4a1-df204f14c38f"
 version = "0.3.0"
+weakdeps = ["LLVM"]
 
     [deps.UnsafeAtomics.extensions]
     UnsafeAtomicsLLVM = ["LLVM"]
-
-    [deps.UnsafeAtomics.weakdeps]
-    LLVM = "929cbde3-209d-540e-8aea-75f648917ca0"
 
 [[deps.Unzip]]
 git-tree-sha1 = "ca0969166a028236229f63514992fc073799bb78"
@@ -2415,6 +2587,18 @@ git-tree-sha1 = "434b3de333c75fc446aa0d19fc394edafd07ab08"
 uuid = "700de1a5-db45-46bc-99cf-38207098b444"
 version = "0.2.7"
 
+[[deps.cuDNN]]
+deps = ["CEnum", "CUDA", "CUDA_Runtime_Discovery", "CUDNN_jll"]
+git-tree-sha1 = "b832b4e26effbb8ef9877811ab63f838b4c9c3e0"
+uuid = "02a925ec-e4fe-4b08-9a7e-0d78e3d38ccd"
+version = "1.4.5"
+
+[[deps.demumble_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "6498e3581023f8e530f34760d18f75a69e3a4ea8"
+uuid = "1e29f10c-031c-5a83-9565-69cddfc27673"
+version = "1.3.0+0"
+
 [[deps.eudev_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
 git-tree-sha1 = "c3b0e6196d50eab0c5ed34021aaa0bb463489510"
@@ -2529,6 +2713,9 @@ version = "1.9.2+0"
 # ╠═a8d8bb94-b9c1-4fc6-8ab2-e21c5e0eecf1
 # ╠═76386eb0-add4-488e-bde1-d770c26f12f9
 # ╠═2c7a3fe5-b68a-44a5-9ac3-a0e173dcdc0c
+# ╠═28377904-399b-469a-88ce-cf18c902818c
+# ╠═f54cb805-8bde-4530-8a1a-d796240745d0
+# ╠═e1708291-f4ab-43e4-9ca5-9cc688fe5d71
 # ╠═697e204c-051b-4e5c-b791-68e073fa29f1
 # ╠═8b2184e2-e1f3-4f5a-abdf-1f1506c234a1
 # ╠═92153584-1778-433d-9eb3-1373d86845e9
@@ -2539,12 +2726,12 @@ version = "1.9.2+0"
 # ╠═70f29d81-c9b1-45c6-aab4-6b4a5178f8e4
 # ╠═d8b33d65-02aa-4a6d-8331-d124f25ff13b
 # ╠═12a1df8c-a987-4c9a-bd5f-d5fe7504b081
+# ╠═83cfe305-9929-4500-bb41-5b4a973b6ba2
 # ╠═bd787423-31d7-4563-9d89-a8def38e6acd
 # ╠═249ac1bb-8eff-40e7-b328-0a25df7aa194
 # ╠═3b0a718d-e7bc-459a-b330-796f9fdf2b4c
 # ╠═c7f7b1bb-26d2-4f63-a5be-530e79c6a6f7
 # ╠═7ae4374d-7722-4585-bb43-7bd27bc3a4ab
 # ╠═c044c37e-fa3b-4d83-a9d0-2976629576d8
-# ╠═9b244d85-6d1e-46a4-9675-9778fa23cddb
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
