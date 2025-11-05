@@ -14,9 +14,9 @@ using PlutoTeachingTools
 using ShortCodes
 
 # ╔═╡ 17163d32-2fd3-11f0-053d-7b01c1dc1e5d
-html"""
-<link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
-"""
+# html"""
+# <link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
+# """
 
 # ╔═╡ 98925bf9-6cfa-4046-b0c7-de0a0ad286ad
 TableOfContents(title="Contenidos", depth=1)
@@ -677,7 +677,12 @@ Este es el vídeo donde un joven LeCun y su equipo muestran cómo trabaja la red
 """
 
 # ╔═╡ 528c23a5-3a0a-4fcc-99eb-90d9a01ff3df
-YouTube("FwFduRA_L6Q")
+Columns(
+	YouTube("FwFduRA_L6Q"),
+	md"""
+	En este enlace tienes una [implementación de LeNet5](https://github.com/AprendizajeAutomaticoUJI/Teoria/blob/main/RedesNeuronales/EjemplosRedesNeuronales/lenet5.jl).
+	"""
+)
 
 # ╔═╡ e35e23ec-fb8a-480b-9904-c0fd95e5fe73
 md"""
@@ -714,6 +719,26 @@ Resource(
 	:alt => "Detalle arquitectura ResNet.",
 	:width => 500,
 	:style => "display: block; margin: auto;",
+)
+
+# ╔═╡ cdf52389-528b-409e-abf0-2306d71d2303
+md"""
+## ResNet
+
+
+"""
+
+# ╔═╡ 54c73cae-750c-47ec-8ad2-7943177370d5
+Columns(
+	Resource(
+		url_imagenes * "resnet_vs_full.png",
+		:alt => "Detalle arquitectura ResNet.",
+		:height => 800,
+		:style => "display: block; margin: auto;",
+	),
+	md"""
+	Después de aplicar dos capas convolucionales, se ajusta con la técnica de ResNet.
+	"""
 )
 
 # ╔═╡ 89386d4f-4d89-4868-917d-71a59f124018
@@ -783,6 +808,21 @@ Y esta es la arquitectura tal y como se presenta en el artículo:
 Resource(
 	url_imagenes * "yolo.png",
 	:alt => "Arquitectura de YOLO",
+	:width => 700,
+	:style => "display: block; margin: auto;",
+)
+
+# ╔═╡ 8f4a4084-ea4c-4111-89e9-4c9cd476d975
+md"""
+## YOLO
+
+La función de pérdidas que se minimiza es:
+"""
+
+# ╔═╡ 608ca8ac-4dd9-484c-b2e7-52dceb9c1461
+Resource(
+	url_imagenes * "yolo_funcion_perdidas.png",
+	:alt => "Función de pérdidas de YOLO",
 	:width => 700,
 	:style => "display: block; margin: auto;",
 )
@@ -1412,7 +1452,7 @@ version = "17.4.0+2"
 """
 
 # ╔═╡ Cell order:
-# ╟─17163d32-2fd3-11f0-053d-7b01c1dc1e5d
+# ╠═17163d32-2fd3-11f0-053d-7b01c1dc1e5d
 # ╟─49bc4ae1-cc37-4de1-8616-d5bd2cc740ad
 # ╟─2537da9f-b15c-448f-805b-8ea2e6bd5996
 # ╟─98d86666-f5c0-4389-8b8c-79291db1b57d
@@ -1496,7 +1536,9 @@ version = "17.4.0+2"
 # ╟─348a29c8-c562-4158-a26c-da3b27cb4f84
 # ╟─f63ed416-2350-4790-b324-842a69fb429e
 # ╟─d2f9757f-68eb-4c4c-8589-4df4bafa830e
-# ╟─ffc23bf9-987f-4392-8671-f6a692d12926
+# ╠═ffc23bf9-987f-4392-8671-f6a692d12926
+# ╠═cdf52389-528b-409e-abf0-2306d71d2303
+# ╠═54c73cae-750c-47ec-8ad2-7943177370d5
 # ╟─89386d4f-4d89-4868-917d-71a59f124018
 # ╟─9b38cde2-1c0a-4871-ab3a-874fca8ac403
 # ╟─0c1094af-ddf9-4206-bb79-0a5146f792e1
@@ -1504,6 +1546,8 @@ version = "17.4.0+2"
 # ╟─bea79739-21ec-4ccf-9f55-af442c1dba7f
 # ╟─85c037d0-c584-4cfe-a3af-726810a9660e
 # ╟─5db3fc14-31c7-40f6-abe3-f2ee3f4f0bf7
+# ╟─8f4a4084-ea4c-4111-89e9-4c9cd476d975
+# ╟─608ca8ac-4dd9-484c-b2e7-52dceb9c1461
 # ╟─6915ef51-2ea5-4705-bc52-42c89205b48a
 # ╟─a5882dd9-f4d3-46c9-9096-743671bf13fb
 # ╟─63b7fefa-729a-45b0-9ebf-754769d77e08
