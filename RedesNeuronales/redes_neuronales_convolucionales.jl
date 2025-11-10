@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.8
+# v0.20.20
 
 using Markdown
 using InteractiveUtils
@@ -14,9 +14,9 @@ using PlutoTeachingTools
 using ShortCodes
 
 # ╔═╡ 17163d32-2fd3-11f0-053d-7b01c1dc1e5d
-# html"""
-# <link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
-# """
+html"""
+<link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
+"""
 
 # ╔═╡ 98925bf9-6cfa-4046-b0c7-de0a0ad286ad
 TableOfContents(title="Contenidos", depth=1)
@@ -677,12 +677,12 @@ Este es el vídeo donde un joven LeCun y su equipo muestran cómo trabaja la red
 """
 
 # ╔═╡ 528c23a5-3a0a-4fcc-99eb-90d9a01ff3df
-Columns(
-	YouTube("FwFduRA_L6Q"),
-	md"""
-	En este enlace tienes una [implementación de LeNet5](https://github.com/AprendizajeAutomaticoUJI/Teoria/blob/main/RedesNeuronales/EjemplosRedesNeuronales/lenet5.jl).
-	"""
-)
+YouTube("FwFduRA_L6Q")
+
+# ╔═╡ f265ac2e-2014-4827-be72-3422ef6a2f11
+md"""
+En este enlace tienes una [implementación de LeNet5](https://github.com/AprendizajeAutomaticoUJI/Teoria/blob/main/RedesNeuronales/EjemplosRedesNeuronales/lenet5.jl).
+"""
 
 # ╔═╡ e35e23ec-fb8a-480b-9904-c0fd95e5fe73
 md"""
@@ -896,7 +896,7 @@ Resource(
 
 # ╔═╡ 350e7132-8200-4a1d-8d4e-98316373dc53
 md"""
-El tiempo de inferencia en mi portátil es de 12.3 ms.
+El tiempo de inferencia en mi portátil es de 12.3 ms. En este enlace tienes el código de [ejemplo](https://github.com/AprendizajeAutomaticoUJI/Teoria/blob/main/RedesNeuronales/EjemplosRedesNeuronales/ejemploObjectDetector.jl).
 """
 
 # ╔═╡ e9cfe0c6-9a57-49b5-953f-448e3d4ee0db
@@ -1065,9 +1065,9 @@ ShortCodes = "~0.3.6"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.11.7"
+julia_version = "1.12.1"
 manifest_format = "2.0"
-project_hash = "299d90740f0db39673c4630d62054ffc32c79e3b"
+project_hash = "7a569f1efe044287c9fcf980287e2d7e96f0bb69"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -1102,7 +1102,7 @@ version = "0.11.5"
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.1.1+0"
+version = "1.3.0+1"
 
 [[deps.Dates]]
 deps = ["Printf"]
@@ -1188,6 +1188,11 @@ git-tree-sha1 = "4255f0032eafd6451d707a51d5f0248b8a165e4d"
 uuid = "aacddb02-875f-59d6-b918-886e6ef4fbf8"
 version = "3.1.3+0"
 
+[[deps.JuliaSyntaxHighlighting]]
+deps = ["StyledStrings"]
+uuid = "ac6e5ff7-fb65-4e79-a425-ec3bc9c03011"
+version = "1.12.0"
+
 [[deps.LaTeXStrings]]
 git-tree-sha1 = "dda21b8cbd6a6c40d9d02a73230f9d70fed6918c"
 uuid = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
@@ -1217,24 +1222,24 @@ uuid = "b27032c2-a3e7-50c8-80cd-2d36dbcbfd21"
 version = "0.6.4"
 
 [[deps.LibCURL_jll]]
-deps = ["Artifacts", "LibSSH2_jll", "Libdl", "MbedTLS_jll", "Zlib_jll", "nghttp2_jll"]
+deps = ["Artifacts", "LibSSH2_jll", "Libdl", "OpenSSL_jll", "Zlib_jll", "nghttp2_jll"]
 uuid = "deac9b47-8bc7-5906-a0fe-35ac56dc84c0"
-version = "8.6.0+0"
+version = "8.11.1+1"
 
 [[deps.LibGit2]]
-deps = ["Base64", "LibGit2_jll", "NetworkOptions", "Printf", "SHA"]
+deps = ["LibGit2_jll", "NetworkOptions", "Printf", "SHA"]
 uuid = "76f85450-5226-5b5a-8eaa-529ad045b433"
 version = "1.11.0"
 
 [[deps.LibGit2_jll]]
-deps = ["Artifacts", "LibSSH2_jll", "Libdl", "MbedTLS_jll"]
+deps = ["Artifacts", "LibSSH2_jll", "Libdl", "OpenSSL_jll"]
 uuid = "e37daf67-58a4-590a-8e99-b0245dd2ffc5"
-version = "1.7.2+0"
+version = "1.9.0+0"
 
 [[deps.LibSSH2_jll]]
-deps = ["Artifacts", "Libdl", "MbedTLS_jll"]
+deps = ["Artifacts", "Libdl", "OpenSSL_jll"]
 uuid = "29816b5a-b9ab-546f-933c-edad1886dfa8"
-version = "1.11.0+1"
+version = "1.11.3+1"
 
 [[deps.Libdl]]
 uuid = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
@@ -1243,7 +1248,7 @@ version = "1.11.0"
 [[deps.LinearAlgebra]]
 deps = ["Libdl", "OpenBLAS_jll", "libblastrampoline_jll"]
 uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
-version = "1.11.0"
+version = "1.12.0"
 
 [[deps.Logging]]
 uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
@@ -1260,14 +1265,9 @@ uuid = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
 version = "0.5.16"
 
 [[deps.Markdown]]
-deps = ["Base64"]
+deps = ["Base64", "JuliaSyntaxHighlighting", "StyledStrings"]
 uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
 version = "1.11.0"
-
-[[deps.MbedTLS_jll]]
-deps = ["Artifacts", "Libdl"]
-uuid = "c8ffd9c3-330d-5841-b78e-0817d7145fa1"
-version = "2.28.6+0"
 
 [[deps.Memoize]]
 deps = ["MacroTools"]
@@ -1281,16 +1281,21 @@ version = "1.11.0"
 
 [[deps.MozillaCACerts_jll]]
 uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
-version = "2023.12.12"
+version = "2025.5.20"
 
 [[deps.NetworkOptions]]
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
-version = "1.2.0"
+version = "1.3.0"
 
 [[deps.OpenBLAS_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
-version = "0.3.27+1"
+version = "0.3.29+0"
+
+[[deps.OpenSSL_jll]]
+deps = ["Artifacts", "Libdl"]
+uuid = "458c3c95-2e84-50aa-8efc-19380b2a3a95"
+version = "3.5.1+0"
 
 [[deps.OrderedCollections]]
 git-tree-sha1 = "05868e21324cede2207c6f0f466b4bfef6d5e7ee"
@@ -1306,7 +1311,7 @@ version = "2.8.3"
 [[deps.Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "Random", "SHA", "TOML", "Tar", "UUIDs", "p7zip_jll"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
-version = "1.11.0"
+version = "1.12.0"
 
     [deps.Pkg.extensions]
     REPLExt = "REPL"
@@ -1391,6 +1396,10 @@ git-tree-sha1 = "159331b30e94d7b11379037feeb9b690950cace8"
 uuid = "856f2bd8-1eba-4b0a-8007-ebc267875bd4"
 version = "1.11.0"
 
+[[deps.StyledStrings]]
+uuid = "f489334b-da3d-4c2e-b8f0-e476e12c162b"
+version = "1.11.0"
+
 [[deps.TOML]]
 deps = ["Dates"]
 uuid = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
@@ -1433,26 +1442,26 @@ version = "1.11.0"
 [[deps.Zlib_jll]]
 deps = ["Libdl"]
 uuid = "83775a58-1f1d-513f-b197-d71354ab007a"
-version = "1.2.13+1"
+version = "1.3.1+2"
 
 [[deps.libblastrampoline_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
-version = "5.11.0+0"
+version = "5.15.0+0"
 
 [[deps.nghttp2_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850ede-7688-5339-a07c-302acd2aaf8d"
-version = "1.59.0+0"
+version = "1.64.0+1"
 
 [[deps.p7zip_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
-version = "17.4.0+2"
+version = "17.5.0+2"
 """
 
 # ╔═╡ Cell order:
-# ╠═17163d32-2fd3-11f0-053d-7b01c1dc1e5d
+# ╟─17163d32-2fd3-11f0-053d-7b01c1dc1e5d
 # ╟─49bc4ae1-cc37-4de1-8616-d5bd2cc740ad
 # ╟─2537da9f-b15c-448f-805b-8ea2e6bd5996
 # ╟─98d86666-f5c0-4389-8b8c-79291db1b57d
@@ -1531,14 +1540,15 @@ version = "17.4.0+2"
 # ╟─d91c36f5-5aaa-4086-8bfb-384ec9a1a200
 # ╟─cca48072-8bd6-4993-aba2-d4e8861cb3a1
 # ╟─83ee5b2f-c44f-464b-b3c6-747ed061aad1
-# ╟─528c23a5-3a0a-4fcc-99eb-90d9a01ff3df
+# ╠═528c23a5-3a0a-4fcc-99eb-90d9a01ff3df
+# ╟─f265ac2e-2014-4827-be72-3422ef6a2f11
 # ╟─e35e23ec-fb8a-480b-9904-c0fd95e5fe73
 # ╟─348a29c8-c562-4158-a26c-da3b27cb4f84
 # ╟─f63ed416-2350-4790-b324-842a69fb429e
 # ╟─d2f9757f-68eb-4c4c-8589-4df4bafa830e
-# ╠═ffc23bf9-987f-4392-8671-f6a692d12926
-# ╠═cdf52389-528b-409e-abf0-2306d71d2303
-# ╠═54c73cae-750c-47ec-8ad2-7943177370d5
+# ╟─ffc23bf9-987f-4392-8671-f6a692d12926
+# ╟─cdf52389-528b-409e-abf0-2306d71d2303
+# ╟─54c73cae-750c-47ec-8ad2-7943177370d5
 # ╟─89386d4f-4d89-4868-917d-71a59f124018
 # ╟─9b38cde2-1c0a-4871-ab3a-874fca8ac403
 # ╟─0c1094af-ddf9-4206-bb79-0a5146f792e1
