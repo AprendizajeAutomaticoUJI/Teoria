@@ -31,6 +31,16 @@ using CUDA
 # ╔═╡ f54cb805-8bde-4530-8a1a-d796240745d0
 using cuDNN
 
+# ╔═╡ 861601d5-3a6b-4a92-94d5-8ce51a334efa
+md"""
+Primero importamos las bibliotecas que necesitamos.
+"""
+
+# ╔═╡ 215212d9-2571-4897-ac42-bc35c2ba809d
+md"""
+Si tenemos una tarjeta gráfica de Nvidia, la seleccionamos, si no, hacemos los cálculos sobre la cpu.
+"""
+
 # ╔═╡ e1708291-f4ab-43e4-9ca5-9cc688fe5d71
 if CUDA.functional() # Comprobamos si hay tarjeta nvidia disponibles
 	dispositivo = gpu # si la hay, la elegimos como dispositivo
@@ -38,11 +48,34 @@ else
 	dispositivo = cpu # si no, seleccionamos cpu
 end
 
+# ╔═╡ 67170c3d-3ef0-4b8f-9469-da876cf3481f
+md"""
+La descarga de los datos nos va a pedir confirmación, para que no se genere un error, aceptamos de entrada los términos y condiciones.
+"""
+
+# ╔═╡ 26fa2a53-ad99-4b34-ae4e-03d5c4ff5f68
+ENV["DATADEPS_ALWAYS_ACCEPT"] = true
+
+# ╔═╡ e7e1b574-0d8b-405c-a100-8ca50b0f095c
+md"""
+Descargamos el conjunto de datos de MINIST para entrenamiento:
+"""
+
 # ╔═╡ 697e204c-051b-4e5c-b791-68e073fa29f1
 datos_entrenamiento = MLDatasets.MNIST()
 
+# ╔═╡ 839fcfd8-37b0-4e41-b11e-c8ac26df198f
+md"""
+y el conjunto de datos de prueba:
+"""
+
 # ╔═╡ 8b2184e2-e1f3-4f5a-abdf-1f1506c234a1
 datos_prueba = MLDatasets.MNIST(split = :test)
+
+# ╔═╡ ef8469e8-1a6b-409c-ad6a-d697cae82454
+md"""
+Cargamos los datos por lotes en gpu o cpu, según lo que tengamos disponible:
+"""
 
 # ╔═╡ 92153584-1778-433d-9eb3-1373d86845e9
 function carga_datos(data::MNIST=datos_entrenamiento; batchsize::Int=64)
@@ -54,8 +87,18 @@ end
 # ╔═╡ 03f72ab5-19b1-48fc-81a9-fa5b3278fa31
 carga_datos()
 
+# ╔═╡ 609717b4-5ab7-4ea3-831c-0e069f21a675
+md"""
+En el artículo original la función de activación era tanh:
+"""
+
 # ╔═╡ cf20e900-d3c0-49a6-8c2c-2ae2bcba35d6
 activacion = tanh
+
+# ╔═╡ 94ba3c0b-ab3f-4871-936d-3338c8f8d655
+md"""
+Creamos la red neuronal tal y como se presenta en el artículo de LeCunn
+"""
 
 # ╔═╡ cbea0c17-94cd-40fc-939a-a368040a8974
 function crea_modelo()
@@ -70,6 +113,11 @@ function crea_modelo()
 	    Dense(84 => 10),
 	) |> dispositivo
 end
+
+# ╔═╡ afe46a3d-2597-41f6-b5ed-f7fa22ddd3d7
+md"""
+Para mostrar información del entrenamiento:
+"""
 
 # ╔═╡ 3e42a6d9-b277-449f-a28f-0e377457fe5d
 function perdidas_precision(model, data::MNIST=datos_entrenamiento)
@@ -112,6 +160,11 @@ function crea_y_entrena(settings)
 	return lenet5, train_log
 end
 
+# ╔═╡ 42dde456-f289-47df-b776-c9abaa19aaec
+md"""
+Creamos el modelo y lo entrenamos:
+"""
+
 # ╔═╡ 12a1df8c-a987-4c9a-bd5f-d5fe7504b081
 lenet5, train_log = crea_y_entrena(hiperparametros)
 
@@ -123,14 +176,29 @@ md"""
 # ╔═╡ bd787423-31d7-4563-9d89-a8def38e6acd
 xtest, ytest = only(carga_datos(datos_prueba, batchsize=length(datos_prueba)));
 
+# ╔═╡ 69e00340-4f54-4247-8124-31adcf7c244b
+md"""
+Hacemos las predicciones sobre el conjunto de prueba:
+"""
+
 # ╔═╡ 249ac1bb-8eff-40e7-b328-0a25df7aa194
 ypredict = Flux.onecold(softmax(lenet5(xtest)), 0:9);
 
 # ╔═╡ 3b0a718d-e7bc-459a-b330-796f9fdf2b4c
 yreal = Flux.onecold(ytest, 0:9);
 
+# ╔═╡ f9b8d516-93fd-4774-9e87-d8cd175e091d
+md"""
+Mostramos la matriz de confusión:
+"""
+
 # ╔═╡ c7f7b1bb-26d2-4f63-a5be-530e79c6a6f7
 confusion_matrix(ypredict |> cpu, yreal |> cpu)
+
+# ╔═╡ c3cf9eb7-14dd-4b50-8ec6-9e2b5621d34d
+md"""
+Mostramos la evolución de la precisión durante el entrenamiento:
+"""
 
 # ╔═╡ 7ae4374d-7722-4585-bb43-7bd27bc3a4ab
 let
@@ -144,6 +212,11 @@ let
 	plot!([x.test_acc for x in train_log], 
 	    label="Conjunto prueba")
 end
+
+# ╔═╡ 61896361-7a70-4a12-8307-5678e6844a01
+md"""
+Mostramos las pérdidad durante el entrenamiento:
+"""
 
 # ╔═╡ c044c37e-fa3b-4d83-a9d0-2976629576d8
 let
@@ -2711,6 +2784,7 @@ version = "1.9.2+0"
 """
 
 # ╔═╡ Cell order:
+# ╟─861601d5-3a6b-4a92-94d5-8ce51a334efa
 # ╠═45f9196e-b979-11f0-1c09-39c06ac01f6a
 # ╠═73067233-7a62-4b5a-8b4b-70c71b24124e
 # ╠═0e439e15-3817-49ba-8b06-a3dc7c237a22
@@ -2720,23 +2794,37 @@ version = "1.9.2+0"
 # ╠═2c7a3fe5-b68a-44a5-9ac3-a0e173dcdc0c
 # ╠═28377904-399b-469a-88ce-cf18c902818c
 # ╠═f54cb805-8bde-4530-8a1a-d796240745d0
+# ╟─215212d9-2571-4897-ac42-bc35c2ba809d
 # ╠═e1708291-f4ab-43e4-9ca5-9cc688fe5d71
+# ╟─67170c3d-3ef0-4b8f-9469-da876cf3481f
+# ╠═26fa2a53-ad99-4b34-ae4e-03d5c4ff5f68
+# ╟─e7e1b574-0d8b-405c-a100-8ca50b0f095c
 # ╠═697e204c-051b-4e5c-b791-68e073fa29f1
+# ╟─839fcfd8-37b0-4e41-b11e-c8ac26df198f
 # ╠═8b2184e2-e1f3-4f5a-abdf-1f1506c234a1
+# ╟─ef8469e8-1a6b-409c-ad6a-d697cae82454
 # ╠═92153584-1778-433d-9eb3-1373d86845e9
 # ╠═03f72ab5-19b1-48fc-81a9-fa5b3278fa31
+# ╟─609717b4-5ab7-4ea3-831c-0e069f21a675
 # ╠═cf20e900-d3c0-49a6-8c2c-2ae2bcba35d6
+# ╟─94ba3c0b-ab3f-4871-936d-3338c8f8d655
 # ╠═cbea0c17-94cd-40fc-939a-a368040a8974
+# ╟─afe46a3d-2597-41f6-b5ed-f7fa22ddd3d7
 # ╠═3e42a6d9-b277-449f-a28f-0e377457fe5d
 # ╠═70f29d81-c9b1-45c6-aab4-6b4a5178f8e4
 # ╠═d8b33d65-02aa-4a6d-8331-d124f25ff13b
+# ╟─42dde456-f289-47df-b776-c9abaa19aaec
 # ╠═12a1df8c-a987-4c9a-bd5f-d5fe7504b081
-# ╠═83cfe305-9929-4500-bb41-5b4a973b6ba2
+# ╟─83cfe305-9929-4500-bb41-5b4a973b6ba2
 # ╠═bd787423-31d7-4563-9d89-a8def38e6acd
+# ╟─69e00340-4f54-4247-8124-31adcf7c244b
 # ╠═249ac1bb-8eff-40e7-b328-0a25df7aa194
 # ╠═3b0a718d-e7bc-459a-b330-796f9fdf2b4c
+# ╟─f9b8d516-93fd-4774-9e87-d8cd175e091d
 # ╠═c7f7b1bb-26d2-4f63-a5be-530e79c6a6f7
+# ╟─c3cf9eb7-14dd-4b50-8ec6-9e2b5621d34d
 # ╠═7ae4374d-7722-4585-bb43-7bd27bc3a4ab
+# ╟─61896361-7a70-4a12-8307-5678e6844a01
 # ╠═c044c37e-fa3b-4d83-a9d0-2976629576d8
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
