@@ -93,7 +93,7 @@ En el artículo original la función de activación era tanh:
 """
 
 # ╔═╡ cf20e900-d3c0-49a6-8c2c-2ae2bcba35d6
-activacion = tanh
+activacion = relu
 
 # ╔═╡ 94ba3c0b-ab3f-4871-936d-3338c8f8d655
 md"""
@@ -133,7 +133,7 @@ hiperparametros = (;
     eta = 3e-4, # tasa de aprendizaje
     lambda = 1e-2,  # decaimiento exponencial
     batchsize = 128,
-    epocas = 20,
+    epocas = 10,
 )
 
 # ╔═╡ d8b33d65-02aa-4a6d-8331-d124f25ff13b

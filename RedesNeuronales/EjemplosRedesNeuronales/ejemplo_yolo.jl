@@ -168,7 +168,7 @@ end
 # ╔═╡ 1a441b96-f8fe-4c70-b8ce-deb64cffad9f
 function detecta(img, yolomod, padding, batch, names; test=false, detect_thresh=0.5, overlap_thresh=0.8)
     res = yolomod(batch, detect_thresh=0.5, overlap_thresh=0.8)
-    imgboxes = dibuja_recuadros!(img, yolomod, padding, res, names; fontsize=24)
+    imgboxes = dibuja_recuadros!(img, yolomod, padding, res, names)
     imshow(imgboxes)
     return imgboxes
 end
@@ -198,7 +198,7 @@ Indicamos la ruta a la imagen.
 """
 
 # ╔═╡ 2cf4ee32-be47-48eb-8986-3f9799f7bf31
-path = "./familia2.jpg"
+path = "./columpio.jpg"
 
 # ╔═╡ 127f024b-966a-4774-837c-f3f0d7fc75a0
 yolomod, batch, names = main_prepara()

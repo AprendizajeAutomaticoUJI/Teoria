@@ -75,7 +75,7 @@ Cargamos la imagen que queremos clasificar:
 """
 
 # ╔═╡ 118a45f5-9a5c-41b8-abba-d68619d73336
-imagen_original = Images.load(download("https://belmonte.uji.es/Docencia/IR2130/Teoria/RedesNeuronales/Imagenes/puente.jpg"))
+imagen_original = Images.load(download("https://belmonte.uji.es/Docencia/IR2130/Teoria/RedesNeuronales/Imagenes/columpio.jpg"))
 
 # ╔═╡ 244138c1-ac3a-4d5a-95e9-c68a6ecd6623
 md"""
