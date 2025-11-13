@@ -2,10 +2,13 @@ using Random
 
 mutable struct Neurona
     nentradas::Int64
+    entradas::Vector{Float64}
     pesos::Matrix{Float64}
+    activacion::Float64
+    error::Float64
 
     function Neurona(nentradas::Int64)::Neurona
-        new(nentradas, randn(nentradas)')
+        new(nentradas, [], randn(nentradas)', 0.0, 0.0)
     end
 end
 
@@ -32,8 +35,9 @@ end
 σ(x) = 1 / (1 + exp(-x))
 dσ(x) = σ(x)*(1 - σ(x))
 
-function activacion(entrada::Vector{Float64}, neurona::Neurona)
-    (neurona.pesos * entrada)[1]
+function activacion(entradas::Vector{Float64}, neurona::Neurona)
+    neurona.entradas = entradas
+    neurona.activacion = (neurona.pesos * entradas)[1]
 end
 
 function salida(entrada::Vector{Float64}, capa::Capa)
@@ -52,4 +56,12 @@ function backprop(entrada::Vector{Float64}, red::RedNeuronal, y::Vector{Float64}
     prediccion = forward(entrada, red)
     error = prediccion - y
     return error
+end
+
+function creared()::RedNeuronal
+    RedNeuronal(
+                Capa(1, 3, σ),
+                Capa(3, 3, σ),
+                Capa(3, 1, x -> x)
+               )
 end
