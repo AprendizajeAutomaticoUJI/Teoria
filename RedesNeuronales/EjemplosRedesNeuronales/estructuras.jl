@@ -34,7 +34,7 @@ end
 
 σ(x) = 1 / (1 + exp(-x))
 dσ(x) = σ(x)*(1 - σ(x))
-η = 0.001
+η = 0.01
 
 function activacion(entradas::Vector{Float64}, neurona::Neurona)
     neurona.entradas = entradas
@@ -60,15 +60,15 @@ function errorespesos(capa::Capa, i::Int64)
 end
 
 function backpropneurona(neurona::Neurona, siguiente::Capa, i::Int64)
-    actualizacion = dσ(neurona.activacion) * errorespesos(siguiente, i) * neurona.entradas
-    neurona.pesos += η * actualizacion'
+    neurona.error = dσ(neurona.activacion) * errorespesos(siguiente, i)
+    # actualizacion = dσ(neurona.activacion) * errorespesos(siguiente, i) * neurona.entradas
+    actualizacion = neurona.error * neurona.entradas
+    neurona.pesos -= η * actualizacion'
 end
 
 function backpropcapa(actual::Capa, siguiente::Capa)
     for (i, neurona) in enumerate(actual.neuronas)
         backpropneurona(neurona, siguiente, i)
-        # errorespesos(siguiente, i)
-        # backpropneurona(neurona)
     end
 end
 
