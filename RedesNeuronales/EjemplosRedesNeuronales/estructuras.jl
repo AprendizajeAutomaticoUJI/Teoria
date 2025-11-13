@@ -89,3 +89,15 @@ function creared()::RedNeuronal
                 Capa(3, 1, x -> x)
                )
 end
+
+# A partir de aquí es código de prueba
+x = [i for i in 0:0.1:2π]
+
+coso = sin.(x)
+
+red = creared()
+
+for y in zip(x, coso)
+    backprop([y[1]], red, [y[2]])
+end
+    
