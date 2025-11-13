@@ -34,6 +34,7 @@ end
 
 σ(x) = 1 / (1 + exp(-x))
 dσ(x) = σ(x)*(1 - σ(x))
+η = 0.001
 
 function activacion(entradas::Vector{Float64}, neurona::Neurona)
     neurona.entradas = entradas
@@ -52,10 +53,33 @@ function forward(entrada::Vector{Float64}, red::RedNeuronal)
     return x
 end
 
+function errorespesos(capa::Capa, i::Int64)
+    errores = [neurona.error for neurona in capa.neuronas]
+    pesos = [neurona.pesos[i] for neurona in capa.neuronas]
+    return errores' * pesos
+end
+
+function backpropneurona(neurona::Neurona, siguiente::Capa, i::Int64)
+    actualizacion = dσ(neurona.activacion) * errorespesos(siguiente, i) * neurona.entradas
+    neurona.pesos += η * actualizacion'
+end
+
+function backpropcapa(actual::Capa, siguiente::Capa)
+    for (i, neurona) in enumerate(actual.neuronas)
+        backpropneurona(neurona, siguiente, i)
+        # errorespesos(siguiente, i)
+        # backpropneurona(neurona)
+    end
+end
+
 function backprop(entrada::Vector{Float64}, red::RedNeuronal, y::Vector{Float64})
     prediccion = forward(entrada, red)
     error = prediccion - y
-    return error
+    red.capas[end].neuronas[end].error = error[1]
+    # Ahora propago hacia atrás
+    for i in length(red.capas):-1:2
+        backpropcapa(red.capas[i-1], red.capas[i])
+    end
 end
 
 function creared()::RedNeuronal
