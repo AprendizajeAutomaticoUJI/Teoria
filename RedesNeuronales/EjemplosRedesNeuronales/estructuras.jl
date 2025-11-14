@@ -10,7 +10,8 @@ mutable struct Neurona
     error::Float64
 
     function Neurona(nentradas::Int64)::Neurona
-        new(nentradas, [], randn(nentradas)', 0.0, 0.0)
+        # El + 1 es por el bias
+        new(nentradas, [], randn(nentradas + 1)', 0.0, 0.0)
     end
 end
 
@@ -42,7 +43,9 @@ dtanh(x) = 1 - tanh(x)^2
 
 function activacion(entradas::Vector{Float64}, neurona::Neurona)
     neurona.entradas = entradas
-    neurona.activacion = (neurona.pesos * entradas)[1]
+    copia = copy(entradas)
+    push!(copia, 1.0) # Para añadir el bias
+    neurona.activacion = (neurona.pesos * copia)[1]
 end
 
 function forward(entrada::Vector{Float64}, capa::Capa)
@@ -64,8 +67,10 @@ function errorespesos(capa::Capa, i::Int64)
 end
 
 function backpropneurona(neurona::Neurona, siguiente::Capa, i::Int64)
+    copia = copy(neurona.entradas)
+    push!(copia, 1.0) # Para añadir el bias
     neurona.error = siguiente.dfactivacion(neurona.activacion) * errorespesos(siguiente, i)
-    actualizacion = neurona.error * neurona.entradas
+    actualizacion = neurona.error * copia
     neurona.pesos -= η * actualizacion'
 end
 
@@ -101,7 +106,7 @@ end
 
 function entrena(epocas::Int64, entradas::Matrix{Float64}, red::RedNeuronal, y::Matrix{Float64})
     errores = []
-    for i in 1:epocas
+    for _ in 1:epocas
         backprop(entradas, red, y)
         push!(errores, error(entradas, red, y))
     end
@@ -112,7 +117,7 @@ end
 
 function crearedtangente(nneuronas::Int64)::RedNeuronal
     RedNeuronal(
-                Capa(2, nneuronas, tanh, dtanh),
+                Capa(1, nneuronas, tanh, dtanh),
                 Capa(nneuronas, nneuronas, tanh, dtanh),
                 Capa(nneuronas, 1, x -> x, x -> 1)
                )
@@ -120,7 +125,7 @@ end
 
 function crearedsigmoide(nneuronas::Int64)::RedNeuronal
     RedNeuronal(
-                Capa(2, nneuronas, σ, dσ),
+                Capa(1, nneuronas, σ, dσ),
                 Capa(nneuronas, nneuronas, σ, dσ),
                 Capa(nneuronas, 1, x -> x, x -> 1)
                )
@@ -131,10 +136,11 @@ function generadatoscuadrado()
     y = x.^2
     df = DataFrame(x = x, y = y)
     df = shuffle(df)
-    X = ones(2, length(x))
-    X[1, 1:end] = df[:,:x]
+    # X = ones(2, length(x))
+    # X[1, 1:end] = df[:,:x]
+    x = collect(df[:, :x]')
     y = collect(df[:, :y]')
-    return X, y
+    return x, y
 end
     
 function generadatosseno()
@@ -142,18 +148,18 @@ function generadatosseno()
     y = sin.(x)
     df = DataFrame(x = x, y = y)
     df = shuffle(df)
-    X = ones(2, length(x))
-    X[1, 1:end] = df[:,:x]
+    # X = ones(2, length(x))
+    # X[1, 1:end] = df[:,:x]
+    x = collect(df[:, :x]')
     y = collect(df[:, :y]')
-    return X, y
+    return x, y
 end
 
-# X, y = generadatosseno();
-# red = crearedsigmoide(5);
-X, y = generadatoscuadrado()
-red = crearedtangente(5);
-
-perdidas = entrena(1000, X, red, y);
+X, y = generadatosseno();
+# red = crearedsigmoide(3);
+# X, y = generadatoscuadrado()
+red = crearedtangente(3);
+perdidas = entrena(2000, X, red, y);
 plot(perdidas, label = "Pérdidas");gui()
 
 estimadas = [forward(X[1:end, i], red)[1] for i in 1:size(X, 2)];
