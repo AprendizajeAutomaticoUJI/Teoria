@@ -37,7 +37,7 @@ end
 σ(x) = 1 / (1 + exp(-x))
 dσ(x) = σ(x)*(1 - σ(x))
 dtanh(x) = 1 - tanh(x)^2
-η = 0.001
+η = 0.01
 
 function activacion(entradas::Vector{Float64}, neurona::Neurona)
     neurona.entradas = entradas
@@ -45,7 +45,6 @@ function activacion(entradas::Vector{Float64}, neurona::Neurona)
 end
 
 function forward(entrada::Vector{Float64}, capa::Capa)
-    # [activacion(entrada, neurona) for neurona in capa.neuronas]
     [capa.factivacion(activacion(entrada, neurona)) for neurona in capa.neuronas]
 end
 
@@ -92,13 +91,13 @@ function backprop(entrada::Matrix{Float64}, red::RedNeuronal, y::Matrix{Float64}
     end
 end
 
-function creared()::RedNeuronal
+function creared(nneuronas)::RedNeuronal
     RedNeuronal(
                 # Capa(2, 3, σ),
                 # Capa(3, 3, σ),
-                Capa(2, 3, tanh),
-                Capa(3, 3, tanh),
-                Capa(3, 1, x -> x)
+                Capa(2, nneuronas, tanh),
+                Capa(nneuronas, nneuronas, tanh),
+                Capa(nneuronas, 1, x -> x)
                )
 end
 
@@ -122,20 +121,36 @@ end
 
 # A partir de aquí es código de prueba
 # Primero voy a crear los datos
-x = [i for i in 0:0.1:2π]
-y = sin.(x)
-df = DataFrame(x = x, y = y)
-df = shuffle(df)
-m = ones(2, length(x))
-m[1, 1:end] = df[:,:x]
-y = collect(df[:, :y]')
-# Ya tengo los datos barajados
+function generadatoscuadrado()
+    x = collect(-1:0.05:1)
+    y = x.^2
+    df = DataFrame(x = x, y = y)
+    df = shuffle(df)
+    X = ones(2, length(x))
+    X[1, 1:end] = df[:,:x]
+    y = collect(df[:, :y]')
+    return X, y
+end
+    
+function generadatosseno()
+    x = [i for i in 0:0.1:2π]
+    y = sin.(x)
+    df = DataFrame(x = x, y = y)
+    df = shuffle(df)
+    X = ones(2, length(x))
+    X[1, 1:end] = df[:,:x]
+    y = collect(df[:, :y]')
+    # Ya tengo los datos barajados
+    return X, y
+end
 
-red = creared()
-perdidas = entrena(10000, m, red, y);
-plot(perdidas);gui()
+# X, y = generadatosseno();
+X, y = generadatoscuadrado()
+red = creared(5);
+perdidas = entrena(1000, X, red, y);
+plot(perdidas, label = "Pérdidas");gui()
 
-estimadas = [forward(m[1:end, i], red)[1] for i in 1:size(m, 2)]
-scatter(m[1, 1:end], y[1, 1:end])
-scatter!(m[1, 1:end], estimadas)
+estimadas = [forward(X[1:end, i], red)[1] for i in 1:size(X, 2)];
+scatter(X[1, 1:end], y[1, 1:end], label="Real")
+scatter!(X[1, 1:end], estimadas, label = "Estimada")
 gui()
