@@ -19,9 +19,10 @@ mutable struct Capa
     nneuronas::Int64
     neuronas::Vector{Neurona}
     factivacion::Function
+    dfactivacion::Function
 
-    function Capa(nentradas::Int64, nneuronas::Int64, factivacion::Function)::Capa
-        new(nentradas, nneuronas, [Neurona(nentradas) for _ in 1:nneuronas], factivacion)
+    function Capa(nentradas::Int64, nneuronas::Int64, factivacion::Function, dfactivacion::Function)::Capa
+        new(nentradas, nneuronas, [Neurona(nentradas) for _ in 1:nneuronas], factivacion, dfactivacion)
     end
 end
 
@@ -63,8 +64,7 @@ function errorespesos(capa::Capa, i::Int64)
 end
 
 function backpropneurona(neurona::Neurona, siguiente::Capa, i::Int64)
-    # neurona.error = dσ(neurona.activacion) * errorespesos(siguiente, i)
-    neurona.error = dtanh(neurona.activacion) * errorespesos(siguiente, i)
+    neurona.error = siguiente.dfactivacion(neurona.activacion) * errorespesos(siguiente, i)
     actualizacion = neurona.error * neurona.entradas
     neurona.pesos -= η * actualizacion'
 end
@@ -91,16 +91,6 @@ function backprop(entrada::Matrix{Float64}, red::RedNeuronal, y::Matrix{Float64}
     end
 end
 
-function creared(nneuronas)::RedNeuronal
-    RedNeuronal(
-                # Capa(2, 3, σ),
-                # Capa(3, 3, σ),
-                Capa(2, nneuronas, tanh),
-                Capa(nneuronas, nneuronas, tanh),
-                Capa(nneuronas, 1, x -> x)
-               )
-end
-
 function error(entradas::Matrix{Float64}, red::RedNeuronal, y::Matrix{Float64})
     error = 0
     for i in 1:size(entradas, 2)
@@ -117,10 +107,25 @@ function entrena(epocas::Int64, entradas::Matrix{Float64}, red::RedNeuronal, y::
     end
     return errores
 end
-        
 
-# A partir de aquí es código de prueba
-# Primero voy a crear los datos
+# A partir de aquí, funciones de utilidad
+
+function crearedtangente(nneuronas::Int64)::RedNeuronal
+    RedNeuronal(
+                Capa(2, nneuronas, tanh, dtanh),
+                Capa(nneuronas, nneuronas, tanh, dtanh),
+                Capa(nneuronas, 1, x -> x, x -> 1)
+               )
+end
+
+function crearedsigmoide(nneuronas::Int64)::RedNeuronal
+    RedNeuronal(
+                Capa(2, nneuronas, σ, dσ),
+                Capa(nneuronas, nneuronas, σ, dσ),
+                Capa(nneuronas, 1, x -> x, x -> 1)
+               )
+end
+
 function generadatoscuadrado()
     x = collect(-1:0.05:1)
     y = x.^2
@@ -140,13 +145,14 @@ function generadatosseno()
     X = ones(2, length(x))
     X[1, 1:end] = df[:,:x]
     y = collect(df[:, :y]')
-    # Ya tengo los datos barajados
     return X, y
 end
 
 # X, y = generadatosseno();
+# red = crearedsigmoide(5);
 X, y = generadatoscuadrado()
-red = creared(5);
+red = crearedtangente(5);
+
 perdidas = entrena(1000, X, red, y);
 plot(perdidas, label = "Pérdidas");gui()
 
