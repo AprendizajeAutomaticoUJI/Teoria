@@ -37,7 +37,7 @@ end
 σ(x) = 1 / (1 + exp(-x))
 dσ(x) = σ(x)*(1 - σ(x))
 dtanh(x) = 1 - tanh(x)^2
-η = 0.01
+η = 0.001
 
 function activacion(entradas::Vector{Float64}, neurona::Neurona)
     neurona.entradas = entradas
@@ -97,10 +97,28 @@ function creared()::RedNeuronal
                 # Capa(2, 3, σ),
                 # Capa(3, 3, σ),
                 Capa(2, 3, tanh),
-                Capa(2, 3, tanh),
+                Capa(3, 3, tanh),
                 Capa(3, 1, x -> x)
                )
 end
+
+function error(entradas::Matrix{Float64}, red::RedNeuronal, y::Matrix{Float64})
+    error = 0
+    for i in 1:size(entradas, 2)
+        error += ((forward(entradas[1:end, i], red) - y[1:end, i])[1])^2
+    end
+    return sqrt(error) / size(entradas, 2)
+end
+
+function entrena(epocas::Int64, entradas::Matrix{Float64}, red::RedNeuronal, y::Matrix{Float64})
+    errores = []
+    for i in 1:epocas
+        backprop(entradas, red, y)
+        push!(errores, error(entradas, red, y))
+    end
+    return errores
+end
+        
 
 # A partir de aquí es código de prueba
 # Primero voy a crear los datos
@@ -114,6 +132,8 @@ y = collect(df[:, :y]')
 # Ya tengo los datos barajados
 
 red = creared()
+perdidas = entrena(10000, m, red, y);
+plot(perdidas);gui()
 
 estimadas = [forward(m[1:end, i], red)[1] for i in 1:size(m, 2)]
 scatter(m[1, 1:end], y[1, 1:end])
