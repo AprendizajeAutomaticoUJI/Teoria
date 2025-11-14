@@ -1,4 +1,6 @@
 using Random
+using Plots
+using DataFrames
 
 mutable struct Neurona
     nentradas::Int64
@@ -41,14 +43,15 @@ function activacion(entradas::Vector{Float64}, neurona::Neurona)
     neurona.activacion = (neurona.pesos * entradas)[1]
 end
 
-function salida(entrada::Vector{Float64}, capa::Capa)
-    [activacion(entrada, neurona) for neurona in capa.neuronas]
+function forward(entrada::Vector{Float64}, capa::Capa)
+    # [activacion(entrada, neurona) for neurona in capa.neuronas]
+    [capa.factivacion(activacion(entrada, neurona)) for neurona in capa.neuronas]
 end
 
 function forward(entrada::Vector{Float64}, red::RedNeuronal)
-    x = salida(entrada, red.capas[1])
+    x = forward(entrada, red.capas[1])
     for capa in red.capas[2:end]
-        x = salida(x, capa)
+        x = forward(x, capa)
     end
     return x
 end
@@ -82,22 +85,34 @@ function backprop(entrada::Vector{Float64}, red::RedNeuronal, y::Vector{Float64}
     end
 end
 
+function backprop(entrada::Matrix{Float64}, red::RedNeuronal, y::Matrix{Float64})
+    for i in 1:size(entrada, 2)
+        backprop(entrada[1:end, i], red, y[1:end, i])
+    end
+end
+
 function creared()::RedNeuronal
     RedNeuronal(
-                Capa(1, 3, σ),
+                Capa(2, 3, σ),
                 Capa(3, 3, σ),
                 Capa(3, 1, x -> x)
                )
 end
 
 # A partir de aquí es código de prueba
+# Primero voy a crear los datos
 x = [i for i in 0:0.1:2π]
-
-coso = sin.(x)
+y = sin.(x)
+df = DataFrame(x = x, y = y)
+df = shuffle(df)
+m = ones(2, length(x))
+m[1, 1:end] = df[:,:x]
+y = collect(df[:, :y]')
+# Ya tengo los datos barajados
 
 red = creared()
 
-for y in zip(x, coso)
-    backprop([y[1]], red, [y[2]])
-end
-    
+estimadas = [forward(m[1:end, i], red)[1] for i in 1:size(m, 2)]
+scatter(m[1, 1:end], y[1, 1:end])
+scatter!(m[1, 1:end], estimadas)
+gui()
