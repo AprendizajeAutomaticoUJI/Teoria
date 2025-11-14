@@ -36,6 +36,7 @@ end
 
 σ(x) = 1 / (1 + exp(-x))
 dσ(x) = σ(x)*(1 - σ(x))
+dtanh(x) = 1 - tanh(x)^2
 η = 0.01
 
 function activacion(entradas::Vector{Float64}, neurona::Neurona)
@@ -63,8 +64,8 @@ function errorespesos(capa::Capa, i::Int64)
 end
 
 function backpropneurona(neurona::Neurona, siguiente::Capa, i::Int64)
-    neurona.error = dσ(neurona.activacion) * errorespesos(siguiente, i)
-    # actualizacion = dσ(neurona.activacion) * errorespesos(siguiente, i) * neurona.entradas
+    # neurona.error = dσ(neurona.activacion) * errorespesos(siguiente, i)
+    neurona.error = dtanh(neurona.activacion) * errorespesos(siguiente, i)
     actualizacion = neurona.error * neurona.entradas
     neurona.pesos -= η * actualizacion'
 end
@@ -93,8 +94,10 @@ end
 
 function creared()::RedNeuronal
     RedNeuronal(
-                Capa(2, 3, σ),
-                Capa(3, 3, σ),
+                # Capa(2, 3, σ),
+                # Capa(3, 3, σ),
+                Capa(2, 3, tanh),
+                Capa(2, 3, tanh),
                 Capa(3, 1, x -> x)
                )
 end
