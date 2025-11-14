@@ -6,7 +6,7 @@ mutable struct Neurona
     nentradas::Int64
     entradas::Vector{Float64}
     pesos::Matrix{Float64}
-    bias::Float64
+    sesgo::Float64
     activacion::Float64
     error::Float64
 
@@ -40,11 +40,11 @@ end
 σ(x) = 1 / (1 + exp(-x))
 dσ(x) = σ(x)*(1 - σ(x))
 dtanh(x) = 1 - tanh(x)^2
-η = 0.02
+η = 0.01
 
 function activacion(entradas::Vector{Float64}, neurona::Neurona)
     neurona.entradas = entradas
-    neurona.activacion = (neurona.pesos * entradas)[1] + neurona.bias
+    neurona.activacion = (neurona.pesos * entradas)[1] + neurona.sesgo
 end
 
 function forward(entrada::Vector{Float64}, capa::Capa)
@@ -65,32 +65,32 @@ function errorespesos(capa::Capa, i::Int64)
     return errores' * pesos
 end
 
-function backpropneurona(neurona::Neurona, siguiente::Capa, i::Int64)
+function backpropneurona!(neurona::Neurona, siguiente::Capa, i::Int64)
     neurona.error = siguiente.dfactivacion(neurona.activacion) * errorespesos(siguiente, i)
     actualizacion = neurona.error * neurona.entradas
     neurona.pesos -= η * actualizacion'
-    neurona.bias -= η * neurona.error
+    neurona.sesgo -= η * neurona.error
 end
 
-function backpropcapa(actual::Capa, siguiente::Capa)
+function backpropcapa!(actual::Capa, siguiente::Capa)
     for (i, neurona) in enumerate(actual.neuronas)
-        backpropneurona(neurona, siguiente, i)
+        backpropneurona!(neurona, siguiente, i)
     end
 end
 
-function backprop(entrada::Vector{Float64}, red::RedNeuronal, y::Vector{Float64})
+function backprop!(entrada::Vector{Float64}, red::RedNeuronal, y::Vector{Float64})
     prediccion = forward(entrada, red)
     error = prediccion - y
     red.capas[end].neuronas[end].error = error[1]
     # Ahora propago hacia atrás
     for i in length(red.capas):-1:2
-        backpropcapa(red.capas[i-1], red.capas[i])
+        backpropcapa!(red.capas[i-1], red.capas[i])
     end
 end
 
-function backprop(entrada::Matrix{Float64}, red::RedNeuronal, y::Matrix{Float64})
+function backprop!(entrada::Matrix{Float64}, red::RedNeuronal, y::Matrix{Float64})
     for i in 1:size(entrada, 2)
-        backprop(entrada[1:end, i], red, y[1:end, i])
+        backprop!(entrada[1:end, i], red, y[1:end, i])
     end
 end
 
@@ -102,10 +102,10 @@ function error(entradas::Matrix{Float64}, red::RedNeuronal, y::Matrix{Float64})
     return sqrt(error) / size(entradas, 2)
 end
 
-function entrena(epocas::Int64, entradas::Matrix{Float64}, red::RedNeuronal, y::Matrix{Float64})
+function entrena!(epocas::Int64, entradas::Matrix{Float64}, red::RedNeuronal, y::Matrix{Float64})
     errores = []
     for _ in 1:epocas
-        backprop(entradas, red, y)
+        backprop!(entradas, red, y)
         push!(errores, error(entradas, red, y))
     end
     return errores
@@ -153,7 +153,7 @@ X, y = generadatosseno();
 # red = crearedsigmoide(3);
 # X, y = generadatoscuadrado()
 red = crearedtangente(3);
-perdidas = entrena(1000, X, red, y);
+perdidas = entrena!(2000, X, red, y);
 plot(perdidas, label = "Pérdidas");gui()
 
 estimadas = [forward(X[1:end, i], red)[1] for i in 1:size(X, 2)];
