@@ -23,8 +23,16 @@ mutable struct Capa
     factivacion::Function
     dfactivacion::Function
 
-    function Capa(nentradas::Int64, nneuronas::Int64, factivacion::Function, dfactivacion::Function)::Capa
-        new(nentradas, nneuronas, [Neurona(nentradas) for _ in 1:nneuronas], factivacion, dfactivacion)
+    function Capa(entradas::Pair{Int64, Int64}, factivacion::Function)::Capa
+        dfactivacion = dσ
+        if factivacion == tanh
+            dfactivacion = dtanh
+        end
+        new(entradas[1], entradas[2], [Neurona(entradas[1]) for _ in 1:entradas[2]], factivacion, dfactivacion)
+    end
+
+    function Capa(entradas::Pair{Int64, Int64})::Capa
+        new(entradas[1], entradas[2], [Neurona(entradas[1]) for _ in 1:entradas[2]], x -> x, x -> 1)
     end
 end
 
@@ -115,17 +123,17 @@ end
 
 function crearedtangente(nneuronas::Int64)::RedNeuronal
     RedNeuronal(
-                Capa(1, nneuronas, tanh, dtanh),
-                Capa(nneuronas, nneuronas, tanh, dtanh),
-                Capa(nneuronas, 1, x -> x, x -> 1)
+                Capa(1 => nneuronas, tanh),
+                Capa(nneuronas => nneuronas, tanh),
+                Capa(nneuronas => 1)
                )
 end
 
 function crearedsigmoide(nneuronas::Int64)::RedNeuronal
     RedNeuronal(
-                Capa(1, nneuronas, σ, dσ),
-                Capa(nneuronas, nneuronas, σ, dσ),
-                Capa(nneuronas, 1, x -> x, x -> 1)
+                Capa(1 => nneuronas, σ),
+                Capa(nneuronas => nneuronas, σ),
+                Capa(nneuronas => 1)
                )
 end
 
@@ -152,8 +160,8 @@ end
 X, y = generadatosseno();
 # red = crearedsigmoide(3);
 # X, y = generadatoscuadrado()
-red = crearedtangente(3);
-perdidas = entrena!(2000, X, red, y);
+red = crearedtangente(5);
+perdidas = entrena!(1000, X, red, y);
 plot(perdidas, label = "Pérdidas");gui()
 
 estimadas = [forward(X[1:end, i], red)[1] for i in 1:size(X, 2)];
