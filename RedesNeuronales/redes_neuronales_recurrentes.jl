@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.8
+# v0.20.20
 
 using Markdown
 using InteractiveUtils
@@ -95,7 +95,9 @@ co2 = descargaDatos();
 md"""
 ## Introducción
 
-La dependencia entre los elementos de una secuencia es una característica que podemos encontrar en muchos conjuntos de datos. El nivel de CO2 en un determinado punto depende del nivel de CO2 en el mismo punto en un instante anterior.
+La dependencia entre los elementos de una secuencia es una característica que podemos encontrar en muchos conjuntos de datos. El nivel de CO2 en un determinado punto de la superficie de la Tierra depende del nivel de CO2 en el mismo punto en un instante anterior.
+
+Por ejemplo, la siguiente gráfica muestra la concentración de CO2 en Izaña, Tenerife. La serie de datos se extiende a lo largo de casi 30 décadas.
 """
 
 # ╔═╡ bee2feec-b95a-4931-9b6e-a069841f5115
@@ -113,6 +115,8 @@ plot_co2 = plot(co2.CO2,
 md"""
 ## Introducción
 
+Algunos otros ejemplos son los siguientes:
+
 * La temperatura ambiente en un determinado punto depende de la temperatura en el mismo punto en un instante anterior.
 * La cotización de un valor en bolsa en un día depende de su valor en el día anterior.
 * La presión arterial de un paciente en un instante depende de su presión arterial en el instante anterior.
@@ -124,12 +128,14 @@ En todos estos casos la secuencia de datos es temporal, pero no es la única pos
 md"""
 ## Introducción
 
-Otros ejemplos donde no existe (explicitamente) componente temporal son:
+Otros ejemplos donde no existe (explícitamente) componente temporal son:
 
 * La siguiente letra dentro de una frase depende la secuencia de letras anteriores.
 * La siguiente imagen en un vídeo depende de la secuencia anterior de imágenes.
 * Para traducir una palabra entre dos lenguas necesitamos todas las letras de la palabra.
 * La traducción de un texto entre dos lenguas se hace frase a frase.
+
+Si embargo, en los anteriores ejemplos sí que existe una componente posicional.
 """
 
 # ╔═╡ ca9add85-9ecf-45c7-bb4d-b10de4a7e8ba
@@ -141,6 +147,8 @@ md"""
 md"""
 ## Series temporales
 
+Veamos, por tanto, qué es una serie temporal y qué características de interés podemos encontrar en las series de datos temporales.
+
 Una **serie temporal** de datos es una secuencia de datos con un orden temporal.
 """
 
@@ -151,13 +159,13 @@ first(co2, 5)
 md"""
 ## Autocorrelación
 
-Muchas veces ocurre que los datos en una serie temporal están auto-correlacionados, existe una correlación entre los datos y los mismos datos desplazados en el tiempo.
+Muchas veces ocurre que los datos en una serie temporal están auto-correlacionados, existe una correlación entre una serie de datos y la misma serie desplazada en el tiempo.
 
-Dicho de otro modo, la autocorrelación es la correlación de los datos con ellos mismos con un cierto desplazamiento temporal.
+Dicho de otro modo, la autocorrelación es la correlación de los datos con ellos mismos cuando se les aplica un cierto desplazamiento temporal.
 
 En Julia podemos calcular la autocorrelación en una seri de datos con:
 
-```julia
+```.julia
 using StatsBase
 
 autocor(serie_temporal, [retraso1, retraso2,...])
@@ -192,7 +200,7 @@ plot(
 md"""
 ## Autocorrelación
 
-Las series aleatorias no presentan autocorrelación.
+Por el contrario, las series aleatorias no presentan autocorrelación.
 """
 
 # ╔═╡ 5459494e-eca1-4c90-8246-94e5a1313f58
@@ -226,7 +234,7 @@ md"""
 ## Tendencia y estacionalidad
 
 A veces, en las series temporales, se puede observar una componente de 
-**tendencia** y sobre ella una componente **estacional**.
+**tendencia** y sobre ella una componente **estacional**. La componente de tendencia evoluciona con el tiempo, mientras que la componente estacional se repite cada cierto intervalo de tiempo.
 """
 
 # ╔═╡ e05fa291-80c1-488c-9773-6c8f1e617b16
@@ -288,7 +296,7 @@ md"""
 
 Vamos a definir una secuencia como un conjunto ordenado con un número de elementos no determinado, podemos tener secuencias de un único elemento o de muchos elementos. Por ejemplo una secuencia temporal de datos puede tener cualquier tamaño, una frase puede tener cualquier número de letras.
 
-Los vectores los vamos a definir como un conjunto ordenado con un número de elementos fijo. Por ejemplo cuando clasificamos imágenes con una red convolucional, todas ellas tienen el mismo tamaño.
+Por otro lado, los vectores los vamos a definir como un conjunto ordenado con un número de elementos fijo. Por ejemplo cuando clasificamos imágenes con una red convolucional, todas ellas tienen el mismo tamaño.
 """
 
 # ╔═╡ 61bdb024-5186-4188-9af0-0a8b3bb09b86
@@ -327,7 +335,7 @@ Resource(
 
 # ╔═╡ 818edee3-24a0-4bb4-8864-918de5c0c385
 md"""
-Este caso es una transformación de vector a secuencia. Un ejemplo es pasar a la red una imagen (vector), y que la red nos devuelva una descripción de lo que se ve en la imagen.
+Este caso es una transformación de vector a secuencia. Un ejemplo es pasar a la red una imagen (vector), y que la red nos devuelva una descripción de lo que se ve en la imagen. La entrada (imagen) tiene una tamaño fijo, y la salida (descripción) es un texto con un número de palabras arbitrario.
 """
 
 # ╔═╡ dda8ac49-f480-4f51-872d-ef185601944b
@@ -471,9 +479,9 @@ md"""
 El objetivo es, a partir de una serie de 10 datos, predecir el siguiente valor 
 en la serie.
 
-Vamos a empezar escalando los datos:
+Como ya sabemos, las redes neuronales son más fáciles de entrenas si los datos tiene la misma escala, por lo que vamos a empezar escalando los datos:
 
-```julia
+```.julia
 escalado = fit(UnitRangeTransform, co2_train)
 co2_train_escalado = Float32.(StatsBase.transform(escalado, co2_train))
 ```
@@ -481,7 +489,7 @@ co2_train_escalado = Float32.(StatsBase.transform(escalado, co2_train))
 Cada entrada de entrenamiento es una serie de 10 elementos de la serie temporal, 
 la salida es el siguiente dato en la serie:
 
-```text
+```.text
 [[0.03046482 0.05354899 0.05841709 0.06092965 0.07333543 0.09422111
   0.1048995  0.09170854 0.06171482 0.01303392]]  -->  0.0
 [[0.05354899 0.05841709 0.06092965 0.07333543 0.09422111 0.1048995
@@ -497,7 +505,7 @@ md"""
 
 Ahora ya podemos construir la red, vamos a empezar con una red sencilla de una única capa, y la entrenamos:
 
-```julia
+```.julia
 tamaño = 10
 rnn = Chain(
 	RNN(tamaño => 64),
@@ -505,7 +513,7 @@ rnn = Chain(
 )
 ```
 
-```julia
+```.julia
 λ = 0.001
 epocas = 2000
 datos = [(Xtrain, ytrain)]
@@ -550,7 +558,7 @@ md"""
 
 Hagamos ahora las predicciones con el modelo entrenado:
 
-```julia
+```.julia
 Flux.reset!(modelo) # Importante resetear el modelo
 estimado = modelo(X)' # Calculamos valores estimados con el modelo
 estimado_desescalado = StatsBase.reconstruct(escalado, estimado)
@@ -574,7 +582,7 @@ md"""
 
 Veamos ahora cómo construir una RNN con varias capas:
 
-```julia
+```.julia
 tamaño = 10
 rnn = Chain(
 	RNN(tamaño => 128),
@@ -630,14 +638,14 @@ md"""
 md"""
 ## El problema del desvanecimiento
 
-Si las secuencias que utilizamos en el entrenamiento son largas, lacontribución de los primeros términos se _desvanece_:
+Si las secuencias que utilizamos en el entrenamiento son largas, la contribución de los primeros términos se _desvanece_:
 
 $y_t = g(\_,h_t,\_)$
 $h_t = f(\_,h_{t-1},\_) \rightarrow y_t = g(f(\_,h_{t-1},\_))$
 $h_{t-1} = f(\_,h_{t-2},\_) \rightarrow y_t = g(f(f(\_,h_{t-2},\_)))$
 $h_{t-2} = f(\_,h_{t-3},\_) \rightarrow y_t = g(f(f(f(\_,h_{t-3},\_))))$
 
-El término $g(f(f(f(\_,h_{t-3},\_))))$ se va haciendo pequeño. La contribución de los primeros valores de la serie tienen una contribución baja.
+El término $g(f(f(f(\_,h_{t-3},\_))))$ se va haciendo cada vez más pequeño. La contribución de los primeros valores de la serie tienen una contribución baja.
 
 """
 
@@ -645,7 +653,7 @@ El término $g(f(f(f(\_,h_{t-3},\_))))$ se va haciendo pequeño. La contribució
 md"""
 ## Arquitectura de la redes LSTM
 
-En este caso, es más conveniente utilizar redes LSTM - Long Short Term Memory. La idea de las redes LSTM es añadir, dentro de cada neurona, un conjunto de puertas lógicas que añaden memoria a largo plazo.
+En este caso, es más conveniente utilizar redes LSTM - Long Short Term Memory. La idea de las redes LSTM es añadir, dentro de cada neurona, un conjunto de puertas lógicas que añaden memoria a corto y a largo plazo.
 """
 
 # ╔═╡ a751b25c-69ff-4263-a72b-f53994a2f688
@@ -668,6 +676,9 @@ md"""
 
 # ╔═╡ 21ef5c35-084f-45f9-b9dc-31e5794821fe
 md"""
+
+Cada una de las puertas realiza la siguiente tarea:
+
 * **forget gate**: controla qué parte de memoria se borra.
 * **input gate**: controla qué parte de $g(x)$ debe añadirse a la memoria.
 * **output gate**: controla la parte de la memoria que se utiliza para calcular la salida y el estado oculto.
@@ -691,9 +702,9 @@ Las puertas combinan estos resultados para guardar el estado a largo plazo.
 md"""
 ## Show me the code
 
-Símplemente tenemos que sustituir la capa RNN por una capa LSTM:
+Para utilizar capas con neuronas LSTM, símplemente tenemos que sustituir la capa RNN por una capa LSTM:
 
-```julia
+```.julia
 lstm = Chain(
 	LSTM(tamaño => 64),
 	Dense(64 => 1)
@@ -747,7 +758,7 @@ md"""
 
 Finalmente veamos como construir una red LSTM profunda, de tres capas:
 
-```julia
+```.julia
 lstm = Chain(
 	LSTM(tamaño => 128),
 	LSTM(128 => 64),
@@ -793,6 +804,45 @@ Resource(
 # ╔═╡ 2b407461-7868-46ef-b081-fcc66183ee1d
 md"""
 Y este es el ajuste del modelo a los datos de prueba.
+"""
+
+# ╔═╡ bdccd5f1-bbec-4be9-b2cc-332919da3200
+md"""
+# Gatted recurrent unit - GRU
+"""
+
+# ╔═╡ 89b99e37-c6c3-4967-9b5c-b79fe3bd8760
+md"""
+Las neuronas Gatted reucurrent units (GRU) son una simplicación de la neuronas LSTM pero que matienen la eficacia en tareas de aprendizaje profundo. Su popularidad se basa en que cada neurona contienen menos parámetros, pero los resultados son tan buenos como los de las redes basadas en neuronas LSTM.
+"""
+
+# ╔═╡ d322a4f7-61c9-4717-968d-43269a9c27c6
+Resource(
+	imagenes * "gru.png",
+	:alt => "Red recurrente muchos a muchos",
+	:width => 450,
+	:style => "display: block; margin: auto;",
+)
+
+# ╔═╡ b309a031-e996-4985-9586-c75afbd9ca67
+html"""
+Fuente: Hands-on machine learning... Aurélien Géron.
+"""
+
+# ╔═╡ 8ab9baca-3faa-4742-a624-bbb175c3d2b4
+md"""
+## Gatted recurrent unit - GRU
+
+Y su uso en Flux es muy sencillo:
+
+```.julia
+lstm = Chain(
+	LSTM(tamaño => 128),
+	LSTM(128 => 64),
+	LSTM(64 => 32),
+	Dense(32 => 1)
+)
+```
 """
 
 # ╔═╡ 50c8ba61-48e7-4e02-a839-4421963f0d19
@@ -1052,9 +1102,9 @@ StatsBase = "~0.34.5"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.11.6"
+julia_version = "1.12.1"
 manifest_format = "2.0"
-project_hash = "b92276863e410fb252288a01633e86f45dac3f90"
+project_hash = "29602cca69cc18263f9ab9657d3f219212408379"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -1152,7 +1202,7 @@ weakdeps = ["Dates", "LinearAlgebra"]
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.1.1+0"
+version = "1.3.0+1"
 
 [[deps.ConcurrentUtilities]]
 deps = ["Serialization", "Sockets"]
@@ -1438,6 +1488,11 @@ git-tree-sha1 = "eac1206917768cb54957c65a615460d87b455fc1"
 uuid = "aacddb02-875f-59d6-b918-886e6ef4fbf8"
 version = "3.1.1+0"
 
+[[deps.JuliaSyntaxHighlighting]]
+deps = ["StyledStrings"]
+uuid = "ac6e5ff7-fb65-4e79-a425-ec3bc9c03011"
+version = "1.12.0"
+
 [[deps.Kaleido_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
 git-tree-sha1 = "43032da5832754f58d14a91ffbe86d5f176acda9"
@@ -1497,24 +1552,24 @@ uuid = "b27032c2-a3e7-50c8-80cd-2d36dbcbfd21"
 version = "0.6.4"
 
 [[deps.LibCURL_jll]]
-deps = ["Artifacts", "LibSSH2_jll", "Libdl", "MbedTLS_jll", "Zlib_jll", "nghttp2_jll"]
+deps = ["Artifacts", "LibSSH2_jll", "Libdl", "OpenSSL_jll", "Zlib_jll", "nghttp2_jll"]
 uuid = "deac9b47-8bc7-5906-a0fe-35ac56dc84c0"
-version = "8.6.0+0"
+version = "8.11.1+1"
 
 [[deps.LibGit2]]
-deps = ["Base64", "LibGit2_jll", "NetworkOptions", "Printf", "SHA"]
+deps = ["LibGit2_jll", "NetworkOptions", "Printf", "SHA"]
 uuid = "76f85450-5226-5b5a-8eaa-529ad045b433"
 version = "1.11.0"
 
 [[deps.LibGit2_jll]]
-deps = ["Artifacts", "LibSSH2_jll", "Libdl", "MbedTLS_jll"]
+deps = ["Artifacts", "LibSSH2_jll", "Libdl", "OpenSSL_jll"]
 uuid = "e37daf67-58a4-590a-8e99-b0245dd2ffc5"
-version = "1.7.2+0"
+version = "1.9.0+0"
 
 [[deps.LibSSH2_jll]]
-deps = ["Artifacts", "Libdl", "MbedTLS_jll"]
+deps = ["Artifacts", "Libdl", "OpenSSL_jll"]
 uuid = "29816b5a-b9ab-546f-933c-edad1886dfa8"
-version = "1.11.0+1"
+version = "1.11.3+1"
 
 [[deps.Libdl]]
 uuid = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
@@ -1559,7 +1614,7 @@ version = "2.41.0+0"
 [[deps.LinearAlgebra]]
 deps = ["Libdl", "OpenBLAS_jll", "libblastrampoline_jll"]
 uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
-version = "1.11.0"
+version = "1.12.0"
 
 [[deps.LogExpFunctions]]
 deps = ["DocStringExtensions", "IrrationalConstants", "LinearAlgebra"]
@@ -1598,7 +1653,7 @@ uuid = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
 version = "0.5.16"
 
 [[deps.Markdown]]
-deps = ["Base64"]
+deps = ["Base64", "JuliaSyntaxHighlighting", "StyledStrings"]
 uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
 version = "1.11.0"
 
@@ -1609,7 +1664,8 @@ uuid = "739be429-bea8-5141-9913-cc70e7f3736d"
 version = "1.1.9"
 
 [[deps.MbedTLS_jll]]
-deps = ["Artifacts", "Libdl"]
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "926c6af3a037c68d02596a44c22ec3595f5f760b"
 uuid = "c8ffd9c3-330d-5841-b78e-0817d7145fa1"
 version = "2.28.6+0"
 
@@ -1636,7 +1692,7 @@ version = "1.11.0"
 
 [[deps.MozillaCACerts_jll]]
 uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
-version = "2023.12.12"
+version = "2025.5.20"
 
 [[deps.NaNMath]]
 deps = ["OpenLibm_jll"]
@@ -1646,7 +1702,7 @@ version = "1.1.3"
 
 [[deps.NetworkOptions]]
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
-version = "1.2.0"
+version = "1.3.0"
 
 [[deps.Ogg_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -1657,12 +1713,12 @@ version = "1.3.5+1"
 [[deps.OpenBLAS_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
-version = "0.3.27+1"
+version = "0.3.29+0"
 
 [[deps.OpenLibm_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "05823500-19ac-5b8b-9628-191a04bc5112"
-version = "0.8.5+0"
+version = "0.8.7+0"
 
 [[deps.OpenSSL]]
 deps = ["BitFlags", "Dates", "MozillaCACerts_jll", "OpenSSL_jll", "Sockets"]
@@ -1671,10 +1727,9 @@ uuid = "4d8831e6-92b7-49fb-bdf8-b643e874388c"
 version = "1.5.0"
 
 [[deps.OpenSSL_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "9216a80ff3682833ac4b733caa8c00390620ba5d"
+deps = ["Artifacts", "Libdl"]
 uuid = "458c3c95-2e84-50aa-8efc-19380b2a3a95"
-version = "3.5.0+0"
+version = "3.5.1+0"
 
 [[deps.Opus_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -1690,7 +1745,7 @@ version = "1.8.1"
 [[deps.PCRE2_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "efcefdf7-47ab-520b-bdef-62a2eaa19f15"
-version = "10.42.0+1"
+version = "10.44.0+1"
 
 [[deps.Pango_jll]]
 deps = ["Artifacts", "Cairo_jll", "Fontconfig_jll", "FreeType2_jll", "FriBidi_jll", "Glib_jll", "HarfBuzz_jll", "JLLWrappers", "Libdl"]
@@ -1719,7 +1774,7 @@ version = "0.44.2+0"
 [[deps.Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "Random", "SHA", "TOML", "Tar", "UUIDs", "p7zip_jll"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
-version = "1.11.0"
+version = "1.12.0"
 weakdeps = ["REPL"]
 
     [deps.Pkg.extensions]
@@ -1852,7 +1907,7 @@ uuid = "e99dba38-086e-5de3-a5b1-6e4c66e897c3"
 version = "6.8.2+0"
 
 [[deps.REPL]]
-deps = ["InteractiveUtils", "Markdown", "Sockets", "StyledStrings", "Unicode"]
+deps = ["InteractiveUtils", "JuliaSyntaxHighlighting", "Markdown", "Sockets", "StyledStrings", "Unicode"]
 uuid = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
 version = "1.11.0"
 
@@ -1940,7 +1995,7 @@ version = "1.2.1"
 [[deps.SparseArrays]]
 deps = ["Libdl", "LinearAlgebra", "Random", "Serialization", "SuiteSparse_jll"]
 uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
-version = "1.11.0"
+version = "1.12.0"
 
 [[deps.StableRNGs]]
 deps = ["Random"]
@@ -1989,7 +2044,7 @@ version = "1.11.0"
 [[deps.SuiteSparse_jll]]
 deps = ["Artifacts", "Libdl", "libblastrampoline_jll"]
 uuid = "bea87d4a-7f5b-5778-9afe-8cc45184846c"
-version = "7.7.0+0"
+version = "7.8.3+2"
 
 [[deps.TOML]]
 deps = ["Dates"]
@@ -2270,7 +2325,7 @@ version = "1.6.0+0"
 [[deps.Zlib_jll]]
 deps = ["Libdl"]
 uuid = "83775a58-1f1d-513f-b197-d71354ab007a"
-version = "1.2.13+1"
+version = "1.3.1+2"
 
 [[deps.Zstd_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -2305,7 +2360,7 @@ version = "0.15.2+0"
 [[deps.libblastrampoline_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
-version = "5.11.0+0"
+version = "5.15.0+0"
 
 [[deps.libdecor_jll]]
 deps = ["Artifacts", "Dbus_jll", "JLLWrappers", "Libdl", "Libglvnd_jll", "Pango_jll", "Wayland_jll", "xkbcommon_jll"]
@@ -2352,12 +2407,12 @@ version = "1.1.7+0"
 [[deps.nghttp2_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850ede-7688-5339-a07c-302acd2aaf8d"
-version = "1.59.0+0"
+version = "1.64.0+1"
 
 [[deps.p7zip_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
-version = "17.4.0+2"
+version = "17.5.0+2"
 
 [[deps.x264_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -2480,6 +2535,11 @@ version = "1.8.1+0"
 # ╠═0b1abb5a-b71e-4dd3-a18a-f51c80ce7df1
 # ╠═ab85d350-8b4c-4d64-a6b3-2d81c66f3758
 # ╠═2b407461-7868-46ef-b081-fcc66183ee1d
+# ╠═bdccd5f1-bbec-4be9-b2cc-332919da3200
+# ╠═89b99e37-c6c3-4967-9b5c-b79fe3bd8760
+# ╠═d322a4f7-61c9-4717-968d-43269a9c27c6
+# ╠═b309a031-e996-4985-9586-c75afbd9ca67
+# ╠═8ab9baca-3faa-4742-a624-bbb175c3d2b4
 # ╠═50c8ba61-48e7-4e02-a839-4421963f0d19
 # ╠═04ed7aa3-6e72-4a9f-9c3e-98a9403a24df
 # ╠═7ba3ff0e-5f2d-47da-a4fd-24c85b783746
