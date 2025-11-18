@@ -35,9 +35,9 @@ using PlutoTeachingTools
 using ShortCodes
 
 # ╔═╡ 37b0af04-57d9-11f0-1110-37aa5650cd3f
-# html"""
-# <link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
-# """
+html"""
+<link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
+"""
 
 # ╔═╡ 7b73278e-bb13-44c8-9bcd-45ec39f679a1
 plotly();
@@ -96,8 +96,6 @@ md"""
 ## Introducción
 
 La dependencia entre los elementos de una secuencia es una característica que podemos encontrar en muchos conjuntos de datos. El nivel de CO2 en un determinado punto de la superficie de la Tierra depende del nivel de CO2 en el mismo punto en un instante anterior.
-
-Por ejemplo, la siguiente gráfica muestra la concentración de CO2 en Izaña, Tenerife. La serie de datos se extiende a lo largo de casi 30 décadas.
 """
 
 # ╔═╡ bee2feec-b95a-4931-9b6e-a069841f5115
@@ -161,11 +159,22 @@ md"""
 
 Muchas veces ocurre que los datos en una serie temporal están auto-correlacionados, existe una correlación entre una serie de datos y la misma serie desplazada en el tiempo.
 
-Dicho de otro modo, la autocorrelación es la correlación de los datos con ellos mismos cuando se les aplica un cierto desplazamiento temporal.
+Dicho de otro modo, la autocorrelación es la correlación de los datos con ellos mismos cuando se les aplica un cierto desplazamiento temporal, y se pude calcular con la siguiente expresión:
+
+```math
+R(l) = \frac{E[(x_i - \mu)(x_{i+l} - \mu)]}{\sigma^2}
+```
+
+donde $l$ es el desplazamiento de la serie.
+"""
+
+# ╔═╡ 4f8030d5-fb16-4856-bc6f-382b076b8116
+md"""
+## Autocorrelación
 
 En Julia podemos calcular la autocorrelación en una seri de datos con:
 
-```.julia
+```julia
 using StatsBase
 
 autocor(serie_temporal, [retraso1, retraso2,...])
@@ -222,7 +231,7 @@ function plot_serie_aleatoria()
 	)
 	plot(
 		plot_serie_aleatoria, plot_serie_aleatoria_autocorrelacion,
-		size = (1200, 400)
+		size = (1000, 400)
 	)
 end;
 
@@ -264,9 +273,19 @@ function plot_tendencia_esatacionalidad()
 	plot(
 		p1, p2,
 		layout = l,
-		size = (1200, 350)
+		size = (1000, 350)
 	)
 end;
+
+# ╔═╡ 83fcd3ab-9d70-4cf7-83f5-72e8a128297f
+md"""
+## Tendencia y estacionalidad
+"""
+
+# ╔═╡ 12049b33-2c16-4ebb-8cf2-8d0c4b968b3c
+md"""
+Por ejemplo en la serie de datos de CO2, hay una clara componente de tendencia sobre la que se repite la componente estacional:
+"""
 
 # ╔═╡ 409f4ff2-3bfa-4b4e-baaf-8ef8f15bde6f
 plot_tendencia_esatacionalidad()
@@ -304,7 +323,7 @@ md"""
 ## Secuencias y vectores
 
 En este gráfico se muestran todas las combinaciones posible a la entrada y 
-a la salida de una red recurrente:
+a la salida de una red recurrente. Veámoslas una por una:
 """
 
 # ╔═╡ 5f6ed735-ce31-4f4f-ba6f-3cfda53d6bb4
@@ -353,7 +372,7 @@ Resource(
 
 # ╔═╡ 6a6a866b-35e0-46c3-942e-eb8fdb098c7d
 md"""
-En este caso se le pasa una secuencia a la red y esta debe proporcionar un único valor a la salida. Por ejemplo, pasamos un texto a la red, y la red nos debe indicar si el texto contiene sesgos sexistas.
+En este caso se le pasa una secuencia a la red y esta debe proporcionar un único valor a la salida. Por ejemplo, pasamos un texto a la red, y la red nos debe indicar si el texto contiene sesgos sexistas. Otro ejemplo es pasar a la red una descripción y que la red genere una imagen a partir de esa descripcion.
 """
 
 # ╔═╡ f761cc35-2b19-4c87-b492-e3b9cf88aec2
@@ -424,6 +443,7 @@ del tiempo.
 Resource(
 	imagenes * "rnn.gif",
 	:alt => "Despliegue de una red recurrente",
+	:width => 1000,
 	:style => "display: block; margin: auto;",
 )
 
@@ -436,13 +456,13 @@ Fuente: Juan Sensio - https://www.juansensio.com/blog/034_rnn_intro
 md"""
 ## Arquitectura de las RNN
 
-La salida en $y_t$ se calcula en función  del estado oculto $h_{t}$:
-
-$y_t = f(W_{yh} h_t + b_y)$
-
 El estado oculto $h_t$ se calcula en función de la entrada $x_t$ y del estado oculto anterior $h_{t-1}$:
 
 $h_t = f(W_{hh} h_{t-1} + W_{hx} x_t + b_h)$
+
+La salida en $y_t$ se calcula en función  del estado oculto $h_{t}$:
+
+$y_t = f(W_{yh} h_t + b_y)$
 
 El estado oculto es la **memoria** de la neurona.
 """
@@ -451,16 +471,16 @@ El estado oculto es la **memoria** de la neurona.
 md"""
 ## Arquitectura de las RNN
 
-En el proceso de entrenamiento, se ajustan tanto los pesos de la matriz que calcula la salid $y_t$ como los pesos de las matrices que calculan el estado oculto $h_t$.
+En el proceso de entrenamiento de una red recurrente, se ajustan tanto los pesos de la matriz que calcula la salid $y_t$ como los pesos de las matrices que calculan el estado oculto $h_t$.
 
-Veamos como definir y entrenar redes recurrentes.
+Veamos como definir y entrenar redes recurrentes en Julia con la biblioteca Flux.
 """
 
 # ╔═╡ 3838c8de-686c-4da9-9698-fbe36b1dd69b
 md"""
 ## Show me the code
 
-Como ejemplo, vamos a trabajar con la serie de datos temporales de concentración de CO2 para intentar predecir su evolución a un periodo de meses en el futuro.
+Como ejemplo, vamos a trabajar con la serie de datos temporales de concentración de CO2 que vimos al inicio de la presentación para intentar predecir su evolución a un periodo de meses en el futuro.
 
 La primera tarea es decidir qué tipo de red recurrente vamos a implementar:
 
@@ -469,7 +489,7 @@ La primera tarea es decidir qué tipo de red recurrente vamos a implementar:
 * One to many.
 * Many to Many.
 
-En nuestro caso, a partir de una serie temporal de datos, queremos predecir cuál es el siguiente dato. Por lo tanto tenemos una estructura **many to one**.
+En nuestro caso, a partir de una serie temporal de datos, queremos predecir cuál es el siguiente dato. Por lo tanto, tenemos una estructura **many to one**.
 """
 
 # ╔═╡ 44736b6f-76c8-46bf-b85c-3f1ca9bfcfbf
@@ -481,7 +501,7 @@ en la serie.
 
 Como ya sabemos, las redes neuronales son más fáciles de entrenas si los datos tiene la misma escala, por lo que vamos a empezar escalando los datos:
 
-```.julia
+```julia
 escalado = fit(UnitRangeTransform, co2_train)
 co2_train_escalado = Float32.(StatsBase.transform(escalado, co2_train))
 ```
@@ -489,7 +509,7 @@ co2_train_escalado = Float32.(StatsBase.transform(escalado, co2_train))
 Cada entrada de entrenamiento es una serie de 10 elementos de la serie temporal, 
 la salida es el siguiente dato en la serie:
 
-```.text
+```text
 [[0.03046482 0.05354899 0.05841709 0.06092965 0.07333543 0.09422111
   0.1048995  0.09170854 0.06171482 0.01303392]]  -->  0.0
 [[0.05354899 0.05841709 0.06092965 0.07333543 0.09422111 0.1048995
@@ -503,21 +523,30 @@ la salida es el siguiente dato en la serie:
 md"""
 ## Show me the code
 
-Ahora ya podemos construir la red, vamos a empezar con una red sencilla de una única capa, y la entrenamos:
+Ahora ya podemos construir la red.
 
-```.julia
+Vamos a empezar con una red sencilla de una única capa:
+
+```julia
 tamaño = 10
 rnn = Chain(
 	RNN(tamaño => 64),
 	Dense(64 => 1)
 )
 ```
+"""
 
-```.julia
+# ╔═╡ 875c22af-374d-4ad4-bf22-fa15ea14b62b
+md"""
+## Show me the code
+
+Y la entrenamos:
+
+```julia
 λ = 0.001
 epocas = 2000
 datos = [(Xtrain, ytrain)]
-optimizador = Flux.setup(Adam(λ), modelo)
+optimizador = Flux.setup(Adam(λ), rnn)
 
 function perdidas(modelo, X, y)
     Flux.reset!(modelo) # Importante resetear el modelo antes de usarlo
@@ -539,11 +568,16 @@ md"""
 ## Show me the code
 """
 
+# ╔═╡ 2833e343-d538-444d-a1f2-6522e47c2a67
+md"""
+La evolución de las pérdidas durante el entrenamiento:
+"""
+
 # ╔═╡ f24db46c-8e84-44a5-8e62-33bee1178340
 Resource(
 	imagenes * "rnn64_2000_perdidas.png",
 	:alt => "Resultado del entrenamiento",
-	:width => 600,
+	:width => 500,
 	:style => "display: block; margin: auto;",
 )
 
@@ -558,7 +592,7 @@ md"""
 
 Hagamos ahora las predicciones con el modelo entrenado:
 
-```.julia
+```julia
 Flux.reset!(modelo) # Importante resetear el modelo
 estimado = modelo(X)' # Calculamos valores estimados con el modelo
 estimado_desescalado = StatsBase.reconstruct(escalado, estimado)
@@ -582,7 +616,7 @@ md"""
 
 Veamos ahora cómo construir una RNN con varias capas:
 
-```.julia
+```julia
 tamaño = 10
 rnn = Chain(
 	RNN(tamaño => 128),
@@ -618,7 +652,7 @@ De nuevo, las pérdidas mostradas son sobre los datos escalados. Las pérdidas h
 md"""
 ## Show me the code
 
-Y las predicciones para el modelo recurrente con más de una capa:
+Y las predicciones, sobre el conjunto de prueba, para el modelo recurrente con más de una capa:
 """
 
 # ╔═╡ f1dc7a2b-00f2-4b7f-bf58-4051492e5a36
@@ -638,7 +672,7 @@ md"""
 md"""
 ## El problema del desvanecimiento
 
-Si las secuencias que utilizamos en el entrenamiento son largas, la contribución de los primeros términos se _desvanece_:
+Al utilizar redes recurrentes, si las secuencias que utilizamos en el entrenamiento son largas, la contribución de los primeros términos se _desvanece_:
 
 $y_t = g(\_,h_t,\_)$
 $h_t = f(\_,h_{t-1},\_) \rightarrow y_t = g(f(\_,h_{t-1},\_))$
@@ -702,9 +736,9 @@ Las puertas combinan estos resultados para guardar el estado a largo plazo.
 md"""
 ## Show me the code
 
-Para utilizar capas con neuronas LSTM, símplemente tenemos que sustituir la capa RNN por una capa LSTM:
+Afortunadamente, para utilizar capas con neuronas LSTM, símplemente tenemos que sustituir la capa RNN por una capa LSTM:
 
-```.julia
+```julia
 lstm = Chain(
 	LSTM(tamaño => 64),
 	Dense(64 => 1)
@@ -721,11 +755,16 @@ md"""
 ## Show me the code
 """
 
+# ╔═╡ 7361496b-d059-4aaf-b519-05b6a8eef639
+md"""
+Y esta es la evolución de las pérdidas durante la fase de entrenamiento:
+"""
+
 # ╔═╡ c9fd4dae-5bd7-40be-b143-387f7f8ec02d
 Resource(
 	imagenes * "lstm64_2000_perdidas.png",
 	:alt => "Resultado del entrenamiento",
-	:width => 550,
+	:width => 500,
 	:style => "display: block; margin: auto;",
 )
 
@@ -749,7 +788,7 @@ Resource(
 
 # ╔═╡ d0764e8b-98bc-4c5a-b7b5-be5adaca308e
 md"""
-Este es el ajuste del modelo a los datos de prueba.
+Este es el ajuste del modelo a los datos de prueba, algo mejor que con una red con capas recurrentes.
 """
 
 # ╔═╡ a096a33d-9304-49bc-a437-4642d323780c
@@ -758,7 +797,7 @@ md"""
 
 Finalmente veamos como construir una red LSTM profunda, de tres capas:
 
-```.julia
+```julia
 lstm = Chain(
 	LSTM(tamaño => 128),
 	LSTM(128 => 64),
@@ -775,17 +814,22 @@ md"""
 ## Show me the code
 """
 
+# ╔═╡ ea24d8b1-3abc-49b2-97a0-44349babce86
+md"""
+La evolución de las pérdidas durante el entrenamiento:
+"""
+
 # ╔═╡ 440cede5-2390-4c06-9f92-f65b6f4a20f6
 Resource(
 	imagenes * "lstm128_2000_perdidas.png",
 	:alt => "Resultado del entrenamiento",
-	:width => 600,
+	:width => 500,
 	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ c19c0c27-4590-4f55-aebd-28ce85ccfc82
 md"""
-En este caso, la red LSTM con 3 capas tiene el menor error cuadrático medio más pequeño de todos los modelos probados.
+En este caso, la red LSTM con 3 capas tiene el menor error cuadrático medio de todos los modelos probados.
 """
 
 # ╔═╡ 0b1abb5a-b71e-4dd3-a18a-f51c80ce7df1
@@ -813,14 +857,14 @@ md"""
 
 # ╔═╡ 89b99e37-c6c3-4967-9b5c-b79fe3bd8760
 md"""
-Las neuronas Gatted reucurrent units (GRU) son una simplicación de la neuronas LSTM pero que matienen la eficacia en tareas de aprendizaje profundo. Su popularidad se basa en que cada neurona contienen menos parámetros, pero los resultados son tan buenos como los de las redes basadas en neuronas LSTM.
+Las neuronas Gatted reucurrent units (GRU) son una simplicación de la neuronas LSTM pero matienen la eficacia en tareas de aprendizaje profundo. Cada neurona contienen menos parámetros, pero los resultados son tan buenos como los de las redes LSTM.
 """
 
 # ╔═╡ d322a4f7-61c9-4717-968d-43269a9c27c6
 Resource(
 	imagenes * "gru.png",
 	:alt => "Red recurrente muchos a muchos",
-	:width => 450,
+	:width => 400,
 	:style => "display: block; margin: auto;",
 )
 
@@ -833,9 +877,9 @@ Fuente: Hands-on machine learning... Aurélien Géron.
 md"""
 ## Gatted recurrent unit - GRU
 
-Y su uso en Flux es muy sencillo:
+Y su uso en Flux es tan sencillo como en los casos anteriores:
 
-```.julia
+```julia
 lstm = Chain(
 	LSTM(tamaño => 128),
 	LSTM(128 => 64),
@@ -854,10 +898,17 @@ md"""
 md"""
 ## ARMA y sus derivadas
 
-El modelo *Autoregresive Moving Average (ARMA)* predice el próximo valor en una serie temporal a partir de los valores actuales y las diferencias entre los valores reales y los predichos anteriormente:
+Aunque hemos visto que las redes neuronales recurerentes funcionan muy bien para la predicción en series temporales, no son la única posibilidad que existe, de hecho, existen muchos modelos estadísticos que no hacen uso de redes neuronales.
 
-$\hat y_t = \sum_{i=1}^p \alpha_i y_{t-i} + \sum_{i=1}^q \theta_i \epsilon_{t-i}$
-$\epsilon_{t-1} = y_{t-1} - \hat y_{t-1}$
+Por ejemplo, el modelo *Autoregresive Moving Average (ARMA)* predice el próximo valor en una serie temporal a partir de los valores actuales y las diferencias entre los valores reales y los predichos anteriormente:
+
+```math
+\begin{gather*}
+\hat y_t = \sum_{i=1}^p \alpha_i y_{t-i} + \sum_{i=1}^q \theta_i \epsilon_{t-i}
+\\
+\epsilon_{t-1} = y_{t-1} - \hat y_{t-1}
+\end{gather*}
+```
 """
 
 # ╔═╡ 7ba3ff0e-5f2d-47da-a4fd-24c85b783746
@@ -949,7 +1000,7 @@ Es decir, si partimos del estado **A**, el siguiente estado será **A** con un 6
 md"""
 ## Cadenas de Markov
 
-Si queremos calcular la probabilidad en el segundo instante, hacemos dos multiplicaciones, en la primera pasamos del estado inicia a las probabilidades en $t+1$ y con la segunda multiplicación de las probabilidades de $t+1$ a $t+2$:
+Si queremos calcular la probabilidad en el segundo instante, hacemos dos multiplicaciones, en la primera pasamos del estado inicial a las probabilidades en $t+1$ y con la segunda multiplicación de las probabilidades de $t+1$ a $t+2$:
 
 $\begin{bmatrix}
 0.6 & 0.7 \\
@@ -991,6 +1042,8 @@ $\begin{bmatrix}
 0.\widehat{63} \\ 
 0.\widehat{36} \\
 \end{bmatrix}$
+
+El resultado es el mismo independientemente del vector de partida.
 """
 
 # ╔═╡ d18d17da-ad30-45fd-8ea8-e2c965609e48
@@ -1004,6 +1057,8 @@ $\begin{bmatrix}
 \end{bmatrix}$ 
 es autovector de la matriz con autovalor $\lambda=1$.
 
+Además, los valores de autocorrelación se pueden calcular a partir de la matriz de transición.
+
 Entrenar un modelo de cadena de Markov implica estimar la matriz de transición dada una cadena de entrada.
 """
 
@@ -1011,7 +1066,7 @@ Entrenar un modelo de cadena de Markov implica estimar la matriz de transición 
 md"""
 ## Modelos ocultos de Markov
 
-En los modelo ocultos de Markov, no se conoce el estado en el que se encuentra el sistema, de ahí lo de ocultos, sólo se _ven_ las observaciones que se emiten en cada uno de los estados.
+En los modelo ocultos de Markov, no se conoce el estado en el que se encuentra el sistema, de ahí lo de ocultos, sólo se _ven_ las observaciones que se emiten en cada uno de los estados. Además, las observaciones tienen una cierta distribución de probabilidad, no son constantes, porque si lo fueran tendríamos, de nuevo, una cadana de Markov.
 """
 
 # ╔═╡ ba09c453-fcea-406f-bc1b-a6b5b2decfe3
@@ -1060,6 +1115,7 @@ md"""
 
 * Sin embargo, para secuencias _largas_ la contribución de los primeros valores de la secuencia se desvanece.
 * Las redes LSTM tratan de evitar este desvanecimiento añadiendo una memoria a largo plazo, que se calcula en cada estado y se propaga a las siguientes estados.
+* Las redes GRU funcionan, en general, igual de bien que las redes LSTM, pero el número de parámetros a entrenar es sensiblemente inferior.
 * Existen alternativas al estudio de las series temporales que no utilizan redes neuronales.
 """
 
@@ -2434,132 +2490,139 @@ version = "1.8.1+0"
 """
 
 # ╔═╡ Cell order:
-# ╠═37b0af04-57d9-11f0-1110-37aa5650cd3f
-# ╠═7688d442-926f-451d-9ef6-50423287dfbe
-# ╠═9f1e3004-7721-4cfe-b55b-0e0ca6c2ed59
-# ╠═8bdf2d83-face-4264-a4b7-e3a63a032089
-# ╠═9c879d33-96c0-4ade-8ffe-8b8ec18fc1e3
-# ╠═c7754369-3be9-4a13-91cc-981f5127992b
-# ╠═63d96af8-7399-4c26-9221-9aa36731c239
-# ╠═ebd9c668-f9f5-48c7-8e9b-859f169ced79
-# ╠═a6b45206-f705-4f48-849d-aca4a0f183f6
-# ╠═9f50ab63-f9ef-4d32-9062-e570aeac9906
-# ╠═4fb47936-5f5b-42cb-99a0-1db519f34584
-# ╠═7b73278e-bb13-44c8-9bcd-45ec39f679a1
-# ╠═2108a2d1-4d9f-4b16-ae3b-e1938c9ae606
-# ╠═b14098b5-65a1-471b-becf-017c5c07d8b4
-# ╠═0a6c0ac8-4555-46b8-864b-6b6e42dce9de
-# ╠═d564cb7c-3866-4a0c-a8f6-b2265fc967e2
-# ╠═11ea5ad6-9c55-47ca-a65e-8342bef0d637
-# ╠═13a8cbd0-21e1-4ac7-ba10-383197bb6e0a
-# ╠═f9e9e887-d961-490e-9f7a-ce1c177bf56b
-# ╠═ce3083be-6fca-428d-bc52-b0a7c2c4b81e
-# ╠═689dfd81-45d2-4371-80b8-ac5177bcc99a
-# ╠═bee2feec-b95a-4931-9b6e-a069841f5115
-# ╠═ec6a877c-6e93-43dd-bc46-45957ada64b0
-# ╠═7ede7d35-8858-49ba-9d16-3171214093ab
-# ╠═ca9add85-9ecf-45c7-bb4d-b10de4a7e8ba
-# ╠═14195e5d-7643-4efb-8535-561530ac2c91
-# ╠═870103c2-eac4-4438-a58f-7279e6f3b6fe
-# ╠═fceba045-6717-4cdd-890e-f06a616162c5
-# ╠═a52d1bc6-7fc3-4bde-bdca-7a199eeef413
-# ╠═033e221a-223d-4ec5-8349-d1f9ed81b0db
-# ╠═3f7622d2-b3c7-4fcc-abe3-2b8c21cf913d
-# ╠═c7f7b3e5-e0fb-41a1-8e60-79c17e5f96a9
-# ╠═5459494e-eca1-4c90-8246-94e5a1313f58
-# ╠═58173b25-bbb2-489b-9b4b-3e6ef45bde74
-# ╠═667d4a6f-7992-47ea-91be-d5d5f9f16af2
-# ╠═e05fa291-80c1-488c-9773-6c8f1e617b16
-# ╠═e52c93f3-41b4-4589-b8bf-61c370844703
-# ╠═409f4ff2-3bfa-4b4e-baaf-8ef8f15bde6f
-# ╠═6d0b4937-00cd-4ab8-9135-45e16b563511
-# ╠═a1766754-152c-4137-b33e-4f38f2e19a2f
-# ╠═977f84a3-4186-454b-bdf2-0bf7ceac826a
-# ╠═0bfa3c33-7cf5-4279-8c8e-0a5052de7b49
-# ╠═61bdb024-5186-4188-9af0-0a8b3bb09b86
-# ╠═5f6ed735-ce31-4f4f-ba6f-3cfda53d6bb4
-# ╠═e252d6e8-4bd6-4bce-8b44-9876ef1279c9
-# ╠═30a5900f-9125-453e-bc18-d38ff81e036c
-# ╠═e5947a34-4d6d-4b9a-9527-94c0fda52057
-# ╠═818edee3-24a0-4bb4-8864-918de5c0c385
-# ╠═dda8ac49-f480-4f51-872d-ef185601944b
-# ╠═5fb81d16-20da-4951-b840-f263bb1fea8e
-# ╠═6a6a866b-35e0-46c3-942e-eb8fdb098c7d
-# ╠═f761cc35-2b19-4c87-b492-e3b9cf88aec2
-# ╠═d6627b70-5a8c-4c95-bd60-0475e63da31e
-# ╠═b64a78c7-e1e4-4e9d-ac78-c8639e150e73
-# ╠═a200a753-9cad-439f-b243-a2640528d4d1
-# ╠═443f09d1-4c69-4d21-b402-8a7c8fd9d537
-# ╠═82d64394-b3d5-4c48-a3bc-5f368ebabea4
-# ╠═ea3bd38c-b7be-49da-a7dc-27aabcf9c713
-# ╠═b2a54c24-afba-4318-bdfc-581a48ac89e8
-# ╠═76ff8c86-3718-4100-8559-7956cabcf748
-# ╠═c90a2e74-5467-42fb-969c-97a08caef2ff
-# ╠═aff9b74b-3867-4286-b866-982ef20c6886
-# ╠═c7fdf81a-68cf-4ae4-935f-99abbe5852bf
-# ╠═6be6dbcc-b169-4184-8116-7444aaefc92a
-# ╠═ede5cec8-4238-4953-9323-a2094dcb0058
-# ╠═3838c8de-686c-4da9-9698-fbe36b1dd69b
-# ╠═44736b6f-76c8-46bf-b85c-3f1ca9bfcfbf
-# ╠═139987b8-5ce6-4456-96fe-6b90a9cb9957
-# ╠═00117c64-829c-4bb7-95b6-c797a4999513
-# ╠═f24db46c-8e84-44a5-8e62-33bee1178340
-# ╠═c3aa482d-37d9-4a44-a65a-df51f987e966
-# ╠═c718a23d-91df-4576-9039-16aed0894f50
-# ╠═2364115b-370d-4e2f-8de8-fcf9e7189f5c
-# ╠═d7c54967-5a6e-4fbc-8689-5d6454a95275
-# ╠═5d3df015-5d84-42d9-b04c-1b847f377d21
-# ╠═986fa101-f14a-430e-bba6-a5c5786f648f
-# ╠═7ac6fa90-2fe2-4a09-8a3d-f5c02c8a12f5
-# ╠═481e34c0-e245-4987-ae96-ca5b30a114ce
-# ╠═f1dc7a2b-00f2-4b7f-bf58-4051492e5a36
-# ╠═f3de6610-6a40-493b-95cc-b8a44236d42d
-# ╠═b00fc178-e092-4961-9a90-fab2961f8db6
-# ╠═4c459fa3-50b5-4a14-952d-a21afd0841b9
-# ╠═a751b25c-69ff-4263-a72b-f53994a2f688
-# ╠═722073ad-065d-4ee8-bae0-4475a03f402c
-# ╠═39a1bd3c-76e0-4f03-888b-8217a6bc866f
-# ╠═21ef5c35-084f-45f9-b9dc-31e5794821fe
-# ╠═6111cb71-2f89-4185-9842-9fd690f7b875
-# ╠═a665581b-afd5-4846-8af2-e80a5aa2b044
-# ╠═ce8adf49-25ce-4644-9420-921bdb8e9c28
-# ╠═c9fd4dae-5bd7-40be-b143-387f7f8ec02d
-# ╠═29e60920-bdde-4c06-8626-7b35e25330a7
-# ╠═c3557873-9d05-432c-aa83-4394a85e4d54
-# ╠═c70e20a7-da2b-4215-9b57-24053b6a2df1
-# ╠═d0764e8b-98bc-4c5a-b7b5-be5adaca308e
-# ╠═a096a33d-9304-49bc-a437-4642d323780c
-# ╠═2f78ace3-e200-4d39-95cb-ddb93fe45e15
-# ╠═440cede5-2390-4c06-9f92-f65b6f4a20f6
-# ╠═c19c0c27-4590-4f55-aebd-28ce85ccfc82
-# ╠═0b1abb5a-b71e-4dd3-a18a-f51c80ce7df1
-# ╠═ab85d350-8b4c-4d64-a6b3-2d81c66f3758
-# ╠═2b407461-7868-46ef-b081-fcc66183ee1d
-# ╠═bdccd5f1-bbec-4be9-b2cc-332919da3200
-# ╠═89b99e37-c6c3-4967-9b5c-b79fe3bd8760
-# ╠═d322a4f7-61c9-4717-968d-43269a9c27c6
-# ╠═b309a031-e996-4985-9586-c75afbd9ca67
-# ╠═8ab9baca-3faa-4742-a624-bbb175c3d2b4
-# ╠═50c8ba61-48e7-4e02-a839-4421963f0d19
-# ╠═04ed7aa3-6e72-4a9f-9c3e-98a9403a24df
-# ╠═7ba3ff0e-5f2d-47da-a4fd-24c85b783746
-# ╠═226e75e4-27c1-4fb9-aa26-4bce7b904fe4
-# ╠═d5d4f807-7e47-48eb-b828-27b43491a2c8
-# ╠═d262a18f-1482-44a1-821b-d5a7b5370f44
-# ╠═222754d0-2196-4b8f-a3f2-f261aee492e6
-# ╠═8997a275-1f23-4f3d-9285-3889aa2f1897
-# ╠═8bcc469e-d96c-4bab-a8de-fa5977d768f6
-# ╠═8e78cb8a-0d5d-4a91-b426-4e1058796a41
-# ╠═7a3bdcef-c0c7-4892-ab49-3c363945f08d
-# ╠═4a1845cd-e71a-4dbb-a5fc-c9b8d6df289a
-# ╠═d18d17da-ad30-45fd-8ea8-e2c965609e48
-# ╠═50a25851-1f8b-48eb-8c04-410128ec5dae
-# ╠═ba09c453-fcea-406f-bc1b-a6b5b2decfe3
-# ╠═8ace3ee2-f67a-4196-882a-d452dd22a69a
-# ╠═00ce16c1-73fd-4e2b-abb2-4dd40a499d75
-# ╠═b5cedc4f-6010-4908-a022-546d639afe6c
-# ╠═07f16946-5cc0-4731-92bb-eaec2e4c04ba
-# ╠═05410453-8140-4c52-809a-c2775784b97c
-# ╠═223b0452-e58d-49f5-a14b-268ddb166369
+# ╟─37b0af04-57d9-11f0-1110-37aa5650cd3f
+# ╟─7688d442-926f-451d-9ef6-50423287dfbe
+# ╟─9f1e3004-7721-4cfe-b55b-0e0ca6c2ed59
+# ╟─8bdf2d83-face-4264-a4b7-e3a63a032089
+# ╟─9c879d33-96c0-4ade-8ffe-8b8ec18fc1e3
+# ╟─c7754369-3be9-4a13-91cc-981f5127992b
+# ╟─63d96af8-7399-4c26-9221-9aa36731c239
+# ╟─ebd9c668-f9f5-48c7-8e9b-859f169ced79
+# ╟─a6b45206-f705-4f48-849d-aca4a0f183f6
+# ╟─9f50ab63-f9ef-4d32-9062-e570aeac9906
+# ╟─4fb47936-5f5b-42cb-99a0-1db519f34584
+# ╟─7b73278e-bb13-44c8-9bcd-45ec39f679a1
+# ╟─2108a2d1-4d9f-4b16-ae3b-e1938c9ae606
+# ╟─b14098b5-65a1-471b-becf-017c5c07d8b4
+# ╟─0a6c0ac8-4555-46b8-864b-6b6e42dce9de
+# ╟─d564cb7c-3866-4a0c-a8f6-b2265fc967e2
+# ╟─11ea5ad6-9c55-47ca-a65e-8342bef0d637
+# ╟─13a8cbd0-21e1-4ac7-ba10-383197bb6e0a
+# ╟─f9e9e887-d961-490e-9f7a-ce1c177bf56b
+# ╟─ce3083be-6fca-428d-bc52-b0a7c2c4b81e
+# ╟─689dfd81-45d2-4371-80b8-ac5177bcc99a
+# ╟─bee2feec-b95a-4931-9b6e-a069841f5115
+# ╟─ec6a877c-6e93-43dd-bc46-45957ada64b0
+# ╟─7ede7d35-8858-49ba-9d16-3171214093ab
+# ╟─ca9add85-9ecf-45c7-bb4d-b10de4a7e8ba
+# ╟─14195e5d-7643-4efb-8535-561530ac2c91
+# ╟─870103c2-eac4-4438-a58f-7279e6f3b6fe
+# ╟─fceba045-6717-4cdd-890e-f06a616162c5
+# ╟─4f8030d5-fb16-4856-bc6f-382b076b8116
+# ╟─a52d1bc6-7fc3-4bde-bdca-7a199eeef413
+# ╟─033e221a-223d-4ec5-8349-d1f9ed81b0db
+# ╟─3f7622d2-b3c7-4fcc-abe3-2b8c21cf913d
+# ╟─c7f7b3e5-e0fb-41a1-8e60-79c17e5f96a9
+# ╟─5459494e-eca1-4c90-8246-94e5a1313f58
+# ╟─58173b25-bbb2-489b-9b4b-3e6ef45bde74
+# ╟─667d4a6f-7992-47ea-91be-d5d5f9f16af2
+# ╟─e05fa291-80c1-488c-9773-6c8f1e617b16
+# ╟─e52c93f3-41b4-4589-b8bf-61c370844703
+# ╟─83fcd3ab-9d70-4cf7-83f5-72e8a128297f
+# ╟─12049b33-2c16-4ebb-8cf2-8d0c4b968b3c
+# ╟─409f4ff2-3bfa-4b4e-baaf-8ef8f15bde6f
+# ╟─6d0b4937-00cd-4ab8-9135-45e16b563511
+# ╟─a1766754-152c-4137-b33e-4f38f2e19a2f
+# ╟─977f84a3-4186-454b-bdf2-0bf7ceac826a
+# ╟─0bfa3c33-7cf5-4279-8c8e-0a5052de7b49
+# ╟─61bdb024-5186-4188-9af0-0a8b3bb09b86
+# ╟─5f6ed735-ce31-4f4f-ba6f-3cfda53d6bb4
+# ╟─e252d6e8-4bd6-4bce-8b44-9876ef1279c9
+# ╟─30a5900f-9125-453e-bc18-d38ff81e036c
+# ╟─e5947a34-4d6d-4b9a-9527-94c0fda52057
+# ╟─818edee3-24a0-4bb4-8864-918de5c0c385
+# ╟─dda8ac49-f480-4f51-872d-ef185601944b
+# ╟─5fb81d16-20da-4951-b840-f263bb1fea8e
+# ╟─6a6a866b-35e0-46c3-942e-eb8fdb098c7d
+# ╟─f761cc35-2b19-4c87-b492-e3b9cf88aec2
+# ╟─d6627b70-5a8c-4c95-bd60-0475e63da31e
+# ╟─b64a78c7-e1e4-4e9d-ac78-c8639e150e73
+# ╟─a200a753-9cad-439f-b243-a2640528d4d1
+# ╟─443f09d1-4c69-4d21-b402-8a7c8fd9d537
+# ╟─82d64394-b3d5-4c48-a3bc-5f368ebabea4
+# ╟─ea3bd38c-b7be-49da-a7dc-27aabcf9c713
+# ╟─b2a54c24-afba-4318-bdfc-581a48ac89e8
+# ╟─76ff8c86-3718-4100-8559-7956cabcf748
+# ╟─c90a2e74-5467-42fb-969c-97a08caef2ff
+# ╟─aff9b74b-3867-4286-b866-982ef20c6886
+# ╟─c7fdf81a-68cf-4ae4-935f-99abbe5852bf
+# ╟─6be6dbcc-b169-4184-8116-7444aaefc92a
+# ╟─ede5cec8-4238-4953-9323-a2094dcb0058
+# ╟─3838c8de-686c-4da9-9698-fbe36b1dd69b
+# ╟─44736b6f-76c8-46bf-b85c-3f1ca9bfcfbf
+# ╟─139987b8-5ce6-4456-96fe-6b90a9cb9957
+# ╟─875c22af-374d-4ad4-bf22-fa15ea14b62b
+# ╟─00117c64-829c-4bb7-95b6-c797a4999513
+# ╟─2833e343-d538-444d-a1f2-6522e47c2a67
+# ╟─f24db46c-8e84-44a5-8e62-33bee1178340
+# ╟─c3aa482d-37d9-4a44-a65a-df51f987e966
+# ╟─c718a23d-91df-4576-9039-16aed0894f50
+# ╟─2364115b-370d-4e2f-8de8-fcf9e7189f5c
+# ╟─d7c54967-5a6e-4fbc-8689-5d6454a95275
+# ╟─5d3df015-5d84-42d9-b04c-1b847f377d21
+# ╟─986fa101-f14a-430e-bba6-a5c5786f648f
+# ╟─7ac6fa90-2fe2-4a09-8a3d-f5c02c8a12f5
+# ╟─481e34c0-e245-4987-ae96-ca5b30a114ce
+# ╟─f1dc7a2b-00f2-4b7f-bf58-4051492e5a36
+# ╟─f3de6610-6a40-493b-95cc-b8a44236d42d
+# ╟─b00fc178-e092-4961-9a90-fab2961f8db6
+# ╟─4c459fa3-50b5-4a14-952d-a21afd0841b9
+# ╟─a751b25c-69ff-4263-a72b-f53994a2f688
+# ╟─722073ad-065d-4ee8-bae0-4475a03f402c
+# ╟─39a1bd3c-76e0-4f03-888b-8217a6bc866f
+# ╟─21ef5c35-084f-45f9-b9dc-31e5794821fe
+# ╟─6111cb71-2f89-4185-9842-9fd690f7b875
+# ╟─a665581b-afd5-4846-8af2-e80a5aa2b044
+# ╟─ce8adf49-25ce-4644-9420-921bdb8e9c28
+# ╟─7361496b-d059-4aaf-b519-05b6a8eef639
+# ╟─c9fd4dae-5bd7-40be-b143-387f7f8ec02d
+# ╟─29e60920-bdde-4c06-8626-7b35e25330a7
+# ╟─c3557873-9d05-432c-aa83-4394a85e4d54
+# ╟─c70e20a7-da2b-4215-9b57-24053b6a2df1
+# ╟─d0764e8b-98bc-4c5a-b7b5-be5adaca308e
+# ╟─a096a33d-9304-49bc-a437-4642d323780c
+# ╟─2f78ace3-e200-4d39-95cb-ddb93fe45e15
+# ╟─ea24d8b1-3abc-49b2-97a0-44349babce86
+# ╟─440cede5-2390-4c06-9f92-f65b6f4a20f6
+# ╟─c19c0c27-4590-4f55-aebd-28ce85ccfc82
+# ╟─0b1abb5a-b71e-4dd3-a18a-f51c80ce7df1
+# ╟─ab85d350-8b4c-4d64-a6b3-2d81c66f3758
+# ╟─2b407461-7868-46ef-b081-fcc66183ee1d
+# ╟─bdccd5f1-bbec-4be9-b2cc-332919da3200
+# ╟─89b99e37-c6c3-4967-9b5c-b79fe3bd8760
+# ╟─d322a4f7-61c9-4717-968d-43269a9c27c6
+# ╟─b309a031-e996-4985-9586-c75afbd9ca67
+# ╟─8ab9baca-3faa-4742-a624-bbb175c3d2b4
+# ╟─50c8ba61-48e7-4e02-a839-4421963f0d19
+# ╟─04ed7aa3-6e72-4a9f-9c3e-98a9403a24df
+# ╟─7ba3ff0e-5f2d-47da-a4fd-24c85b783746
+# ╟─226e75e4-27c1-4fb9-aa26-4bce7b904fe4
+# ╟─d5d4f807-7e47-48eb-b828-27b43491a2c8
+# ╟─d262a18f-1482-44a1-821b-d5a7b5370f44
+# ╟─222754d0-2196-4b8f-a3f2-f261aee492e6
+# ╟─8997a275-1f23-4f3d-9285-3889aa2f1897
+# ╟─8bcc469e-d96c-4bab-a8de-fa5977d768f6
+# ╟─8e78cb8a-0d5d-4a91-b426-4e1058796a41
+# ╟─7a3bdcef-c0c7-4892-ab49-3c363945f08d
+# ╟─4a1845cd-e71a-4dbb-a5fc-c9b8d6df289a
+# ╟─d18d17da-ad30-45fd-8ea8-e2c965609e48
+# ╟─50a25851-1f8b-48eb-8c04-410128ec5dae
+# ╟─ba09c453-fcea-406f-bc1b-a6b5b2decfe3
+# ╟─8ace3ee2-f67a-4196-882a-d452dd22a69a
+# ╟─00ce16c1-73fd-4e2b-abb2-4dd40a499d75
+# ╟─b5cedc4f-6010-4908-a022-546d639afe6c
+# ╟─07f16946-5cc0-4731-92bb-eaec2e4c04ba
+# ╟─05410453-8140-4c52-809a-c2775784b97c
+# ╟─223b0452-e58d-49f5-a14b-268ddb166369
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
