@@ -45,7 +45,7 @@ Resource(
 md"""
 ## Objetivos de aprendizaje
 
-- Interpretar cuales son las características particulares del aprendizaje por refuerzo.
+- Interpretar cuales son las características del aprendizaje por refuerzo.
 - Resumir los conceptos de agente, estado, acción y recompensa.
 - Conectar cada uno de los conceptos anteriores con el proceso de aprendizaje.
 - Construir una solución utilizando el algoritmo Q-learning.
@@ -191,9 +191,24 @@ md"""
 # Conceptos clave
 """
 
+# ╔═╡ e785e43e-c7c4-4603-b3f2-241efabc4697
+md"""
+## Entorno, Agente, Acción, Estado y Recompensa
+
+El **entorno** es todo aquello que el agente puede observar y con lo que puede interaccionar. El entorno puede reaccionar a las acciones realizadas por el agente, y devolverle recompensas.
+"""
+
+# ╔═╡ 447bb4af-4da1-40f0-98a3-d68e2b34b5b1
+Resource(
+	imagenes * "rl.png",
+	:alt => "Aprendizaje por refuerzo",
+	:width => 900,
+	:style => "display: block; margin: auto;",
+)
+
 # ╔═╡ 4b07e8e5-524d-4e68-8a0d-f5cd7c47a894
 md"""
-## Agente, Acción, Estado y Recompensa
+## Entorno, Agente, Acción, Estado y Recompensa
 
 El **agente** es quien decide qué acción tomar.
 """
@@ -220,7 +235,7 @@ Representa el conjunto de posibles acciones.
 
 # ╔═╡ 7464261c-999c-4397-b411-bd07025a3beb
 md"""
-## Agente, Acción, Estado y Recompensa
+## Entorno, Agente, Acción, Estado y Recompensa
 
 La secuencia de pasos durante el proceso de aprendizaje es:
 """
@@ -247,7 +262,7 @@ $\{S_1, A_1, R_1, S_2, A_2, R_2,...,S_t,A_t,R_t\}$
 
 # ╔═╡ 0e3c3c29-76a2-4404-8fdb-8b442ce1eb9f
 md"""
-## Agente, Acción, Estado y Recompensa
+## Entorno, Agente, Acción, Estado y Recompensa
 """
 
 # ╔═╡ 8cbb1134-49b5-472c-aadb-1754230742ea
@@ -265,7 +280,7 @@ Un detalle importante: observa que el entorno puede cambiar, si el agente es un 
 
 # ╔═╡ d17c48c8-259a-4ca9-97e7-c844370c52fe
 md"""
-## Agente, Acción, Estado y Recompensa
+## Entorno, Agente, Acción, Estado y Recompensa
 
 Si el conjunto de estados, acciones y recompensas es finito, se conoce el 
 estado actual y la acción elegida, entonces, se puede calcular la probabilidad
@@ -278,9 +293,16 @@ Con la condición: $\sum\limits_{s' \in S} \sum\limits_{r \in R}^{} p(s',r|s,a) 
 A esta elaboración matemática se la llama *procesos de decisión de Markov*.
 """
 
+# ╔═╡ 13c68676-b38b-4fe2-91e8-f9a808ebef96
+md"""
+## Entorno, Agente, Acción, Estado y Recompensa
+
+Tal y como los hemos definido, este marco de trabajo se conoce con el nombre de Procesos de Decisión de Markov (*Markov Decision Process, MDP*).
+"""
+
 # ╔═╡ 5d78edeb-d092-459c-ad88-6345fb838350
 md"""
-## Agente, Acción, Estado y Recompensa
+## Entorno, Agente, Acción, Estado y Recompensa
 
 Ejemplos de agente pueden ser:
 
@@ -1180,6 +1202,8 @@ version = "17.5.0+2"
 # ╠═b3ec2529-5127-4f4c-a221-07b1f665081b
 # ╠═39adf584-77e4-4109-9cf7-303615c2e638
 # ╠═3551e3f8-8e24-413c-9947-0babb6910cfb
+# ╠═e785e43e-c7c4-4603-b3f2-241efabc4697
+# ╠═447bb4af-4da1-40f0-98a3-d68e2b34b5b1
 # ╠═4b07e8e5-524d-4e68-8a0d-f5cd7c47a894
 # ╠═3a92bd3f-4d2a-41a9-9f77-70edf3fbf10c
 # ╠═b29b0b8c-ed15-49ea-95f5-6634a6d74178
@@ -1190,6 +1214,7 @@ version = "17.5.0+2"
 # ╠═8cbb1134-49b5-472c-aadb-1754230742ea
 # ╠═57e7e52c-5cef-463d-87ac-b0bb606ddfe9
 # ╠═d17c48c8-259a-4ca9-97e7-c844370c52fe
+# ╠═13c68676-b38b-4fe2-91e8-f9a808ebef96
 # ╠═5d78edeb-d092-459c-ad88-6345fb838350
 # ╠═7a1582ac-c323-48de-ba53-fad1ce12ea26
 # ╠═43e5877d-1cb7-4a6f-9331-e1ec7bf4ef8b
