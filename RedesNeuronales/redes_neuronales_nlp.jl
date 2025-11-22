@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.20
+# v0.20.21
 
 using Markdown
 using InteractiveUtils
@@ -405,7 +405,7 @@ En Julia podemos trabajar con embeddings utilizando el paquete **Embeddings**, q
 
 Para conocer los embbedings que tenemos disponibles:
 
-```..julia
+```julia
 using Embeddings
 
 language_files(FastText_Text{:es})
@@ -413,7 +413,7 @@ language_files(FastText_Text{:es})
 
 En este caso se muestra la siguiente salida:
 
-```.shell
+```shell
 4-element Vector{String}:
  "FastText es CommonCrawl Text/cc.es.300.vec"
  "FastText es Wiki Text/wiki.es.vec"
@@ -423,7 +423,7 @@ En este caso se muestra la siguiente salida:
 
 Para cargar el primero de los embeddings
 
-```.julia
+```julia
 español = load_embeddings(FastText_Text{:es}, 1)
 ```
 """
@@ -434,7 +434,7 @@ md"""
 
 Para obtener el vector de embedding de una palabra en el diccionario puedes utilizar el código de ejemplo que encuentras en la documentación del paquete:
 
-```.julia
+```julia
 diccionario = Dict(palabra => indice for (indice, palabra) in enumerate(español.vocab))
 
 function obten_embedding(palabra)
@@ -454,7 +454,7 @@ md"""
 ## Show me the code
 Vamos a calcular el concepto de reina a partir de los conceptos mujer, rey, hombre, y calcular la distancia coseno entre el vector del embedding para reina y el calculado:
 
-```.julia
+```julia
 rey = obten_embedding("rey")
 reina = obten_embedding("reina")
 hombre = obten_embedding("hombre")
@@ -468,7 +468,7 @@ coseno(rey, rey2)
 
 Obtenemos:
 
-```.shell
+```shell
 0.7006942f0 (45 grados)
 0.6734288f0 (47 grados)
 ```
@@ -703,50 +703,26 @@ Resource(
 # ╔═╡ 4e5b4466-587a-44f5-85c4-561c454e2100
 md"""
 Supongamos que queremos clasificar textos como positivos, negativos o neutros.
-
-En el conjunto de entrenamiento, no todos los textos tienen el mismo número de palabras.
-"""
-
-# ╔═╡ a7b091ab-0dcc-44c9-a93e-118d1610a855
-md"""
-## Clasificación de texto
-
-Podemos resolverlo insertando una marca especial que indique huecos, donde se esperan palabras.
-
-Pero esto no dará buenos resultados durante el proceso de entrenamiento.
-
-Una mejor solución es indicar a la red que las marcas de _hueco_ no sean tenidas en cuenta durante el proceso de entrenamiento.
-
-```{.python}
-tf.keras.layers.Embedding(tam_vacobulario, tam_embedding, mask_zero=True)
-```
-
-De igual modo, los _huecos_ tampoco se tendrán en cuenta en el proceso de clasificación.
 """
 
 # ╔═╡ dc52bfd9-2bfd-4882-88cd-f869a135945c
 md"""
 ## Clasificación de texto
 
-Para construir la red que analiza sentimientos, primero construimos la capa de vectorización, ahora estamos trabajando con palabras, e inicialmente no sabemos cuantas palabras tiene nuestro corpus:
+Para construir la red que analiza sentimientos, la primera capa que usamos es una capa de embedding que también se va actualizando en el proceso de entrenamiento de la red:
 
-```{.python}
-text_vec_layer = tf.keras.layers.TextVectorization(max_tokens=tam_maximo)
-text_vec_layer.adapt([textos, etiquetas])
+```julia
+modelo = Chain(
+	Embedding(tam_vocabulario => tam_embedding),
+	GRU(tam_embedding => 1),
+	Dense(1 => 1, σ)
+)
 ```
+"""
 
-Y ahora construimos la red:
-
-```{.python}
-modelo = tf.keras.Sequential([
-    text_vec_layer,
-    tf.keras.layers.Embedding(tam_vocabulario, tam_embedding),
-    tf.keras.layers.GRU(128),
-    tf.keras.layers.Dense(1, activation="sigmoid")
-])
-model.compile(loss="binary_crossentropy", optimizer="nadam",
-              metrics=["accuracy"])
-```
+# ╔═╡ 0d8671db-4e8f-4a9b-84af-91664d3d220e
+md"""
+Evidentemente, podemos añadir todas las capas GRU que nos interese.
 """
 
 # ╔═╡ 0b8d86b8-ab46-466f-91a4-70b689eb6b21
@@ -886,7 +862,7 @@ Resource(
 
 # ╔═╡ 4f4e0350-1e9e-4d30-b428-4336f6cb4f7a
 md"""
-La parte novedosa es utilizar máscaras para que la red encuentre relación entre las partes del texto aunque estas se encuentren alejadas entre sí dentro de la misma frase.
+La parte novedosa es utilizar máscaras, la parte de la red correspondiente a los Positional Encoders, para que la red encuentre relación entre las partes del texto aunque estas se encuentren alejadas entre sí dentro de la misma frase.
 
 Fuente: Attention is all you need - A. Vashvani et al.
 """
@@ -911,160 +887,93 @@ md"""
 
 Hugging Face, entre otras muchas cosas, es un repositorio de LLM listos para usar o adaptar en tus aplicaciones.
 
-Su uso básico es muy sencillo.
+Su uso básico es muy sencillo con la biblioteca [Transformers.jl](https://github.com/chengchingwen/Transformers.jl/):
 
-Primero tendremos que instalar la versión de keras con la que trabaja los transformers de Hugging Face.
-
-```{.bash}
-micromamba install tf-keras
-```
-
-Y cargamos la biblioteca:
-
-```{.python}
-from transformers import pipeline
+```julia
+using Transformers
 ```
 """
 
-# ╔═╡ 3c6c6b3b-2ff6-49ae-b534-ddfccaca12fb
+# ╔═╡ bc946ef2-e59d-44c3-a9ce-1ed17a096acc
 md"""
 ## Hugging Face
 
-Si lo que queremos hacer es **clasificación de textos**, lo primero es encontrar 
-un modelo entrenado para ello y en español.
+Este es un ejemmplo extraído del repositorio de Transformers.jl
 
-Luego, creamos un pipeline indicando la tarea y el modelo.
+```julia
+using Flux
+using StatsBase
+using TextEncodeBase
+using Transformers
+using Transformers.HuggingFace
 
-```{.python}
-nombre_modelo = "UMUTeam/roberta-spanish-sentiment-analysis"
-clasificador = pipeline("sentiment-analysis", model=nombre_modelo)
-clasificacion = clasificador("No me gusta comer fuera de casa")
-print(clasificacion)
-```
+textenc = hgf"gpt2:tokenizer"
+model = hgf"gpt2:lmheadmodel"
 
-El resultado es:
+function temp_softmax(logits; temperature=1.2)
+    return softmax(logits ./ temperature)
+end
 
-```{.bash}
-[{'label': 'negative', 'score': 0.9891014695167542}]
+function top_k_sample(probs; k=10)
+    sorted = sort(probs, rev = true)
+    indexes = partialsortperm(probs, 1:k, rev=true)
+    index = sample(indexes, ProbabilityWeights(sorted[1:k]), 1)
+    return index
+end
+
+function generate_text(context=""; max_length=50)
+    encoded = encode(textenc, context).token
+    ids = encoded.onehots
+    ends_id = lookup(textenc.vocab, textenc.endsym)
+    for i in 1:max_length
+        input = (; token = encoded)
+        outputs = model(input)
+        logits = @view outputs.logit[:, end, 1]
+        probs = temp_softmax(logits)
+        new_id = top_k_sample(probs)[1]
+        push!(ids, new_id)
+        new_id == ends_id && break
+    end
+    return decode(textenc, encoded)
+end
+
+function generate(prompt, max_length)
+    text_token = generate_text(prompt; max_length=max_length)
+    gen_text = join(text_token)
+    print("\n\nGenerated Text: ")
+    println(gen_text)
+end
 ```
 """
 
-# ╔═╡ f1c88b97-179c-41b8-860a-5fc7b61780c6
+# ╔═╡ 31a709f7-6c97-443a-936a-b6daad33bca0
 md"""
 ## Hugging Face
 
-Otro ejemplo de clasificación de sentimientos:
-
-```{.bash}
-clasificacion = clasificador("Ayer fui al cine a ver una peli y pasé una tarde muy agradable")
-print(clasificacion)
+```julia
+generate("My name is Thomas and my main", 100)
 ```
 
-El resultado es:
+Y el resultado:
 
-```{.bash}
-[{'label': 'positive', 'score': 0.9974034428596497}]
-```
+```shell
+Generated Text: I live in the beautiful city of San Francisco, which has the world's fastest and most beautiful beach in California. We are in the Bay Area with an abundance of good jobs here and the only reason to live on a budget, is because we have affordable housing. So if the housing crisis in the city really goes away, you'll know why.
 
-Como puedes ver, en ambos casos el resultado es bastante bueno.
-"""
-
-# ╔═╡ 8afabde3-ce96-4590-aebb-ab61f6ad1572
-md"""
-## Hugging Face
-
-Si la tarea que queremos hacer es generar texto:
-
-```{.python}
-nombre_modelo = "Kukedlc/Llama-7b-spanish"
-generador = pipeline("text-generation", model=nombre_modelo)
-
-texto = generador("Hoy voy a comer a casa", max_length=30)
-print(texto)
-```
-
-El resultado es:
-
-```{.bash}
-Hoy voy a comer a casa de mis padres.
+I was just at the airport, and there was this young man, he was talking about housing. And you see, we are in the Bay Area, so that means we have to
 ```
 """
 
-# ╔═╡ 0788fccf-cfe2-4b12-9ba8-7c2a1def2218
+# ╔═╡ ed846ca6-1272-47af-b186-0f066c898aaf
 md"""
 ## Hugging Face
 
-Alguna tarea más compleja como el reconocimiento de entidades:
+Como los LLM son probabilista, si volvemos a solicitar la generación de texto, esta vez obtenemos:
 
-```{.python}
-ner = pipeline("ner", grouped_entities=True)
-ner("Me llamo Óscar y trabajo como profesor en la UJI de Castellón.")
+```shell
+Generated Text: I live in the beautiful city of San Francisco. It is a beautiful city. We have a good number of businesses here, and that's great because that's how much we're going to have to spend," Trump told the crowd. "So I'm going to build a beautiful, beautiful wall. The people of this country know that. So it's great for us. I'm going to build a very nice wall, because it's not going to be great."
+
+Trump also spoke about the importance of "our jobs" in a
 ```
-
-El resultado es:
-
-```{.bash}
-[{'entity_group': 'PER',
-  'score': 0.6795335,
-  'word': 'Óscar',
-  'start': 9,
-  'end': 14},
- {'entity_group': 'ORG',
-  'score': 0.99412817,
-  'word': 'UJI',
-  'start': 45,
-  'end': 48},
- {'entity_group': 'LOC',
-  'score': 0.94170475,
-  'word': 'Castellón',
-  'start': 52,
-  'end': 61}]
-```
-"""
-
-# ╔═╡ 6cff35d1-55f3-492f-8026-aa0d13700e69
-md"""
-## Hugging Face
-
-Finalmente, hacer resúmenes de textos:
-
-```{.python}
-resumidor = pipeline("summarization")
-resumen = resumidor( "En una economía tan estacional como la española, a no
-ser que haya eventos disruptivos como una pandemia o un colapso como el de
-2008, el comportamiento de la afiliación a la Seguridad Social y del paro
-registrado riman cada mes. Y noviembre, con la temporada turística veraniega
-completamente agotada y a la espera de la Navidad, no suele ser un buen mes
-para el mercado laboral. Así, España perdió en noviembre 30.050 empleos, hasta
-dejar la afiliación media en 21.302.463 trabajadores, el mayor bajón en el
-undécimo mes desde 2019. El retroceso se centra en la hostelería, un sector en
-el que se perdieron 120.000 empleos respecto a octubre, lo que también se nota
-en la desagregación por territorios: la ocupación solo cae con fuerza en
-Baleares, una región de monocultivo turístico. Los datos son algo mejores en
-paro registrado, con un retroceso de 16.036 personas. Pero es una caída leve,
-peor que la de los tres últimos años, de la mano de un dato positivo: el total
-de parados en noviembre es el menor desde 2007, antes de la Gran Recesión. En
-la misma línea, la cifra de ocupados es la más alta que se haya registrado
-nunca en un mes de noviembre.")
-```
-
-"""
-
-# ╔═╡ 320611a2-9366-4aa6-86ba-ab7fc247ab84
-md"""
-## Hugging Face
-
-Y este es el resultado del resumen:
-
-```{.bash} 
-[{'summary_text': ' España perdió en noviembre 30.050 empleos, hasta
-dejar la afiliación media en 21.302.463 trabajadores . El retroceso se centra
-en la hostelería, un sector en el que se perdieron 120,000 empleo a octubre
-.'}]
-```
-
-Como puedes ver, bastante bueno.
-
 """
 
 # ╔═╡ 11b6f7ff-f6d5-4f0d-8a9f-aa1eb2604b55
@@ -1783,8 +1692,8 @@ version = "17.5.0+2"
 # ╠═8ef6df12-63ca-4544-8df9-14bb4c944319
 # ╠═f6bf7355-4d41-4d5b-8034-492871b67b7c
 # ╠═4e5b4466-587a-44f5-85c4-561c454e2100
-# ╠═a7b091ab-0dcc-44c9-a93e-118d1610a855
 # ╠═dc52bfd9-2bfd-4882-88cd-f869a135945c
+# ╠═0d8671db-4e8f-4a9b-84af-91664d3d220e
 # ╠═0b8d86b8-ab46-466f-91a4-70b689eb6b21
 # ╠═96221fff-1ac1-497c-97da-62c71571100c
 # ╠═7c25120d-4043-4d81-8961-06b5192cf526
@@ -1807,12 +1716,9 @@ version = "17.5.0+2"
 # ╠═4f4e0350-1e9e-4d30-b428-4336f6cb4f7a
 # ╠═e9c837ad-f0a7-41f8-a932-e4699d58c277
 # ╠═0050209d-57cd-4dcf-aac0-b753172a552c
-# ╠═3c6c6b3b-2ff6-49ae-b534-ddfccaca12fb
-# ╠═f1c88b97-179c-41b8-860a-5fc7b61780c6
-# ╠═8afabde3-ce96-4590-aebb-ab61f6ad1572
-# ╠═0788fccf-cfe2-4b12-9ba8-7c2a1def2218
-# ╠═6cff35d1-55f3-492f-8026-aa0d13700e69
-# ╠═320611a2-9366-4aa6-86ba-ab7fc247ab84
+# ╠═bc946ef2-e59d-44c3-a9ce-1ed17a096acc
+# ╠═31a709f7-6c97-443a-936a-b6daad33bca0
+# ╠═ed846ca6-1272-47af-b186-0f066c898aaf
 # ╠═11b6f7ff-f6d5-4f0d-8a9f-aa1eb2604b55
 # ╠═61de2811-9a8d-40d3-9248-22c147dc2aee
 # ╠═9d9bd2f8-71d8-4d52-8437-805e6de7c391

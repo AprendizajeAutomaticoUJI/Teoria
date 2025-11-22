@@ -172,14 +172,14 @@ donde $l$ es el desplazamiento de la serie.
 md"""
 ## Autocorrelación
 
-En Julia podemos calcular la autocorrelación en una seri de datos con:
+En Julia podemos calcular la autocorrelación en una serie de datos con:
 
 ```julia
 using StatsBase
 
 autocor(serie_temporal, [retraso1, retraso2,...])
 
-autorcor(serie_temporal, 0:9) # Los 10 primeros valores de autocorrelación.
+autocor(serie_temporal, 0:9) # Los 10 primeros valores de autocorrelación.
 ```
 """
 
@@ -881,9 +881,9 @@ Y su uso en Flux es tan sencillo como en los casos anteriores:
 
 ```julia
 lstm = Chain(
-	LSTM(tamaño => 128),
-	LSTM(128 => 64),
-	LSTM(64 => 32),
+	GRU(tamaño => 128),
+	GRU(128 => 64),
+	GRU(64 => 32),
 	Dense(32 => 1)
 )
 ```
