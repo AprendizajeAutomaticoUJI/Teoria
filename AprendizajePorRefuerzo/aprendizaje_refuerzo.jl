@@ -222,7 +222,7 @@ Columns(
 		:style => "display: block; margin: auto;",
 	),
 	md"""
-	El **agente** debe escoger la siguiente **acción** a llevar a cabo dependiendodel **estado** actual del **entorno** con el objetivo de maximizar la**recompensa**.
+	El **agente** debe escoger la siguiente **acción** a llevar a cabo dependiendodel **estado** actual del **entorno** con el objetivo de maximizar la **recompensa**.
 	"""
 )
 
@@ -286,18 +286,59 @@ Si el conjunto de estados, acciones y recompensas es finito, se conoce el
 estado actual y la acción elegida, entonces, se puede calcular la probabilidad
 del siguiente estado y la recompensa obtenida.
 
-$p(s',r|s,a) = p(S_t=s', R_t=r | S_{t-1} = s, A_{t-1} = a)$
+```math
+p(s',r|s,a) = p(S_t=s', R_t=r | S_{t-1} = s, A_{t-1} = a)
+```
 
-Con la condición: $\sum\limits_{s' \in S} \sum\limits_{r \in R}^{} p(s',r|s,a) = 1$
+Con la condición: ``\sum\limits_{s' \in S} \sum\limits_{r \in R}^{} p(s',r|s,a) = 1``
 
-A esta elaboración matemática se la llama *procesos de decisión de Markov*.
+Fíjate en que la igualdad anterior es simplemente una definición.
+"""
+
+# ╔═╡ 1e0cad5b-10b0-4839-b112-25f5b15f7798
+md"""
+## Entorno, Agente, Acción, Estado y Recompensa
+
+Si sumamos sobre todas las recompensas que el agente puede obtener después de realizar la acción ``a``, obtenemos las probabilidades de transición a los siguienetes estados:
+
+```math
+p(s'|s, a) = p(S_t = s' | S_{t-1} = s, A_{t-1} = a) = \sum\limits_{r \in R}^{} p(s',r|s,a)
+```
+
+Fíjate en que, de nuevo, esta nueva expresión es símplemente una manipulación con la definición de probabilidad condicionada.
+"""
+
+# ╔═╡ 7ef876f4-b64d-4a20-9e69-95c08075275c
+md"""
+## Entorno, Agente, Acción, Estado y Recompensa
+
+Por otro lado, si calculamos el valor esperado de las recompensas que el agente puede obtener después de realizar la acción ``a`` desde el estado ``s``, obtenemos la recompensa esperada para al realizar la acción ``a`` en el estado ``s``:
+
+```math
+r(s, a) = E[R_t | S_{t-1} = s, A_{t-1} = a) = \sum\limits_{r \in R}^{} r \sum\limits_{s' \in S} p(s',r|s,a)
+```
+
+Que vuelve a ser una manipulación de las expresiones de probabilidad anteriores.
+"""
+
+# ╔═╡ 2ead2629-7a7e-4ad4-86bf-50698e12f13d
+md"""
+## Entorno, Agente, Acción, Estado y Recompensa
+
+Finalmente, también podemos calcular el valor esperado de la recompensa al llegar al estado ``s'`` desde el estado ``s`` al realizar la acción ``a``:
+
+```math
+r(s, a, s') = E[R_t | S_{t-1} = s, A_{t-1} = a, S_t = s') = \sum\limits_{r \in R}^{} r \frac{p(s',r|s,a)}{p(s'|s,a)}
+```
+
+Donde hemos dividido por ``p(s'|s,a)`` para que todas las probabilidades ``\frac{p(s',r|s,a)}{p(s'|s,a)} = 1``.
 """
 
 # ╔═╡ 13c68676-b38b-4fe2-91e8-f9a808ebef96
 md"""
 ## Entorno, Agente, Acción, Estado y Recompensa
 
-Tal y como los hemos definido, este marco de trabajo se conoce con el nombre de Procesos de Decisión de Markov (*Markov Decision Process, MDP*).
+Tal y como lo hemos definido, este marco de trabajo se conoce con el nombre de Procesos de Decisión de Markov (*Markov Decision Process, MDP*).
 """
 
 # ╔═╡ 5d78edeb-d092-459c-ad88-6345fb838350
@@ -362,6 +403,19 @@ Una analogía monetaria, 100 euros de hoy no tendrán el mismo valor dentro de
 10 años, se habrán devaluado.
 """
 
+# ╔═╡ 77ab5a72-0022-42cb-bd72-24f6ea51c201
+md"""
+## Episodios y Ganancia
+
+La ganancia se puede expresar de una manera más conveniente del siguiente mod:
+
+```math
+G_t = R_{t+1} + \gamma G_{t+1}
+```
+
+Expresión en la que se relaciona la ganacia en un instante con la ganancia en el siguiente instante posterior.
+"""
+
 # ╔═╡ cf4d406f-9570-4bf8-a266-9f6d7cac24ed
 md"""
 ## Episodios y Ganancia
@@ -386,11 +440,37 @@ La política $\pi$ puede ser:
 * **No determinista** $a = p(a|s)$, se escoge la acción según cierta probabilidad asignada a cada una de ellas.
 """
 
+# ╔═╡ 2e8856b0-a21a-46dc-9601-f928b31245c1
+md"""
+## Función valor del estado
+
+Un ejemplo para entender el objetivo de la función valor es el juego del ajedrez. En el ajedrez es importante controlar las posiciones del centro del tablero porque son estas las más importantes, ya que si realizo movimientos desde ellas la probabilidad de ganar la partida aumenta.
+
+La función valor asigna un valor a cada uno de los posibles estados en los que se puede encontrar el agente, es como calcular un valor para cada uno de los escaques del juego del ajedrez.
+
+En términos de valor esperado, la función valor ``v_\pi`` para un determinado estado ``s`` es el valor esperado para la ganancia si se sigue la política ``\pi`` desde ese estado ``s``:
+
+```math
+v_\pi(s) = E_\pi[G_t | S_t = s] = E_\pi\left[ \sum_{k=0}^{\infty} \gamma^kR_{t+k+1} | S_t = s \right]
+```
+"""
+
+# ╔═╡ fc948717-9f3b-403c-8f65-d05d7bb92b85
+md"""
+## Función valor del estado
+
+De modo análogo, la ganancia esperada (valor esperado de la ganancia) al realizar una acción ``a`` en un estado ``s`` al seguir la política ``\pi`` es:
+
+```math
+q_\pi(s,a) = E_\pi(G_t|S_t = s, A_t = a) = E_\pi \left[ \sum_{k=0}^{\infty} \gamma^kR_{t+k+1} | S_t = s, A_t = a \right]
+```
+"""
+
 # ╔═╡ 1e7a508a-0745-46ad-bd0e-a53fe94d4ec7
 md"""
-## Función acción-valor
+## Función valor de la acción
 
-Finalmente, lo que buscamos es encontrar una política que maximice la ganancia esperada a futuro:
+Lo que buscamos es encontrar una política que maximice la ganancia esperada a futuro:
 
 $q_\pi(s,a) = E_\pi(G_t|S_t = s, A_t = a)$
 
@@ -775,7 +855,7 @@ ShortCodes = "~0.3.6"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.12.1"
+julia_version = "1.12.2"
 manifest_format = "2.0"
 project_hash = "70629a17fedc4b6b66c91c2e3f7dce41300725cb"
 
@@ -826,7 +906,7 @@ version = "1.11.0"
 [[deps.Downloads]]
 deps = ["ArgTools", "FileWatching", "LibCURL", "NetworkOptions"]
 uuid = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
-version = "1.6.0"
+version = "1.7.0"
 
 [[deps.FileWatching]]
 uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
@@ -938,7 +1018,7 @@ version = "0.6.4"
 [[deps.LibCURL_jll]]
 deps = ["Artifacts", "LibSSH2_jll", "Libdl", "OpenSSL_jll", "Zlib_jll", "nghttp2_jll"]
 uuid = "deac9b47-8bc7-5906-a0fe-35ac56dc84c0"
-version = "8.11.1+1"
+version = "8.15.0+0"
 
 [[deps.LibGit2]]
 deps = ["LibGit2_jll", "NetworkOptions", "Printf", "SHA"]
@@ -1009,7 +1089,7 @@ version = "0.3.29+0"
 [[deps.OpenSSL_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "458c3c95-2e84-50aa-8efc-19380b2a3a95"
-version = "3.5.1+0"
+version = "3.5.4+0"
 
 [[deps.OrderedCollections]]
 git-tree-sha1 = "05868e21324cede2207c6f0f466b4bfef6d5e7ee"
@@ -1169,9 +1249,9 @@ uuid = "8e850ede-7688-5339-a07c-302acd2aaf8d"
 version = "1.64.0+1"
 
 [[deps.p7zip_jll]]
-deps = ["Artifacts", "Libdl"]
+deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
-version = "17.5.0+2"
+version = "17.7.0+0"
 """
 
 # ╔═╡ Cell order:
@@ -1214,14 +1294,20 @@ version = "17.5.0+2"
 # ╠═8cbb1134-49b5-472c-aadb-1754230742ea
 # ╠═57e7e52c-5cef-463d-87ac-b0bb606ddfe9
 # ╠═d17c48c8-259a-4ca9-97e7-c844370c52fe
+# ╠═1e0cad5b-10b0-4839-b112-25f5b15f7798
+# ╠═7ef876f4-b64d-4a20-9e69-95c08075275c
+# ╠═2ead2629-7a7e-4ad4-86bf-50698e12f13d
 # ╠═13c68676-b38b-4fe2-91e8-f9a808ebef96
 # ╠═5d78edeb-d092-459c-ad88-6345fb838350
 # ╠═7a1582ac-c323-48de-ba53-fad1ce12ea26
 # ╠═43e5877d-1cb7-4a6f-9331-e1ec7bf4ef8b
 # ╠═79784c4f-b1c8-4ad7-ac1e-e9b2331f3663
 # ╠═4e5ad759-e840-43c0-a342-ebf413a5fb2b
+# ╠═77ab5a72-0022-42cb-bd72-24f6ea51c201
 # ╠═cf4d406f-9570-4bf8-a266-9f6d7cac24ed
 # ╠═3d815877-88a7-44b6-b9df-8d329d1a7e3b
+# ╠═2e8856b0-a21a-46dc-9601-f928b31245c1
+# ╠═fc948717-9f3b-403c-8f65-d05d7bb92b85
 # ╠═1e7a508a-0745-46ad-bd0e-a53fe94d4ec7
 # ╠═c45243d4-456d-494b-b27b-1ea79d2e0b48
 # ╠═63e07476-a0bb-4dc4-9f3d-5f315e9880de
