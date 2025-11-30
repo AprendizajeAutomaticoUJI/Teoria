@@ -407,13 +407,13 @@ Una analogía monetaria, 100 euros de hoy no tendrán el mismo valor dentro de
 md"""
 ## Episodios y Ganancia
 
-La ganancia se puede expresar de una manera más conveniente del siguiente mod:
+La ganancia se puede expresar de una manera más conveniente del siguiente modo:
 
 ```math
 G_t = R_{t+1} + \gamma G_{t+1}
 ```
 
-Expresión en la que se relaciona la ganacia en un instante con la ganancia en el siguiente instante posterior.
+Expresión recursiva en la que se relaciona la ganancia en un instante con la ganancia en el siguiente instante posterior.
 """
 
 # ╔═╡ cf4d406f-9570-4bf8-a266-9f6d7cac24ed
@@ -444,6 +444,8 @@ La política $\pi$ puede ser:
 md"""
 ## Función valor del estado
 
+La **Función valor** mide la recompensa total esperada que se obtiene desde el estado ``s`` hasta el final del juego (o episodio), siguiendo una política concreta ``\pi``.
+
 Un ejemplo para entender el objetivo de la función valor es el juego del ajedrez. En el ajedrez es importante controlar las posiciones del centro del tablero porque son estas las más importantes, ya que si realizo movimientos desde ellas la probabilidad de ganar la partida aumenta.
 
 La función valor asigna un valor a cada uno de los posibles estados en los que se puede encontrar el agente, es como calcular un valor para cada uno de los escaques del juego del ajedrez.
@@ -455,28 +457,71 @@ v_\pi(s) = E_\pi[G_t | S_t = s] = E_\pi\left[ \sum_{k=0}^{\infty} \gamma^kR_{t+k
 ```
 """
 
-# ╔═╡ fc948717-9f3b-403c-8f65-d05d7bb92b85
+# ╔═╡ 26c0db62-9f96-43cc-a18b-f64290293576
 md"""
 ## Función valor del estado
+
+La función valor de estado se puede expresar de forma recursiva en función de los siguiente estados posible al actual:
+
+$$\begin{align}
+v_\pi(s) &= E_\pi[G_t | S_t = s] \\
+&= E_\pi[R_{t+1} + \gamma G_{t+1} | S_t = s] \\
+&= \sum_a \pi(a|s) \sum_{s'} \sum_r p(s',r | r,a) \left[r + \gamma E_\pi[G_{t+1} | S_{t+1} = s']\right] \\
+&= \sum_a \pi(a|s) \sum_{s',r'} p(s',r | r,a) \left[r + \gamma v_\pi(s')]\right]
+\end{align}$$
+
+A esta expresión se la conoce como **Ecuación de Bellman**.
+"""
+
+# ╔═╡ fc948717-9f3b-403c-8f65-d05d7bb92b85
+md"""
+## Función valor de la acción/estado
 
 De modo análogo, la ganancia esperada (valor esperado de la ganancia) al realizar una acción ``a`` en un estado ``s`` al seguir la política ``\pi`` es:
 
 ```math
 q_\pi(s,a) = E_\pi(G_t|S_t = s, A_t = a) = E_\pi \left[ \sum_{k=0}^{\infty} \gamma^kR_{t+k+1} | S_t = s, A_t = a \right]
 ```
+
+Que también la podemos expresar de manera recursiva como:
+
+```math
+\begin{align}
+q_\pi(s,a) &= E_\pi[G_t | S_t = s, A_t = a] \\
+&= E_\pi[R_{t+1} + \gamma G_{t+1} | S_t = s, A_t = a] \\
+&= \sum_{a'} \sum_{s'} \sum_r p(s',r | r,a) \left[r + \gamma E_\pi[G_{t+1} | S_{t+1} = s', A_{t+1} = a']\right] \\
+&= \sum_{a',s',r'} p(s',r | r,a) \left[r + \gamma q_\pi(s',a')]\right]
+\end{align}
+```
+"""
+
+# ╔═╡ 68fb378b-e910-4344-b0aa-832ebe930ba1
+md"""
+## Función valor de la acción/estado
+
+Fíjate en que políticas diferentes van a dar lugar a funciones de valor estado y valor acción estado distintas; en ajedrez la política «apropiarse del centro» da diferentes valores de para los estados y las acciones estado que la política «proteger al rey».
+
+Podemos establecer un orden entre dos políticas del siguiente modo: una política ``\pi`` es mejor que otra política ``\pi'`` si ``v_\pi(s) \ge v_{\pi'}(s)`` para todos los posibles estados.
+
+Con esta relación de orden, podemos encontrar al menos una política ``\pi^*``, quizás más de una, para la que sus valores de ``v_{\pi^*}(s)`` sean mayores que para cualquier otra política. O dicho de otro modo, buscamos, la política cuyas acciones para cada estado maximizan la ganancia.
 """
 
 # ╔═╡ 1e7a508a-0745-46ad-bd0e-a53fe94d4ec7
 md"""
-## Función valor de la acción
+## Función valor de la acción/estado
 
-Lo que buscamos es encontrar una política que maximice la ganancia esperada a futuro:
+Lo que buscamos es encontrar una política que maximice la ganancia esperada a futuro, es decir, buscamos las política ``\pi_*`` para la que la función valor estado:
 
-$q_\pi(s,a) = E_\pi(G_t|S_t = s, A_t = a)$
+```math
+v_{\pi^*}(s) = \max_a \sum_{s',r'} p(s',r | r,a) \left[r + \gamma v_{\pi^*}(s')]\right]
+```
 
-Esta función se llama **función acción-valor para la política $\pi$**.
+sea la máxima para cada estado, y también lo sea la función acción estado:
 
-El objetivo es maximizar la **función acción-valor** eligiendo la secuencia de acciones adecuada.
+```math
+q_{\pi^*}(s,a) = \sum_{s',r'} p(s',r | r,a) \left[r + \gamma \max_a' q_{\pi^*}(s',a')]\right]
+```
+
 """
 
 # ╔═╡ c45243d4-456d-494b-b27b-1ea79d2e0b48
@@ -1307,7 +1352,9 @@ version = "17.7.0+0"
 # ╠═cf4d406f-9570-4bf8-a266-9f6d7cac24ed
 # ╠═3d815877-88a7-44b6-b9df-8d329d1a7e3b
 # ╠═2e8856b0-a21a-46dc-9601-f928b31245c1
+# ╠═26c0db62-9f96-43cc-a18b-f64290293576
 # ╠═fc948717-9f3b-403c-8f65-d05d7bb92b85
+# ╠═68fb378b-e910-4344-b0aa-832ebe930ba1
 # ╠═1e7a508a-0745-46ad-bd0e-a53fe94d4ec7
 # ╠═c45243d4-456d-494b-b27b-1ea79d2e0b48
 # ╠═63e07476-a0bb-4dc4-9f3d-5f315e9880de
