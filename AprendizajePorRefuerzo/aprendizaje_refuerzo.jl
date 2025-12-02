@@ -22,7 +22,7 @@ using ShortCodes
 TableOfContents(title="Contenidos", depth=1)
 
 # ╔═╡ 25e87a36-ca03-4497-9571-165f9f9ce5e0
-imagenes = "https://belmonte.uji.es/Docencia/IR2130/Teoria/AprendizajePorRefuerzo/Imagenes/"
+imagenes = "https://belmonte.uji.es/Docencia/IR2130/Teoria/AprendizajePorRefuerzo/Imagenes/";
 
 # ╔═╡ 270a45a5-bfb3-47a4-b5fb-981cb9343af1
 md"""
@@ -461,7 +461,7 @@ v_\pi(s) = E_\pi[G_t | S_t = s] = E_\pi\left[ \sum_{k=0}^{\infty} \gamma^kR_{t+k
 md"""
 ## Función valor del estado
 
-La función valor de estado se puede expresar de forma recursiva en función de los siguiente estados posible al actual:
+La función valor del estado se puede expresar de forma recursiva en función de los siguiente estados posibles al actual:
 
 $$\begin{align}
 v_\pi(s) &= E_\pi[G_t | S_t = s] \\
@@ -510,7 +510,7 @@ Con esta relación de orden, podemos encontrar al menos una política ``\pi^*``,
 md"""
 ## Función valor de la acción/estado
 
-Lo que buscamos es encontrar una política que maximice la ganancia esperada a futuro, es decir, buscamos las política ``\pi_*`` para la que la función valor estado:
+Lo que buscamos es encontrar una política que maximice la ganancia esperada a futuro, es decir, buscamos las política ``\pi^*`` para la que la función valor estado:
 
 ```math
 v_{\pi^*}(s) = \max_a \sum_{s',r'} p(s',r | r,a) \left[r + \gamma v_{\pi^*}(s')]\right]
@@ -524,6 +524,17 @@ q_{\pi^*}(s,a) = \sum_{s',r'} p(s',r | r,a) \left[r + \gamma \max_a' q_{\pi^*}(s
 
 """
 
+# ╔═╡ a48fea43-f6d8-44f9-a862-21f29486e669
+md"""
+## Función valor de la acción/estado
+
+El modo de operar es el siguiente:
+
+1. Inicializamos todos los valores de la función valor a cero.
+1. Utilizmos la ecuación ``v_{\pi^*}(s)`` para actualizar los valores en un iteración.
+1. Volvemos a actualizar los valores hasta que alcanzamos un número máximo de iteraciones, o la cuando la actualización de la ganancia está por debajo de cierto umbral (actualización pequeña de la ganancia).
+"""
+
 # ╔═╡ c45243d4-456d-494b-b27b-1ea79d2e0b48
 md"""
 # El algoritmo Q-learning
@@ -533,24 +544,30 @@ md"""
 md"""
 ## Función Q
 
+El problema al utilizar las ecuaciones de Bellman para calcular directamente la función valor y la función de acción/valor es que necesitaremos un número muy alto de iteraciones.
+
 Una aproximación al óptimo de la **función acción-valor** es el algoritmo **Q-learning**:
 
-$Q(S_t,A_t) \leftarrow Q(S_t,A_t) + \alpha[ R_{t+1} + \gamma \max_{a \in A} Q(S_{t+1},a) - Q(S_t,A_t) ]$
+```math
+Q(S_t,A_t) \leftarrow Q(S_t,A_t) + \alpha[ R_{t+1} + \gamma \max_{a \in A} Q(S_{t+1},a) - Q(S_t,A_t) ]
+```
 
 Donde $\alpha$ es la tasa de aprendizaje y $\gamma$ es el factor de descuento.
 
 La función $Q(s,a)$ es una medida de lo bueno que es estar en el estado $s$, y realizar la acción $a$; mide la _calidad_ (Q-uality) de la pareja estado-acción.
+
+Un detalle muy importante del algoritmo Q-learning es que no depende de la política para calcular una aproximación a la solución óptima.
 """
 
 # ╔═╡ f9c33887-db0e-4757-90b9-d6f91ccabf86
 md"""
 ## Función Q
 
-$Q(S_t,A_t) \leftarrow Q(S_t,A_t) + \alpha[ R_{t+1} + \gamma \max_{a \in A} Q(S_{t+1},a) - Q(S_t,A_t) ]$
+```math
+Q(S_t,A_t) \leftarrow Q(S_t,A_t) + \alpha[ R_{t+1} + \gamma \max_{a \in A} Q(S_{t+1},a) - Q(S_t,A_t) ]
+```
 
-$\gamma \max_{a \in A} Q(S_{t+1},a) \rightarrow$ mejor estado que se puede conseguir al realizar una acción $a \in A$ (con descuento).
-
-$R_{t+1} \rightarrow$ recompensa inmediata al realizar la acción $a \in A$.
+Dónde $\gamma \max_{a \in A} Q(S_{t+1},a)$ es el mejor estado que se puede conseguir al realizar una acción $a \in A$ (con descuento). Y $R_{t+1}$ es la recompensa inmediata al realizar la acción $a \in A$.
 """
 
 # ╔═╡ 7c118104-3aec-478c-a6f7-5bdee9defe76
@@ -558,29 +575,30 @@ Columns(
 	Resource(
 		imagenes * "frozen_lake_estado_14.png",
 		:alt => "Lago helado",
-		# :width => 400,
 		:style => "display: block; margin: auto;",
 	),
 	md"""
 	**Ejemplo**
 	
-	En el estado mostrado (14), la mejor acción que puede tomar el elfo es moverse
-	hacia la derecha, por lo que la calidad (Q) de la pareja (estado=14,
+	En el estado mostrado, la mejor acción que puede tomar el elfo es moverse
+	hacia la derecha, por lo que la calidad (Q) de la pareja (estado,
 	acción=derecha) se incrementa.
 	""";
-	widths = [30, 70]
+	widths = [40, 60]
 )
 
 # ╔═╡ fb18dbd7-5223-45c7-bd20-d6c648c01c2b
 md"""
 ## Función Q
 
-$Q(S_t,A_t) \leftarrow Q(S_t,A_t) + \alpha[ R_{t+1} + \gamma \max_{a \in A} Q(S_{t+1},a) - Q(S_t,A_t) ]$
+```math
+Q(S_t,A_t) \leftarrow Q(S_t,A_t) + \alpha[ R_{t+1} + \gamma \max_{a \in A} Q(S_{t+1},a) - Q(S_t,A_t) ]
+```
 
 Fíjate en que la función $Q(S_t,A_t)$ se actualiza al elegir la mejor acción 
 $a$ en cada paso del aprendizaje.
 
-Un detalle muy interesante de esta función es que converge hacia el óptimo con 
+Además, un detalle muy interesante de esta función es que converge hacia el óptimo con 
 independencia de la política que utilicemos.
 """
 
@@ -602,21 +620,25 @@ Columns(
 	md"""
 	**Lago Helado**:
 	
-	El agente debe llegar desde la posición de inicio hasta el regalo, si se alcanza 
-	el regalo, la recompensa es 1.
+	El agente (elfo) debe llegar desde la posición de inicio hasta el regalo. Si se alcanza el regalo, la recompensa es 1. No se obtiene recompensa en cada uno de los movimientos. Además, hay casillas en las que el juego acaba sin obtener recompensa, los agujeros en el hielo.
 	
 	Las posibles **acciones** son moverse a la izquierda, abajo, derecha, o arriba 
-	desde la posición actual.
-	
-	El juego acaba si se cae en un agujero, o si el número de acciones antes de 
-	alcanzar el regalo alcanza un límite, la recompensa es 0.
+	desde la posición actual. Fíjate en que el juego es probabilista ya que, como el suelo está helado, cuando el elfo esté en una casilla concreta puede decidir realizar una acción, resbalar, y como consecuencia llegar a otra casilla.
 	""";
-	widths = [30, 70]
+	widths = [40, 60]
 )
+
+# ╔═╡ 72465d6d-ad82-4798-b7db-f2c6a3a5a9ba
+md"""
+El juego acaba si se cae en un agujero, o si el número de acciones antes de 
+alcanzar el regalo alcanza un límite, la recompensa es 0.
+"""
 
 # ╔═╡ d4dd8e39-baa8-4077-8f21-69d9de1c1b33
 md"""
 ## Función Q en espacios finitos
+
+El algoritmo Q-learning se basa en una tabla en la que cada posible estado está representado por una fila, y cada columna representa una de las posibles acciones que el agente puede tomar. 
 """
 
 # ╔═╡ fb43650f-53e1-4af6-8f30-09389bd024dd
@@ -628,7 +650,7 @@ Columns(
 		:style => "display: block; margin: auto;",
 	),
 	md"""
-	El problema tiene 16 estado posibles (uno por cada casilla), y las acciones que el agente puede tomar son 4.
+	En nuestro caso, el problema tiene 16 estado posibles (uno por cada casilla), y las acciones que el agente puede tomar son 4.
 	
 	|       | Izquierda   | Abajo     | Derecha  | Arriba  | 
 	|-------|:-----------:|:---------:|:--------:|:-------:|
@@ -637,58 +659,43 @@ Columns(
 	|**...**|     0       |     0     |     0    |    0    |
 	|**15** |     0       |     0     |     0    |    0    |
 	|**16** |     0       |     0     |     0    |    0    |
+	
+	Inicialmente todas las casillas se rellenan con el valor cero.
 	""";
-	widths = [30, 70]
+	widths = [40, 60]
 )
 
-# ╔═╡ 5a45ca41-dcf4-4b38-9af7-a047378aeeff
-md"""
-Inicialmente la matriz está llena de ceros.
-"""
-
-# ╔═╡ d72fa66d-21df-402e-bfc4-0c4d3fddf646
+# ╔═╡ 17f2e0c5-f4b3-4ec0-9103-c538bbab8fba
 md"""
 ## Función Q en espacios finitos
 """
 
-# ╔═╡ 08c1a771-382a-445a-b430-19f28d58dfcf
-Columns(
-	Resource(
-		imagenes * "frozen_lake.png",
-		:alt => "Lago helado",
-		# :width => 400,
-		:style => "display: block; margin: auto;",
-	),
-	md"""
-	Nuestra tabla Q tiene 16 x 4 = 64 elementos.
-	
-	Si aplicamos el algoritmo:
-	```python
-	while not terminado:  
-	    accion = np.argmax(Q[estado,:])
-	    nuevo_estado, recompensa, terminado,_,_ = lago.step(accion)
-	    Q[estado, accion] += alfa * (recompensa + 
-	        gamma*np.max(Q[nuevo_estado,:]) - Q[estado, accion])
-	    estado = nuevo_estado
-	```
-	""";
-	widths = [25, 75]
-)
-
-# ╔═╡ 52c34bd3-9ac5-49dd-94ce-0d46e968d25c
+# ╔═╡ f5c12b63-2d42-4979-a3b9-6497b5e297a2
 md"""
+Si aplicamos la función de actualización
+
 ```math
 Q(S_t,A_t) \leftarrow Q(S_t,A_t) + \alpha[ R_{t+1} + \gamma \max_{a \in A} Q(S_{t+1},a) - Q(S_t,A_t) ]
 ```
 
-Veremos que, simplemente, el algoritmo no aprende. ¿Por qué?
+a la tabla inicial
+
+|       | Izquierda   | Abajo     | Derecha  | Arriba  | 
+|-------|:-----------:|:---------:|:--------:|:-------:|
+|**1**  |     0       |     0     |     0    |    0    |
+|**2**  |     0       |     0     |     0    |    0    |
+|**...**|     0       |     0     |     0    |    0    |
+|**15** |     0       |     0     |     0    |    0    |
+|**16** |     0       |     0     |     0    |    0    |
+
+vermos que el algoritmo no actualiza los valores de la tabla. 
 """
 
 # ╔═╡ 0fed9fc3-8914-4570-971b-f53397e98070
 md"""
 ## Función Q en espacios finitos
 
-El problema en esta expresión:
+El problema en la función de actualización:
 
 ```math
 Q(S_t,A_t) \leftarrow Q(S_t,A_t) + \alpha[ R_{t+1} + \gamma \max_{a \in A} Q(S_{t+1},a) - Q(S_t,A_t) ]
@@ -709,39 +716,9 @@ md"""
 
 Este problema se conoce con el nombre de *Dilema de exploración frente a explotación*.
 
-Si siempre queremos explotar (maximizar) el resultado, puede que nunca exploremos nueva soluciones que nos pueden acercar al óptimo.
+Si siempre queremos explotar (maximizar) el resultado, puede que nunca exploremos nuevas soluciones que nos pueden acercar al óptimo.
 
-¿Cómo lo solucionamos?
-"""
-
-# ╔═╡ 0e7bcdd9-eb1e-4099-bd54-fad2c3992b4b
-md"""
-## Función Q en espacios finitos
-
-Introduciendo un factor de exploración en el algoritmo.
-
-```python
-def selecciona_accion(estado):
-    if rng.random() < epsilon: 
-        accion = lago.action_space.sample()
-    else:
-        accion = np.argmax(Q[estado, :])
-
-    return accion
-```
-
-Y la introducimos en el algoritmo Q:
-
-```python
-while not terminado:  
-    accion = selecciona_accion(estado)
-    nuevo_estado, recompensa, terminado, _, _ = lago.step(accion)
-    Q[estado, accion] += alfa * (recompensa + gamma*np.max(Q[nuevo_estado,:]) - 
-        Q[estado, accion])
-    estado = nuevo_estado
-
-epsilon = max(epsilon - epsilon_decay, 0)
-```
+¿Cómo lo solucionamos? Introduciendo un factor de exploración en el algoritmo, al elegir la siguiente acción no seleccionamos lo que tengo un valor máximo, sino que seleccionamos, con alguna probabilidad, otra acción. Además, a medida que la solución evoluciona, vamos reduciendo la probabilidad de selección aleatoria, es decir, al principio permitimos cierta exploración en la búsqueda de la solución, pero a medida que iteramos, vamos reduciendo la probabilidad de elección aleatoria del siguiente estado.
 """
 
 # ╔═╡ 5ffc2df3-9fc7-4e54-aca3-1145f5f09b72
@@ -1356,6 +1333,7 @@ version = "17.7.0+0"
 # ╠═fc948717-9f3b-403c-8f65-d05d7bb92b85
 # ╠═68fb378b-e910-4344-b0aa-832ebe930ba1
 # ╠═1e7a508a-0745-46ad-bd0e-a53fe94d4ec7
+# ╠═a48fea43-f6d8-44f9-a862-21f29486e669
 # ╠═c45243d4-456d-494b-b27b-1ea79d2e0b48
 # ╠═63e07476-a0bb-4dc4-9f3d-5f315e9880de
 # ╠═f9c33887-db0e-4757-90b9-d6f91ccabf86
@@ -1363,15 +1341,13 @@ version = "17.7.0+0"
 # ╠═fb18dbd7-5223-45c7-bd20-d6c648c01c2b
 # ╠═dbd20ea5-091a-4f08-84e4-7639cf9339b5
 # ╠═a18f901f-9be6-49f0-aed5-5f0089fdf165
+# ╠═72465d6d-ad82-4798-b7db-f2c6a3a5a9ba
 # ╠═d4dd8e39-baa8-4077-8f21-69d9de1c1b33
 # ╠═fb43650f-53e1-4af6-8f30-09389bd024dd
-# ╠═5a45ca41-dcf4-4b38-9af7-a047378aeeff
-# ╠═d72fa66d-21df-402e-bfc4-0c4d3fddf646
-# ╠═08c1a771-382a-445a-b430-19f28d58dfcf
-# ╠═52c34bd3-9ac5-49dd-94ce-0d46e968d25c
+# ╠═17f2e0c5-f4b3-4ec0-9103-c538bbab8fba
+# ╠═f5c12b63-2d42-4979-a3b9-6497b5e297a2
 # ╠═0fed9fc3-8914-4570-971b-f53397e98070
 # ╠═46198f73-8966-43ff-9878-13de4cca96d9
-# ╠═0e7bcdd9-eb1e-4099-bd54-fad2c3992b4b
 # ╠═5ffc2df3-9fc7-4e54-aca3-1145f5f09b72
 # ╠═34a29918-675d-4d18-bf2c-728166acc9aa
 # ╠═fb24292b-4737-4f9f-a5b6-0c4a0d85bf53
