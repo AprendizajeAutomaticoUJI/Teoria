@@ -57,23 +57,34 @@ md"""
 # Introducción
 """
 
-# ╔═╡ 4a7b4cd1-df95-4deb-bac7-61b6bcda655a
+# ╔═╡ e4ac1d9a-e347-46c1-886d-769293aae84c
 md"""
 ## Introducción
+"""
 
+# ╔═╡ c5ceb695-574b-4948-b384-8ff05b1c9ff2
+Resource(
+	imagenes * "breakout.jpg",
+	:alt => "Logo UJI",
+	:width => 400,
+	:style => "display: block; margin: auto;",
+)
+
+# ╔═╡ 4a7b4cd1-df95-4deb-bac7-61b6bcda655a
+md"""
 Imagina un juego por ordenador, clásico, por simplificar, como el breakout, el número de estados posibles es enorme. Intentar aplicar el algoritmo Q es estos caso es inviable.
 
-La idea es estos casos es reducir el número de parámetros (estados en el caso del algoritmo Q) que el algoritmo debe aprender, y utilizar una buena representación del problema.
+La idea es estos casos es reducir el número de parámetros (estados en el caso del algoritmo Q) que el algoritmo debe aprender, y utilizar una representación alternativa del problema.
 """
 
 # ╔═╡ ed2e8efc-8554-4318-8338-9e5e91e7321d
 md"""
 ## Introducción
 
-Podemos utilizar una red neuronal para trabajar las ideas anteriores:
+Podemos utilizar una red neuronal como una representación del problema:
 
 1. Pasamos del espacio de estados al espacio de parámetros de la red.
-1. Utilizamos una representación dependiente del problema.
+1. La representación dependiente del problema.
 """
 
 # ╔═╡ 765c63ae-9565-4ad0-8c88-31ced0c455f3
@@ -85,7 +96,7 @@ md"""
 md"""
 ## Deep Q Networks
 
-Una de las primeras aproximaciones de aplicación de redes neuronales profundas a soluciones de aprendizaje por refuerzo apareció publicada como: [Playing Atari with Deep Reinforcement Learning](https://arxiv.org/pdf/1312.5602)
+Una de las primeras aproximaciones de la aplicación de las redes neuronales profundas a soluciones de aprendizaje por refuerzo apareció publicada como: [Playing Atari with Deep Reinforcement Learning](https://arxiv.org/pdf/1312.5602)
 
 Recordemos la expresión de la actualización de Q:
 
@@ -93,7 +104,7 @@ Recordemos la expresión de la actualización de Q:
 Q(S_t,A_t) \leftarrow Q(S_t,A_t) + \alpha[ \boxed{R_{t+1} + \gamma \max_{a \in A} Q(S_{t+1},a)} - Q(S_t,A_t) ]
 ```
 
-Lo que queremos es que nuestra red neuronal _aprenda_ (aproxime) la parte encuadrada de la función $Q$.
+Lo que queremos es que nuestra red neuronal _aprenda_ (aproxime) la parte recuadrada de la función $Q$.
 """
 
 # ╔═╡ f151d343-9c01-4f13-95a2-d6cd823307fb
@@ -130,19 +141,19 @@ Defino la función de pérdidas de la red como:
 md"""
 ## Show me the code
 
-Afortunadamente, estas técnicas están implementadas en paquetes de Python. Uno de estos paquetes es [stable-baseline3](https://stable-baselines3.readthedocs.io/en/master/#)
+Afortunadamente, estas técnicas están implementadas en el paquete de Julia [DeepQLearning](https://github.com/JuliaPOMDP/DeepQLearning.jl).
 
-Instalamos el paquete:
+Tenemos que crear, con Flux, el modelo que va a entrenar el algoritmo:
 
-```bash
-micromamba install stable-baseline3
-```
+```julia
+using Flux
+using DeepQLearning
 
-Importamos los paquetes necesarios:
-
-```python
-import gymnasium as gym
-from stable_baselines3 import DQN
+modelo = Chain(
+               Dense(2, 64, relu), 
+               Dense(64, 32, relu),
+               Dense(32, length(actions(entorno)))
+              )
 ```
 """
 
@@ -150,45 +161,25 @@ from stable_baselines3 import DQN
 md"""
 ## Show me the code
 
-Y este es el código que crea el entorno y entrena una DQN:
+Y ya podemos entrenar la red utilizando una estrategia voraz para resolver el problema de exploración frente a explotación:
 
-```python
-env = gym.make("LunarLander-v2", enable_wind=False, gravity=-10.0,
-               wind_power=15.0, turbulence_power=1.5)
+```julia
+exploracion = EpsGreedyPolicy(entorno, LinearDecaySchedule(start=1.0, stop=0.01, steps=10000/2));
+dqsolver = DeepQLearningSolver(qnetwork = modelo, max_steps=100000, 
+                             exploration_policy = exploracion,
+                             learning_rate=0.005,log_freq=500,
+                             recurrence=false,double_q=true, dueling=true, 									 prioritized_replay=true
+)
+dqpolitica = solve(dqsolver, entorno)
 
-env.reset()
-model = DQN("MlpPolicy", env, verbose=1, 
-            gamma=0.99, learning_rate=5e-4, batch_size=128, buffer_size=50_000, 
-            target_update_interval=250, train_freq=4, gradient_steps=-1,
-            learning_starts=0, exploration_fraction=0.12, exploration_final_eps=0.1, 
-            policy_kwargs={'net_arch': [256, 256]})
-
-model.learn(total_timesteps=200_000)
-
-env.close()
 ```
-
-Fíjate en el elevado número de iteraciones que tenemos que hacer para que el resultado sea bueno.
 """
 
-# ╔═╡ 60d7b109-c6d4-41ae-8330-a24804242111
+# ╔═╡ 47beab3f-067d-48b0-b039-91422a24b611
 md"""
 ## Show me the code
 
-Y este es el resultado
-"""
-
-# ╔═╡ b3829d4a-88df-40c8-a90e-80b949f76581
-Resource(
-	imagenes * "lunar_lander.gif",
-	:alt => "Lunar lander",
-	:width => 900,
-	:style => "display: block; margin: auto;",
-)
-
-# ╔═╡ 017af455-ec55-497a-ac07-3fbd6fbc1bed
-md"""
-Aterrizaje conseguido!!!
+En la práctica de aprendizaje por refuerzo vas o entrenar una red para resolver el problema del lago helado.
 """
 
 # ╔═╡ eec0f571-889b-4344-96c8-2e84bb1ffa3b
@@ -526,6 +517,8 @@ version = "17.7.0+0"
 # ╠═98a7f0ab-937f-43e3-a769-59ae9df7afc3
 # ╠═2ba99e7c-f076-449e-87a0-8377162f2938
 # ╠═c4d433f0-912e-481d-8a60-d627f84e16c9
+# ╠═e4ac1d9a-e347-46c1-886d-769293aae84c
+# ╠═c5ceb695-574b-4948-b384-8ff05b1c9ff2
 # ╠═4a7b4cd1-df95-4deb-bac7-61b6bcda655a
 # ╠═ed2e8efc-8554-4318-8338-9e5e91e7321d
 # ╠═765c63ae-9565-4ad0-8c88-31ced0c455f3
@@ -534,9 +527,7 @@ version = "17.7.0+0"
 # ╠═5643b8cb-97fa-4c5f-83c1-5b91aa500257
 # ╠═a22eefbf-7c27-4da2-a245-2d8e24bad2ed
 # ╠═104c2496-af24-41b9-a445-5b962463dedc
-# ╠═60d7b109-c6d4-41ae-8330-a24804242111
-# ╠═b3829d4a-88df-40c8-a90e-80b949f76581
-# ╠═017af455-ec55-497a-ac07-3fbd6fbc1bed
+# ╠═47beab3f-067d-48b0-b039-91422a24b611
 # ╠═eec0f571-889b-4344-96c8-2e84bb1ffa3b
 # ╠═db6ad5c6-87d7-4b7b-becf-9f232365f0f1
 # ╠═4fecad69-0852-4de4-b015-69591344836d
