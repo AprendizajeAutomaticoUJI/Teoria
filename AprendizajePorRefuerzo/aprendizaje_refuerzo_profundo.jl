@@ -20,7 +20,7 @@ imagenes = "https://belmonte.uji.es/Docencia/IR2130/Teoria/AprendizajePorRefuerz
 
 # ╔═╡ 99dfd58b-0076-4282-bc26-04be14b48eaf
 md"""
-# Aprendizaje por Refuerzo
+# Aprendizaje por Refuerzo Profundo
 
 Óscar Belmonte Fernández - IR2130 Aprendizaje Automático
 
@@ -208,7 +208,6 @@ md"""
 md"""
 ## Referencias
 
-1. [Stable Baseline 3.](https://stable-baselines3.readthedocs.io/en/master/#)
 1. [Deep Reinforcement Learning for Robotics: A Survey of Real-World
    Successes.](https://arxiv.org/pdf/2408.03539)
 1. [A friendly introduction to deep reinforcement learning, Q-networks and policy gradients](https://www.youtube.com/watch?v=SgC6AZss478&t=23s)

@@ -14,9 +14,9 @@ using PlutoTeachingTools
 using ShortCodes
 
 # ╔═╡ f722bfd0-66eb-11f0-01ea-7b434238558a
-# html"""
-# <link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
-# """
+html"""
+<link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
+"""
 
 # ╔═╡ 913974f6-4c99-4f2e-be95-9a66c8fce004
 TableOfContents(title="Contenidos", depth=1)
@@ -46,7 +46,7 @@ md"""
 ## Objetivos de aprendizaje
 
 - Interpretar cuales son las características del aprendizaje por refuerzo.
-- Resumir los conceptos de agente, estado, acción y recompensa.
+- Resumir los conceptos de entorno, agente, estado, acción y recompensa.
 - Conectar cada uno de los conceptos anteriores con el proceso de aprendizaje.
 - Construir una solución utilizando el algoritmo Q-learning.
 """
@@ -88,9 +88,9 @@ Son necesarios nuevos algoritmos para encontrar las soluciones dentro de este nu
 md"""
 ## Introducción
 
-En el **aprendizaje supervisado** construimos un modelo con datos y valores de salida. Nuestro modelo nos dará un nueva salida para cada nuevo dato.
+En el **aprendizaje supervisado** construimos un modelo con datos y valores de salida. Una vez entrenado, nuestro modelo nos dará un nueva salida para cada nuevo dato.
 
-En **aprendizaje no supervisado** construimos un modelo sólo con datos, y el modelo aprende a identificar las similitudes entre los datos.
+En **aprendizaje no supervisado** construimos un modelo sin valores de salida, y el modelo aprende a identificar las similitudes entre los datos.
 """
 
 # ╔═╡ bc67e92a-4c09-4104-882f-632db5972747
@@ -116,8 +116,6 @@ Fuente: Reinforcement learning: An introduction
 # ╔═╡ 3d047e1f-d2ee-464a-bb30-9ff08acaf3f4
 md"""
 ## Introducción
-
-Estrategia en juegos:
 """
 
 # ╔═╡ b0e55979-4466-47d6-8a75-39a6ca1a7192
@@ -140,16 +138,17 @@ md"""
 ## Introducción
 """
 
+# ╔═╡ 86277025-8b60-46b5-a5f3-1b0bccd72844
+md"""
+Plafinicación en robótica
+"""
+
 # ╔═╡ 38115240-6cf5-47ab-bb91-94f8c5f37b4a
-Columns(
-	md"Plafinicación en robótica",
-	Resource(
-		imagenes * "robotics_rl.jpg",
-		:alt => "Planificación en robótica",
-		:width => 400,
-		:style => "display: block; margin: auto;",
-	);
-	widths = [30, 70]
+Resource(
+	imagenes * "robotics_rl.jpg",
+	:alt => "Planificación en robótica",
+	:width => 900,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ 0d625f98-49c6-4cf3-baff-9c973145e484
@@ -157,16 +156,17 @@ md"""
 ## Introducción
 """
 
+# ╔═╡ d4438817-61d6-47b4-8536-adba3d784e18
+md"""
+Medicina y salud
+"""
+
 # ╔═╡ dfba5a6e-826f-49d4-ae8f-fa1b9b86158f
-Columns(
-	md"Medicina y salud",
-	Resource(
-		imagenes * "alpha_fold.png",
-		:alt => "Medicina y salud",
-		:width => 400,
-		:style => "display: block; margin: auto;",
-	);
-	widths = [30, 70]
+Resource(
+	imagenes * "alpha_fold.png",
+	:alt => "Medicina y salud",
+	:width => 600,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ b3ec2529-5127-4f4c-a221-07b1f665081b
@@ -174,16 +174,17 @@ md"""
 ## Introducción
 """
 
+# ╔═╡ 8e6ee3ac-82ed-43c5-a80d-81e67f676ce0
+md"""
+Conducción autónoma
+"""
+
 # ╔═╡ 39adf584-77e4-4109-9cf7-303615c2e638
-Columns(
-	md"Conducción autónoma",
-	Resource(
-		imagenes * "conduccion_autonoma.jpg",
-		:alt => "Conducción autónoma",
-		:width => 400,
-		:style => "display: block; margin: auto;",
-	);
-	widths = [30, 70]
+Resource(
+	imagenes * "conduccion_autonoma.jpg",
+	:alt => "Conducción autónoma",
+	:width => 800,
+	:style => "display: block; margin: auto;",
 )
 
 # ╔═╡ 3551e3f8-8e24-413c-9947-0babb6910cfb
@@ -312,7 +313,7 @@ Fíjate en que, de nuevo, esta nueva expresión es símplemente una manipulació
 md"""
 ## Entorno, Agente, Acción, Estado y Recompensa
 
-Por otro lado, si calculamos el valor esperado de las recompensas que el agente puede obtener después de realizar la acción ``a`` desde el estado ``s``, obtenemos la recompensa esperada para al realizar la acción ``a`` en el estado ``s``:
+Por otro lado, si calculamos el valor esperado de las recompensas que el agente puede obtener después de realizar la acción ``a`` desde el estado ``s``, obtenemos la recompensa esperada al realizar la acción ``a`` en el estado ``s``:
 
 ```math
 r(s, a) = E[R_t | S_{t-1} = s, A_{t-1} = a) = \sum\limits_{r \in R}^{} r \sum\limits_{s' \in S} p(s',r|s,a)
@@ -331,7 +332,11 @@ Finalmente, también podemos calcular el valor esperado de la recompensa al lleg
 r(s, a, s') = E[R_t | S_{t-1} = s, A_{t-1} = a, S_t = s') = \sum\limits_{r \in R}^{} r \frac{p(s',r|s,a)}{p(s'|s,a)}
 ```
 
-Donde hemos dividido por ``p(s'|s,a)`` para que todas las probabilidades ``\frac{p(s',r|s,a)}{p(s'|s,a)} = 1``.
+Donde hemos dividido por ``p(s'|s,a)`` para que todas las probabilidades 
+
+```math
+\sum\limits_{r \in R}^{}\frac{p(s',r|s,a)}{p(s'|s,a)} = 1
+```
 """
 
 # ╔═╡ 13c68676-b38b-4fe2-91e8-f9a808ebef96
@@ -373,6 +378,25 @@ Columns(
 # ╔═╡ 43e5877d-1cb7-4a6f-9331-e1ec7bf4ef8b
 html"""
 Fuente: Pexels.
+"""
+
+# ╔═╡ 35a29c40-2b5d-49f0-9485-fdd2b06a3492
+md"""
+## Entorno, Agente, Acción, Estado y Recompensa
+
+Un ejemplo: el lago helado.
+"""
+
+# ╔═╡ 8fdcd8e0-ff6c-4b83-8e47-2d3d22a459d6
+Resource(
+	imagenes * "frozen_lake.png",
+	:alt => "Lago helado",
+	:style => "display: block; margin: auto;",
+)
+
+# ╔═╡ c1abe3ab-c796-48b7-bbdb-860ec93f8394
+md"""
+El elfo tiene que llegar desde la casilla de salida hasta la casilla del regalo sin caer en los agujeros. Importante: como el lago está helado, no siempre se ejecuta la acción que el elfo decide hacer, hay veces en la que resvala y la acción seleccionada es otra. Este es el ejemplo que vamos a resolver con una implementación en Julia.
 """
 
 # ╔═╡ 79784c4f-b1c8-4ad7-ac1e-e9b2331f3663
@@ -430,7 +454,7 @@ El dominio suele ser $0 \leq \gamma \leq 1$, siendo un valor típico $\gamma =
 md"""
 ## Política
 
-La acción se escoge según cierta política $\pi$:
+La acción a realizar por el agente se escoge siguiendo cierta política $\pi$:
 
 $\pi: S \rightarrow A$
 
@@ -444,9 +468,14 @@ La política $\pi$ puede ser:
 md"""
 ## Función valor del estado
 
-La **Función valor** mide la recompensa total esperada que se obtiene desde el estado ``s`` hasta el final del juego (o episodio), siguiendo una política concreta ``\pi``.
+La **Función valor del estado** mide la recompensa total esperada que se obtiene desde el estado ``s`` hasta el final del juego (o episodio), siguiendo una política concreta ``\pi``.
 
 Un ejemplo para entender el objetivo de la función valor es el juego del ajedrez. En el ajedrez es importante controlar las posiciones del centro del tablero porque son estas las más importantes, ya que si realizo movimientos desde ellas la probabilidad de ganar la partida aumenta.
+"""
+
+# ╔═╡ f74ada35-1e6e-46ad-8723-43f8674b7fd4
+md"""
+## Función valor del estado
 
 La función valor asigna un valor a cada uno de los posibles estados en los que se puede encontrar el agente, es como calcular un valor para cada uno de los escaques del juego del ajedrez.
 
@@ -461,7 +490,7 @@ v_\pi(s) = E_\pi[G_t | S_t = s] = E_\pi\left[ \sum_{k=0}^{\infty} \gamma^kR_{t+k
 md"""
 ## Función valor del estado
 
-La función valor del estado se puede expresar de forma recursiva en función de los siguiente estados posibles al actual:
+La función valor del estado se puede expresar de forma recursiva en función de los siguiente estados posibles y siguientes al actual:
 
 $$\begin{align}
 v_\pi(s) &= E_\pi[G_t | S_t = s] \\
@@ -470,7 +499,7 @@ v_\pi(s) &= E_\pi[G_t | S_t = s] \\
 &= \sum_a \pi(a|s) \sum_{s',r'} p(s',r | r,a) \left[r + \gamma v_\pi(s')]\right]
 \end{align}$$
 
-A esta expresión se la conoce como **Ecuación de Bellman**.
+A esta expresión se la conoce como **Ecuación de Bellman**, y es la ecuación fundamental para encontrar la mejor política para maximizar la ganancia.
 """
 
 # ╔═╡ fc948717-9f3b-403c-8f65-d05d7bb92b85
@@ -531,8 +560,10 @@ md"""
 El modo de operar es el siguiente:
 
 1. Inicializamos todos los valores de la función valor a cero.
-1. Utilizmos la ecuación ``v_{\pi^*}(s)`` para actualizar los valores en un iteración.
+1. Utilizamos la ecuación ``v_{\pi^*}(s)`` para actualizar los valores en un iteración.
 1. Volvemos a actualizar los valores hasta que alcanzamos un número máximo de iteraciones, o la cuando la actualización de la ganancia está por debajo de cierto umbral (actualización pequeña de la ganancia).
+
+A esta manera de operar se le llama **algoritmo iteración valor**, y nos garantiza que podemos acercarnos a la política óptima (la de mayor ganancia) tanto como queremos, simplemente iterando el algoritmo.
 """
 
 # ╔═╡ c45243d4-456d-494b-b27b-1ea79d2e0b48
@@ -621,15 +652,15 @@ Columns(
 	**Lago Helado**:
 	
 	El agente (elfo) debe llegar desde la posición de inicio hasta el regalo. Si se alcanza el regalo, la recompensa es 1. No se obtiene recompensa en cada uno de los movimientos. Además, hay casillas en las que el juego acaba sin obtener recompensa, los agujeros en el hielo.
-	
-	Las posibles **acciones** son moverse a la izquierda, abajo, derecha, o arriba 
-	desde la posición actual. Fíjate en que el juego es probabilista ya que, como el suelo está helado, cuando el elfo esté en una casilla concreta puede decidir realizar una acción, resbalar, y como consecuencia llegar a otra casilla.
 	""";
 	widths = [40, 60]
 )
 
 # ╔═╡ 72465d6d-ad82-4798-b7db-f2c6a3a5a9ba
 md"""
+Las posibles **acciones** son moverse a la izquierda, abajo, derecha, o arriba 
+desde la posición actual. Fíjate en que el juego es probabilista ya que, como el suelo está helado, cuando el elfo esté en una casilla concreta puede decidir realizar una acción, resbalar, y como consecuencia llegar a otra casilla.
+
 El juego acaba si se cae en un agujero, o si el número de acciones antes de 
 alcanzar el regalo alcanza un límite, la recompensa es 0.
 """
@@ -688,7 +719,7 @@ a la tabla inicial
 |**15** |     0       |     0     |     0    |    0    |
 |**16** |     0       |     0     |     0    |    0    |
 
-vermos que el algoritmo no actualiza los valores de la tabla. 
+veremos que el algoritmo no actualiza los valores de la tabla. 
 """
 
 # ╔═╡ 0fed9fc3-8914-4570-971b-f53397e98070
@@ -707,7 +738,7 @@ Está en esta parte:
 Q(S_t,A_t) \leftarrow  ... \max_{a \in A} Q(S_{t+1},a) ...
 ```
 
-Como todas las posiciones de la tabla son **0**, nunca se actualiza la tabla, dicho de otro modo, el algoritmo no _aprende_.
+Como todas las posiciones de la tabla son ``0``, nunca se actualiza la tabla, dicho de otro modo, el algoritmo no _aprende_.
 """
 
 # ╔═╡ 46198f73-8966-43ff-9878-13de4cca96d9
@@ -732,6 +763,22 @@ El valor inicial de $\epsilon$ puede ser $1$ y decaer en cada episodio de aprend
 Al principio la política es de exploración, y cuando la tabla **Q** ya contiene algunos valores, $\epsilon$ ha decaído de manera que se pasa a la fase de explotación.
 """
 
+# ╔═╡ 3d9947ca-a126-4366-a801-21a79c369493
+md"""
+## Función Q en espacios finitos
+
+La implementación en Julia es bastante directa:
+
+```julia
+# Definimos la política epsilon-voraz
+exppolicy = EpsGreedyPolicy(entorno, 0.01)
+# Seleccionamos el algoritmo Q-learning para resolver el problema
+qsolver = QLearningSolver(exploration_policy=exppolicy, learning_rate=0.1, n_episodes=5000, max_episode_length=50, eval_every=50, n_eval_traj=100)
+# Resolvemos el problema y obtenemos la política.
+qpolicy = solve(qsolver, entorno)
+```
+"""
+
 # ╔═╡ 34a29918-675d-4d18-bf2c-728166acc9aa
 md"""
 ## Función Q en espacios finitos
@@ -744,7 +791,6 @@ Columns(
 	Resource(
 		imagenes * "lago_helado.gif",
 		:alt => "Lago helado",
-		# :width => 400,
 		:style => "display: block; margin: auto;",
 	),
 	md"""
@@ -770,7 +816,6 @@ Columns(
 	Resource(
 		imagenes * "cartpole.gif",
 		:alt => "Péndulo invertido",
-		# :width => 400,
 		:style => "display: block; margin: auto;",
 	),
 	md"""
@@ -800,15 +845,14 @@ Columns(
 	Resource(
 		imagenes * "cartpole.gif",
 		:alt => "Péndulo invertido",
-		# :width => 400,
 		:style => "display: block; margin: auto;",
 	),
 	md"""
-	```python
-	espacio_posiciones = np.linspace(-2.4, 2.4, 10)
-	espacio_velocidades = np.linspace(-4, 4, 10)
-	espacio_angulos = np.linspace(-.2095, .2095, 10)
-	espacio_velocidad_angular = np.linspace(-4, 4, 10)
+	```julia
+	espacio_posiciones = range(-2.4, 2.4, 10)
+	espacio_velocidades = range(-4, 4, 10)
+	espacio_angulos = range(-.2095, .2095, 10)
+	espacio_velocidad_angular = range(-4, 4, 10)
 	```
 	Y, a partir de este momento, procedemos de igual forma que lo hemos hecho en el 
 	caso discreto.
@@ -818,7 +862,7 @@ Columns(
 
 # ╔═╡ 0cffafb0-a1d3-453f-a366-5cbf5b5f12da
 md"""
-Detalle importante, la matriz Q en este caso tiene 10 x 10 x 10 x 10 = 10.000 posiciones.
+Detalle importante, la matriz Q en este caso tiene 10 x 10 x 10 x 10 = 10.000 filas.
 """
 
 # ╔═╡ fc6453cd-0a0e-4e4a-9601-962dc62b58cb
@@ -828,6 +872,13 @@ md"""
 Cuando el espacio de estados es muy grande, la aproximación con tablas Q no se puede aplicar.
 
 Pero, podemos aplicar redes neuronales para ayudar en la resolución.
+"""
+
+# ╔═╡ 78d32a32-1ab1-43e3-a657-8b0f80a0ac95
+md"""
+## Implementación
+
+En este [libro de notas](https://belmonte.uji.es/Docencia/IR2130/Teoria/AprendizajePorRefuerzo/mundo_cuadriculado_4x4_pluto.jl) tienes una implementación de todo lo que hemos visto.
 """
 
 # ╔═╡ 43bb1241-f83c-4566-8a26-cd990807471f
@@ -840,15 +891,9 @@ md"""
 ## Resumen
 
 1. El aprendizaje por refuerzo no parte de un conjunto de datos de entrenamiento.
-1. Los conceptos clave son el agente, los estados, las acciones y las recompensas.
+1. Los conceptos clave son el entorno, el agente, los estados, las acciones y las recompensas.
 1. El objetivo de los algoritmos de aprendizaje automático es maximizar la recompensa a futuro.
-"""
-
-# ╔═╡ e4463d7c-68d4-4f4f-9ba5-694c81054d20
-md"""
-## Resumen
-
-4. Un algoritmo que se aproxima al óptimo del máximo de recompensa a futuro es el algoritmo **Q-learning**.
+1. Un algoritmo que se aproxima al óptimo del máximo de recompensa a futuro es el algoritmo **Q-learning**.
 1. **Q-learning** tiene una aplicación directa en el caso de entornos discretos, pero si los queremos aplicar a entornos continuos, debemos discretizar los espacios de estados.
 """
 
@@ -857,7 +902,7 @@ md"""
 ## Referencias
 
 1. [Reinforcement learning at MIT.](https://www.youtube.com/watch?v=8JVRbHAVCws)
-1. [Gymnasium.](https://gymnasium.farama.org/)
+1. [Reinforcement learning: An introduction](http://incompleteideas.net/book/the-book.html)
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -1277,91 +1322,99 @@ version = "17.7.0+0"
 """
 
 # ╔═╡ Cell order:
-# ╠═f722bfd0-66eb-11f0-01ea-7b434238558a
-# ╠═646115db-9b69-482e-b0bf-fb287ed023c4
-# ╠═80589f75-0e75-4171-9f8e-d08ecc8cdf67
-# ╠═963761bd-4b3c-40cb-96fd-d004e9e1e94d
-# ╠═913974f6-4c99-4f2e-be95-9a66c8fce004
-# ╠═25e87a36-ca03-4497-9571-165f9f9ce5e0
-# ╠═270a45a5-bfb3-47a4-b5fb-981cb9343af1
-# ╠═49dde659-7259-44f8-9352-7b9a09a8a324
-# ╠═9344959d-aab8-4c21-96bd-7b0a16d6f068
-# ╠═9bb76759-af68-4f85-8276-b99cabae0857
-# ╠═19069594-b31c-47fa-9e58-ba183fae3409
-# ╠═e65a18ad-9f34-4afc-a3c7-3f9f1bd346a1
-# ╠═f62853c5-1bb6-4ec4-b256-695121d29029
-# ╠═322740c2-ad9e-4335-bb12-bf71006de7a1
-# ╠═bc67e92a-4c09-4104-882f-632db5972747
-# ╠═0d30181c-687b-472a-92a1-4d60016596c6
-# ╠═a24c2f05-b7e1-4a27-b770-a66022306bdb
+# ╟─f722bfd0-66eb-11f0-01ea-7b434238558a
+# ╟─646115db-9b69-482e-b0bf-fb287ed023c4
+# ╟─80589f75-0e75-4171-9f8e-d08ecc8cdf67
+# ╟─963761bd-4b3c-40cb-96fd-d004e9e1e94d
+# ╟─913974f6-4c99-4f2e-be95-9a66c8fce004
+# ╟─25e87a36-ca03-4497-9571-165f9f9ce5e0
+# ╟─270a45a5-bfb3-47a4-b5fb-981cb9343af1
+# ╟─49dde659-7259-44f8-9352-7b9a09a8a324
+# ╟─9344959d-aab8-4c21-96bd-7b0a16d6f068
+# ╟─9bb76759-af68-4f85-8276-b99cabae0857
+# ╟─19069594-b31c-47fa-9e58-ba183fae3409
+# ╟─e65a18ad-9f34-4afc-a3c7-3f9f1bd346a1
+# ╟─f62853c5-1bb6-4ec4-b256-695121d29029
+# ╟─322740c2-ad9e-4335-bb12-bf71006de7a1
+# ╟─bc67e92a-4c09-4104-882f-632db5972747
+# ╟─0d30181c-687b-472a-92a1-4d60016596c6
+# ╟─a24c2f05-b7e1-4a27-b770-a66022306bdb
 # ╟─3d047e1f-d2ee-464a-bb30-9ff08acaf3f4
-# ╠═b0e55979-4466-47d6-8a75-39a6ca1a7192
-# ╠═539dcba5-102d-4c11-a400-94a6ca077b5b
-# ╠═46d7f494-efff-40d2-a1bc-bca8ffd0cd9f
-# ╠═38115240-6cf5-47ab-bb91-94f8c5f37b4a
-# ╠═0d625f98-49c6-4cf3-baff-9c973145e484
-# ╠═dfba5a6e-826f-49d4-ae8f-fa1b9b86158f
-# ╠═b3ec2529-5127-4f4c-a221-07b1f665081b
-# ╠═39adf584-77e4-4109-9cf7-303615c2e638
-# ╠═3551e3f8-8e24-413c-9947-0babb6910cfb
-# ╠═e785e43e-c7c4-4603-b3f2-241efabc4697
-# ╠═447bb4af-4da1-40f0-98a3-d68e2b34b5b1
-# ╠═4b07e8e5-524d-4e68-8a0d-f5cd7c47a894
-# ╠═3a92bd3f-4d2a-41a9-9f77-70edf3fbf10c
-# ╠═b29b0b8c-ed15-49ea-95f5-6634a6d74178
-# ╠═7464261c-999c-4397-b411-bd07025a3beb
-# ╠═10d98301-fc2d-4125-94a2-2ea7f3b42307
-# ╠═3d832db2-de0c-41e1-bf1e-cc0c152f4f98
-# ╠═0e3c3c29-76a2-4404-8fdb-8b442ce1eb9f
-# ╠═8cbb1134-49b5-472c-aadb-1754230742ea
-# ╠═57e7e52c-5cef-463d-87ac-b0bb606ddfe9
-# ╠═d17c48c8-259a-4ca9-97e7-c844370c52fe
-# ╠═1e0cad5b-10b0-4839-b112-25f5b15f7798
-# ╠═7ef876f4-b64d-4a20-9e69-95c08075275c
-# ╠═2ead2629-7a7e-4ad4-86bf-50698e12f13d
-# ╠═13c68676-b38b-4fe2-91e8-f9a808ebef96
-# ╠═5d78edeb-d092-459c-ad88-6345fb838350
-# ╠═7a1582ac-c323-48de-ba53-fad1ce12ea26
-# ╠═43e5877d-1cb7-4a6f-9331-e1ec7bf4ef8b
-# ╠═79784c4f-b1c8-4ad7-ac1e-e9b2331f3663
-# ╠═4e5ad759-e840-43c0-a342-ebf413a5fb2b
-# ╠═77ab5a72-0022-42cb-bd72-24f6ea51c201
-# ╠═cf4d406f-9570-4bf8-a266-9f6d7cac24ed
-# ╠═3d815877-88a7-44b6-b9df-8d329d1a7e3b
-# ╠═2e8856b0-a21a-46dc-9601-f928b31245c1
-# ╠═26c0db62-9f96-43cc-a18b-f64290293576
-# ╠═fc948717-9f3b-403c-8f65-d05d7bb92b85
-# ╠═68fb378b-e910-4344-b0aa-832ebe930ba1
-# ╠═1e7a508a-0745-46ad-bd0e-a53fe94d4ec7
-# ╠═a48fea43-f6d8-44f9-a862-21f29486e669
-# ╠═c45243d4-456d-494b-b27b-1ea79d2e0b48
-# ╠═63e07476-a0bb-4dc4-9f3d-5f315e9880de
-# ╠═f9c33887-db0e-4757-90b9-d6f91ccabf86
-# ╠═7c118104-3aec-478c-a6f7-5bdee9defe76
-# ╠═fb18dbd7-5223-45c7-bd20-d6c648c01c2b
-# ╠═dbd20ea5-091a-4f08-84e4-7639cf9339b5
-# ╠═a18f901f-9be6-49f0-aed5-5f0089fdf165
-# ╠═72465d6d-ad82-4798-b7db-f2c6a3a5a9ba
-# ╠═d4dd8e39-baa8-4077-8f21-69d9de1c1b33
-# ╠═fb43650f-53e1-4af6-8f30-09389bd024dd
-# ╠═17f2e0c5-f4b3-4ec0-9103-c538bbab8fba
-# ╠═f5c12b63-2d42-4979-a3b9-6497b5e297a2
-# ╠═0fed9fc3-8914-4570-971b-f53397e98070
-# ╠═46198f73-8966-43ff-9878-13de4cca96d9
-# ╠═5ffc2df3-9fc7-4e54-aca3-1145f5f09b72
-# ╠═34a29918-675d-4d18-bf2c-728166acc9aa
-# ╠═fb24292b-4737-4f9f-a5b6-0c4a0d85bf53
-# ╠═1ea8f988-ef7b-485c-a901-d172f0f88471
-# ╠═a5afa66c-7447-454d-b0a8-03dba7fb1bbd
-# ╠═9ba9044e-3f77-4a48-a9ac-df196bd77f96
-# ╠═6c6dbb72-61be-4e6f-93b1-73a15eae1646
-# ╠═29d0e749-6072-4888-8fc8-eae42a6b7f06
-# ╠═a235da3d-a99f-41c4-a9f6-47a8e975fbb5
-# ╠═0cffafb0-a1d3-453f-a366-5cbf5b5f12da
-# ╠═fc6453cd-0a0e-4e4a-9601-962dc62b58cb
-# ╠═43bb1241-f83c-4566-8a26-cd990807471f
-# ╠═3831b6c1-d605-4d6b-b3ab-4dc8def26432
-# ╠═e4463d7c-68d4-4f4f-9ba5-694c81054d20
-# ╠═fffa4aac-a902-4f8b-9e92-1cc52e49b017
+# ╟─b0e55979-4466-47d6-8a75-39a6ca1a7192
+# ╟─539dcba5-102d-4c11-a400-94a6ca077b5b
+# ╟─46d7f494-efff-40d2-a1bc-bca8ffd0cd9f
+# ╟─86277025-8b60-46b5-a5f3-1b0bccd72844
+# ╟─38115240-6cf5-47ab-bb91-94f8c5f37b4a
+# ╟─0d625f98-49c6-4cf3-baff-9c973145e484
+# ╟─d4438817-61d6-47b4-8536-adba3d784e18
+# ╟─dfba5a6e-826f-49d4-ae8f-fa1b9b86158f
+# ╟─b3ec2529-5127-4f4c-a221-07b1f665081b
+# ╟─8e6ee3ac-82ed-43c5-a80d-81e67f676ce0
+# ╟─39adf584-77e4-4109-9cf7-303615c2e638
+# ╟─3551e3f8-8e24-413c-9947-0babb6910cfb
+# ╟─e785e43e-c7c4-4603-b3f2-241efabc4697
+# ╟─447bb4af-4da1-40f0-98a3-d68e2b34b5b1
+# ╟─4b07e8e5-524d-4e68-8a0d-f5cd7c47a894
+# ╟─3a92bd3f-4d2a-41a9-9f77-70edf3fbf10c
+# ╟─b29b0b8c-ed15-49ea-95f5-6634a6d74178
+# ╟─7464261c-999c-4397-b411-bd07025a3beb
+# ╟─10d98301-fc2d-4125-94a2-2ea7f3b42307
+# ╟─3d832db2-de0c-41e1-bf1e-cc0c152f4f98
+# ╟─0e3c3c29-76a2-4404-8fdb-8b442ce1eb9f
+# ╟─8cbb1134-49b5-472c-aadb-1754230742ea
+# ╟─57e7e52c-5cef-463d-87ac-b0bb606ddfe9
+# ╟─d17c48c8-259a-4ca9-97e7-c844370c52fe
+# ╟─1e0cad5b-10b0-4839-b112-25f5b15f7798
+# ╟─7ef876f4-b64d-4a20-9e69-95c08075275c
+# ╟─2ead2629-7a7e-4ad4-86bf-50698e12f13d
+# ╟─13c68676-b38b-4fe2-91e8-f9a808ebef96
+# ╟─5d78edeb-d092-459c-ad88-6345fb838350
+# ╟─7a1582ac-c323-48de-ba53-fad1ce12ea26
+# ╟─43e5877d-1cb7-4a6f-9331-e1ec7bf4ef8b
+# ╟─35a29c40-2b5d-49f0-9485-fdd2b06a3492
+# ╟─8fdcd8e0-ff6c-4b83-8e47-2d3d22a459d6
+# ╟─c1abe3ab-c796-48b7-bbdb-860ec93f8394
+# ╟─79784c4f-b1c8-4ad7-ac1e-e9b2331f3663
+# ╟─4e5ad759-e840-43c0-a342-ebf413a5fb2b
+# ╟─77ab5a72-0022-42cb-bd72-24f6ea51c201
+# ╟─cf4d406f-9570-4bf8-a266-9f6d7cac24ed
+# ╟─3d815877-88a7-44b6-b9df-8d329d1a7e3b
+# ╟─2e8856b0-a21a-46dc-9601-f928b31245c1
+# ╟─f74ada35-1e6e-46ad-8723-43f8674b7fd4
+# ╟─26c0db62-9f96-43cc-a18b-f64290293576
+# ╟─fc948717-9f3b-403c-8f65-d05d7bb92b85
+# ╟─68fb378b-e910-4344-b0aa-832ebe930ba1
+# ╟─1e7a508a-0745-46ad-bd0e-a53fe94d4ec7
+# ╟─a48fea43-f6d8-44f9-a862-21f29486e669
+# ╟─c45243d4-456d-494b-b27b-1ea79d2e0b48
+# ╟─63e07476-a0bb-4dc4-9f3d-5f315e9880de
+# ╟─f9c33887-db0e-4757-90b9-d6f91ccabf86
+# ╟─7c118104-3aec-478c-a6f7-5bdee9defe76
+# ╟─fb18dbd7-5223-45c7-bd20-d6c648c01c2b
+# ╟─dbd20ea5-091a-4f08-84e4-7639cf9339b5
+# ╟─a18f901f-9be6-49f0-aed5-5f0089fdf165
+# ╟─72465d6d-ad82-4798-b7db-f2c6a3a5a9ba
+# ╟─d4dd8e39-baa8-4077-8f21-69d9de1c1b33
+# ╟─fb43650f-53e1-4af6-8f30-09389bd024dd
+# ╟─17f2e0c5-f4b3-4ec0-9103-c538bbab8fba
+# ╟─f5c12b63-2d42-4979-a3b9-6497b5e297a2
+# ╟─0fed9fc3-8914-4570-971b-f53397e98070
+# ╟─46198f73-8966-43ff-9878-13de4cca96d9
+# ╟─5ffc2df3-9fc7-4e54-aca3-1145f5f09b72
+# ╟─3d9947ca-a126-4366-a801-21a79c369493
+# ╟─34a29918-675d-4d18-bf2c-728166acc9aa
+# ╟─fb24292b-4737-4f9f-a5b6-0c4a0d85bf53
+# ╟─1ea8f988-ef7b-485c-a901-d172f0f88471
+# ╟─a5afa66c-7447-454d-b0a8-03dba7fb1bbd
+# ╟─9ba9044e-3f77-4a48-a9ac-df196bd77f96
+# ╟─6c6dbb72-61be-4e6f-93b1-73a15eae1646
+# ╟─29d0e749-6072-4888-8fc8-eae42a6b7f06
+# ╟─a235da3d-a99f-41c4-a9f6-47a8e975fbb5
+# ╟─0cffafb0-a1d3-453f-a366-5cbf5b5f12da
+# ╟─fc6453cd-0a0e-4e4a-9601-962dc62b58cb
+# ╟─78d32a32-1ab1-43e3-a657-8b0f80a0ac95
+# ╟─43bb1241-f83c-4566-8a26-cd990807471f
+# ╟─3831b6c1-d605-4d6b-b3ab-4dc8def26432
+# ╟─fffa4aac-a902-4f8b-9e92-1cc52e49b017
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
