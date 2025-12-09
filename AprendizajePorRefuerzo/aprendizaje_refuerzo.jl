@@ -300,13 +300,13 @@ Fíjate en que la igualdad anterior es simplemente una definición.
 md"""
 ## Entorno, Agente, Acción, Estado y Recompensa
 
-Si sumamos sobre todas las recompensas que el agente puede obtener después de realizar la acción ``a``, obtenemos las probabilidades de transición a los siguienetes estados:
+Si sumamos sobre todas las recompensas que el agente puede obtener después de realizar la acción ``a``, obtenemos las probabilidades de transición a los siguientes estados:
 
 ```math
 p(s'|s, a) = p(S_t = s' | S_{t-1} = s, A_{t-1} = a) = \sum\limits_{r \in R}^{} p(s',r|s,a)
 ```
 
-Fíjate en que, de nuevo, esta nueva expresión es símplemente una manipulación con la definición de probabilidad condicionada.
+Fíjate en que, de nuevo, esta nueva expresión es simplemente una manipulación de la definición de probabilidad condicionada.
 """
 
 # ╔═╡ 7ef876f4-b64d-4a20-9e69-95c08075275c
@@ -343,7 +343,7 @@ Donde hemos dividido por ``p(s'|s,a)`` para que todas las probabilidades
 md"""
 ## Entorno, Agente, Acción, Estado y Recompensa
 
-Tal y como lo hemos definido, este marco de trabajo se conoce con el nombre de Procesos de Decisión de Markov (*Markov Decision Process, MDP*).
+Tal y como lo hemos definido, este marco de trabajo se conoce con el nombre de Proceso de Decisión de Markov (*Markov Decision Process, MDP*).
 """
 
 # ╔═╡ 5d78edeb-d092-459c-ad88-6345fb838350
@@ -396,7 +396,7 @@ Resource(
 
 # ╔═╡ c1abe3ab-c796-48b7-bbdb-860ec93f8394
 md"""
-El elfo tiene que llegar desde la casilla de salida hasta la casilla del regalo sin caer en los agujeros. Importante: como el lago está helado, no siempre se ejecuta la acción que el elfo decide hacer, hay veces en la que resvala y la acción seleccionada es otra. Este es el ejemplo que vamos a resolver con una implementación en Julia.
+El elfo tiene que llegar desde la casilla de salida hasta la casilla del regalo sin caer en los agujeros. Importante: como el lago está helado, no siempre se ejecuta la acción que el elfo decide hacer, hay veces en las que resbala y la acción seleccionada es otra. Este es el ejemplo que vamos a resolver con una implementación en Julia.
 """
 
 # ╔═╡ 79784c4f-b1c8-4ad7-ac1e-e9b2331f3663
@@ -528,7 +528,7 @@ q_\pi(s,a) &= E_\pi[G_t | S_t = s, A_t = a] \\
 md"""
 ## Función valor de la acción/estado
 
-Fíjate en que políticas diferentes van a dar lugar a funciones de valor estado y valor acción estado distintas; en ajedrez la política «apropiarse del centro» da diferentes valores de para los estados y las acciones estado que la política «proteger al rey».
+Fíjate en que políticas diferentes van a dar lugar a funciones de valor estado y valor acción estado distintas; en ajedrez la política «apropiarse del centro» da diferentes valores para los estados y las acciones estado que la política «proteger al rey».
 
 Podemos establecer un orden entre dos políticas del siguiente modo: una política ``\pi`` es mejor que otra política ``\pi'`` si ``v_\pi(s) \ge v_{\pi'}(s)`` para todos los posibles estados.
 
@@ -749,7 +749,7 @@ Este problema se conoce con el nombre de *Dilema de exploración frente a explot
 
 Si siempre queremos explotar (maximizar) el resultado, puede que nunca exploremos nuevas soluciones que nos pueden acercar al óptimo.
 
-¿Cómo lo solucionamos? Introduciendo un factor de exploración en el algoritmo, al elegir la siguiente acción no seleccionamos lo que tengo un valor máximo, sino que seleccionamos, con alguna probabilidad, otra acción. Además, a medida que la solución evoluciona, vamos reduciendo la probabilidad de selección aleatoria, es decir, al principio permitimos cierta exploración en la búsqueda de la solución, pero a medida que iteramos, vamos reduciendo la probabilidad de elección aleatoria del siguiente estado.
+¿Cómo lo solucionamos? Introduciendo un factor de exploración en el algoritmo. Al elegir la siguiente acción no seleccionamos lo que tengo un valor máximo (explotación), sino que seleccionamos, con alguna probabilidad, otra acción (exploración). Además, a medida que la solución evoluciona, vamos reduciendo la probabilidad de selección aleatoria, es decir, al principio permitimos cierta exploración en la búsqueda de la solución, pero a medida que iteramos, vamos reduciendo la probabilidad de elección aleatoria del siguiente estado, y explotamos los resultados.
 """
 
 # ╔═╡ 5ffc2df3-9fc7-4e54-aca3-1145f5f09b72
