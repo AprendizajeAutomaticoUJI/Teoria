@@ -8,15 +8,15 @@ using InteractiveUtils
 using PlutoUI
 
 # ╔═╡ a8613fc2-a430-11f0-1cbc-5752a791d4b4
-# html"""
-# <link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
-# """
+html"""
+<link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
+"""
 
 # ╔═╡ ab6a53f4-0755-43e6-9980-4197976755ef
 TableOfContents(title="Contenidos", depth=1)
 
 # ╔═╡ 76ebc4c8-2cc7-43be-9cf0-c53d7d93f09d
-imagenes = "https://belmonte.uji.es/Docencia/IR2130/Teoria/AprendizajePorRefuerzo/Imagenes/"
+imagenes = "https://belmonte.uji.es/Docencia/IR2130/Teoria/AprendizajePorRefuerzo/Imagenes/";
 
 # ╔═╡ 99dfd58b-0076-4282-bc26-04be14b48eaf
 md"""
@@ -508,28 +508,28 @@ version = "17.7.0+0"
 """
 
 # ╔═╡ Cell order:
-# ╠═a8613fc2-a430-11f0-1cbc-5752a791d4b4
-# ╠═d9c87ebb-d033-4d6c-82dd-fe806c9f40d4
-# ╠═ab6a53f4-0755-43e6-9980-4197976755ef
-# ╠═76ebc4c8-2cc7-43be-9cf0-c53d7d93f09d
-# ╠═99dfd58b-0076-4282-bc26-04be14b48eaf
-# ╠═45263a1d-0ade-43e7-b167-07d73edc6e4d
-# ╠═98a7f0ab-937f-43e3-a769-59ae9df7afc3
-# ╠═2ba99e7c-f076-449e-87a0-8377162f2938
-# ╠═c4d433f0-912e-481d-8a60-d627f84e16c9
-# ╠═e4ac1d9a-e347-46c1-886d-769293aae84c
-# ╠═c5ceb695-574b-4948-b384-8ff05b1c9ff2
-# ╠═4a7b4cd1-df95-4deb-bac7-61b6bcda655a
-# ╠═ed2e8efc-8554-4318-8338-9e5e91e7321d
-# ╠═765c63ae-9565-4ad0-8c88-31ced0c455f3
-# ╠═550dfa63-0625-494f-8c21-eb89b753d865
-# ╠═f151d343-9c01-4f13-95a2-d6cd823307fb
-# ╠═5643b8cb-97fa-4c5f-83c1-5b91aa500257
-# ╠═a22eefbf-7c27-4da2-a245-2d8e24bad2ed
-# ╠═104c2496-af24-41b9-a445-5b962463dedc
-# ╠═47beab3f-067d-48b0-b039-91422a24b611
-# ╠═eec0f571-889b-4344-96c8-2e84bb1ffa3b
-# ╠═db6ad5c6-87d7-4b7b-becf-9f232365f0f1
-# ╠═4fecad69-0852-4de4-b015-69591344836d
+# ╟─a8613fc2-a430-11f0-1cbc-5752a791d4b4
+# ╟─d9c87ebb-d033-4d6c-82dd-fe806c9f40d4
+# ╟─ab6a53f4-0755-43e6-9980-4197976755ef
+# ╟─76ebc4c8-2cc7-43be-9cf0-c53d7d93f09d
+# ╟─99dfd58b-0076-4282-bc26-04be14b48eaf
+# ╟─45263a1d-0ade-43e7-b167-07d73edc6e4d
+# ╟─98a7f0ab-937f-43e3-a769-59ae9df7afc3
+# ╟─2ba99e7c-f076-449e-87a0-8377162f2938
+# ╟─c4d433f0-912e-481d-8a60-d627f84e16c9
+# ╟─e4ac1d9a-e347-46c1-886d-769293aae84c
+# ╟─c5ceb695-574b-4948-b384-8ff05b1c9ff2
+# ╟─4a7b4cd1-df95-4deb-bac7-61b6bcda655a
+# ╟─ed2e8efc-8554-4318-8338-9e5e91e7321d
+# ╟─765c63ae-9565-4ad0-8c88-31ced0c455f3
+# ╟─550dfa63-0625-494f-8c21-eb89b753d865
+# ╟─f151d343-9c01-4f13-95a2-d6cd823307fb
+# ╟─5643b8cb-97fa-4c5f-83c1-5b91aa500257
+# ╟─a22eefbf-7c27-4da2-a245-2d8e24bad2ed
+# ╟─104c2496-af24-41b9-a445-5b962463dedc
+# ╟─47beab3f-067d-48b0-b039-91422a24b611
+# ╟─eec0f571-889b-4344-96c8-2e84bb1ffa3b
+# ╟─db6ad5c6-87d7-4b7b-becf-9f232365f0f1
+# ╟─4fecad69-0852-4de4-b015-69591344836d
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

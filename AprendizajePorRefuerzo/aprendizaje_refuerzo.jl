@@ -14,9 +14,9 @@ using PlutoTeachingTools
 using ShortCodes
 
 # ╔═╡ f722bfd0-66eb-11f0-01ea-7b434238558a
-# html"""
-# <link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
-# """
+html"""
+<link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
+"""
 
 # ╔═╡ 913974f6-4c99-4f2e-be95-9a66c8fce004
 TableOfContents(title="Contenidos", depth=1)
@@ -1322,7 +1322,7 @@ version = "17.7.0+0"
 """
 
 # ╔═╡ Cell order:
-# ╠═f722bfd0-66eb-11f0-01ea-7b434238558a
+# ╟─f722bfd0-66eb-11f0-01ea-7b434238558a
 # ╟─646115db-9b69-482e-b0bf-fb287ed023c4
 # ╟─80589f75-0e75-4171-9f8e-d08ecc8cdf67
 # ╟─963761bd-4b3c-40cb-96fd-d004e9e1e94d
