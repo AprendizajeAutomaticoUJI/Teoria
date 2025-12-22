@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.20
+# v0.20.21
 
 using Markdown
 using InteractiveUtils
@@ -17,7 +17,7 @@ macro bind(def, element)
 end
 
 # ╔═╡ 7c5ac60a-bbbe-11f0-a5e3-2b1468301aa3
-using Zygote
+using Zygote # Para el cálculo de derivadas
 
 # ╔═╡ ebd400c1-3e4d-4e51-b901-86e90b910bf4
 using Plots
@@ -27,6 +27,21 @@ using PlutoUI
 
 # ╔═╡ 29c0aa58-5cb4-4544-b240-18674b575e13
 using PlutoTeachingTools
+
+# ╔═╡ cdeee61c-0301-433a-b457-b467c7bb8752
+struct Ejemplo
+	funcion # La función de la que buscamos el mínimo.
+	x₀ # Punto inicial.
+	limitesx # Límites para el gráfico.
+	posicionleyenda # Posición de la leyenda en el gráfico.
+end
+
+# ╔═╡ 54c3af72-29e6-42c1-86c2-266318388e74
+opciones = Dict(
+	"seno" => Ejemplo(sin, 1.0, (-2, 2), :topleft),
+	"coseno" => Ejemplo(cos, 1.0, (-0.5, 3.5), :topright),
+	"parábola" => Ejemplo(x -> x^2, 1.0, (-0.5, 1.5), :topright)
+)
 
 # ╔═╡ 3513f738-10ee-46e2-addf-89a4a90d7334
 function actualizacion(x, f, η)
@@ -46,7 +61,7 @@ function descenso(f, x₀, η, pasos)
 end
 
 # ╔═╡ 2e1c7807-e953-4d99-979e-f4071783c51d
-function descensoumbral(f, x₀, η, ϵ)
+function descensoconumbral(f, x₀, η, ϵ)
 	xₜ = x₀
 	xₜ₊₁ = xₜ - η * actualizacion(xₜ, f, η)
 	resultado = [xₜ]
@@ -58,9 +73,21 @@ function descensoumbral(f, x₀, η, ϵ)
 	return resultado
 end
 
-# ╔═╡ 56a0ea9c-046b-43bf-b70d-bdbcb63b0462
-# f(x) = 5 * x^2
-f(x) = sin(x)
+# ╔═╡ 32a40aac-f873-4dc8-9ca8-7cd0c2de6c50
+md"""
+Elije una opción: 
+$(@bind ejemploseleccionado Select(sort(collect(keys(opciones)))))
+"""
+
+# ╔═╡ 9891262e-6dbe-4f57-8800-ffca61698353
+opcion = opciones[ejemploseleccionado];
+
+# ╔═╡ 83b0924a-30aa-4dc4-ac85-93ea45e21728
+function dibujaresultado(resultado)
+	plot(opcion.funcion, label = "Función", legendposition = opcion.posicionleyenda, xlim = opcion.limitesx, title = "Pasos totales = " * string(length(resultado)))
+	scatter!(resultado, opcion.funcion.(resultado), alpha = 0.5, markerstrokewidth = 0, label = "Pasos")
+	annotate!(resultado[1]+0.1, opcion.funcion(resultado[1]), "x₀")
+end
 
 # ╔═╡ bf7b0729-4240-446b-8b5b-f4b0f6c50ac6
 Columns(
@@ -77,16 +104,10 @@ Columns(
 )
 
 # ╔═╡ fd1a54a2-98b8-4872-b665-8dd78d40968a
-# resultado = descenso(f, 1.0, 0.1, 600)
-resultado = descensoumbral(f, 1.0, parse(Float64, η), parse(Float64, ϵ))
+resultado = descensoconumbral(opcion.funcion, opcion.x₀, parse(Float64, η), parse(Float64, ϵ))
 
-# ╔═╡ 83b0924a-30aa-4dc4-ac85-93ea45e21728
-let
-	# plot(f, xlim = (-2, 2), label = "Función", legendposition = :topleft)
-	plot(f, label = "Función", legendposition = :topleft)
-	# plot!(resultado, f.(resultado), label = "Descenso gradiente")
-	scatter!(resultado, f.(resultado), alpha = 0.5, markerstrokewidth = 0, label = "Pasos")
-end
+# ╔═╡ e945121c-886f-4d0b-bd13-94967b5aee7c
+dibujaresultado(resultado)
 
 # ╔═╡ c6c15287-badd-4319-871a-65ab9bda1078
 md"""
@@ -112,7 +133,7 @@ Zygote = "~0.7.10"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.12.1"
+julia_version = "1.12.2"
 manifest_format = "2.0"
 project_hash = "770db7deb6ec767238ef7acfbbd934d1d03d8bcb"
 
@@ -341,7 +362,7 @@ version = "0.9.5"
 [[deps.Downloads]]
 deps = ["ArgTools", "FileWatching", "LibCURL", "NetworkOptions"]
 uuid = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
-version = "1.6.0"
+version = "1.7.0"
 
 [[deps.EpollShim_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -622,7 +643,7 @@ version = "0.6.4"
 [[deps.LibCURL_jll]]
 deps = ["Artifacts", "LibSSH2_jll", "Libdl", "OpenSSL_jll", "Zlib_jll", "nghttp2_jll"]
 uuid = "deac9b47-8bc7-5906-a0fe-35ac56dc84c0"
-version = "8.11.1+1"
+version = "8.15.0+0"
 
 [[deps.LibGit2]]
 deps = ["LibGit2_jll", "NetworkOptions", "Printf", "SHA"]
@@ -791,7 +812,7 @@ version = "1.6.0"
 [[deps.OpenSSL_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "458c3c95-2e84-50aa-8efc-19380b2a3a95"
-version = "3.5.1+0"
+version = "3.5.4+0"
 
 [[deps.OpenSpecFun_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl"]
@@ -1436,9 +1457,9 @@ uuid = "8e850ede-7688-5339-a07c-302acd2aaf8d"
 version = "1.64.0+1"
 
 [[deps.p7zip_jll]]
-deps = ["Artifacts", "Libdl"]
+deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
-version = "17.5.0+2"
+version = "17.7.0+0"
 
 [[deps.x264_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -1464,14 +1485,18 @@ version = "1.9.2+0"
 # ╠═ebd400c1-3e4d-4e51-b901-86e90b910bf4
 # ╠═125ea3da-ead6-4751-817c-dd6f98f3ffa0
 # ╠═29c0aa58-5cb4-4544-b240-18674b575e13
+# ╠═cdeee61c-0301-433a-b457-b467c7bb8752
+# ╠═54c3af72-29e6-42c1-86c2-266318388e74
 # ╠═3513f738-10ee-46e2-addf-89a4a90d7334
 # ╟─434e010a-ebc0-42a1-81ac-21ae87108d2e
 # ╠═2e1c7807-e953-4d99-979e-f4071783c51d
-# ╠═56a0ea9c-046b-43bf-b70d-bdbcb63b0462
+# ╠═83b0924a-30aa-4dc4-ac85-93ea45e21728
+# ╟─32a40aac-f873-4dc8-9ca8-7cd0c2de6c50
+# ╠═9891262e-6dbe-4f57-8800-ffca61698353
 # ╟─bf7b0729-4240-446b-8b5b-f4b0f6c50ac6
 # ╟─7d3eafd8-e3c1-4aec-a3a6-680d39f198c3
 # ╠═fd1a54a2-98b8-4872-b665-8dd78d40968a
-# ╠═83b0924a-30aa-4dc4-ac85-93ea45e21728
+# ╠═e945121c-886f-4d0b-bd13-94967b5aee7c
 # ╟─c6c15287-badd-4319-871a-65ab9bda1078
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
