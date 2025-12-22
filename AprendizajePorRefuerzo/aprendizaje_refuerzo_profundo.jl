@@ -168,7 +168,8 @@ exploracion = EpsGreedyPolicy(entorno, LinearDecaySchedule(start=1.0, stop=0.01,
 dqsolver = DeepQLearningSolver(qnetwork = modelo, max_steps=100000, 
                              exploration_policy = exploracion,
                              learning_rate=0.005,log_freq=500,
-                             recurrence=false,double_q=true, dueling=true, 									 prioritized_replay=true
+                             recurrence=false,double_q=true, dueling=true,
+							  prioritized_replay=true
 )
 dqpolitica = solve(dqsolver, entorno)
 
