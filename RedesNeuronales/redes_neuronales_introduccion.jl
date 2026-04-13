@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.21
+# v0.20.24
 
 using Markdown
 using InteractiveUtils
@@ -72,7 +72,7 @@ url_imagenes = "https://belmonte.uji.es/Docencia/IR2130/Teoria/RedesNeuronales/I
 md"""
 ## Introducción
 
-Las redes neuronales son modelos de aprendizaje automático muy potentes, pero computacionalmente costosos de entrenar.
+Las redes neuronales son modelos de aprendizaje automático muy potentes, pero costosos de entrenar desde el punto de vista computacional, energético y económico.
 
 Su entrenamiento se basa en el algoritmo de retropropagación, que es un una combinación del algoritmo de descenso de gradiente y de la regla de la cadena de las derivadas.
 
