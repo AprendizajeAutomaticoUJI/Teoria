@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.21
+# v0.20.24
 
 using Markdown
 using InteractiveUtils
@@ -831,11 +831,11 @@ y_N \\
 \end{bmatrix}
 =
 \begin{bmatrix}
-1 & x_1^1 & x_1^2 & ... & x_1^m\\
-1 & x_2^1 & x_2^2 & ... & x_2^m\\
-1 & x_3^1 & x_3^2 & ... & x_3^m\\
+1 & x_1^{(1)} & x_1^{(2)} & ... & x_1^{(m)}\\
+1 & x_2^{(1)} & x_2^{(2)} & ... & x_2^{(m)}\\
+1 & x_3^{(1)} & x_3^{(2)} & ... & x_3^{(m)}\\
 ... & ... & ... & ... & ... \\
-1 & x_n^1 & x_n^2 & ... & x_N^m\\
+1 & x_n^{(1)} & x_n^{(2)} & ... & x_N^{(m)}\\
 \end{bmatrix}
 \begin{bmatrix}
 \theta_0 \\
@@ -853,7 +853,7 @@ y_N \\
 \epsilon \\
 \end{bmatrix}
 ```
-
+Fíjate en que los superíndices **no** denotan potencias.
 """
 
 # ╔═╡ 6aa1e98d-13df-4732-bc3a-b907bcb8e4bd
@@ -1489,9 +1489,11 @@ Mostramos el resultados:
 
 # ╔═╡ 78bba65a-9ce0-4045-abc3-ab515017dc27
 #=╠═╡
-begin
-	scatter(muestra_X, muestra_y, legend=false)
-	plot!(intervalo, prediccion, width=3)
+let
+	scatter(muestra_X, muestra_y, label = false)
+	plot!(intervalo, prediccion, width=3, label = "Ridge", legend = :topleft)
+	polinomio = Polynomials.fit(muestra_X, muestra_y, maximo_grado)
+	plot!(intervalo, polinomio.(intervalo), width = 3, label = "Sin regularización")
 end
   ╠═╡ =#
 
@@ -1614,8 +1616,10 @@ Representamos los puntos del conjunto que queremos ajustar, y el polinomio ajust
 # ╔═╡ 3becbcf2-753c-4662-bc05-be7e625146b0
 #=╠═╡
 begin
-	scatter(X_normalizada, y_normalizada, legend=false)
-	plot!(intervalo_normalizado, prediccion_normalizado, width=3)
+	scatter(X_normalizada, y_normalizada, label = false, legend = :topleft)
+	plot!(intervalo_normalizado, prediccion_normalizado, width=3, label = "Lasso")
+	polinomio = Polynomials.fit(X_normalizada, y_normalizada, maximo_grado)
+	plot!(intervalo_normalizado, polinomio.(range(extrema(X_normalizada)..., 100)), width = 3, label = "Sin regularización")
 end
   ╠═╡ =#
 
