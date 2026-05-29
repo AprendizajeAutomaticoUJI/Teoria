@@ -844,10 +844,10 @@ md"""
 md"""
 ## Extensión de la regresión lineal
 
-Hasta ahora, sólo hemos utilizado una característica como predictor en 
+Hasta ahora, sólo hemos utilizado una característica como predictora en 
 nuestro modelo.
 
-Pero, podemos añadir más características como predictores de nuestro modelo.
+Pero, podemos añadir más características como predictoras de nuestro modelo.
 
 $h_{\theta}(x) = y = \theta_0 + \theta_1 x_1 + \theta_2 x_2 +...+ \epsilon$
 """
@@ -901,11 +901,11 @@ y_N \\
 \end{bmatrix}
 +
 \begin{bmatrix}
-\epsilon \\
-\epsilon \\
-\epsilon \\
+\epsilon_1 \\
+\epsilon_2 \\
+\epsilon_3 \\
 ... \\
-\epsilon \\
+\epsilon_N \\
 \end{bmatrix}
 ```
 Fíjate en que los superíndices **no** denotan potencias.
@@ -914,7 +914,7 @@ Fíjate en que los superíndices **no** denotan potencias.
 # ╔═╡ 6aa1e98d-13df-4732-bc3a-b907bcb8e4bd
 md"""
 ## Extensión de la regresión lineal 
-Que podemos resolver de este modo si incluimos todas las características:
+Donde las $\theta$ las podemos calcular del siguiente modo:
 """
 
 # ╔═╡ dff726bd-66dc-49d0-8dfd-bd762cad734b
@@ -972,6 +972,8 @@ evaluate!(maquina_multiple, resampling=MLJ.CV(nfolds=10, rng=69), measure=rms)
 # ╔═╡ 354706f0-c7a2-49b6-be7d-5fe9d333aa30
 md"""
 ## Normalidad de los residuos
+
+De nuevo, debemos comprobar que se cumple la hipótesis de normalida de los residuos:
 """
 
 # ╔═╡ b4ffd1ca-dc72-45fe-a6a4-b0f9569cec64
@@ -1008,7 +1010,7 @@ La normalidad de los residuos sí que pasa las dos últimas pruebas.
 md"""
 ## Normalidad de los residuos
 
-Utilicemos una representación cuantil-cuantil:
+Para ver qué está ocurriendo, utilicemos una representación cuantil-cuantil:
 """
 
 # ╔═╡ 2ecb47e6-58e1-4065-afa4-1c0eea75a6ee
@@ -1039,7 +1041,7 @@ qqnorm(filter(x -> x > -15, residuos_multiple), size=(900,400))
 md"""
 ## Resumen
 
-Todo lo que hemos aprendido en el caso de un único predictor y una única variable predicha lo podemos extender al caso de varios predictores y una única variable predicha.
+Todo lo que hemos aprendido en el caso de una única variable predictora y una única variable predicha lo podemos extender al caso de varias variables predictoras y una única variable predicha.
 """
 
 # ╔═╡ 47e52680-e6ea-4de9-b621-9294c13c99ee
@@ -1051,7 +1053,7 @@ md"""
 md"""
 ## Extensión de la regresión lineal
 
-Visualicemos todos los datos de nuestro conjunto, no sólo los datos de las personas adultas:
+Esta vez, visualicemos todos los datos de nuestro conjunto, no sólo los datos de las personas adultas:
 """
 
 # ╔═╡ e3c90bb0-22fb-4853-ba20-c77dd87d0096
@@ -1072,8 +1074,7 @@ En el caso de ajuste de un polinomio tenemos:
 $h_{\theta}(x) = y = \theta_0 + \theta_1 x + \theta_2 x^2 +...+ \theta_n x^n + \epsilon$
 
 Fíjate en que los parámetros que buscamos $\mathbf{\theta}$ siguen siendo 
-lineales, no hay ninguna potencia de los parámetros, la potencia está en los 
-datos.
+lineales, no hay ninguna potencia de los parámetros, las potencias se calculan sobre los datos.
 """
 
 # ╔═╡ be0d88a4-5520-43bd-8914-9b566a343acc
@@ -1106,11 +1107,11 @@ y_N \\
 \end{bmatrix}
 +
 \begin{bmatrix}
-\epsilon \\
-\epsilon \\
-\epsilon \\
+\epsilon_1 \\
+\epsilon_2 \\
+\epsilon_3 \\
 ... \\
-\epsilon \\
+\epsilon_N \\
 \end{bmatrix}
 ```
 """
@@ -1119,7 +1120,7 @@ y_N \\
 md"""
 ## Encontrar el mejor grado del polinomio
 
-Probemos primero con un polinomio de grado 2:
+¿Cuál es el grado del polinomio que mejor ajusta los datos? Probemos primero con un polinomio de grado 2:
 """
 
 # ╔═╡ e982d0a1-3469-48d5-a286-28fc2f88f714
@@ -1246,9 +1247,6 @@ print("AIC: " * string(GLM.aic(regresion_grado3_glm)))
 
 # ╔═╡ 0984464e-7c1d-418b-b956-436744c84704
 print("BIC: " * string(GLM.bic(regresion_grado3_glm)))
-
-# ╔═╡ a2239793-3d61-4ec5-a9b8-5b7689a2bc2b
-
 
 # ╔═╡ 8b6c1f57-a7a6-45e1-81f3-a3b06cbd25cc
 md"""
@@ -4218,7 +4216,6 @@ version = "1.4.1+2"
 # ╠═78f74061-afc3-44af-9753-3feeab77b889
 # ╠═fa1025bf-df2c-4bcc-83d5-8f0d88a56e57
 # ╠═0984464e-7c1d-418b-b956-436744c84704
-# ╠═a2239793-3d61-4ec5-a9b8-5b7689a2bc2b
 # ╠═8b6c1f57-a7a6-45e1-81f3-a3b06cbd25cc
 # ╠═7237b145-9c6d-40e0-bc56-601d552fcd33
 # ╠═d86aafd0-4e64-4c95-8279-a0a0a7f6ff1e
