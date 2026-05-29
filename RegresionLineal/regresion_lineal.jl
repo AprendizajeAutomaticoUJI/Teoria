@@ -63,6 +63,21 @@ using Normalization
 # <link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
 # """
 
+# ╔═╡ 3b73ddf2-7811-49f5-a66a-acdb606bbd41
+# html"""
+# <style>
+#   @media screen {
+# 	main {
+# 		margin: 0 auto;
+# 		max-width: 2000px;
+# 		padding-left: max(100px, 10%);
+# 		padding-right: max(450px, 10%); 
+# 		# 450px para no solapar Documentación en vivo
+# 	}
+#   }
+# </style>
+# """
+
 # ╔═╡ b94cf5fa-352f-46f7-94cf-aa533b98f5ca
 import PlotlyBase
 
@@ -100,16 +115,16 @@ md"""
 
 La regresión lineal es uno de los algoritmos para problemas de regresión más antiguos y utilizados.
 
-No obstante hay que conocer en qué problemas se puede utilizar y en qué otros no se puede utilizar.
+No obstante hay que conocer cuales son las condiciones que los datos deben cumplir para aplicar la regresión lineal con éxito.
 
-La regresión lineal simple se puede extender, de manera muy sencilla, a problemas de regresión con múltiples variables y regresión con polinomios.
+Como veremos, la regresión lineal simple se puede extender, de manera muy sencilla, a problemas de regresión con múltiples variables y regresión con polinomios.
 """
 
 # ╔═╡ e709b44b-57b0-482d-bc11-93b91451d790
 md"""
 ## Introducción
 
-Aunque existe una fórmula exacta para resolver problemas de regresión, estudiaremos la técnica del descenso de gradiente para encontrar la solución de la regresión lineal.
+Aunque existe una fórmula exacta para resolver problemas de regresión, también estudiaremos la técnica del descenso de gradiente para encontrar la solución de la regresión lineal. El descenso de gradiente también es la base para entrenar redes neuronales.
 
 Finalmente veremos qué es la regularización y qué problema nos ayuda a resolver.
 """
@@ -130,8 +145,9 @@ md"""
 md"""
 ## Referencias
 
-* Christopher M. Bishop. Pattern Recognition and Machine Learning.
+1. Christopher M. Bishop. Pattern Recognition and Machine Learning.
    Springer-Verlag New York Inc.; 2006. Capítulo 3.
+1. Bogumil Kaminski. Julia for Data Analysis. Manning. 2013.
 """
 
 # ╔═╡ eb52ead3-2e23-4884-96c6-4ccdbf529be2
@@ -143,24 +159,24 @@ md"""
 md"""
 ## Objetivos de la regresión lineal
 
-La hipótesis de partida es que existe una relación lineal entre una variable que se utiliza como predictor $x$, y la salida $y$:
+Las hipótesis de partida son, primera, que existe una relación lineal entre una variable que se utiliza como predictora $x$, y la salida $y$:
 
 $h_{\theta}(x) = y = \theta_0 + \theta_1 x + \epsilon$
 
-Donde $\epsilon \sim N(0, \sigma^2)$ sigue una distribución normal, con media $0$ y varianza $\sigma^2$.
+Segunda hipótesis, $\epsilon$ es un error que se sigue una distribución normal con media $0$ y varianza $\sigma^2$, que se representa como: $\epsilon \sim N(0, \sigma^2)$ y es la misma distribución para cualquier punto de la recta (criterio de **homocedasticidad**).
 """
 
 # ╔═╡ b3fe5074-6461-4d1e-bea3-f005533210a0
 md"""
 ## Objetivo de la regresión lineal
 
-Es decir, tenemos un conjunto de $N$ datos para los cuales:
+Concretamente, tenemos un conjunto de $N$ datos para cada uno de los cuales podemos escribir una igualdad del siguiente modo:
 
 
-$h_{\theta}(x_1) = y_1 = \theta_0 + \theta_1 x_1 + \epsilon$
-$h_{\theta}(x_2) = y_2 = \theta_0 + \theta_1 x_2 + \epsilon$
+$h_{\theta}(x_1) = y_1 = \theta_0 + \theta_1 x_1 + \epsilon_1$
+$h_{\theta}(x_2) = y_2 = \theta_0 + \theta_1 x_2 + \epsilon_2$
 $...$
-$h_{\theta}(x_N) = y_N = \theta_0 + \theta_1 x_N + \epsilon$
+$h_{\theta}(x_N) = y_N = \theta_0 + \theta_1 x_N + \epsilon_N$
 
 Que podemos expresar de manera matricial como:
 
@@ -170,6 +186,8 @@ $h_{\theta}(\mathbf{X}) = \mathbf{y} = \mathbf{X \theta} + \mathbf{\epsilon}$
 # ╔═╡ 4309c399-3035-4a0a-8f88-2184efd415b9
 md"""
 ## Objetivo de la regresión lineal
+
+Que podemos expresar de manera matricial como:
 
 $h_{\theta}(\mathbf{X}) = \mathbf{y} = \mathbf{X \theta} + \mathbf{\epsilon}$
 
@@ -195,10 +213,10 @@ y_N \\
 \end{bmatrix}
 +
 \begin{bmatrix}
-\epsilon \\
-\epsilon \\
+\epsilon_1 \\
+\epsilon_2 \\
 ... \\
-\epsilon \\
+\epsilon_N \\
 \end{bmatrix}
 
 ```
@@ -232,7 +250,7 @@ El objetivo de la regresión lineal es, encontrar unos estimadores de $\theta$ q
 \end{bmatrix}
 ```
 
-estén a la *menor distancia posible* de los datos $y$.
+estén a la *menor distancia posible* de los datos $y$. En algún momento tendremos que definir qué entendemos por *menor distancia posible*.
 """
 
 # ╔═╡ 410f5c00-91f0-4f00-924f-6691227bf1cd
@@ -243,7 +261,7 @@ Veamos un caso real, la relación entre el peso y la altura de los nativos adult
 
 $height = h_{\theta}(weight) = \theta_0 + \theta_1 weight + \epsilon$
 
-A partir del predictor ($weight$) queremos obtener el valor de la altura ($height$) en cm.
+A partir de la variable predictora peso de una persona ($weight$) queremos obtener una estimación de la altura de la persona ($height$) en cm.
 """
 
 # ╔═╡ a079b8eb-f179-41af-9712-de65be3d7a64
@@ -259,6 +277,14 @@ begin
 	adultos = data[data.age .>= 18, :]
 end
 
+# ╔═╡ 8b6e94e8-05f0-4260-8074-313636d700ba
+md"""
+Sobre los datos:
+
+1. Nos quedamos con las personas adultas data.age .>= 18.
+1. Hemos añadido la columna **bias**.
+"""
+
 # ╔═╡ 2e638e63-6f50-4dd0-921a-0e5d33e31fe1
 md"""
 ## Objetivo de la regresión lineal
@@ -271,11 +297,11 @@ scatter(adultos.weight, adultos.height, xlabel="weight", ylabel="height", label=
 md"""
 ## Función de pérdidas $\mathcal{L}(h_\mathbf{\theta})$
 
-El objetivo es encontrar los parámetros $\theta$ que minimizan la distancia entre los datos reales $y_i$ y los valores calculados $\hat y_i = h_\theta(x_i)$.
+El objetivo es encontrar los parámetros $\theta$ que minimizan la distancia euclidiana entre los datos reales $y_i$ y los valores calculados $\hat y_i = h_\theta(x_i)$. Luego *menor distancia* significa *menor distancia euclidiana*.
 
 $\mathcal{L}(h_\mathbf{\theta}) = \frac{1}{N} \sum_{i=1}^N \lvert y_i - \hat y_i \rvert ^2$
 
-Que se puede expresar en forma matricial como:
+A esta función se la llama función de pérdidas y se puede expresar en forma matricial como:
 
 $\mathcal{L_{\theta}} = \frac{1}{N} \lVert \mathbf{y} - \mathbf{X \theta} \rVert^2$
 """
@@ -284,9 +310,9 @@ $\mathcal{L_{\theta}} = \frac{1}{N} \lVert \mathbf{y} - \mathbf{X \theta} \rVert
 md"""
 ## Minimizar la función de pérdidas
 
-Tenemos que encontrar el mínimo de la función de pérdidas.
+Entonces, nuestro objetivo es encontrar el mínimo de la función de pérdidas.
 
-Tomamos las derivadas parciales respecto a los parámetros $\theta$:
+Para ello, tomamos las derivadas parciales respecto a los parámetros $\theta$, que son los parámetros que podemos modificar, tanto los datos en $\mathbf{X}$ como los datos en $\mathbf{y}$ son fijos:
 
 $\vec\nabla_{\mathbf{\theta}}\mathcal{L} = 
 \vec\nabla_{\mathbf{\theta}} \lVert \mathbf{y} - \mathbf{X \theta} \rVert^2 = 
@@ -317,7 +343,7 @@ end
 
 # ╔═╡ 433bea47-fd81-4e3f-8fd0-d0fe76d6f6ec
 md"""
-Si dibujamos el conjunto de datos y la recta de regresión lineal.
+Podemos ver el resultado si dibujamos el conjunto de datos y sobre ellos la recta de regresión lineal con los coeficientes que acabamos de obtener.
 """
 
 # ╔═╡ 86ad6318-1a86-469f-870c-591e9e306d74
@@ -331,9 +357,13 @@ end
 md"""
 ## Residuos
 
-Los residuos son la parte no lineal de los datos, hemos supuesto que siguen una distribución normal:
+Los residuos, antes los hemos llamado errores, son la parte no lineal de los datos, hemos supuesto que siguen una distribución normal:
 
-$r_i = y_i - h_{\theta}(x_i)$
+$\epsilon_i = r_i = y_i - h_{\theta}(x_i)$
+
+y que esta distribución es la misma con independencia del punto de la recta en la que nos encontremos.
+
+Ahora tenemos que comprobar que estos residuos siguen una distribución normal, que es una de nuestras hipótesis.
 """
 
 # ╔═╡ 8af8b802-49d8-474f-b3a3-1278a69093f9
@@ -370,7 +400,7 @@ Un estimador para la varianza de los residuos es:
 
 ${\hat \sigma}^2 = \frac{1}{N} \sum_{i=1}^N (y_i - h_{\theta}(x_i))^2$
 
-que es un estimador con sesgo.
+que es un estimador con sesgo. Se dice que un estimador tienen sesgo o está sesgado cuando su valor no coincide exactamente con el valor real de la distribución subyacente, pero que tiende al valor real cuando en número de muestras tiende a infinito.
 """
 
 # ╔═╡ 4c05c9d4-e724-4956-9866-7037025150ee
@@ -408,7 +438,7 @@ md"""
 En el ejemplo que estamos tratando, al aplicar las fórmulas, obtenemos 
 $SE(\hat \theta_0) = 1.9111$ y $SE(\hat \theta_1) = 0.0420$.
 
-Finalmente:
+Por lo que, finalmente:
 
 $\hat \theta_0 = 113.9 \pm 1.9$
 
@@ -420,9 +450,9 @@ md"""
 ## Normalidad de los residuos
 
 Ahora debemos comprobar la hipótesis de normalidad de los residuos, sin ella 
-la regresión lineal que acabamos de hacer no tiene sentido.
+la regresión lineal que acabamos de hacer no es estrictamente válida.
 
-Empecemos visualizando el histograma de los residuos y el ajuste a una normal.
+Para orientarnos, empecemos visualizando el histograma de los residuos y su ajuste a una normal.
 """
 
 # ╔═╡ 7a3f806a-5d26-40f1-b665-7bf686728fde
@@ -445,11 +475,8 @@ ShapiroWilkTest(residuos)
 
 # ╔═╡ 13a23e81-542b-4290-9101-4d3e2d33c7c4
 md"""
-El p-valor que obtenemos:
+La prueba de Shapiro-Wilk nos dice que no podemos rechazar la hipótesis nula (en este caso que los datos siguen una distribución normal) si el p-valor en mayor que 0.05. En nuestro caso, l p-valor que obtenemos es $(pvalue(ShapiroWilkTest(residuos)))
 """
-
-# ╔═╡ 5c3c4e78-6e8a-43e0-83a4-b2728e846981
-pvalue(ShapiroWilkTest(residuos))
 
 # ╔═╡ 00cc7560-f1c7-449a-8ce9-c25bf9e6fa31
 md"""
@@ -478,7 +505,7 @@ ApproximateOneSampleKSTest(residuos, ajuste_residuos)
 
 # ╔═╡ f4c5fdba-5493-4240-93dd-86345c9adad7
 md"""
-En todos los casos el $p-valor > 0.05$ y por lo tanto no podemos rechazar que la distribución de los residuos sea normal.
+Para estas dos pruebas el $p-valor > 0.05$ y por lo tanto no podemos rechazar que la distribución de los residuos sea normal.
 """
 
 # ╔═╡ 90a3a2c0-4d45-40d9-9bdc-a966c628ba90
@@ -493,7 +520,7 @@ qqnorm(residuos, xlabel="Cuantiles teóricos", ylabel="Cuantiles de los datos", 
 
 # ╔═╡ 08794500-ec04-4834-8852-c79680f0d136
 md"""
-Si podemos apreciar que el gráfico qqplot es una recta, no podemos rechazar que nuestros datos sigan una distribución normal.
+Si podemos apreciar que los puntos del gráfico qqplot están cerca de una recta, es una señal de que nuestros datos sigan una distribución normal. Esta técnica siempre la debemos reforzar con las pruebas anteriores.
 """
 
 # ╔═╡ 3ffe9740-d133-410a-a3ff-77c2ba64217f
@@ -540,8 +567,8 @@ md"""
 1. Hemos calculado los valores estimados para $\theta_0,\theta_1,\sigma$.
 1. Hemos calculado sus errores estándar.
 1. Hemos ajustado los residuos a una normal.
-1. Hemos hecho pruebas para comprobar la bondad del ajuste.
-1. Hemos utilizado un gráfico cuantil-cuantil.
+1. Hemos hecho pruebas para comprobar la bondad del ajuste de los residuos a una normal.
+1. Hemos utilizado un gráfico cuantil-cuantil para visualizar el ajuste de residuos a una normal.
 """
 
 # ╔═╡ 6518ba79-f3cc-4ccb-9935-fe037f256d4e
@@ -552,6 +579,13 @@ Todos estos cálculos los hemos hecho con un poco de álgebra. Existen paquetes 
 
 # ╔═╡ e3278b0e-ff00-4bc9-b06e-d2757a08f997
 regresion_glm = lm(@formula(height ~ weight), adultos)
+
+# ╔═╡ 65a0552d-4901-45dd-a569-a9fbeb0355fb
+md"""
+Los valores de los coeficientes y sus errores estándar son los mismos que hemos obtenido con el cálculo directo.
+
+A partir del ajuste que nos proporciona el paquete GLM tenemos acceso a los residuos a través de la función **residuals(regresion)**:
+"""
 
 # ╔═╡ 3a665608-f044-41a9-a619-7ed799457277
 histogram(residuals(regresion_glm))
@@ -594,18 +628,27 @@ begin
 	plot!(extremos_df.weight, prediccion_glm, width=3, label="regresión")
 end
 
+# ╔═╡ 444ccd42-d92d-4854-9545-99a99aaf8793
+md"""
+Podemos obtener el coeficiente de determinación R2 con **r(regresion)**
+"""
+
+# ╔═╡ 37c503c3-f085-4ec9-8e0f-d28380ba7937
+r2(regresion_glm)
+
 # ╔═╡ 23dfc277-7289-4a69-8ec5-75fbd05b43e2
 md"""
-Nota: sobre los modelos de GLM se pueden aplicar funciones como r2(modelo), que calcula r2, y aic(modelo) que calcula AIC. También bic(modelo) para calcular BIC. Este último es interesante si incluyo AIC como una medida para seleccionar el grado de un polinomio.
+!!! info "Mejora"
+Sobre los modelos de GLM se pueden aplicar funciones como r2(modelo), que calcula r2, y aic(modelo) que calcula Akaike Information Criterion (AIC). y bic(modelo) para calcular Bayesian Information Criterion (BIC). Estos dos últimos los utilizaremos para guiarnos en la selección del mejor grado de un polinomio en la regresión polinomial.
 """
 
 # ╔═╡ f437681b-464d-449d-befc-75d60a5c4974
 md"""
 ## Paquetes en Julia
 
-También podemos utilizar el paquete **MLJ** (Machine Learning for Julia)
+También podemos utilizar el paquete **MLJ** (Machine Learning for Julia), que va a ser nuestra opción por defecto.
 
-Primero cargamos el modelo que nos interesa
+Primero cargamos el modelo que nos interesa:
 """
 
 # ╔═╡ 660be5ac-4791-48c3-b1f4-824f53c80215
@@ -621,7 +664,7 @@ regresor = LinearRegressor()
 
 # ╔═╡ 19905308-9b52-4f49-a4e8-7212bc08fb0a
 md"""
-**MLJ** tiene una interfaz uniforme, trabajamos con todos los modelos de aprendizaje automático con los mismos pasos, creando una máquina que contiene el modelo y los datos.
+**MLJ** tiene una interfaz uniforme, trabajamos con los modelos de aprendizaje automático del mismo modo, creando una máquina que contiene el modelo y los datos.
 """
 
 # ╔═╡ 57a30f20-7dc2-4c02-8621-32f03c5d5f71
@@ -636,6 +679,13 @@ Y ahora lo entrenamos:
 
 # ╔═╡ c76bc69f-eeaf-4861-b735-f2d4a99cd4d3
 MLJ.fit!(modelo)
+
+# ╔═╡ a3cc6366-788e-427f-9b8b-8ab49f2b4668
+md"""
+!!! info "Convención bang (!)"
+
+Por convención, en Julia las funciones que modifican el valor de su argumento acaban con el signo de admiración para hacerselo saber al programador.
+"""
 
 # ╔═╡ 8cab10cf-e7d4-42a9-b9b9-c6243ea80ec4
 md"""
@@ -686,6 +736,8 @@ md"""
 Al conjunto que utilizamos para entrenar el modelo lo llamas *conjunto de 
 entrenamiento*, y al conjunto que utilizamos para evaluar el modelo *conjunto 
 de prueba*.
+
+Para ello podemos utilizar la función **partition(...)**:
 """
 
 # ╔═╡ b972c073-20c7-41e0-bc72-61838652ea79
@@ -696,6 +748,8 @@ md"""
 ## Evaluación cruzada
 
 La evaluación cruzada consiste en dividir el conjunto de datos inicial en un conjunto de entrenamiento y otro de pruebas de manera aleatoria, repetidas veces. En cada repetición se crea un modelo con los datos de entrenamiento y se prueba con los datos de prueba, el resultado final es el promedio de todas las repeticiones.
+
+La evaluación cruzada se utiliza cuando el número de datos disponible es bajo.
 """
 
 # ╔═╡ 2da21951-935d-4ba8-9a3b-c2628a71a31e
@@ -721,7 +775,7 @@ distribuidos.
 md"""
 ## Estimación de parámetros por máxima verosimilitud
 Hemos supuesto que los residuos siguen una distribución normal
-independientemente del punto donde calculamos la regresión, lo que significa
+independientemente del punto donde calculamos la regresión (**homocedasticidad**), lo que significa
 suponer que:
 
 $p(y_i|\theta,\sigma^2) = \frac{1}{\sqrt{2\pi\sigma^2}}
@@ -746,7 +800,8 @@ donde hemos extendido el productorio a todas las muestras.
 # ╔═╡ 4b0609e8-cc0b-44e9-94e9-01c34301dfe7
 md"""
 ## Estimación de parámetros por máxima verosimilitud
-Si tomamos logaritmos de la función de verosimilitud:
+
+Trabajar con productorios de números pequeños (probabilidades en nuestro caso) es computacionalmente inestable, acabamos obteniendo productos muy cercanos a cero, por lo que siempre es mejor tomar logaritmos de la función de verosimilitud:
 
 $ln(p(\mathbf{y}|\theta,\sigma^2)) = {-\frac{1}{2}}\sum_{i=1}^N ln(2\pi\sigma^2) - 
 \sum_{i=1}^N \frac{(y_i-x_i\theta)^2}{2\sigma^2}$
@@ -763,7 +818,7 @@ $-ln(p(\mathbf{y}|\theta,\sigma^2)) = {\frac{1}{2}}\sum_{n=1}^N ln(2\pi\sigma^2)
 \boxed{\sum_{i=1}^N \frac{(y_i-x_i\theta)^2}{2\sigma^2}}$
 
 Si fijamos $\sigma^2$ minizar la expresión anterior significa minimizar el 
-sumatorio que depende de $\theta$, que es proporcional a la función de pérdidas.
+sumatorio que depende de $\theta$, que es proporcional a la función de pérdidas, luego **minimizar las distancias eclideanas es lo mismo que minimizar la función de pérdidas**
 
 """
 
@@ -1695,7 +1750,7 @@ StatsPlots = "~0.15.7"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.12.4"
+julia_version = "1.12.6"
 manifest_format = "2.0"
 project_hash = "6db74fb6175d7b2d04c5a905dc47d16adf6cd232"
 
@@ -3987,6 +4042,7 @@ version = "1.4.1+2"
 
 # ╔═╡ Cell order:
 # ╠═55ee1eef-992e-4a5f-95dd-9e8790dd5b5f
+# ╠═3b73ddf2-7811-49f5-a66a-acdb606bbd41
 # ╠═ace78ba9-b53f-4e88-98bd-090d37ca57ec
 # ╠═ab7b2dd7-8f6a-4b05-a26d-43c9d62be61c
 # ╠═85d5c54e-2aa0-414a-8f86-3f632fd3b40f
@@ -4020,6 +4076,7 @@ version = "1.4.1+2"
 # ╠═410f5c00-91f0-4f00-924f-6691227bf1cd
 # ╠═a079b8eb-f179-41af-9712-de65be3d7a64
 # ╠═48d3993b-fcae-4d91-a53a-a936dcaea321
+# ╠═8b6e94e8-05f0-4260-8074-313636d700ba
 # ╠═2e638e63-6f50-4dd0-921a-0e5d33e31fe1
 # ╠═bf9d5f2e-a1ae-4b9a-88ac-a7fcef6945bb
 # ╠═a7712a98-dbef-4f62-a83c-546ebfb3a40e
@@ -4044,7 +4101,6 @@ version = "1.4.1+2"
 # ╠═287328fd-2389-4e7e-84f9-4cd932db899a
 # ╠═5443ad0a-deb3-463f-8975-12fb969df1cc
 # ╠═13a23e81-542b-4290-9101-4d3e2d33c7c4
-# ╠═5c3c4e78-6e8a-43e0-83a4-b2728e846981
 # ╠═00cc7560-f1c7-449a-8ce9-c25bf9e6fa31
 # ╠═965d8844-8fdd-4e88-a6bd-01281a5fb642
 # ╠═f5a3b766-4781-47de-8097-af3bd8bc4ecd
@@ -4059,6 +4115,7 @@ version = "1.4.1+2"
 # ╠═900f41a8-59a2-4301-88a5-9f0b4c25d4ac
 # ╠═6518ba79-f3cc-4ccb-9935-fe037f256d4e
 # ╠═e3278b0e-ff00-4bc9-b06e-d2757a08f997
+# ╠═65a0552d-4901-45dd-a569-a9fbeb0355fb
 # ╠═3a665608-f044-41a9-a619-7ed799457277
 # ╠═23b1b815-1048-4ebb-9d12-eba8dfa8e60c
 # ╠═58e0b3a9-9f2c-438f-ac4a-db490a3f6685
@@ -4068,6 +4125,8 @@ version = "1.4.1+2"
 # ╠═6f07b059-a4b3-4a32-b62e-fbadb15d71a3
 # ╠═83a5e422-1eb7-4b53-b5fb-038d6145c97c
 # ╠═203a5b66-2c6d-4707-ae13-ed2563a2f305
+# ╠═444ccd42-d92d-4854-9545-99a99aaf8793
+# ╠═37c503c3-f085-4ec9-8e0f-d28380ba7937
 # ╠═23dfc277-7289-4a69-8ec5-75fbd05b43e2
 # ╠═f437681b-464d-449d-befc-75d60a5c4974
 # ╠═660be5ac-4791-48c3-b1f4-824f53c80215
@@ -4077,6 +4136,7 @@ version = "1.4.1+2"
 # ╠═57a30f20-7dc2-4c02-8621-32f03c5d5f71
 # ╠═83788e2c-84f8-4d0c-bdb0-930680eafa4c
 # ╠═c76bc69f-eeaf-4861-b735-f2d4a99cd4d3
+# ╠═a3cc6366-788e-427f-9b8b-8ab49f2b4668
 # ╠═8cab10cf-e7d4-42a9-b9b9-c6243ea80ec4
 # ╠═cb016b85-517d-4e28-ab73-60adab8007b5
 # ╠═3566a81e-5a17-4c34-87b4-3b7dfbe2fc1d
