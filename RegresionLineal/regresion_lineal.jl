@@ -43,9 +43,6 @@ using GLM
 # ╔═╡ 2ec183cb-cc49-4f49-b456-63f4b4af2259
 using MLJ
 
-# ╔═╡ db3c1413-8380-4cc3-95aa-d4c570eaacb9
-using Polynomials
-
 # ╔═╡ ee81127d-c05a-4442-b448-e47f05013784
 using Random
 
@@ -1280,13 +1277,13 @@ Otras métricas que podemos utilizar para seleccionar entre varios modelos son:
 * [BIC (Bayessian Information Criterion](https://en.wikipedia.org/wiki/Bayesian_information_criterion).
 
 Estas métricas tienen en cuenta tanto el grado de ajuste del modelo a los datos como la complejidad del modelo.
+
+En nuestro caso:
+
+AIC = $(GLM.aic(regresion_grado3_glm))
+
+BIC = $(GLM.bic(regresion_grado3_glm))
 """
-
-# ╔═╡ fa1025bf-df2c-4bcc-83d5-8f0d88a56e57
-print("AIC: " * string(GLM.aic(regresion_grado3_glm)))
-
-# ╔═╡ 0984464e-7c1d-418b-b956-436744c84704
-print("BIC: " * string(GLM.bic(regresion_grado3_glm)))
 
 # ╔═╡ 8b6c1f57-a7a6-45e1-81f3-a3b06cbd25cc
 md"""
@@ -1580,13 +1577,15 @@ md"""
 Mostramos el resultados:
 """
 
-# ╔═╡ 78bba65a-9ce0-4045-abc3-ab515017dc27
+# ╔═╡ 24c63783-6bff-4bfe-afba-85fd6137ebf0
 #=╠═╡
 let
+	datos = DataFrame(weight = muestra_X, height = muestra_y)
 	scatter(muestra_X, muestra_y, label = false)
 	plot!(intervalo, prediccion, width=3, label = "Ridge", legend = :topleft)
-	polinomio = Polynomials.fit(muestra_X, muestra_y, maximo_grado)
-	plot!(intervalo, polinomio.(intervalo), width = 3, label = "Sin regularización")
+	polinomio = lm(genera_formula(maximo_grado), datos)
+	predicciones = GLM.predict(polinomio, DataFrame(weight = intervalo))
+	plot!(intervalo, predicciones, width = 3, label = "Sin regularización")
 end
   ╠═╡ =#
 
@@ -1706,13 +1705,15 @@ md"""
 Representamos los puntos del conjunto que queremos ajustar, y el polinomio ajustado mediante la regresión Lasso:
 """
 
-# ╔═╡ 3becbcf2-753c-4662-bc05-be7e625146b0
+# ╔═╡ 2da31501-83ae-4eb9-a4b2-35277bb5a399
 #=╠═╡
-begin
+let
+	datos = DataFrame(weight = X_normalizada, height = y_normalizada)
 	scatter(X_normalizada, y_normalizada, label = false, legend = :topleft)
 	plot!(intervalo_normalizado, prediccion_normalizado, width=3, label = "Lasso")
-	polinomio = Polynomials.fit(X_normalizada, y_normalizada, maximo_grado)
-	plot!(intervalo_normalizado, polinomio.(range(extrema(X_normalizada)..., 100)), width = 3, label = "Sin regularización")
+	polinomio = lm(genera_formula(maximo_grado), datos)
+	predicciones = GLM.predict(polinomio, DataFrame(weight = intervalo_normalizado))
+	plot!(intervalo_normalizado, predicciones, width = 3, label = "Sin regularización")
 end
   ╠═╡ =#
 
@@ -1761,7 +1762,6 @@ Normalization = "be38d6a3-8366-4a42-ad57-222272b5bbe7"
 PlotlyBase = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
 PlotlyKaleido = "f2990250-8cf9-495f-b13a-cce12b45703c"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
-Polynomials = "f27b6e38-b328-58d1-80ce-0feddd5e7a45"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 StatsPlots = "f3b207a7-027a-5e70-b257-86293d7955fd"
 
@@ -1780,7 +1780,6 @@ Normalization = "~0.7.3"
 PlotlyBase = "~0.8.19"
 PlotlyKaleido = "~2.2.5"
 PlutoUI = "~0.7.60"
-Polynomials = "~4.0.12"
 StatsPlots = "~0.15.7"
 """
 
@@ -1790,7 +1789,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.12.6"
 manifest_format = "2.0"
-project_hash = "6db74fb6175d7b2d04c5a905dc47d16adf6cd232"
+project_hash = "0f68a28edf5e96f58b14038d01b4f93a90f83fb1"
 
 [[deps.ARFFFiles]]
 deps = ["CategoricalArrays", "Dates", "Parsers", "Tables"]
@@ -3220,24 +3219,6 @@ git-tree-sha1 = "eba4810d5e6a01f612b948c9fa94f905b49087b0"
 uuid = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 version = "0.7.60"
 
-[[deps.Polynomials]]
-deps = ["LinearAlgebra", "OrderedCollections", "RecipesBase", "Requires", "Setfield", "SparseArrays"]
-git-tree-sha1 = "adc25dbd4d13f148f3256b6d4743fe7e63a71c4a"
-uuid = "f27b6e38-b328-58d1-80ce-0feddd5e7a45"
-version = "4.0.12"
-
-    [deps.Polynomials.extensions]
-    PolynomialsChainRulesCoreExt = "ChainRulesCore"
-    PolynomialsFFTWExt = "FFTW"
-    PolynomialsMakieCoreExt = "MakieCore"
-    PolynomialsMutableArithmeticsExt = "MutableArithmetics"
-
-    [deps.Polynomials.weakdeps]
-    ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
-    FFTW = "7a1cc6ca-52ef-59f5-83cd-3a7055c09341"
-    MakieCore = "20f20a25-4f0e-4fdf-b5d1-57303727442b"
-    MutableArithmetics = "d8a4904e-b15c-11e9-3269-09a3773c0cb0"
-
 [[deps.PooledArrays]]
 deps = ["DataAPI", "Future"]
 git-tree-sha1 = "36d8b4b899628fb92c2749eb488d884a926614d3"
@@ -4093,7 +4074,6 @@ version = "1.4.1+2"
 # ╠═4a0b5740-c8cb-455d-b61c-8f5a8aac12e0
 # ╠═2ec183cb-cc49-4f49-b456-63f4b4af2259
 # ╠═e19cb042-30ae-436a-970b-f1d5f4729f18
-# ╠═db3c1413-8380-4cc3-95aa-d4c570eaacb9
 # ╠═ee81127d-c05a-4442-b448-e47f05013784
 # ╠═a88e846a-ba8e-497d-ae55-2494ec5570f4
 # ╠═8b452fa6-21df-4b59-800f-08c32497b770
@@ -4258,8 +4238,6 @@ version = "1.4.1+2"
 # ╠═5cd0a735-6ab1-4467-aed0-591f876658a7
 # ╠═90cef0bf-fc2f-4e0d-acd5-750456dd9bf9
 # ╠═78f74061-afc3-44af-9753-3feeab77b889
-# ╠═fa1025bf-df2c-4bcc-83d5-8f0d88a56e57
-# ╠═0984464e-7c1d-418b-b956-436744c84704
 # ╠═8b6c1f57-a7a6-45e1-81f3-a3b06cbd25cc
 # ╠═7237b145-9c6d-40e0-bc56-601d552fcd33
 # ╠═d86aafd0-4e64-4c95-8279-a0a0a7f6ff1e
@@ -4293,7 +4271,7 @@ version = "1.4.1+2"
 # ╠═521f2427-7018-4672-808e-270aa99799b7
 # ╠═e55a90ef-6ca5-43b3-b5ce-5e43d2e9cccc
 # ╠═cd0cb7ce-9f2d-4c2c-987e-3d5a04c20907
-# ╠═78bba65a-9ce0-4045-abc3-ab515017dc27
+# ╠═24c63783-6bff-4bfe-afba-85fd6137ebf0
 # ╠═9e9d1dc9-9f77-4e15-a621-3fb4043a462f
 # ╠═d7642855-cffd-4031-9566-64e7b64b92cb
 # ╠═db473f0a-09ef-4e60-becf-10ddd49d34d4
@@ -4317,7 +4295,7 @@ version = "1.4.1+2"
 # ╠═4bab4869-622e-49ad-b66a-dbefb0caad10
 # ╠═b0fcfd03-67d3-403a-aaf5-5efd5baee89b
 # ╠═f8a956a7-6520-45e4-85e3-487cd433a315
-# ╠═3becbcf2-753c-4662-bc05-be7e625146b0
+# ╠═2da31501-83ae-4eb9-a4b2-35277bb5a399
 # ╠═61e188a0-8080-4e76-8531-cca90d56cc14
 # ╠═5c0b5a16-fd1d-4b8c-aa70-d746332b4d28
 # ╟─00000000-0000-0000-0000-000000000001
