@@ -1138,35 +1138,6 @@ md"""
 Grado del polinomio: $(@bind grado NumberField(1:12, default=2))
 """
 
-# ╔═╡ b117c48e-2e1b-4908-8747-58d080a829f0
-# ╠═╡ disabled = true
-#=╠═╡
-function ajuste_polinomial(grado::Int)
-	fit = Polynomials.fit(data[:,:weight], data[:,:height], grado)
-	rmse = rms(fit.(data[:, :weight]), data[:, :height])
-	fit, rmse#, GLM.aic(fit)
-end;
-  ╠═╡ =#
-
-# ╔═╡ 4f59d4d0-8c87-41d6-b313-1cdc368a5120
-#=╠═╡
-function dibuja_ajuste(grado::Int)
-	fit, rmse = ajuste_polinomial(grado)
-	titulo = "Grado: " * string(grado) * ", RMSE: " * string(rmse)
-	if grado <= 2
-		titulo = titulo * " (Subajuste)"
-	elseif grado > 8 
-		titulo = titulo * " (Sobreajuste)"
-	end
-	scatter(data[:, :weight], data[:, :height], 
-		ylim=(50, 200), 
-		xlabel="weight", ylabel="height", 
-		label="Datos", legend=false, 
-		title=titulo)
-	plot!(fit, extrema(data[:, :weight])..., width=3)
-end;
-  ╠═╡ =#
-
 # ╔═╡ 2074ac3d-d583-4bb8-971d-a2cad5ca7b30
 function genera_formula(grado::Int64)
 	formula = "height ~ weight"
@@ -1181,12 +1152,13 @@ function ajuste_polinomial_glm(grado::Int64)
 	fit = lm(genera_formula(grado), data)
 	rmse = rms(GLM.predict(fit, select(data, [:weight])), data.height)
 	aic = GLM.aic(fit)
-	return fit, rmse, aic
+	bic = GLM.bic(fit)
+	return (fit = fit, rmse = rmse, aic = aic, bic = bic)
 end
 
 # ╔═╡ c5883560-0214-4581-a081-b16766c1646b
 function dibuja_ajuste_gml(grado::Int)
-	fit, rmse = ajuste_polinomial_glm(grado)
+	fit, rmse, aic, bic = ajuste_polinomial_glm(grado)
 	titulo = "Grado: " * string(grado) * ", RMSE: " * string(rmse)
 	if grado <= 2
 		titulo = titulo * " (Subajuste)"
@@ -1203,11 +1175,6 @@ function dibuja_ajuste_gml(grado::Int)
 	plot!(x.weight, y, lw = 3)
 end;
 
-# ╔═╡ 0ad863f8-3479-4da5-92b2-7bdc2f4044d5
-#=╠═╡
-dibuja_ajuste(grado)
-  ╠═╡ =#
-
 # ╔═╡ d5aee77f-ab26-4f9d-9111-b54465c23df4
 dibuja_ajuste_gml(grado)
 
@@ -1218,27 +1185,9 @@ md"""
 Para ver cuál es la evolución del ajuste, representemos el error cuadrático medio en función del grado del polinomio:
 """
 
-# ╔═╡ 1c7e1986-b12f-4d4a-9be9-12befefb98bd
-#=╠═╡
-let
-	datos = [ajuste_polinomial(x)[2] for x in 1:12]
-	plot(
-		datos,
-		xlim=(0,12),
-		title = "Evolución del MSE con el grado del polinomio",
-		xlabel = "Grado del polinomio",
-		ylabel = "MSE",
-		size=(900,400),
-		xticks=(1:12),
-		legend = false,
-	)
-	scatter!(datos)
-end
-  ╠═╡ =#
-
 # ╔═╡ cfd782aa-0644-4296-9492-08fe07b25493
 let
-	datos = [ajuste_polinomial_glm(x)[2] for x in 1:12]
+	datos = [ajuste_polinomial_glm(x)[:aic] for x in 1:12]
 	plot(
 		datos,
 		xlim=(0,12),
@@ -4278,15 +4227,11 @@ version = "1.4.1+2"
 # ╠═be0d88a4-5520-43bd-8914-9b566a343acc
 # ╠═690417e7-50a6-401c-9ad9-1d42abc384a3
 # ╠═e982d0a1-3469-48d5-a286-28fc2f88f714
-# ╠═b117c48e-2e1b-4908-8747-58d080a829f0
-# ╠═4f59d4d0-8c87-41d6-b313-1cdc368a5120
 # ╠═2074ac3d-d583-4bb8-971d-a2cad5ca7b30
 # ╠═7e9a785a-5c18-431c-b221-56aefb9489ab
 # ╠═c5883560-0214-4581-a081-b16766c1646b
-# ╠═0ad863f8-3479-4da5-92b2-7bdc2f4044d5
 # ╠═d5aee77f-ab26-4f9d-9111-b54465c23df4
 # ╠═53bdf7bb-95f7-4413-aec7-1c88375fcf22
-# ╠═1c7e1986-b12f-4d4a-9be9-12befefb98bd
 # ╠═cfd782aa-0644-4296-9492-08fe07b25493
 # ╠═f8967d16-3b32-47af-93eb-13eee06fc199
 # ╠═5390815a-39a1-4aee-bb0c-d93edb60c9ec
