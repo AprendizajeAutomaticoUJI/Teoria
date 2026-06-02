@@ -1186,20 +1186,28 @@ Para ver cuál es la evolución del ajuste, representemos el error cuadrático m
 """
 
 # ╔═╡ cfd782aa-0644-4296-9492-08fe07b25493
-let
-	datos = [ajuste_polinomial_glm(x)[:aic] for x in 1:12]
+function dibuja_metrica(metrica::Symbol)
+	datos = [ajuste_polinomial_glm(x)[metrica] for x in 1:12]
 	plot(
 		datos,
 		xlim=(0,12),
 		title = "Evolución del MSE con el grado del polinomio",
 		xlabel = "Grado del polinomio",
-		ylabel = "MSE",
+		ylabel = metrica,
 		size=(900,400),
 		xticks=(1:12),
 		legend = false,
 	)
 	scatter!(datos)
 end
+
+# ╔═╡ a6d7d9e4-9de4-4f91-a2af-5264043b34f8
+md"""
+Métrica: $(@bind metrica Select([:rmse => "rmse", :aic => "aic", :bic => "bic"]))
+"""
+
+# ╔═╡ a4e447a1-bda9-4c55-8033-ee065733b949
+dibuja_metrica(metrica)
 
 # ╔═╡ f8967d16-3b32-47af-93eb-13eee06fc199
 md"""
@@ -4233,6 +4241,8 @@ version = "1.4.1+2"
 # ╠═d5aee77f-ab26-4f9d-9111-b54465c23df4
 # ╠═53bdf7bb-95f7-4413-aec7-1c88375fcf22
 # ╠═cfd782aa-0644-4296-9492-08fe07b25493
+# ╠═a6d7d9e4-9de4-4f91-a2af-5264043b34f8
+# ╠═a4e447a1-bda9-4c55-8033-ee065733b949
 # ╠═f8967d16-3b32-47af-93eb-13eee06fc199
 # ╠═5390815a-39a1-4aee-bb0c-d93edb60c9ec
 # ╠═1d3429b4-30d3-407c-aa96-40b91823870e
