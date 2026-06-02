@@ -1198,6 +1198,16 @@ function dibuja_metrica(metrica::Symbol)
 	scatter!(datos)
 end
 
+# ╔═╡ d5f537aa-d71b-4957-bb50-007c1291153a
+md"""
+Otras métricas que podemos utilizar para seleccionar entre varios modelos son:
+
+* [AIC (Akaike Information Criterion)](https://en.wikipedia.org/wiki/Akaike_information_criterion) y 
+* [BIC (Bayessian Information Criterion](https://en.wikipedia.org/wiki/Bayesian_information_criterion).
+
+Estas métricas tienen en cuenta tanto el grado de ajuste del modelo a los datos como la complejidad del modelo.
+"""
+
 # ╔═╡ a6d7d9e4-9de4-4f91-a2af-5264043b34f8
 md"""
 Métrica: $(@bind metrica Select([:rmse => "rmse", :aic => "aic", :bic => "bic"]))
@@ -1208,7 +1218,7 @@ dibuja_metrica(metrica)
 
 # ╔═╡ f8967d16-3b32-47af-93eb-13eee06fc199
 md"""
-Parece que desde grado 3 hasta 8 son buenas elecciones.
+Parece que desde grado 2 hasta 4 son buenas elecciones.
 """
 
 # ╔═╡ 5390815a-39a1-4aee-bb0c-d93edb60c9ec
@@ -1267,22 +1277,6 @@ qqnorm(residuals(regresion_grado3_glm))
 # ╔═╡ 90cef0bf-fc2f-4e0d-acd5-750456dd9bf9
 md"""
 ## Encontrar el mejor grado de un polinomio
-"""
-
-# ╔═╡ 78f74061-afc3-44af-9753-3feeab77b889
-md"""
-Otras métricas que podemos utilizar para seleccionar entre varios modelos son:
-
-* [AIC (Akaike Information Criterion)](https://en.wikipedia.org/wiki/Akaike_information_criterion) y 
-* [BIC (Bayessian Information Criterion](https://en.wikipedia.org/wiki/Bayesian_information_criterion).
-
-Estas métricas tienen en cuenta tanto el grado de ajuste del modelo a los datos como la complejidad del modelo.
-
-En nuestro caso:
-
-AIC = $(GLM.aic(regresion_grado3_glm))
-
-BIC = $(GLM.bic(regresion_grado3_glm))
 """
 
 # ╔═╡ 8b6c1f57-a7a6-45e1-81f3-a3b06cbd25cc
@@ -4221,6 +4215,7 @@ version = "1.4.1+2"
 # ╠═d5aee77f-ab26-4f9d-9111-b54465c23df4
 # ╠═53bdf7bb-95f7-4413-aec7-1c88375fcf22
 # ╠═cfd782aa-0644-4296-9492-08fe07b25493
+# ╠═d5f537aa-d71b-4957-bb50-007c1291153a
 # ╠═a6d7d9e4-9de4-4f91-a2af-5264043b34f8
 # ╠═a4e447a1-bda9-4c55-8033-ee065733b949
 # ╠═f8967d16-3b32-47af-93eb-13eee06fc199
@@ -4237,7 +4232,6 @@ version = "1.4.1+2"
 # ╠═dbbca94b-d3eb-40f2-b303-f40f537dbbd9
 # ╠═5cd0a735-6ab1-4467-aed0-591f876658a7
 # ╠═90cef0bf-fc2f-4e0d-acd5-750456dd9bf9
-# ╠═78f74061-afc3-44af-9753-3feeab77b889
 # ╠═8b6c1f57-a7a6-45e1-81f3-a3b06cbd25cc
 # ╠═7237b145-9c6d-40e0-bc56-601d552fcd33
 # ╠═d86aafd0-4e64-4c95-8279-a0a0a7f6ff1e
