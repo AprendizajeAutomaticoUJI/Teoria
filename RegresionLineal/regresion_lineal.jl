@@ -577,6 +577,15 @@ md"""
 Todos estos cálculos los hemos hecho con un poco de álgebra. Existen paquetes en Julia que nos facilitan estos cálculos, como por ejemplo, el paquete [**GLM**](https://juliastats.org/GLM.jl/stable/) (Generalised Linear Models)
 """
 
+# ╔═╡ a68b97a2-d45c-4ecd-ae5f-d27fdceee732
+let
+	coso = "height ~ weight"
+	for i in 2:4
+		coso = coso * " + weight^" * string(i)
+	end
+	println(coso)
+end
+
 # ╔═╡ e3278b0e-ff00-4bc9-b06e-d2757a08f997
 regresion_glm = lm(@formula(height ~ weight), adultos)
 
@@ -1074,13 +1083,14 @@ En el caso de ajuste de un polinomio tenemos:
 $h_{\theta}(x) = y = \theta_0 + \theta_1 x + \theta_2 x^2 +...+ \theta_n x^n + \epsilon$
 
 Fíjate en que los parámetros que buscamos $\mathbf{\theta}$ siguen siendo 
-lineales, no hay ninguna potencia de los parámetros, las potencias se calculan sobre los datos.
+lineales, no hay ninguna potencia de los parámetros $x$, las potencias se calculan sobre los datos.
 """
 
 # ╔═╡ be0d88a4-5520-43bd-8914-9b566a343acc
 md"""
 ## Extensión de la regresión lineal
-Que lo podemos expresar de modo matricial como:
+
+Particularizando para cada valor en el conjunto de datos y utilizando notación matricial podemos escribir:
 
 ```math
 \begin{bmatrix}
@@ -1120,7 +1130,7 @@ y_N \\
 md"""
 ## Encontrar el mejor grado del polinomio
 
-¿Cuál es el grado del polinomio que mejor ajusta los datos? Probemos primero con un polinomio de grado 2:
+La siguiente pregunta es: ¿Cuál es el grado del polinomio que mejor ajusta los datos? Probemos primero con un polinomio de grado 2, puedes utilizar el selector para cambiar el orden del polinomio:
 """
 
 # ╔═╡ e982d0a1-3469-48d5-a286-28fc2f88f714
@@ -1129,13 +1139,17 @@ Grado del polinomio: $(@bind grado NumberField(1:12, default=2))
 """
 
 # ╔═╡ b117c48e-2e1b-4908-8747-58d080a829f0
+# ╠═╡ disabled = true
+#=╠═╡
 function ajuste_polinomial(grado::Int)
 	fit = Polynomials.fit(data[:,:weight], data[:,:height], grado)
 	rmse = rms(fit.(data[:, :weight]), data[:, :height])
-	fit, rmse
+	fit, rmse#, GLM.aic(fit)
 end;
+  ╠═╡ =#
 
 # ╔═╡ 4f59d4d0-8c87-41d6-b313-1cdc368a5120
+#=╠═╡
 function dibuja_ajuste(grado::Int)
 	fit, rmse = ajuste_polinomial(grado)
 	titulo = "Grado: " * string(grado) * ", RMSE: " * string(rmse)
@@ -1151,21 +1165,90 @@ function dibuja_ajuste(grado::Int)
 		title=titulo)
 	plot!(fit, extrema(data[:, :weight])..., width=3)
 end;
+  ╠═╡ =#
+
+# ╔═╡ 2074ac3d-d583-4bb8-971d-a2cad5ca7b30
+function genera_formula(grado::Int64)
+	formula = "height ~ weight"
+	for i in 2:grado
+		formula = formula * " + weight^" * string(i)
+	end
+	return @eval(@formula($(Meta.parse(formula))))
+end
+
+# ╔═╡ 7e9a785a-5c18-431c-b221-56aefb9489ab
+function ajuste_polinomial_glm(grado::Int64)
+	fit = lm(genera_formula(grado), data)
+	rmse = rms(GLM.predict(fit, select(data, [:weight])), data.height)
+	aic = GLM.aic(fit)
+	return fit, rmse, aic
+end
+
+# ╔═╡ c5883560-0214-4581-a081-b16766c1646b
+function dibuja_ajuste_gml(grado::Int)
+	fit, rmse = ajuste_polinomial_glm(grado)
+	titulo = "Grado: " * string(grado) * ", RMSE: " * string(rmse)
+	if grado <= 2
+		titulo = titulo * " (Subajuste)"
+	elseif grado >= 5 
+		titulo = titulo * " (Sobreajuste)"
+	end
+	scatter(data[:, :weight], data[:, :height], 
+		ylim=(50, 200), 
+		xlabel="weight", ylabel="height", 
+		label="Datos", legend=false, 
+		title=titulo)
+	x = sort(select(data, [:weight]))
+	y = GLM.predict(fit, x)
+	plot!(x.weight, y, lw = 3)
+end;
 
 # ╔═╡ 0ad863f8-3479-4da5-92b2-7bdc2f4044d5
+#=╠═╡
 dibuja_ajuste(grado)
+  ╠═╡ =#
+
+# ╔═╡ d5aee77f-ab26-4f9d-9111-b54465c23df4
+dibuja_ajuste_gml(grado)
 
 # ╔═╡ 53bdf7bb-95f7-4413-aec7-1c88375fcf22
 md"""
 ## Encontrar el mejor grado del polinomio
 
-La siguiente gráfica muestra el MSE frente al grado del polinomio:
+Para ver cuál es la evolución del ajuste, representemos el error cuadrático medio en función del grado del polinomio:
 """
 
 # ╔═╡ 1c7e1986-b12f-4d4a-9be9-12befefb98bd
-begin
+#=╠═╡
+let
 	datos = [ajuste_polinomial(x)[2] for x in 1:12]
-	plot(datos, xlim=(0,12), size=(900,400), xticks=(1:12))
+	plot(
+		datos,
+		xlim=(0,12),
+		title = "Evolución del MSE con el grado del polinomio",
+		xlabel = "Grado del polinomio",
+		ylabel = "MSE",
+		size=(900,400),
+		xticks=(1:12),
+		legend = false,
+	)
+	scatter!(datos)
+end
+  ╠═╡ =#
+
+# ╔═╡ cfd782aa-0644-4296-9492-08fe07b25493
+let
+	datos = [ajuste_polinomial_glm(x)[2] for x in 1:12]
+	plot(
+		datos,
+		xlim=(0,12),
+		title = "Evolución del MSE con el grado del polinomio",
+		xlabel = "Grado del polinomio",
+		ylabel = "MSE",
+		size=(900,400),
+		xticks=(1:12),
+		legend = false,
+	)
 	scatter!(datos)
 end
 
@@ -4112,6 +4195,7 @@ version = "1.4.1+2"
 # ╠═caba4624-8388-43b9-a9bf-b0bb5ed27213
 # ╠═900f41a8-59a2-4301-88a5-9f0b4c25d4ac
 # ╠═6518ba79-f3cc-4ccb-9935-fe037f256d4e
+# ╠═a68b97a2-d45c-4ecd-ae5f-d27fdceee732
 # ╠═e3278b0e-ff00-4bc9-b06e-d2757a08f997
 # ╠═65a0552d-4901-45dd-a569-a9fbeb0355fb
 # ╠═3a665608-f044-41a9-a619-7ed799457277
@@ -4196,9 +4280,14 @@ version = "1.4.1+2"
 # ╠═e982d0a1-3469-48d5-a286-28fc2f88f714
 # ╠═b117c48e-2e1b-4908-8747-58d080a829f0
 # ╠═4f59d4d0-8c87-41d6-b313-1cdc368a5120
+# ╠═2074ac3d-d583-4bb8-971d-a2cad5ca7b30
+# ╠═7e9a785a-5c18-431c-b221-56aefb9489ab
+# ╠═c5883560-0214-4581-a081-b16766c1646b
 # ╠═0ad863f8-3479-4da5-92b2-7bdc2f4044d5
+# ╠═d5aee77f-ab26-4f9d-9111-b54465c23df4
 # ╠═53bdf7bb-95f7-4413-aec7-1c88375fcf22
 # ╠═1c7e1986-b12f-4d4a-9be9-12befefb98bd
+# ╠═cfd782aa-0644-4296-9492-08fe07b25493
 # ╠═f8967d16-3b32-47af-93eb-13eee06fc199
 # ╠═5390815a-39a1-4aee-bb0c-d93edb60c9ec
 # ╠═1d3429b4-30d3-407c-aa96-40b91823870e
