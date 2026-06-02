@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.8
+# v0.20.24
 
 using Markdown
 using InteractiveUtils
@@ -8,9 +8,9 @@ using InteractiveUtils
 using PlutoUI
 
 # ╔═╡ 1db7081a-2bdc-11f0-0c01-4b497af0a469
-html"""
-<link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
-"""
+# html"""
+# <link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
+# """
 
 # ╔═╡ 8211d6e7-2da7-42dc-a03e-f7e8827d0bd4
 TableOfContents(title="Contenidos", depth=1)
@@ -135,7 +135,7 @@ md"""
 
 1. Seleccionar los algoritmos más interesantes para el problema en cuestión.
 1. Hacer pruebas rápidas para cada uno de los algoritmos seleccionados.
-1. Comprobar si se cumplen las condiciones *ideales* para los algoritmos seleccionados.
+1. Comprobar si los datos cumplen las condiciones que *imponen* los algoritmos seleccionados.
 1. Aplicar la/las métricas seleccionadas y registrar los resultados.
 1. Añadir/eliminar características y repetir las pruebas.
 1. Seleccionar los algoritmos que dan mejores resultados para la siguiente fase.
@@ -227,9 +227,9 @@ PlutoUI = "~0.7.61"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.11.6"
+julia_version = "1.12.6"
 manifest_format = "2.0"
-project_hash = "6d1b77f27e79835fc27b2d7e99ab8fcaf37aa976"
+project_hash = "95f3f934b7e2c5249ef6e1068e98d6029094e806"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -258,7 +258,7 @@ version = "0.11.5"
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.1.1+0"
+version = "1.3.0+1"
 
 [[deps.Dates]]
 deps = ["Printf"]
@@ -268,7 +268,7 @@ version = "1.11.0"
 [[deps.Downloads]]
 deps = ["ArgTools", "FileWatching", "LibCURL", "NetworkOptions"]
 uuid = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
-version = "1.6.0"
+version = "1.7.0"
 
 [[deps.FileWatching]]
 uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
@@ -309,30 +309,35 @@ git-tree-sha1 = "31e996f0a15c7b280ba9f76636b3ff9e2ae58c9a"
 uuid = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 version = "0.21.4"
 
+[[deps.JuliaSyntaxHighlighting]]
+deps = ["StyledStrings"]
+uuid = "ac6e5ff7-fb65-4e79-a425-ec3bc9c03011"
+version = "1.12.0"
+
 [[deps.LibCURL]]
 deps = ["LibCURL_jll", "MozillaCACerts_jll"]
 uuid = "b27032c2-a3e7-50c8-80cd-2d36dbcbfd21"
 version = "0.6.4"
 
 [[deps.LibCURL_jll]]
-deps = ["Artifacts", "LibSSH2_jll", "Libdl", "MbedTLS_jll", "Zlib_jll", "nghttp2_jll"]
+deps = ["Artifacts", "LibSSH2_jll", "Libdl", "OpenSSL_jll", "Zlib_jll", "nghttp2_jll"]
 uuid = "deac9b47-8bc7-5906-a0fe-35ac56dc84c0"
-version = "8.6.0+0"
+version = "8.15.0+0"
 
 [[deps.LibGit2]]
-deps = ["Base64", "LibGit2_jll", "NetworkOptions", "Printf", "SHA"]
+deps = ["LibGit2_jll", "NetworkOptions", "Printf", "SHA"]
 uuid = "76f85450-5226-5b5a-8eaa-529ad045b433"
 version = "1.11.0"
 
 [[deps.LibGit2_jll]]
-deps = ["Artifacts", "LibSSH2_jll", "Libdl", "MbedTLS_jll"]
+deps = ["Artifacts", "LibSSH2_jll", "Libdl", "OpenSSL_jll"]
 uuid = "e37daf67-58a4-590a-8e99-b0245dd2ffc5"
-version = "1.7.2+0"
+version = "1.9.0+0"
 
 [[deps.LibSSH2_jll]]
-deps = ["Artifacts", "Libdl", "MbedTLS_jll"]
+deps = ["Artifacts", "Libdl", "OpenSSL_jll"]
 uuid = "29816b5a-b9ab-546f-933c-edad1886dfa8"
-version = "1.11.0+1"
+version = "1.11.3+1"
 
 [[deps.Libdl]]
 uuid = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
@@ -341,7 +346,7 @@ version = "1.11.0"
 [[deps.LinearAlgebra]]
 deps = ["Libdl", "OpenBLAS_jll", "libblastrampoline_jll"]
 uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
-version = "1.11.0"
+version = "1.12.0"
 
 [[deps.Logging]]
 uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
@@ -353,14 +358,9 @@ uuid = "6c6e2e6c-3030-632d-7369-2d6c69616d65"
 version = "1.1.0"
 
 [[deps.Markdown]]
-deps = ["Base64"]
+deps = ["Base64", "JuliaSyntaxHighlighting", "StyledStrings"]
 uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
 version = "1.11.0"
-
-[[deps.MbedTLS_jll]]
-deps = ["Artifacts", "Libdl"]
-uuid = "c8ffd9c3-330d-5841-b78e-0817d7145fa1"
-version = "2.28.6+0"
 
 [[deps.Mmap]]
 uuid = "a63ad114-7e13-5084-954f-fe012c677804"
@@ -368,16 +368,21 @@ version = "1.11.0"
 
 [[deps.MozillaCACerts_jll]]
 uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
-version = "2023.12.12"
+version = "2025.11.4"
 
 [[deps.NetworkOptions]]
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
-version = "1.2.0"
+version = "1.3.0"
 
 [[deps.OpenBLAS_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
-version = "0.3.27+1"
+version = "0.3.29+0"
+
+[[deps.OpenSSL_jll]]
+deps = ["Artifacts", "Libdl"]
+uuid = "458c3c95-2e84-50aa-8efc-19380b2a3a95"
+version = "3.5.4+0"
 
 [[deps.Parsers]]
 deps = ["Dates", "PrecompileTools", "UUIDs"]
@@ -388,7 +393,7 @@ version = "2.8.3"
 [[deps.Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "Random", "SHA", "TOML", "Tar", "UUIDs", "p7zip_jll"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
-version = "1.11.0"
+version = "1.12.1"
 
     [deps.Pkg.extensions]
     REPLExt = "REPL"
@@ -449,6 +454,10 @@ version = "1.11.1"
     [deps.Statistics.weakdeps]
     SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
+[[deps.StyledStrings]]
+uuid = "f489334b-da3d-4c2e-b8f0-e476e12c162b"
+version = "1.11.0"
+
 [[deps.TOML]]
 deps = ["Dates"]
 uuid = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
@@ -486,51 +495,51 @@ version = "1.11.0"
 [[deps.Zlib_jll]]
 deps = ["Libdl"]
 uuid = "83775a58-1f1d-513f-b197-d71354ab007a"
-version = "1.2.13+1"
+version = "1.3.1+2"
 
 [[deps.libblastrampoline_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
-version = "5.11.0+0"
+version = "5.15.0+0"
 
 [[deps.nghttp2_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850ede-7688-5339-a07c-302acd2aaf8d"
-version = "1.59.0+0"
+version = "1.64.0+1"
 
 [[deps.p7zip_jll]]
-deps = ["Artifacts", "Libdl"]
+deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
-version = "17.4.0+2"
+version = "17.7.0+0"
 """
 
 # ╔═╡ Cell order:
-# ╟─1db7081a-2bdc-11f0-0c01-4b497af0a469
-# ╟─0a611a39-2f34-4190-84ea-36791341ed75
-# ╟─8211d6e7-2da7-42dc-a03e-f7e8827d0bd4
-# ╟─2ba8182e-7607-4516-8c65-7f2b8362672f
-# ╟─1ec92e62-38e5-490e-8764-7c657d35c296
-# ╟─39a5d438-5034-49d6-9256-9fbe43fc9e01
-# ╟─276f4250-bd8c-408c-9cb0-0493f5f7b3fe
-# ╟─67b9cdd1-32b3-431b-9fe4-88fc39057eb0
-# ╟─27f48568-a11b-43a0-bc3a-a2306d3c9963
-# ╟─1eff8fdd-86c1-4ffc-ad78-cce43ee6a786
-# ╟─f8771a01-7018-4ae0-a6e6-1d21c994e9a9
-# ╟─72a9bc7c-bb05-4814-97d6-90fb17bb37bb
-# ╟─856c2092-93ac-4c77-8455-d838fd74ab62
-# ╟─de706874-4566-477a-bcfa-f4145ea20cdb
-# ╟─ecf46d82-359d-4e54-ac55-e5748a9ef97e
-# ╟─27d4223e-66cb-4136-9d37-bb9cc704a0da
-# ╟─7bef6ea7-48f6-4491-9b16-e08a5597c101
-# ╟─7cdff43a-666f-4704-9ece-dbc81d0ab0c2
-# ╟─d119b883-aaa4-48c4-ab72-1c40913a04ce
-# ╟─bb0fa793-9662-4926-9eef-077d22963c15
-# ╟─5842c918-9ebf-4903-be1c-7f5377b66002
-# ╟─2754be9e-f58b-4921-a3dc-d43eed844362
-# ╟─9c99a746-9534-477c-8f73-8a5cf4f94a78
-# ╟─a1f64f7d-eedb-4ac3-9ceb-e8b751a561c9
-# ╟─2532887c-9182-4167-8ee8-6d3d5cf486e5
-# ╟─1160e27a-611a-4868-8cd3-77fe30fa4edd
-# ╟─8eb3ddb5-8ccd-446e-9e1d-bc1150e3f8d9
+# ╠═1db7081a-2bdc-11f0-0c01-4b497af0a469
+# ╠═0a611a39-2f34-4190-84ea-36791341ed75
+# ╠═8211d6e7-2da7-42dc-a03e-f7e8827d0bd4
+# ╠═2ba8182e-7607-4516-8c65-7f2b8362672f
+# ╠═1ec92e62-38e5-490e-8764-7c657d35c296
+# ╠═39a5d438-5034-49d6-9256-9fbe43fc9e01
+# ╠═276f4250-bd8c-408c-9cb0-0493f5f7b3fe
+# ╠═67b9cdd1-32b3-431b-9fe4-88fc39057eb0
+# ╠═27f48568-a11b-43a0-bc3a-a2306d3c9963
+# ╠═1eff8fdd-86c1-4ffc-ad78-cce43ee6a786
+# ╠═f8771a01-7018-4ae0-a6e6-1d21c994e9a9
+# ╠═72a9bc7c-bb05-4814-97d6-90fb17bb37bb
+# ╠═856c2092-93ac-4c77-8455-d838fd74ab62
+# ╠═de706874-4566-477a-bcfa-f4145ea20cdb
+# ╠═ecf46d82-359d-4e54-ac55-e5748a9ef97e
+# ╠═27d4223e-66cb-4136-9d37-bb9cc704a0da
+# ╠═7bef6ea7-48f6-4491-9b16-e08a5597c101
+# ╠═7cdff43a-666f-4704-9ece-dbc81d0ab0c2
+# ╠═d119b883-aaa4-48c4-ab72-1c40913a04ce
+# ╠═bb0fa793-9662-4926-9eef-077d22963c15
+# ╠═5842c918-9ebf-4903-be1c-7f5377b66002
+# ╠═2754be9e-f58b-4921-a3dc-d43eed844362
+# ╠═9c99a746-9534-477c-8f73-8a5cf4f94a78
+# ╠═a1f64f7d-eedb-4ac3-9ceb-e8b751a561c9
+# ╠═2532887c-9182-4167-8ee8-6d3d5cf486e5
+# ╠═1160e27a-611a-4868-8cd3-77fe30fa4edd
+# ╠═8eb3ddb5-8ccd-446e-9e1d-bc1150e3f8d9
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
