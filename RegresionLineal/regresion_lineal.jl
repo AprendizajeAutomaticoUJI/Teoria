@@ -1447,24 +1447,25 @@ md"""
 ## Qué es la regularización
 
 Recordemos que en el caso de la regresión hemos encontrado el _mejor_ grado 
-del polinomio calculando error cuadrático medio.
+del polinomio calculando error cuadrático medio, el valor de AIC o el valor de BIC.
 
 Ahora que conocemos la técnica de descenso del gradiente, podemos ampliar la 
 definición de la función de pérdidas para incluir un término que **controle** 
-el grado del polinomio que estamos ajustando.
+el grado del polinomio que estamos ajustando. A esta técnica se la llama regularización.
 """
 
 # ╔═╡ 9539b216-c13f-4aed-ae82-d569f9a1ac7e
 md"""
 ## Modelos lineales regularizados: Ridge
 
-En este tipo de regularización, a la función de pérdidas se le añade un término 
-con el módulo 
+Cuando utilizamos regularización, a la función de pérdidas se le añade un nuevo término $\lambda \theta^T\theta$:
 
 ```math
 \mathcal{L}(\mathbf{\theta}) = \frac{1}{N} \sum_{i=1}^N \lvert y_i - h(\theta) \rvert ^2
 + \lambda \theta^T\theta
 ```
+
+El objetivo del nuevo término es *controlar* el valor de los coeficientes $\theta$ para que no se hagan exesívamente grandes.
 
 Este caso tiene una solución exacta para $\theta$:
 
@@ -1487,7 +1488,7 @@ Veamos un ejemplo sobre un subconjunto de nuestros datos cuando ajustamos a un p
 md"""
 ## Modelos lineales regularizados: Ridge
 
-Vamos a tomar una muestra de los datos correspondientes a las personas adultas.
+Esta vez, vamos a tomar una muestra de los datos correspondientes a las personas adultas.
 """
 
 # ╔═╡ ee8c9183-ead1-4a95-8d2c-818979ae6a05
@@ -1568,7 +1569,7 @@ prediccion = potencias_prediccion * A .+ b
 md"""
 ## Modelos lineales regularizados: Ridge
 
-Mostramos el resultados:
+Mostramos el resultados. Se observa que el ajuste regularizado es más suave que el ajuste sin regularización.
 """
 
 # ╔═╡ 24c63783-6bff-4bfe-afba-85fd6137ebf0
@@ -1592,14 +1593,14 @@ En la regularización Lasso el término que se añade a la función de pérdidas
 $\mathcal{L}(\mathbf{\theta}) = \frac{1}{N} \sum_{i=1}^N \lvert y_i - h(\theta) \rvert ^2
      + \lambda \sum_{j=1}^k \theta_j$
 
-donde $k$ es el grado del polinomio. Fíjate en que no se incluye el parámetro de bias $\theta_0$ en la regularización.
+donde $k$ es el grado del polinomio. Fíjate en que no se incluye el parámetro de bias $\theta_0$ en la regularización. La idea es la misma que con el término de regularizadión de Ridge, que los coeficientes del polinomio no tomen valores *demasiado* grandes.
 """
 
 # ╔═╡ d7642855-cffd-4031-9566-64e7b64b92cb
 md"""
 ## Modelos lineales regularizados: Lasso
 
-Para utilizar la regularización Lasso, el procedimiento es muy parecido a la regularización Ridge. Sin embargo, hay que tener en cuenta que la regularización Lasso no tiene fórmula exacta y se utiliza descenso de gradiente, que funciona mejor si los datos están normalizados.
+Para utilizar la regularización Lasso, el procedimiento es muy parecido a la regularización Ridge. Sin embargo, hay que tener en cuenta que la regularización Lasso no tiene una solución exacta y para resolverla se utiliza descenso de gradiente. El descenso de gradiente funciona mejor si los datos están normalizados.
 """
 
 # ╔═╡ db473f0a-09ef-4e60-becf-10ddd49d34d4
@@ -1713,7 +1714,7 @@ end
 
 # ╔═╡ 61e188a0-8080-4e76-8531-cca90d56cc14
 md"""
-## Modelos lineales regularizados: ElasticNet
+## Modelos lineales regularizados: Elastic Net
 
 La regularización Elastic Net es una combinación de las dos anteriores:
 
@@ -1735,8 +1736,8 @@ md"""
 - Hemos extendido la regresión lineal a modelos polinómicos.
 - Hemos estudiado qué es la técnica de descenso del gradiente.
 - Hemos introducido la regularización para mejorar el rendimiento.
-- Es importante que compruebes que se cumplen las condiciones para aplicar regresión lineal: residuos distribuidos según una gaussiana centrada en el 0.
-- Hemos visto algunos fragmentos de código Julia.
+- Es importante que compruebes que se cumplen las condiciones para aplicar regresión lineal: residuos distribuidos según una gaussiana centrada en el $0$.
+- Hemos visto cómo implementar las soluciones en Julia.
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -4071,8 +4072,8 @@ version = "1.4.1+2"
 # ╠═ee81127d-c05a-4442-b448-e47f05013784
 # ╠═a88e846a-ba8e-497d-ae55-2494ec5570f4
 # ╠═8b452fa6-21df-4b59-800f-08c32497b770
-# ╠═2ba1c09d-1a4a-486e-9370-4247b8526d7e
 # ╠═518c90c6-e42d-4c2c-bf1e-8892dac5e4a0
+# ╠═2ba1c09d-1a4a-486e-9370-4247b8526d7e
 # ╠═266e632b-30a5-4ae4-981f-8e2ab61e3232
 # ╠═d0fe37ee-bbc1-11ef-2f0c-4b6bc41d2c3a
 # ╠═2a8ae7fc-5eab-427a-974f-4e52017f040d
