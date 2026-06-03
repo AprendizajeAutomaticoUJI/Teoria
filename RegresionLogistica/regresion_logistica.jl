@@ -579,7 +579,7 @@ Ahora supongamos que:
 1. Las distribuciones de las variables en las clases $C_1$ y $C_2$ son gaussianas.
 1. Las correlaciones de las variables son iguales en las dos clases.
 
-Fíjate en que estas suposiciones son «validas» para los datos de Howell. Es importante comprobar que nuestros datos cumplen estas dos condiciones si vamos a aplicar la formulación siguiente.
+Fíjate en que ya hemos comprobado que estas suposiciones son «validas» para los datos de Howell. Es importante comprobar que nuestros datos cumplen estas dos condiciones si vamos a aplicar la formulación siguiente.
 """
 
 # ╔═╡ d48f86ef-1894-4f82-ab34-6b4553996902
@@ -604,7 +604,7 @@ $p(C_1|x) = \sigma(\theta^T x + \theta_0) = \sigma(\theta^T x)$
 
 Esto significa que si hacemos una transformación lineal sobre una muestra $\theta^T x$ y sobre el resultado aplicamos la función $\sigma(\theta^T x)$ obtenemos la probabilidad de que la muestra $x$ pertenezca a la clase $C_1$.
 
-Nos queda por calcular los parámetros de la transformación.
+Por lo tanto, tenemos que calcular los parámetros de la transformación $\theta$.
 """
 
 # ╔═╡ f057fb6c-af57-46c0-b712-06eed205dbc8
@@ -707,7 +707,7 @@ Creamos el Dataframe con las características *X* y la variable a predecir *y*:
 X = select(entrenamiento, [:weight, :height])
 
 # ╔═╡ 02f644b9-a877-4e91-9c4f-aff38a3dac2a
-y = coerce(entrenamiento.male, OrderedFactor)
+y = coerce(entrenamiento.male, Multiclass)
 
 # ╔═╡ 88992576-3631-4d79-8008-5778d0cd850b
 md"""
@@ -762,7 +762,7 @@ Calculamos la curva ROC:
 """
 
 # ╔═╡ ececc102-a1d5-4669-8bea-6a3deabc540b
-fpr, tpr = roc_curve(predict(maquina, select(prueba, [:weight, :height])), coerce(prueba.male, OrderedFactor))
+fpr, tpr = roc_curve(predict(maquina, select(prueba, [:weight, :height])), coerce(prueba.male, Multiclass))
 
 # ╔═╡ 511ea9f7-d54f-46b4-b184-7bec2bfa274f
 md"""
@@ -770,7 +770,7 @@ Calculamos el área bajo la curva:
 """
 
 # ╔═╡ ce15f735-0e8a-47fe-90f3-d06fbc296b33
-auc = area_under_curve(predict(maquina, select(prueba, [:weight, :height])), coerce(prueba.male, OrderedFactor))
+auc = area_under_curve(predict(maquina, select(prueba, [:weight, :height])), coerce(prueba.male, Multiclass))
 
 # ╔═╡ 3e1e3253-4eee-4284-ac87-3de5d451495a
 md"""
