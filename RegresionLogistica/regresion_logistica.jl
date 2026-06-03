@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.8
+# v0.20.24
 
 using Markdown
 using InteractiveUtils
@@ -38,9 +38,9 @@ using MLJ
 using PlutoUI
 
 # ╔═╡ 67ff8652-f2c7-11ef-3967-593c57b25a22
-html"""
-<link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
-"""
+# html"""
+# <link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
+# """
 
 # ╔═╡ f4492566-e856-4fc1-b5f7-6897874cf19f
 import PlotlyBase
@@ -78,7 +78,7 @@ Resource(
 md"""
 ## Introducción
 
-Aunque hablemos de regresión logística, la tarea que se resuelve con la regresión logística es la clasificación.
+Aunque hablemos de regresión logística, la tarea que resuelve la regresión logística es la clasificación.
 
 Empezaremos mostrando cómo aplicar la regresión logística cuando sólo tenemos dos clases, y queremos clasificar nuevas instancias como pertenecientes a alguna de las dos clases.
 
@@ -92,7 +92,7 @@ md"""
 * Resumir en qué consiste la regresión logística.
 * Interpretar los resultados de los análisis de distribuciones y covarianzas de los datos.
 * Decidir si un problema de clasificación se puede abordar con regresión logística.
-* Construir un algoritmo de clasificación a partir de la regresión logística.
+* Construir un algoritmo de clasificación utilizando la regresión logística.
 """
 
 # ╔═╡ 0d5bcada-a6a8-4bc1-8af6-6a2ee5a0729f
@@ -111,9 +111,9 @@ md"""
 md"""
 ## Teorema de Bayes
 
-El teorema de Bayes es uno de los más importantes de la teoría de la probabilidad. Nos permite calcular la probabilidad de un suceso a partir de otras probabilidades relacionadas con el suceso.
+El teorema de Bayes es uno de los más importantes teoremas de la teoría de la probabilidad. Nos permite calcular la probabilidad de un suceso a partir de otras probabilidades relacionadas con el suceso.
 
-La probabilidad de que ocurran dos sucesos A y B se calcula como:
+Empecemos recordando cómo se calcula la probabilidad de que ocurran dos sucesos A y B se calcula como:
 
 $p(A,B) = p(A) p(B|A)$
 
@@ -128,7 +128,11 @@ Como los sucesos son intercambiables también podemos escribir:
 
 $p(B,A) = p(B) p(A|B)$
 
-Igualando ambas expresiones:
+Y como la probabilidad de que acurra $A$ y $B$ es la misma de que ocurra $B$ y $A$:
+
+$p(A,B) = p(B,A)$
+
+podemos igualar ambas expresiones:
 
 $p(A) p(B|A) = p(B) p(A|B)$
 
@@ -145,7 +149,9 @@ La expresión anterior es el teorema de Bayes:
 
 $p(A|B) = \frac{p(A) p(B|A)}{p(B)}$
 
-Veamos un ejemplo para aclarar su significado.
+Si conocemos la probabilidad de que suceda $A$, la probabilidad de que suceda $B$, y la probabilidad de que suceda $B$ si $A$ ha sucedido, podemos calcular la probabilidad de que suceda $A$ si $B$ ha sucedido. 
+
+Veamos un ejemplo para aclarar su significado y la potencia de este resultado.
 """
 
 # ╔═╡ 8ce55806-3d06-43b5-a99f-d9aa90c74e48
@@ -153,6 +159,8 @@ md"""
 ## Teorema de Bayes
 
 Supongamos que una persona se hace una prueba de covid-19 y le da positivo, ¿cuál es la probabilidad de que la persona tenga covid-19?
+
+De la formula de Bayes identificamos que $B = positiva$ y $A=covid$.
 
 Si escribimos esta pregunta en forma de probabilidades 
 $p(covid|positiva)$ y aplicando el teorema de Bayes:
@@ -187,15 +195,13 @@ md"""
 
 Calculando todas las cantidades:
 
-$p(positiva|covid) = 4950/5000 = 0.99$
-
-$p(covid) = 0.001$
-
-$p(positiva|!covid) = 100/5000 = 0.02$
-
 $p(covid) = 0.001$
 
 $p(!covid) = 0.999$
+
+$p(positiva|covid) = 4950/5000 = 0.99$
+
+$p(positiva|!covid) = 100/5000 = 0.02$
 
 $p(positiva) = p(positiva|covid) p(covid) + \\p(positiva|!covid) p(!covid)$
 
@@ -212,7 +218,7 @@ Sustituyendo finalmente en la fórmula del teorema de Bayes:
 $p(covid|positiva) = \frac{p(covid) p(positiva|covid)}{p(positiva)} =$
 $\frac{0.99 \cdot 0.001}{0.20079} = 0.00493$
 
-Que se interpreta como: si tomamos una persona al azar, le hacemos la prueba de covid-19 y da positivo, la probabilidad de que realmente tenga la enfermedad es del 0.5%.
+Que se interpreta como: si tomamos una persona al azar, le hacemos la prueba de covid-19 y da positivo, la probabilidad de que realmente tenga la enfermedad es del $0.493\%$, que está muy lejos del $p(covid|positiva) = 99\%$. Es muy importante remarcar que la persona se ha elegido al azar. Otra cosa muy distinta es que la persona presente síntomas.
 """
 
 # ╔═╡ 6e897bc2-d623-4ab6-83d2-d7a82caef8c5
@@ -224,7 +230,29 @@ md"""
 md"""
 ## Sexo a partir de peso y altura
 
-Cargamos los datos con los que vamos a trabajar:
+Nuestro objetivo es predecir el sexo de una persona de la etnia !Kung San a partir de su peso y altura.
+
+Para ello, vamos a seguir el procedimiento que vimos en el tema anterior *Desarrollo de proyectos de aprendizaje automático*.
+"""
+
+# ╔═╡ 239098fc-2202-493f-af15-6dcd85154103
+md"""
+# Obtener los datos
+
+## Conjunto de datos Howell
+
+Los datos son los del conjunto de datos de Howell.
+
+La primera tarea que debemos hacer es procesar los datos para eliminar duplicados, eliminar/impputar datos faltantes, etcétera, es decir, asegurar la calidad de los datos.
+
+Afortunadamente, los datos están *limpios*, es decir, todas las muestras contienen valores para todas las características, no hay datos duplicados, etcétera.
+
+De nuevo, las conclusiones que extraigamos son válidas únicamente para ese conjunto de datos.
+"""
+
+# ╔═╡ 6770f0d3-dd84-4454-834e-104f94225b7c
+md"""
+## Conjunto de datos Howell
 """
 
 # ╔═╡ 11c9c78a-a2e1-4395-b174-e1577afd9970
@@ -248,7 +276,7 @@ function grafica_peso_altura()
 	p1 = scatter!(mujeres.weight, mujeres.height, label="mujeres")
 	p2 = scatter(hombres_adultos.weight, hombres_adultos.height, xlabel="Peso", ylabel="Altura", title="Adultos", labels=false)
 	p2 = scatter!(mujeres_adultas.weight, mujeres_adultas.height, labels=false)
-	plot(p1, p2, size=(900,500))
+	plot(p1, p2, size=(1200,500))
 end;
 
 # ╔═╡ daf598e0-ccb2-489a-8dcd-77e44e9c23fc
@@ -256,23 +284,11 @@ grafica_peso_altura()
 
 # ╔═╡ 8addd58e-47c8-42bf-88cb-c9d33bc77ce9
 md"""
-## Sexo a partir de peso y altura
+## Conjunto de datos Howell
 
 Parece que, a partir de la edad adulta (18 años), existen diferencias entre hombres y mujeres si atendemos al peso y la altura, ojo!!! para el conjunto de datos que estamos utilizando.
 
 Ahora, vamos a intentar construir un clasificador que nos permita realizar esa clasificación.
-"""
-
-# ╔═╡ 239098fc-2202-493f-af15-6dcd85154103
-md"""
-# Obtener los datos
-
-## Conjunto de datos Howell
-Los datos ya los tenemos, son los del conjunto de datos de Howell.
-
-Afortunadamente, los datos están *limpios*, es decir, todas las muestras contienen valores para todas las características, no hay datos duplicados, etcétera.
-
-De nuevo, las conclusiones que extraigamos son válidas únicamente para ese conjunto de datos.
 """
 
 # ╔═╡ e2b69df9-227d-42b2-a10a-c230525b5a04
@@ -286,8 +302,8 @@ md"""
 
 Antes de intentar utilizar algún algoritmo, es muy recomendable estudiar los datos desde el punto de vista estadístico, por ejemplo:
 
-1. ¿Los datos tienen alguna distribución conocida?
-1. ¿Existen correlaciones entre los datos?
+1. ¿Las características de los datos tienen alguna distribución conocida?
+1. ¿Existen correlaciones entre las características de los datos?
 """
 
 # ╔═╡ ee9223fc-8d4d-45b5-8d19-9f0dfba5596f
@@ -385,7 +401,7 @@ pvalue(OneSampleADTest(mujeres_adultas.height, fit(Normal, mujeres_adultas.heigh
 
 # ╔═╡ 8e6b402f-cd3e-41e0-9be5-41e939a817f5
 md"""
-Los ajustes parecen ser bastante buenos en todos los casos.
+Los ajustes parecen ser bastante buenos en todos los casos. Luego no podemos descartar la hipótesis de que peso y altura sigan distribuciones normales tanto para hombres como para mujeres.
 """
 
 # ╔═╡ b1f4000f-9fc1-4363-a3c2-f08be4348ac5
@@ -478,19 +494,19 @@ BartlettTest(Matrix(select(hombres_adultos, Not(:age))), Matrix(select(mujeres_a
 
 # ╔═╡ 517c9b6c-d4b7-45c6-a916-12f92f07fb08
 md"""
-A la vista del p-valor de esta prueba, podemos considerar que las matrices de covarianzas de hombres y mujeres para peso y altura se *parecen lo suficiente*.
+A la vista del p-valor de esta prueba, no podemos rechazar la hipótesis de que las matrices de covarianza para hombres y mujeres sean la misma.
 """
 
 # ╔═╡ bc3c772e-578d-4fea-ad56-bc0b5598d43e
 md"""
 ## Conclusiones:
 
-1. Existe una correlación alta entre altura y género.
-1. Existe una correlación moderada entre peso y género.
-1. La correlación entre edad y género es muy pequeña.
+1. No podemos rechazar que las distribuciones de peso y altura, tanto para hombres como para mujeres, sigan una distribución normal.
+1. Existe una correlación alta entre altura y sexo.
+1. Existe una correlación moderada entre peso y sexo.
+1. La correlación entre edad y sexo es muy pequeña.
 1. Las correlaciones entre peso y altura son parecidas entre hombres y mujeres.
-1. La matriz de covarianza (peso y altura) es parecida entre hombres y mujeres.
-1. Suponemos que la distribución peso-altura sigue una distribución normal para hombres y mujeres.
+1. No podemos rechazar que las matrices de covarianza (peso y altura) sean iguales para hombres y mujeres.
 
 Todas estas conclusiones nos van a ser útiles en lo siguiente.
 """
@@ -520,7 +536,7 @@ md"""
 # El algoritmo de regresión logística para tareas de clasificación
 
 ## Clasificación con dos clases
-El problema de clasificar una persona de la base de datos Howell por género es un problema con dos únicas clases. Para generalizar, vamos a llamar a estas clases $C_1$ y $C_2$.
+El problema de clasificar una persona de la base de datos Howell por sexo es un problema con dos únicas clases. Para generalizar, vamos a llamar a estas clases $C_1$ y $C_2$.
 
 Utilizamos el teorema de Bayes para calcular la probabilidad de que una muestra $x$ pertenezca a la clase $C_1$:
 
@@ -888,9 +904,9 @@ StatsPlots = "~0.15.7"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.11.6"
+julia_version = "1.12.6"
 manifest_format = "2.0"
-project_hash = "3fffe0958b9624492427cb24d056b0e0bc08ec52"
+project_hash = "b0cca3d11bde4c130594fb4d9f057891e9eb174e"
 
 [[deps.ARFFFiles]]
 deps = ["CategoricalArrays", "Dates", "Parsers", "Tables"]
@@ -1201,7 +1217,7 @@ weakdeps = ["Dates", "LinearAlgebra"]
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.1.1+0"
+version = "1.3.0+1"
 
 [[deps.CompositionsBase]]
 git-tree-sha1 = "802bb88cd69dfd1509f6670416bd4434015693ad"
@@ -1351,7 +1367,7 @@ version = "0.9.3"
 [[deps.Downloads]]
 deps = ["ArgTools", "FileWatching", "LibCURL", "NetworkOptions"]
 uuid = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
-version = "1.6.0"
+version = "1.7.0"
 
 [[deps.EarlyStopping]]
 deps = ["Dates", "Statistics"]
@@ -1697,6 +1713,11 @@ git-tree-sha1 = "eac1206917768cb54957c65a615460d87b455fc1"
 uuid = "aacddb02-875f-59d6-b918-886e6ef4fbf8"
 version = "3.1.1+0"
 
+[[deps.JuliaSyntaxHighlighting]]
+deps = ["StyledStrings"]
+uuid = "ac6e5ff7-fb65-4e79-a425-ec3bc9c03011"
+version = "1.12.0"
+
 [[deps.JuliaVariables]]
 deps = ["MLStyle", "NameResolution"]
 git-tree-sha1 = "49fb3cb53362ddadb4415e9b73926d6b40709e70"
@@ -1799,24 +1820,24 @@ uuid = "b27032c2-a3e7-50c8-80cd-2d36dbcbfd21"
 version = "0.6.4"
 
 [[deps.LibCURL_jll]]
-deps = ["Artifacts", "LibSSH2_jll", "Libdl", "MbedTLS_jll", "Zlib_jll", "nghttp2_jll"]
+deps = ["Artifacts", "LibSSH2_jll", "Libdl", "OpenSSL_jll", "Zlib_jll", "nghttp2_jll"]
 uuid = "deac9b47-8bc7-5906-a0fe-35ac56dc84c0"
-version = "8.6.0+0"
+version = "8.15.0+0"
 
 [[deps.LibGit2]]
-deps = ["Base64", "LibGit2_jll", "NetworkOptions", "Printf", "SHA"]
+deps = ["LibGit2_jll", "NetworkOptions", "Printf", "SHA"]
 uuid = "76f85450-5226-5b5a-8eaa-529ad045b433"
 version = "1.11.0"
 
 [[deps.LibGit2_jll]]
-deps = ["Artifacts", "LibSSH2_jll", "Libdl", "MbedTLS_jll"]
+deps = ["Artifacts", "LibSSH2_jll", "Libdl", "OpenSSL_jll"]
 uuid = "e37daf67-58a4-590a-8e99-b0245dd2ffc5"
-version = "1.7.2+0"
+version = "1.9.0+0"
 
 [[deps.LibSSH2_jll]]
-deps = ["Artifacts", "Libdl", "MbedTLS_jll"]
+deps = ["Artifacts", "Libdl", "OpenSSL_jll"]
 uuid = "29816b5a-b9ab-546f-933c-edad1886dfa8"
-version = "1.11.0+1"
+version = "1.11.3+1"
 
 [[deps.Libdl]]
 uuid = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
@@ -1879,7 +1900,7 @@ version = "7.3.0"
 [[deps.LinearAlgebra]]
 deps = ["Libdl", "OpenBLAS_jll", "libblastrampoline_jll"]
 uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
-version = "1.11.0"
+version = "1.12.0"
 
 [[deps.LinearMaps]]
 deps = ["LinearAlgebra"]
@@ -2023,7 +2044,7 @@ uuid = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
 version = "0.5.15"
 
 [[deps.Markdown]]
-deps = ["Base64"]
+deps = ["Base64", "JuliaSyntaxHighlighting", "StyledStrings"]
 uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
 version = "1.11.0"
 
@@ -2034,7 +2055,8 @@ uuid = "739be429-bea8-5141-9913-cc70e7f3736d"
 version = "1.1.9"
 
 [[deps.MbedTLS_jll]]
-deps = ["Artifacts", "Libdl"]
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "926c6af3a037c68d02596a44c22ec3595f5f760b"
 uuid = "c8ffd9c3-330d-5841-b78e-0817d7145fa1"
 version = "2.28.6+0"
 
@@ -2061,7 +2083,7 @@ version = "1.11.0"
 
 [[deps.MozillaCACerts_jll]]
 uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
-version = "2023.12.12"
+version = "2025.11.4"
 
 [[deps.MultivariateStats]]
 deps = ["Arpack", "Distributions", "LinearAlgebra", "SparseArrays", "Statistics", "StatsAPI", "StatsBase"]
@@ -2123,7 +2145,7 @@ version = "0.4.21"
 
 [[deps.NetworkOptions]]
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
-version = "1.2.0"
+version = "1.3.0"
 
 [[deps.Observables]]
 git-tree-sha1 = "7438a59546cf62428fc9d1bc94729146d37a7225"
@@ -2148,12 +2170,12 @@ version = "1.3.5+1"
 [[deps.OpenBLAS_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
-version = "0.3.27+1"
+version = "0.3.29+0"
 
 [[deps.OpenLibm_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "05823500-19ac-5b8b-9628-191a04bc5112"
-version = "0.8.5+0"
+version = "0.8.7+0"
 
 [[deps.OpenML]]
 deps = ["ARFFFiles", "HTTP", "JSON", "Markdown", "Pkg", "Scratch"]
@@ -2168,10 +2190,9 @@ uuid = "4d8831e6-92b7-49fb-bdf8-b643e874388c"
 version = "1.4.3"
 
 [[deps.OpenSSL_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "a9697f1d06cc3eb3fb3ad49cc67f2cfabaac31ea"
+deps = ["Artifacts", "Libdl"]
 uuid = "458c3c95-2e84-50aa-8efc-19380b2a3a95"
-version = "3.0.16+0"
+version = "3.5.4+0"
 
 [[deps.OpenSpecFun_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl"]
@@ -2205,7 +2226,7 @@ version = "1.8.0"
 [[deps.PCRE2_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "efcefdf7-47ab-520b-bdef-62a2eaa19f15"
-version = "10.42.0+1"
+version = "10.44.0+1"
 
 [[deps.PDMats]]
 deps = ["LinearAlgebra", "SparseArrays", "SuiteSparse"]
@@ -2245,7 +2266,7 @@ version = "0.43.4+0"
 [[deps.Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "Random", "SHA", "TOML", "Tar", "UUIDs", "p7zip_jll"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
-version = "1.11.0"
+version = "1.12.1"
 weakdeps = ["REPL"]
 
     [deps.Pkg.extensions]
@@ -2394,7 +2415,7 @@ version = "2.11.2"
     Enzyme = "7da242da-08ed-463a-9acd-ee780be4f1d9"
 
 [[deps.REPL]]
-deps = ["InteractiveUtils", "Markdown", "Sockets", "StyledStrings", "Unicode"]
+deps = ["InteractiveUtils", "JuliaSyntaxHighlighting", "Markdown", "Sockets", "StyledStrings", "Unicode"]
 uuid = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
 version = "1.11.0"
 
@@ -2551,7 +2572,7 @@ version = "1.2.1"
 [[deps.SparseArrays]]
 deps = ["Libdl", "LinearAlgebra", "Random", "Serialization", "SuiteSparse_jll"]
 uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
-version = "1.11.0"
+version = "1.12.0"
 
 [[deps.SpecialFunctions]]
 deps = ["IrrationalConstants", "LogExpFunctions", "OpenLibm_jll", "OpenSpecFun_jll"]
@@ -2673,7 +2694,7 @@ uuid = "4607b0f0-06f3-5cda-b6b1-a6196a1729e9"
 [[deps.SuiteSparse_jll]]
 deps = ["Artifacts", "Libdl", "libblastrampoline_jll"]
 uuid = "bea87d4a-7f5b-5778-9afe-8cc45184846c"
-version = "7.7.0+0"
+version = "7.8.3+2"
 
 [[deps.TOML]]
 deps = ["Dates"]
@@ -3010,7 +3031,7 @@ version = "1.5.1+0"
 [[deps.Zlib_jll]]
 deps = ["Libdl"]
 uuid = "83775a58-1f1d-513f-b197-d71354ab007a"
-version = "1.2.13+1"
+version = "1.3.1+2"
 
 [[deps.Zstd_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -3051,7 +3072,7 @@ version = "0.15.2+0"
 [[deps.libblastrampoline_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
-version = "5.11.0+0"
+version = "5.15.0+0"
 
 [[deps.libdecor_jll]]
 deps = ["Artifacts", "Dbus_jll", "JLLWrappers", "Libdl", "Libglvnd_jll", "Pango_jll", "Wayland_jll", "xkbcommon_jll"]
@@ -3098,18 +3119,18 @@ version = "1.1.6+0"
 [[deps.nghttp2_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850ede-7688-5339-a07c-302acd2aaf8d"
-version = "1.59.0+0"
+version = "1.64.0+1"
 
 [[deps.oneTBB_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl"]
+deps = ["Artifacts", "JLLWrappers", "LazyArtifacts", "Libdl"]
 git-tree-sha1 = "d5a767a3bb77135a99e433afe0eb14cd7f6914c3"
 uuid = "1317d2d5-d96f-522e-a858-c73665f53c3e"
 version = "2022.0.0+0"
 
 [[deps.p7zip_jll]]
-deps = ["Artifacts", "Libdl"]
+deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
-version = "17.4.0+2"
+version = "17.7.0+0"
 
 [[deps.x264_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -3131,138 +3152,139 @@ version = "1.4.1+2"
 """
 
 # ╔═╡ Cell order:
-# ╟─67ff8652-f2c7-11ef-3967-593c57b25a22
-# ╟─2a2b9587-6bb6-4f5e-811a-2bea4bba10cc
-# ╟─a8657eaa-905f-4b2f-845d-7ffe5d13e8e6
-# ╟─3fe74add-23e0-4ca9-aa83-1cb945388e10
-# ╟─ad7e997c-bdd5-4187-87cc-f2b2bed38d7c
-# ╟─f4492566-e856-4fc1-b5f7-6897874cf19f
-# ╟─3748086b-5bb8-409e-807e-9e8c8845cf03
-# ╟─f19c87ed-bfc5-4eca-b61b-5bca6bd8eb65
-# ╟─a4488176-5912-4879-afca-1b4112457dec
-# ╟─e6901419-169d-4400-b2a1-3bc01342ba59
-# ╟─58ac34c0-0a42-45ee-a830-fad4d5dd9d71
-# ╟─86baef7c-e1aa-4e24-b6e0-ed9b40761059
-# ╟─513b3406-a196-4c31-8d43-e9850c2908bb
-# ╟─018db6c4-5039-494a-b3be-60f436f0c4a5
-# ╟─6a690dd8-eb37-435e-ab77-989fb3c32006
-# ╟─2a86bff1-dda4-4412-9300-3d54330e7388
-# ╟─0d1ffc59-3f36-49e6-a0f4-c0c91fe9b5b8
-# ╟─95697151-e85c-42b3-8c92-cb206ed70e0b
-# ╟─987c2875-6ae9-43e9-b9be-aa560e644c8c
-# ╟─4d219ec4-6bd6-45c1-9013-18c5806b274d
-# ╟─ca2fe96c-0eb3-47c7-9537-a26ed3ab44e1
-# ╟─0d5bcada-a6a8-4bc1-8af6-6a2ee5a0729f
-# ╟─8fa5709e-e7da-48ba-9d44-357adf5459b6
-# ╟─4c30d44c-e54f-4676-8d55-b6438f62db50
-# ╟─b5bc0dab-7d95-46fd-adc5-7ea2a8420d83
-# ╟─9ff0ea90-8a75-46eb-814c-11fcef453cc9
-# ╟─8ce55806-3d06-43b5-a99f-d9aa90c74e48
-# ╟─be0cb678-d6e6-402b-952b-14f494b70df9
-# ╟─abde0c3a-7060-4b3e-a772-7a872c8d8c3a
-# ╟─cef7a0fa-9638-4ebb-b558-c1420dae089a
-# ╟─6e897bc2-d623-4ab6-83d2-d7a82caef8c5
-# ╟─abbc8c34-ccec-42ed-8039-64921395f126
-# ╟─11c9c78a-a2e1-4395-b174-e1577afd9970
-# ╟─336a8e44-150e-461f-a9c9-cc87c94ccccf
-# ╟─d0a45350-a28a-43ad-9009-0bb3ad91da86
-# ╟─daf598e0-ccb2-489a-8dcd-77e44e9c23fc
-# ╟─8addd58e-47c8-42bf-88cb-c9d33bc77ce9
-# ╟─239098fc-2202-493f-af15-6dcd85154103
-# ╟─e2b69df9-227d-42b2-a10a-c230525b5a04
-# ╟─d30a158c-c577-4f3f-8804-d354f2cf6abc
-# ╟─ee9223fc-8d4d-45b5-8d19-9f0dfba5596f
-# ╟─63327e12-c31e-433f-b110-0b4a6acf0e8e
-# ╟─51f1622c-d0f7-430c-a2b7-e3ea5c2bbeae
-# ╟─7a153f0b-a604-4cbc-9af1-911b247ebc7a
-# ╟─752ea24a-ca1c-43fe-a98a-168643c8378b
-# ╟─92192af7-a787-4cd8-86a4-13b386b51f10
-# ╟─ad4a41b9-7a8c-4999-a88a-28f816ffb0ba
-# ╟─42362461-58bf-49b4-8199-c6bd3e0f2900
-# ╟─0bc95d3e-d681-4be0-8aaf-57758a11a22a
+# ╠═67ff8652-f2c7-11ef-3967-593c57b25a22
+# ╠═2a2b9587-6bb6-4f5e-811a-2bea4bba10cc
+# ╠═a8657eaa-905f-4b2f-845d-7ffe5d13e8e6
+# ╠═3fe74add-23e0-4ca9-aa83-1cb945388e10
+# ╠═ad7e997c-bdd5-4187-87cc-f2b2bed38d7c
+# ╠═f4492566-e856-4fc1-b5f7-6897874cf19f
+# ╠═3748086b-5bb8-409e-807e-9e8c8845cf03
+# ╠═f19c87ed-bfc5-4eca-b61b-5bca6bd8eb65
+# ╠═a4488176-5912-4879-afca-1b4112457dec
+# ╠═e6901419-169d-4400-b2a1-3bc01342ba59
+# ╠═58ac34c0-0a42-45ee-a830-fad4d5dd9d71
+# ╠═86baef7c-e1aa-4e24-b6e0-ed9b40761059
+# ╠═513b3406-a196-4c31-8d43-e9850c2908bb
+# ╠═018db6c4-5039-494a-b3be-60f436f0c4a5
+# ╠═6a690dd8-eb37-435e-ab77-989fb3c32006
+# ╠═2a86bff1-dda4-4412-9300-3d54330e7388
+# ╠═0d1ffc59-3f36-49e6-a0f4-c0c91fe9b5b8
+# ╠═95697151-e85c-42b3-8c92-cb206ed70e0b
+# ╠═987c2875-6ae9-43e9-b9be-aa560e644c8c
+# ╠═4d219ec4-6bd6-45c1-9013-18c5806b274d
+# ╠═ca2fe96c-0eb3-47c7-9537-a26ed3ab44e1
+# ╠═0d5bcada-a6a8-4bc1-8af6-6a2ee5a0729f
+# ╠═8fa5709e-e7da-48ba-9d44-357adf5459b6
+# ╠═4c30d44c-e54f-4676-8d55-b6438f62db50
+# ╠═b5bc0dab-7d95-46fd-adc5-7ea2a8420d83
+# ╠═9ff0ea90-8a75-46eb-814c-11fcef453cc9
+# ╠═8ce55806-3d06-43b5-a99f-d9aa90c74e48
+# ╠═be0cb678-d6e6-402b-952b-14f494b70df9
+# ╠═abde0c3a-7060-4b3e-a772-7a872c8d8c3a
+# ╠═cef7a0fa-9638-4ebb-b558-c1420dae089a
+# ╠═6e897bc2-d623-4ab6-83d2-d7a82caef8c5
+# ╠═abbc8c34-ccec-42ed-8039-64921395f126
+# ╠═239098fc-2202-493f-af15-6dcd85154103
+# ╠═6770f0d3-dd84-4454-834e-104f94225b7c
+# ╠═daf598e0-ccb2-489a-8dcd-77e44e9c23fc
+# ╠═11c9c78a-a2e1-4395-b174-e1577afd9970
+# ╠═336a8e44-150e-461f-a9c9-cc87c94ccccf
+# ╠═d0a45350-a28a-43ad-9009-0bb3ad91da86
+# ╠═8addd58e-47c8-42bf-88cb-c9d33bc77ce9
+# ╠═e2b69df9-227d-42b2-a10a-c230525b5a04
+# ╠═d30a158c-c577-4f3f-8804-d354f2cf6abc
+# ╠═ee9223fc-8d4d-45b5-8d19-9f0dfba5596f
+# ╠═63327e12-c31e-433f-b110-0b4a6acf0e8e
+# ╠═51f1622c-d0f7-430c-a2b7-e3ea5c2bbeae
+# ╠═7a153f0b-a604-4cbc-9af1-911b247ebc7a
+# ╠═752ea24a-ca1c-43fe-a98a-168643c8378b
+# ╠═92192af7-a787-4cd8-86a4-13b386b51f10
+# ╠═ad4a41b9-7a8c-4999-a88a-28f816ffb0ba
+# ╠═42362461-58bf-49b4-8199-c6bd3e0f2900
+# ╠═0bc95d3e-d681-4be0-8aaf-57758a11a22a
 # ╠═9e5fa7a9-f7ad-4ab0-ad47-64bb777c584a
-# ╟─67333fdc-c200-4776-aafb-7947f6be05f9
+# ╠═67333fdc-c200-4776-aafb-7947f6be05f9
 # ╠═5f306070-918c-4491-992e-6d47307a9139
-# ╟─e7341d4c-624e-44d1-9ab4-b30bb6dfef4f
+# ╠═e7341d4c-624e-44d1-9ab4-b30bb6dfef4f
 # ╠═288ed03e-d9e7-41f3-9f91-b67bfda75b0c
-# ╟─369232ee-276b-4abb-a308-f3071cb0ffa5
+# ╠═369232ee-276b-4abb-a308-f3071cb0ffa5
 # ╠═7d3a83f1-27e6-487f-b85e-96bba7704550
-# ╟─8e6b402f-cd3e-41e0-9be5-41e939a817f5
-# ╟─b1f4000f-9fc1-4363-a3c2-f08be4348ac5
+# ╠═8e6b402f-cd3e-41e0-9be5-41e939a817f5
+# ╠═b1f4000f-9fc1-4363-a3c2-f08be4348ac5
 # ╠═b248e25c-0507-44df-98f7-af73b72f5be6
-# ╟─8e01180b-560c-4eb9-a28f-79e6034e7208
+# ╠═8e01180b-560c-4eb9-a28f-79e6034e7208
 # ╠═14bbf814-5254-4528-bcd0-6732aaf46b2c
-# ╟─3389b7e8-305a-4242-bae9-926f8bfa5ee8
+# ╠═3389b7e8-305a-4242-bae9-926f8bfa5ee8
 # ╠═c33a49ae-1c51-40cf-8b39-107fc942e362
-# ╟─ae448d10-e562-4a8f-899e-bc1484e63bf5
+# ╠═ae448d10-e562-4a8f-899e-bc1484e63bf5
 # ╠═240fc13e-a96b-4340-bdb3-cc367aab9650
 # ╠═f57559bd-d99b-43e8-b2dc-5cb75abf668e
 # ╠═e4e11601-94db-4642-af8f-9838d6ca2994
-# ╟─a21a7ad8-b71d-4053-8350-1748fd204250
-# ╟─3e814d0e-5fe0-475f-a488-40727787dd59
-# ╟─96ad543b-d968-4fb3-b358-92ea5197436c
-# ╟─bf361273-75aa-4620-b63d-a7e8f47f83c8
-# ╟─629bed62-cb21-481b-b24d-b123e16d607d
-# ╟─85cbdac8-a4c8-4a91-ba6d-90f0c55ba818
+# ╠═a21a7ad8-b71d-4053-8350-1748fd204250
+# ╠═3e814d0e-5fe0-475f-a488-40727787dd59
+# ╠═96ad543b-d968-4fb3-b358-92ea5197436c
+# ╠═bf361273-75aa-4620-b63d-a7e8f47f83c8
+# ╠═629bed62-cb21-481b-b24d-b123e16d607d
+# ╠═85cbdac8-a4c8-4a91-ba6d-90f0c55ba818
 # ╠═9458817b-d025-4f73-9c71-42fdb2bbd266
-# ╟─517c9b6c-d4b7-45c6-a916-12f92f07fb08
+# ╠═517c9b6c-d4b7-45c6-a916-12f92f07fb08
 # ╠═bc3c772e-578d-4fea-ad56-bc0b5598d43e
-# ╟─2cd44fbd-46e9-4942-ac06-df9c5af1badc
-# ╟─a3ee5e5f-4ce4-4652-9cfd-5e3bb13460e1
-# ╟─30f3a04d-fe07-4293-b457-e26299d216d9
-# ╟─97fe3b83-59a4-4474-bc53-a81a018518d4
-# ╟─441170ee-8d7f-4b36-ab2d-8075c4196b5d
+# ╠═2cd44fbd-46e9-4942-ac06-df9c5af1badc
+# ╠═a3ee5e5f-4ce4-4652-9cfd-5e3bb13460e1
+# ╠═30f3a04d-fe07-4293-b457-e26299d216d9
+# ╠═97fe3b83-59a4-4474-bc53-a81a018518d4
+# ╠═441170ee-8d7f-4b36-ab2d-8075c4196b5d
 # ╠═19db055b-db56-4f64-bab7-6f598c93e175
-# ╟─330e6f0f-f955-405d-8c66-ae9efa8d7e0a
-# ╟─8f6a1785-f5fc-4216-af16-8c84d46b5b40
-# ╟─d48f86ef-1894-4f82-ab34-6b4553996902
-# ╟─cd15154f-fc0f-41ba-a711-0236ffa9f04d
-# ╟─f057fb6c-af57-46c0-b712-06eed205dbc8
-# ╟─0ab915b8-2d9d-4edf-9b26-a7783eb6326e
-# ╟─97b78daf-0932-4950-bfe5-def83b79f199
-# ╟─72bfb2fd-7ff4-42a0-9bf1-1266fa1d86ba
-# ╟─409db5f5-d986-4e5e-af5d-1de216cfba1d
-# ╟─3cf08dc9-e14a-4b33-a31b-43e4d9494995
-# ╟─a3889151-f6b0-42a7-9251-14136107d5f7
+# ╠═330e6f0f-f955-405d-8c66-ae9efa8d7e0a
+# ╠═8f6a1785-f5fc-4216-af16-8c84d46b5b40
+# ╠═d48f86ef-1894-4f82-ab34-6b4553996902
+# ╠═cd15154f-fc0f-41ba-a711-0236ffa9f04d
+# ╠═f057fb6c-af57-46c0-b712-06eed205dbc8
+# ╠═0ab915b8-2d9d-4edf-9b26-a7783eb6326e
+# ╠═97b78daf-0932-4950-bfe5-def83b79f199
+# ╠═72bfb2fd-7ff4-42a0-9bf1-1266fa1d86ba
+# ╠═409db5f5-d986-4e5e-af5d-1de216cfba1d
+# ╠═3cf08dc9-e14a-4b33-a31b-43e4d9494995
+# ╠═a3889151-f6b0-42a7-9251-14136107d5f7
 # ╠═350afb0c-dc70-47f8-a393-ee462f01798f
-# ╟─83b5d2b4-ab18-461a-a291-a9790cb62af8
+# ╠═83b5d2b4-ab18-461a-a291-a9790cb62af8
 # ╠═46448798-4d11-45bd-9fce-a2c2d9118763
-# ╟─ac4e5b7b-3a3e-42fe-b059-dcff8fd91a62
+# ╠═ac4e5b7b-3a3e-42fe-b059-dcff8fd91a62
 # ╠═52abed5f-197b-4308-a875-1c351725358d
 # ╠═02f644b9-a877-4e91-9c4f-aff38a3dac2a
-# ╟─88992576-3631-4d79-8008-5778d0cd850b
-# ╟─ad633dbf-a0c1-4328-835e-a970dace06a8
+# ╠═88992576-3631-4d79-8008-5778d0cd850b
+# ╠═ad633dbf-a0c1-4328-835e-a970dace06a8
 # ╠═122c7f45-af9d-43a7-ba90-455b22196166
-# ╟─7bded503-d16c-4a29-a041-6402b17396d1
+# ╠═7bded503-d16c-4a29-a041-6402b17396d1
 # ╠═5a41f8da-a56e-4e1a-ad3c-815df8872d90
-# ╟─0e043d3c-96ec-402f-a0e1-ced01d5841ec
-# ╟─ef6f0e0d-3ebd-4a8a-aa28-c0d24b4b0382
+# ╠═0e043d3c-96ec-402f-a0e1-ced01d5841ec
+# ╠═ef6f0e0d-3ebd-4a8a-aa28-c0d24b4b0382
 # ╠═ee79aa91-420d-44a6-bc17-4a5a5f6e6231
-# ╟─f88330d0-7bf9-4366-bbf9-363ed7fe5cec
+# ╠═f88330d0-7bf9-4366-bbf9-363ed7fe5cec
 # ╠═c12c09f0-75db-4a40-a201-1bd8d69b482a
-# ╟─335a4475-f46a-4255-af6c-cce27f2cc693
-# ╟─c00f5e6e-cb0e-44d9-8fe9-41ed8da6eed3
+# ╠═335a4475-f46a-4255-af6c-cce27f2cc693
+# ╠═c00f5e6e-cb0e-44d9-8fe9-41ed8da6eed3
 # ╠═ececc102-a1d5-4669-8bea-6a3deabc540b
-# ╟─511ea9f7-d54f-46b4-b184-7bec2bfa274f
+# ╠═511ea9f7-d54f-46b4-b184-7bec2bfa274f
 # ╠═ce15f735-0e8a-47fe-90f3-d06fbc296b33
-# ╟─3e1e3253-4eee-4284-ac87-3de5d451495a
+# ╠═3e1e3253-4eee-4284-ac87-3de5d451495a
 # ╠═46bc179b-7c0e-4987-8a64-ecbd28847e80
-# ╟─400bd916-166c-4c3a-a2bc-1e244f05d742
-# ╟─efa6b1c3-e6aa-4e6b-b745-0595d36f59a8
+# ╠═400bd916-166c-4c3a-a2bc-1e244f05d742
+# ╠═efa6b1c3-e6aa-4e6b-b745-0595d36f59a8
 # ╠═fa8dc7ad-c6cb-4f69-8e5d-738bcc45354a
-# ╟─0c7b05ae-b4c9-475b-983a-29df7298cb11
+# ╠═0c7b05ae-b4c9-475b-983a-29df7298cb11
 # ╠═9c4ed964-c3b2-4ac3-833e-98af8e787b53
 # ╠═a963e81f-011c-4211-a2f6-b3fd24810196
-# ╟─98d486a3-cd4f-45a6-90c5-fbf650a713d8
-# ╟─4651681e-d16b-462b-b51c-bde9efb44eb6
+# ╠═98d486a3-cd4f-45a6-90c5-fbf650a713d8
+# ╠═4651681e-d16b-462b-b51c-bde9efb44eb6
 # ╠═b57f71a8-4cba-4afb-86c6-c8240e8fc49d
 # ╠═b9f24a63-4fc9-47da-b3cf-adce20b0cea3
 # ╠═70c6667b-64b1-4c24-ae3b-612bb89c5d0e
 # ╠═92acf800-30e8-4d06-bb3d-11db12498fcb
-# ╟─113481b8-5cdb-4f0a-a26d-2db2ec3eccec
+# ╠═113481b8-5cdb-4f0a-a26d-2db2ec3eccec
 # ╠═d2f46c79-ab68-4ca0-aef1-48d5f2e2edc4
 # ╠═b8b7f2c9-10ed-487f-9690-a4be2a245f0c
-# ╟─303bace0-02ac-4501-a76d-018adeb5714a
-# ╟─536fe5a2-395f-4cd9-9791-606ea6db96ed
+# ╠═303bace0-02ac-4501-a76d-018adeb5714a
+# ╠═536fe5a2-395f-4cd9-9791-606ea6db96ed
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
