@@ -698,14 +698,20 @@ df = select(adultos, caracteristicas)
 md"""
 ## Rescalado de los datos
 
-Vamos a transformar los datos para que tanto peso como altura estén en el mismo rango de valores [0, 1]
+Vamos a transformar los datos para que tanto peso como altura estén en el mismo rango de valores, para ello vamos a utilzar un estandarizador del tal modo que el conjunto resultado estará centrado en el 0 y con una desviación estándar de 1.
 """
 
 # ╔═╡ c17696d5-5e89-42fc-9c41-e94a4f802840
-transformador = StatsBase.fit(UnitRangeTransform, Matrix(df), dims = 1)
+transformador = StatsBase.fit(ZScoreTransform, Matrix(df[!, [:weight, :height]]), dims = 1)
 
 # ╔═╡ 1c4f8e71-bb1e-440d-8f36-e65739f39b85
-df_escalado = DataFrame(StatsBase.transform(transformador, Matrix(df)), caracteristicas)
+df_escalado = DataFrame(StatsBase.transform(transformador, Matrix(df[!, [:weight, :height]])), :auto)
+
+# ╔═╡ 2317546e-9a07-4ba5-9a07-bac734e1be78
+df_escalado.male = df.male
+
+# ╔═╡ 8bdd95d2-f55a-4ccf-9a25-c824cd1a79e4
+rename!(df_escalado, names(df))
 
 # ╔═╡ 010d9c3c-f5fb-4109-9057-82f78e28eb4a
 md"""
@@ -886,10 +892,12 @@ Creamos matrices para hombres y mujeres con las columnas de peso, altura y añad
 """
 
 # ╔═╡ 9c4ed964-c3b2-4ac3-833e-98af8e787b53
-hombres_plot = StatsBase.transform(transformador, cat(Matrix(hombres_adultos[:,[:weight, :height]]), ones(size(hombres_adultos, 1)), dims=2))
+# hombres_plot = StatsBase.transform(transformador, cat(Matrix(hombres_adultos[:,[:weight, :height]]), ones(size(hombres_adultos, 1)), dims=2))
+hombres_plot = cat(StatsBase.transform(transformador, Matrix(hombres_adultos[:,[:weight, :height]])), ones(size(hombres_adultos, 1)), dims = 2)
 
 # ╔═╡ a963e81f-011c-4211-a2f6-b3fd24810196
-mujeres_plot= StatsBase.transform(transformador, cat(Matrix(mujeres_adultas[:, [:weight, :height]]), ones(size(mujeres_adultas, 1)), dims=2))
+# mujeres_plot= StatsBase.transform(transformador, cat(Matrix(mujeres_adultas[:, [:weight, :height]]), ones(size(mujeres_adultas, 1)), dims=2))
+mujeres_plot = cat(StatsBase.transform(transformador, Matrix(mujeres_adultas[:,[:weight, :height]])), ones(size(mujeres_adultas, 1)), dims = 2)
 
 # ╔═╡ 98d486a3-cd4f-45a6-90c5-fbf650a713d8
 md"""
@@ -928,6 +936,13 @@ end
 
 # ╔═╡ b8b7f2c9-10ed-487f-9690-a4be2a245f0c
 datos_sobre_sigmoide(transformado_hombres, sigma_hombres, transformado_mujeres, sigma_mujeres)
+
+# ╔═╡ b3c4681f-8136-47b7-9a41-084347ac5a9d
+md"""
+## Todo en uno con MLJ
+
+Hemos desarrollado paso a paso toda la cadena de operaciones sobre los datos hasta obtener el resultado final. Ahora vamos a ver cómo MLJ nos ayuda a simplificar mucho la creación de la máquina.
+"""
 
 # ╔═╡ 303bace0-02ac-4501-a76d-018adeb5714a
 md"""
@@ -3332,6 +3347,8 @@ version = "1.4.1+2"
 # ╠═721a7b7e-824f-4bbc-b064-92f6b84a73b5
 # ╠═c17696d5-5e89-42fc-9c41-e94a4f802840
 # ╠═1c4f8e71-bb1e-440d-8f36-e65739f39b85
+# ╠═2317546e-9a07-4ba5-9a07-bac734e1be78
+# ╠═8bdd95d2-f55a-4ccf-9a25-c824cd1a79e4
 # ╠═010d9c3c-f5fb-4109-9057-82f78e28eb4a
 # ╠═e18d51dc-df8c-4f71-ab22-691b65eb5c54
 # ╠═b9d43acd-5fe3-4a74-a645-3b929f91da98
@@ -3382,6 +3399,7 @@ version = "1.4.1+2"
 # ╠═113481b8-5cdb-4f0a-a26d-2db2ec3eccec
 # ╠═d2f46c79-ab68-4ca0-aef1-48d5f2e2edc4
 # ╠═b8b7f2c9-10ed-487f-9690-a4be2a245f0c
+# ╠═b3c4681f-8136-47b7-9a41-084347ac5a9d
 # ╠═303bace0-02ac-4501-a76d-018adeb5714a
 # ╠═536fe5a2-395f-4cd9-9791-606ea6db96ed
 # ╟─00000000-0000-0000-0000-000000000001
