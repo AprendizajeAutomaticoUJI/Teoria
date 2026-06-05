@@ -678,15 +678,44 @@ md"""
 # Aplicación a los datos de Howell
 """
 
+# ╔═╡ e18d51dc-df8c-4f71-ab22-691b65eb5c54
+md"""
+Lo primero es comprobar que el tipo de datos de nuestro conjunto de datos es adecuado. Para ello utilizamos la función schema
+"""
+
+# ╔═╡ b9d43acd-5fe3-4a74-a645-3b929f91da98
+schema(adultos)
+
+# ╔═╡ a3658922-6138-4f83-a9f7-cbc53f4d554e
+md"""
+La característica *male* está codificada como un entero, pero debe ser un valor de una clase posible: hombre o mujer. Vamos a cambiar el tipo de la variable:
+"""
+
+# ╔═╡ 4cb2b175-3a94-47a0-b640-8927956ea1b4
+adultos_cientifico = coerce(adultos, :male => Multiclass);
+
+# ╔═╡ 8277fb0a-6cae-4d8c-821d-70151ec838d1
+md"""
+Volvemos a comprobar el tipo:
+"""
+
+# ╔═╡ 376e80db-8ca3-4c96-9c9e-befbd496ff37
+schema(adultos_cientifico)
+
+# ╔═╡ 1a584605-36dd-4b62-b4f7-c9ce020e584c
+md"""
+Ahora ya es el adecuado.
+"""
+
 # ╔═╡ a3889151-f6b0-42a7-9251-14136107d5f7
 md"""
 ## Aplicación a los datos de Howell
 
-Primero dividimos el conjunto de datos en entrenamiento y prueba:
+Ahora dividimos el conjunto de datos en conjunto de entrenamiento y conjunto de prueba:
 """
 
 # ╔═╡ 350afb0c-dc70-47f8-a393-ee462f01798f
-entrenamiento, prueba = partition(adultos, 0.75, rng=3)
+entrenamiento, prueba = partition(adultos_cientifico, 0.75, rng = 3)
 
 # ╔═╡ 83b5d2b4-ab18-461a-a291-a9790cb62af8
 md"""
@@ -707,7 +736,7 @@ Creamos el Dataframe con las características *X* y la variable a predecir *y*:
 X = select(entrenamiento, [:weight, :height])
 
 # ╔═╡ 02f644b9-a877-4e91-9c4f-aff38a3dac2a
-y = coerce(entrenamiento.male, Multiclass)
+y = entrenamiento.male
 
 # ╔═╡ 88992576-3631-4d79-8008-5778d0cd850b
 md"""
@@ -751,6 +780,11 @@ Calculamos la precisión del modelo:
 # ╔═╡ c12c09f0-75db-4a40-a201-1bd8d69b482a
 accuracy(ŷ, prueba.male)
 
+# ╔═╡ 5d499006-2928-469f-95a1-776e1a5c6474
+md"""
+No te dejes engañar por este resultado, es para la partición que hemos utilizado. Más adelante vamos a hacer cross validation para tener una mejor medida de la precisión.
+"""
+
 # ╔═╡ 335a4475-f46a-4255-af6c-cce27f2cc693
 md"""
 ## Aplicación a los datos de Howell
@@ -762,7 +796,7 @@ Calculamos la curva ROC:
 """
 
 # ╔═╡ ececc102-a1d5-4669-8bea-6a3deabc540b
-fpr, tpr = roc_curve(predict(maquina, select(prueba, [:weight, :height])), coerce(prueba.male, Multiclass))
+fpr, tpr = roc_curve(predict(maquina, select(prueba, [:weight, :height])), prueba.male)
 
 # ╔═╡ 511ea9f7-d54f-46b4-b184-7bec2bfa274f
 md"""
@@ -770,7 +804,7 @@ Calculamos el área bajo la curva:
 """
 
 # ╔═╡ ce15f735-0e8a-47fe-90f3-d06fbc296b33
-auc = area_under_curve(predict(maquina, select(prueba, [:weight, :height])), coerce(prueba.male, Multiclass))
+auc = area_under_curve(predict(maquina, select(prueba, [:weight, :height])), prueba.male)
 
 # ╔═╡ 3e1e3253-4eee-4284-ac87-3de5d451495a
 md"""
@@ -779,6 +813,11 @@ Mostramos la curva ROC:
 
 # ╔═╡ 46bc179b-7c0e-4987-8a64-ecbd28847e80
 plot(fpr,tpr, title="Curva ROC auc=$auc", xlabel="False positive rate", ylabel="True positive rate", legend=false)
+
+# ╔═╡ 79a4e65b-0375-487c-9d55-9d8288180569
+md"""
+De nuevo, el resultado es muy bueno, pero para esta división del conjunto de datos en entrenamiento/prueba.
+"""
 
 # ╔═╡ 400bd916-166c-4c3a-a2bc-1e244f05d742
 md"""
@@ -3163,11 +3202,11 @@ version = "1.4.1+2"
 # ╠═a4488176-5912-4879-afca-1b4112457dec
 # ╠═e6901419-169d-4400-b2a1-3bc01342ba59
 # ╠═58ac34c0-0a42-45ee-a830-fad4d5dd9d71
-# ╠═86baef7c-e1aa-4e24-b6e0-ed9b40761059
 # ╠═513b3406-a196-4c31-8d43-e9850c2908bb
 # ╠═018db6c4-5039-494a-b3be-60f436f0c4a5
 # ╠═6a690dd8-eb37-435e-ab77-989fb3c32006
 # ╠═2a86bff1-dda4-4412-9300-3d54330e7388
+# ╠═86baef7c-e1aa-4e24-b6e0-ed9b40761059
 # ╠═0d1ffc59-3f36-49e6-a0f4-c0c91fe9b5b8
 # ╠═95697151-e85c-42b3-8c92-cb206ed70e0b
 # ╠═987c2875-6ae9-43e9-b9be-aa560e644c8c
@@ -3245,6 +3284,13 @@ version = "1.4.1+2"
 # ╠═72bfb2fd-7ff4-42a0-9bf1-1266fa1d86ba
 # ╠═409db5f5-d986-4e5e-af5d-1de216cfba1d
 # ╠═3cf08dc9-e14a-4b33-a31b-43e4d9494995
+# ╠═e18d51dc-df8c-4f71-ab22-691b65eb5c54
+# ╠═b9d43acd-5fe3-4a74-a645-3b929f91da98
+# ╠═a3658922-6138-4f83-a9f7-cbc53f4d554e
+# ╠═4cb2b175-3a94-47a0-b640-8927956ea1b4
+# ╠═8277fb0a-6cae-4d8c-821d-70151ec838d1
+# ╠═376e80db-8ca3-4c96-9c9e-befbd496ff37
+# ╠═1a584605-36dd-4b62-b4f7-c9ce020e584c
 # ╠═a3889151-f6b0-42a7-9251-14136107d5f7
 # ╠═350afb0c-dc70-47f8-a393-ee462f01798f
 # ╠═83b5d2b4-ab18-461a-a291-a9790cb62af8
@@ -3262,6 +3308,7 @@ version = "1.4.1+2"
 # ╠═ee79aa91-420d-44a6-bc17-4a5a5f6e6231
 # ╠═f88330d0-7bf9-4366-bbf9-363ed7fe5cec
 # ╠═c12c09f0-75db-4a40-a201-1bd8d69b482a
+# ╠═5d499006-2928-469f-95a1-776e1a5c6474
 # ╠═335a4475-f46a-4255-af6c-cce27f2cc693
 # ╠═c00f5e6e-cb0e-44d9-8fe9-41ed8da6eed3
 # ╠═ececc102-a1d5-4669-8bea-6a3deabc540b
@@ -3269,6 +3316,7 @@ version = "1.4.1+2"
 # ╠═ce15f735-0e8a-47fe-90f3-d06fbc296b33
 # ╠═3e1e3253-4eee-4284-ac87-3de5d451495a
 # ╠═46bc179b-7c0e-4987-8a64-ecbd28847e80
+# ╠═79a4e65b-0375-487c-9d55-9d8288180569
 # ╠═400bd916-166c-4c3a-a2bc-1e244f05d742
 # ╠═efa6b1c3-e6aa-4e6b-b745-0595d36f59a8
 # ╠═fa8dc7ad-c6cb-4f69-8e5d-738bcc45354a
