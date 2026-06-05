@@ -892,11 +892,9 @@ Creamos matrices para hombres y mujeres con las columnas de peso, altura y añad
 """
 
 # ╔═╡ 9c4ed964-c3b2-4ac3-833e-98af8e787b53
-# hombres_plot = StatsBase.transform(transformador, cat(Matrix(hombres_adultos[:,[:weight, :height]]), ones(size(hombres_adultos, 1)), dims=2))
 hombres_plot = cat(StatsBase.transform(transformador, Matrix(hombres_adultos[:,[:weight, :height]])), ones(size(hombres_adultos, 1)), dims = 2)
 
 # ╔═╡ a963e81f-011c-4211-a2f6-b3fd24810196
-# mujeres_plot= StatsBase.transform(transformador, cat(Matrix(mujeres_adultas[:, [:weight, :height]]), ones(size(mujeres_adultas, 1)), dims=2))
 mujeres_plot = cat(StatsBase.transform(transformador, Matrix(mujeres_adultas[:,[:weight, :height]])), ones(size(mujeres_adultas, 1)), dims = 2)
 
 # ╔═╡ 98d486a3-cd4f-45a6-90c5-fbf650a713d8
@@ -942,7 +940,33 @@ md"""
 ## Todo en uno con MLJ
 
 Hemos desarrollado paso a paso toda la cadena de operaciones sobre los datos hasta obtener el resultado final. Ahora vamos a ver cómo MLJ nos ayuda a simplificar mucho la creación de la máquina.
+
+Vamos a crear un flujo con todas las transformaciones que queremos aplicar a nuestros datos:
+
+flujo = Estandarizar --> Seleccionar características --> Clasificador
 """
+
+# ╔═╡ f55c06a4-6c56-40fe-ae90-b5a1619563f7
+flujo = Standardizer() |> FeatureSelector(features = [:weight, :height]) |> LogisticClassifier()
+
+# ╔═╡ 2a601542-0415-4e59-bafa-1de6660df954
+md"""
+Fíjate en el uso del operado |> que envía la salida de una función como argumento de la siguiente.
+
+Ahora entrenamos todo el flujo:
+"""
+
+# ╔═╡ 5ed92ad1-d3e4-4491-a9c4-79f9d08d0383
+maquina_tuberia = machine(flujo, X, y) |> fit!
+
+# ╔═╡ 299137fe-ac65-494c-8e1e-caba30ca41d3
+
+
+# ╔═╡ a283debe-f192-4bcd-8aa7-4112f43e99f9
+predicciones_tuberia = predict_mode(maquina_tuberia, select(prueba, [:weight, :height]))
+
+# ╔═╡ 57bbfd86-7ff3-4b5f-aab6-1c79fbcc2d41
+confusion_matrix(predicciones_tuberia, prueba.male)
 
 # ╔═╡ 303bace0-02ac-4501-a76d-018adeb5714a
 md"""
@@ -3400,6 +3424,12 @@ version = "1.4.1+2"
 # ╠═d2f46c79-ab68-4ca0-aef1-48d5f2e2edc4
 # ╠═b8b7f2c9-10ed-487f-9690-a4be2a245f0c
 # ╠═b3c4681f-8136-47b7-9a41-084347ac5a9d
+# ╠═f55c06a4-6c56-40fe-ae90-b5a1619563f7
+# ╠═2a601542-0415-4e59-bafa-1de6660df954
+# ╠═5ed92ad1-d3e4-4491-a9c4-79f9d08d0383
+# ╠═299137fe-ac65-494c-8e1e-caba30ca41d3
+# ╠═a283debe-f192-4bcd-8aa7-4112f43e99f9
+# ╠═57bbfd86-7ff3-4b5f-aab6-1c79fbcc2d41
 # ╠═303bace0-02ac-4501-a76d-018adeb5714a
 # ╠═536fe5a2-395f-4cd9-9791-606ea6db96ed
 # ╟─00000000-0000-0000-0000-000000000001
