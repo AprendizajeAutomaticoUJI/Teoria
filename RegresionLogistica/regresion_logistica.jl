@@ -19,6 +19,9 @@ using Plots
 # ╔═╡ f19c87ed-bfc5-4eca-b61b-5bca6bd8eb65
 using Distributions
 
+# ╔═╡ e590a8bb-13c3-4ab2-a4e2-4cfeb4433422
+using StatsBase
+
 # ╔═╡ e6901419-169d-4400-b2a1-3bc01342ba59
 using StatsPlots
 
@@ -678,21 +681,42 @@ md"""
 # Aplicación a los datos de Howell
 """
 
+# ╔═╡ 721a7b7e-824f-4bbc-b064-92f6b84a73b5
+md"""
+## Rescalado de los datos
+
+Vamos a transformar los datos para que tanto peso como altura estén en el mismo rango de valores [0, 1]
+"""
+
+# ╔═╡ c17696d5-5e89-42fc-9c41-e94a4f802840
+transformador = StatsBase.fit(UnitRangeTransform, Matrix(adultos), dims = 1)
+
+# ╔═╡ 1c4f8e71-bb1e-440d-8f36-e65739f39b85
+adultos_escalado = DataFrame(StatsBase.transform(transformador, Matrix(adultos)), names(adultos))
+
+# ╔═╡ 010d9c3c-f5fb-4109-9057-82f78e28eb4a
+md"""
+## Tipos de datos científicos
+"""
+
 # ╔═╡ e18d51dc-df8c-4f71-ab22-691b65eb5c54
 md"""
 Lo primero es comprobar que el tipo de datos de nuestro conjunto de datos es adecuado. Para ello utilizamos la función schema
 """
 
 # ╔═╡ b9d43acd-5fe3-4a74-a645-3b929f91da98
-schema(adultos)
+schema(adultos_escalado)
 
 # ╔═╡ a3658922-6138-4f83-a9f7-cbc53f4d554e
 md"""
 La característica *male* está codificada como un entero, pero debe ser un valor de una clase posible: hombre o mujer. Vamos a cambiar el tipo de la variable:
 """
 
+# ╔═╡ 26fb591a-8b44-4b2c-8975-36b0e0e315bc
+# adultos_escalado.male = Int64.(adultos_escalado.male)
+
 # ╔═╡ 4cb2b175-3a94-47a0-b640-8927956ea1b4
-adultos_cientifico = coerce(adultos, :male => Multiclass);
+coerce!(adultos_escalado, :male => Multiclass);
 
 # ╔═╡ 8277fb0a-6cae-4d8c-821d-70151ec838d1
 md"""
@@ -700,7 +724,7 @@ Volvemos a comprobar el tipo:
 """
 
 # ╔═╡ 376e80db-8ca3-4c96-9c9e-befbd496ff37
-schema(adultos_cientifico)
+schema(adultos_escalado)
 
 # ╔═╡ 1a584605-36dd-4b62-b4f7-c9ce020e584c
 md"""
@@ -715,7 +739,7 @@ Ahora dividimos el conjunto de datos en conjunto de entrenamiento y conjunto de 
 """
 
 # ╔═╡ 350afb0c-dc70-47f8-a393-ee462f01798f
-entrenamiento, prueba = partition(adultos_cientifico, 0.75, rng = 3)
+entrenamiento, prueba = partition(adultos_escalado, 0.75, rng = 3)
 
 # ╔═╡ 83b5d2b4-ab18-461a-a291-a9790cb62af8
 md"""
@@ -796,7 +820,7 @@ Calculamos la curva ROC:
 """
 
 # ╔═╡ ececc102-a1d5-4669-8bea-6a3deabc540b
-fpr, tpr = roc_curve(predict(maquina, select(prueba, [:weight, :height])), prueba.male)
+fpr, tpr = roc_curve(MLJ.predict(maquina, select(prueba, [:weight, :height])), prueba.male)
 
 # ╔═╡ 511ea9f7-d54f-46b4-b184-7bec2bfa274f
 md"""
@@ -804,7 +828,7 @@ Calculamos el área bajo la curva:
 """
 
 # ╔═╡ ce15f735-0e8a-47fe-90f3-d06fbc296b33
-auc = area_under_curve(predict(maquina, select(prueba, [:weight, :height])), prueba.male)
+auc = area_under_curve(MLJ.predict(maquina, select(prueba, [:weight, :height])), prueba.male)
 
 # ╔═╡ 3e1e3253-4eee-4284-ac87-3de5d451495a
 md"""
@@ -921,6 +945,7 @@ PlotlyBase = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
 PlotlyKaleido = "f2990250-8cf9-495f-b13a-cce12b45703c"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
+StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 StatsPlots = "f3b207a7-027a-5e70-b257-86293d7955fd"
 
 [compat]
@@ -936,6 +961,7 @@ PlotlyBase = "~0.8.19"
 PlotlyKaleido = "~2.2.6"
 Plots = "~1.40.9"
 PlutoUI = "~0.7.61"
+StatsBase = "~0.34.4"
 StatsPlots = "~0.15.7"
 """
 
@@ -945,7 +971,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.12.6"
 manifest_format = "2.0"
-project_hash = "b0cca3d11bde4c130594fb4d9f057891e9eb174e"
+project_hash = "49ec4a279edde2346ee4ef1152809557baaac863"
 
 [[deps.ARFFFiles]]
 deps = ["CategoricalArrays", "Dates", "Parsers", "Tables"]
@@ -3200,6 +3226,7 @@ version = "1.4.1+2"
 # ╠═3748086b-5bb8-409e-807e-9e8c8845cf03
 # ╠═f19c87ed-bfc5-4eca-b61b-5bca6bd8eb65
 # ╠═a4488176-5912-4879-afca-1b4112457dec
+# ╠═e590a8bb-13c3-4ab2-a4e2-4cfeb4433422
 # ╠═e6901419-169d-4400-b2a1-3bc01342ba59
 # ╠═58ac34c0-0a42-45ee-a830-fad4d5dd9d71
 # ╠═513b3406-a196-4c31-8d43-e9850c2908bb
@@ -3284,9 +3311,14 @@ version = "1.4.1+2"
 # ╠═72bfb2fd-7ff4-42a0-9bf1-1266fa1d86ba
 # ╠═409db5f5-d986-4e5e-af5d-1de216cfba1d
 # ╠═3cf08dc9-e14a-4b33-a31b-43e4d9494995
+# ╠═721a7b7e-824f-4bbc-b064-92f6b84a73b5
+# ╠═c17696d5-5e89-42fc-9c41-e94a4f802840
+# ╠═1c4f8e71-bb1e-440d-8f36-e65739f39b85
+# ╠═010d9c3c-f5fb-4109-9057-82f78e28eb4a
 # ╠═e18d51dc-df8c-4f71-ab22-691b65eb5c54
 # ╠═b9d43acd-5fe3-4a74-a645-3b929f91da98
 # ╠═a3658922-6138-4f83-a9f7-cbc53f4d554e
+# ╠═26fb591a-8b44-4b2c-8975-36b0e0e315bc
 # ╠═4cb2b175-3a94-47a0-b640-8927956ea1b4
 # ╠═8277fb0a-6cae-4d8c-821d-70151ec838d1
 # ╠═376e80db-8ca3-4c96-9c9e-befbd496ff37
