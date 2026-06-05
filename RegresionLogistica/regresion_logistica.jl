@@ -681,6 +681,19 @@ md"""
 # Aplicación a los datos de Howell
 """
 
+# ╔═╡ 86332bac-8c30-47da-95c4-cf0e228b6fdf
+md"""
+## Selección de características
+
+El estudio trabaja con las características weight, height y male.
+"""
+
+# ╔═╡ 2cd389d3-fbc9-48cf-9cf8-84967f0cc22a
+caracteristicas = [:weight, :height, :male]
+
+# ╔═╡ 49fe4ccb-9caa-4773-aad9-b3300d86ca17
+df = select(adultos, caracteristicas)
+
 # ╔═╡ 721a7b7e-824f-4bbc-b064-92f6b84a73b5
 md"""
 ## Rescalado de los datos
@@ -689,10 +702,10 @@ Vamos a transformar los datos para que tanto peso como altura estén en el mismo
 """
 
 # ╔═╡ c17696d5-5e89-42fc-9c41-e94a4f802840
-transformador = StatsBase.fit(UnitRangeTransform, Matrix(adultos), dims = 1)
+transformador = StatsBase.fit(UnitRangeTransform, Matrix(df), dims = 1)
 
 # ╔═╡ 1c4f8e71-bb1e-440d-8f36-e65739f39b85
-adultos_escalado = DataFrame(StatsBase.transform(transformador, Matrix(adultos)), names(adultos))
+df_escalado = DataFrame(StatsBase.transform(transformador, Matrix(df)), caracteristicas)
 
 # ╔═╡ 010d9c3c-f5fb-4109-9057-82f78e28eb4a
 md"""
@@ -705,18 +718,15 @@ Lo primero es comprobar que el tipo de datos de nuestro conjunto de datos es ade
 """
 
 # ╔═╡ b9d43acd-5fe3-4a74-a645-3b929f91da98
-schema(adultos_escalado)
+schema(df_escalado)
 
 # ╔═╡ a3658922-6138-4f83-a9f7-cbc53f4d554e
 md"""
 La característica *male* está codificada como un entero, pero debe ser un valor de una clase posible: hombre o mujer. Vamos a cambiar el tipo de la variable:
 """
 
-# ╔═╡ 26fb591a-8b44-4b2c-8975-36b0e0e315bc
-# adultos_escalado.male = Int64.(adultos_escalado.male)
-
 # ╔═╡ 4cb2b175-3a94-47a0-b640-8927956ea1b4
-coerce!(adultos_escalado, :male => Multiclass);
+coerce!(df_escalado, :male => Multiclass);
 
 # ╔═╡ 8277fb0a-6cae-4d8c-821d-70151ec838d1
 md"""
@@ -724,7 +734,7 @@ Volvemos a comprobar el tipo:
 """
 
 # ╔═╡ 376e80db-8ca3-4c96-9c9e-befbd496ff37
-schema(adultos_escalado)
+schema(df_escalado)
 
 # ╔═╡ 1a584605-36dd-4b62-b4f7-c9ce020e584c
 md"""
@@ -733,17 +743,17 @@ Ahora ya es el adecuado.
 
 # ╔═╡ a3889151-f6b0-42a7-9251-14136107d5f7
 md"""
-## Aplicación a los datos de Howell
+## Conjunto de entrenamiento y prueba
 
 Ahora dividimos el conjunto de datos en conjunto de entrenamiento y conjunto de prueba:
 """
 
 # ╔═╡ 350afb0c-dc70-47f8-a393-ee462f01798f
-entrenamiento, prueba = partition(adultos_escalado, 0.75, rng = 3)
+entrenamiento, prueba = partition(df_escalado, 0.75, rng = 3)
 
 # ╔═╡ 83b5d2b4-ab18-461a-a291-a9790cb62af8
 md"""
-## Aplicación a los datos de Howell
+## Carga del clasificador
 
 Luego cargamos el modelo: **LogisticClassifier** para la regresión logística.
 """
@@ -764,7 +774,7 @@ y = entrenamiento.male
 
 # ╔═╡ 88992576-3631-4d79-8008-5778d0cd850b
 md"""
-## Aplicación a los datos de Howell
+## Creación de la máquina
 """
 
 # ╔═╡ ad633dbf-a0c1-4328-835e-a970dace06a8
@@ -785,7 +795,7 @@ Obtenemos las predicciones del modelo para los datos de prueba:
 
 # ╔═╡ 0e043d3c-96ec-402f-a0e1-ced01d5841ec
 md"""
-## Aplicación a los datos de Howell
+## Predicciones de la máquina
 """
 
 # ╔═╡ ef6f0e0d-3ebd-4a8a-aa28-c0d24b4b0382
@@ -811,7 +821,7 @@ No te dejes engañar por este resultado, es para la partición que hemos utiliza
 
 # ╔═╡ 335a4475-f46a-4255-af6c-cce27f2cc693
 md"""
-## Aplicación a los datos de Howell
+## Curva ROC
 """
 
 # ╔═╡ c00f5e6e-cb0e-44d9-8fe9-41ed8da6eed3
@@ -845,7 +855,7 @@ De nuevo, el resultado es muy bueno, pero para esta división del conjunto de da
 
 # ╔═╡ 400bd916-166c-4c3a-a2bc-1e244f05d742
 md"""
-## Aplicación a los datos de Howell
+## Validación cruzada
 """
 
 # ╔═╡ efa6b1c3-e6aa-4e6b-b745-0595d36f59a8
@@ -861,9 +871,14 @@ evaluate!(
 )
 
 
+# ╔═╡ 11e1cef3-522e-411a-9768-d4226ec09982
+md"""
+Como ves, al repetir los experimentos 10 veces obtenemos un valor para la precisión de 0.83, que tampoco está nada mal.
+"""
+
 # ╔═╡ 0c7b05ae-b4c9-475b-983a-29df7298cb11
 md"""
-## Aplicación a los datos de Howell
+## Visulización de resultados
 
 Para finalizar, vamos a visualizar cómo se distribuyen los datos transformados sobre la sigmoide. Esto aclara qué está haciendo el clasificador.
 
@@ -871,14 +886,14 @@ Creamos matrices para hombres y mujeres con las columnas de peso, altura y añad
 """
 
 # ╔═╡ 9c4ed964-c3b2-4ac3-833e-98af8e787b53
-hombres_plot = cat(Matrix(hombres_adultos[:,[:weight, :height]]), ones(size(hombres_adultos, 1)), dims=2)
+hombres_plot = StatsBase.transform(transformador, cat(Matrix(hombres_adultos[:,[:weight, :height]]), ones(size(hombres_adultos, 1)), dims=2))
 
 # ╔═╡ a963e81f-011c-4211-a2f6-b3fd24810196
-mujeres_plot= cat(Matrix(mujeres_adultas[:, [:weight, :height]]), ones(size(mujeres_adultas, 1)), dims=2)
+mujeres_plot= StatsBase.transform(transformador, cat(Matrix(mujeres_adultas[:, [:weight, :height]]), ones(size(mujeres_adultas, 1)), dims=2))
 
 # ╔═╡ 98d486a3-cd4f-45a6-90c5-fbf650a713d8
 md"""
-## Aplicación a los datos de Howell
+## Visulización de resultados
 """
 
 # ╔═╡ 4651681e-d16b-462b-b51c-bde9efb44eb6
@@ -900,7 +915,7 @@ sigma_mujeres = σ.(transformado_mujeres)
 
 # ╔═╡ 113481b8-5cdb-4f0a-a26d-2db2ec3eccec
 md"""
-## Aplicación a los datos de Howell
+## Visulización de resultados
 
 Ahora ya podemos visualizar los datos:
 """
@@ -3311,6 +3326,9 @@ version = "1.4.1+2"
 # ╠═72bfb2fd-7ff4-42a0-9bf1-1266fa1d86ba
 # ╠═409db5f5-d986-4e5e-af5d-1de216cfba1d
 # ╠═3cf08dc9-e14a-4b33-a31b-43e4d9494995
+# ╠═86332bac-8c30-47da-95c4-cf0e228b6fdf
+# ╠═2cd389d3-fbc9-48cf-9cf8-84967f0cc22a
+# ╠═49fe4ccb-9caa-4773-aad9-b3300d86ca17
 # ╠═721a7b7e-824f-4bbc-b064-92f6b84a73b5
 # ╠═c17696d5-5e89-42fc-9c41-e94a4f802840
 # ╠═1c4f8e71-bb1e-440d-8f36-e65739f39b85
@@ -3318,7 +3336,6 @@ version = "1.4.1+2"
 # ╠═e18d51dc-df8c-4f71-ab22-691b65eb5c54
 # ╠═b9d43acd-5fe3-4a74-a645-3b929f91da98
 # ╠═a3658922-6138-4f83-a9f7-cbc53f4d554e
-# ╠═26fb591a-8b44-4b2c-8975-36b0e0e315bc
 # ╠═4cb2b175-3a94-47a0-b640-8927956ea1b4
 # ╠═8277fb0a-6cae-4d8c-821d-70151ec838d1
 # ╠═376e80db-8ca3-4c96-9c9e-befbd496ff37
@@ -3352,6 +3369,7 @@ version = "1.4.1+2"
 # ╠═400bd916-166c-4c3a-a2bc-1e244f05d742
 # ╠═efa6b1c3-e6aa-4e6b-b745-0595d36f59a8
 # ╠═fa8dc7ad-c6cb-4f69-8e5d-738bcc45354a
+# ╠═11e1cef3-522e-411a-9768-d4226ec09982
 # ╠═0c7b05ae-b4c9-475b-983a-29df7298cb11
 # ╠═9c4ed964-c3b2-4ac3-833e-98af8e787b53
 # ╠═a963e81f-011c-4211-a2f6-b3fd24810196
