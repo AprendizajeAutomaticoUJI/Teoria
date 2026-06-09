@@ -16,6 +16,9 @@ using DataFrames
 # ╔═╡ 87613936-7ddb-452e-8389-09f5f6e2eaee
 using Plots
 
+# ╔═╡ f1027402-615a-4641-b443-56334659d13e
+using Random
+
 # ╔═╡ a23524a7-b4a4-4bd7-aec8-e15800823dfe
 using MLJ
 
@@ -102,7 +105,7 @@ md"""
 md"""
 ## Objetivo
 
-El objetivo de las Máquinas de Soporte Vectorial es crear un modelo de clasificación que dada una muestra me prediga a cuál de entre dos clases pertenece.
+El objetivo de las Máquinas de Soporte Vectorial es crear un modelo de clasificación tal que dada una muestra me prediga a cuál de entre dos clases pertenece.
 
 Clasificación binaria.
 """
@@ -121,6 +124,7 @@ end;
 
 # ╔═╡ 40151e5b-9c13-4178-9de1-0feeb4bf31ac
 function genera_datos(θ, θ0, muestras)
+	Random.seed!(68)
 	xs = 10 * rand(2 * muestras)
 	y = [evalua(x, θ, θ0) for x in xs]
 	positivos = y[1:muestras] + rand(muestras) .+ 1
@@ -196,7 +200,7 @@ md"""
 md"""
 ## Ecuación de la recta
 
-Los puntos de la recta (hiperplano) que estamos buscando cumplen la siguiente ecuación:
+Los puntos de la recta (hiperplano) que estamos buscando cumplen la siguiente ecuación de la recta:
 
 $y(x) = \theta^T x + \theta_0 = 0$
 """
@@ -204,9 +208,8 @@ $y(x) = \theta^T x + \theta_0 = 0$
 # ╔═╡ 51ae1229-3bbb-46cd-8721-70b8f93e4889
 md"""
 !!! danger "Atención"
-
-Cuidado $\theta$ no es el vector director de la recta, de hecho es un vector 
-perpendicular a la recta (*Demostración*); y $\theta_0$ no es el corte con el eje de ordenadas.
+	Cuidado $\theta$ no es el vector director de la recta, de hecho es un vector 
+	perpendicular a la recta (*Demostración*); y $\theta_0$ no es el corte con el eje de ordenadas.
 """
 
 # ╔═╡ c7531d9b-19b1-4940-af5a-7adec5033039
@@ -293,7 +296,7 @@ $a = \frac{\theta^T}{\| \theta \|} (v_+ - v_-) = \frac{1}{\| \theta \|}
 
 $t_n(\theta^T x_n + \theta_0) - 1 = 0$
 
-Para un punto límete en la zona positiva:
+Para un punto límite en la zona positiva:
 
 $v_+ \rightarrow 1(\theta^T v_+ + \theta_0) - 1 = 0$
 $\theta^T v_+ = 1 - \theta_0$
@@ -311,6 +314,8 @@ $\theta^T v_- = -1 - \theta_0$
 Finalmente:
 
 $a = \frac{1}{\| \theta \|} [1 - \theta_0 - (-\theta_0 - 1)] = \frac{2}{\| \theta \|}$
+
+Es la anchura del margen máximo.
 """
 
 # ╔═╡ d1df1292-66d0-4a60-bbaf-e71c799e7f54
@@ -359,8 +364,7 @@ $L(\theta, \theta_0, \alpha_n) = \frac{1}{2} \| \theta \|^2 - \sum_{n=1}^N \alph
 # ╔═╡ 86588b2e-d8de-45f7-af7a-27f88a739c2b
 md"""
 !!! info "Nota"
-Los signos en la Lagrangiana son opuestos porque estamos maximizando la 
-primera expresión, pero minimizando la segunda.
+	Los signos en la Lagrangiana son opuestos porque estamos maximizando la primera expresión, pero minimizando la segunda.
 """
 
 # ╔═╡ 5938fc64-d79d-4068-9967-60e695cb7d7b
@@ -376,7 +380,7 @@ $\frac{\partial L}{\partial \theta} = \theta - \sum_{n=1}^N \alpha_n t_n x_n = 0
 $\frac{\partial L}{\partial \theta_0} = - \sum_{n=1}^N \alpha_n t_n = 0 
 \rightarrow \boxed{\sum_{n=1}^N \alpha_n t_n = 0}$
 
-Ya tenemos parte del problema solucionado, pero no del todo, porque no conocemos el valor de las $\alpha_n$ y, de momento, no tenemos una expresión para calcular $\theta_0$.
+Ya tenemos parte del problema resuelto, pero no del todo, porque no conocemos el valor de las $\alpha_n$ y, de momento, no tenemos una expresión para calcular $\theta_0$.
 """
 
 # ╔═╡ c4abe55a-dc53-44db-87f8-3894d8657eb2
@@ -433,7 +437,8 @@ $\alpha_n [t_n y(x_n) - 1] = 0$
 
 Para que se cumpla esta condición tenemos dos opciones:
 
-$\alpha_n = 0$
+$\alpha_n = 0$ ó
+
 $t_n y(x_n) - 1 = 0$
 
 La primera opción nos dice que el vector $x_n$ (dato de entrenamiento) no contribuye 
@@ -740,7 +745,7 @@ md"""
 ## Muestras solapadas
 
 Antes de pasar a ver qué es el kernel, vamos a analizar el caso en el que las 
-muestras están solapadas, están en la región de la clase contraria.
+muestras están solapadas, es decir, en el conjunto de entrenamiento hay muestras positivas que están entre las negativas y viceversa.
 """
 
 # ╔═╡ 4fa4e2da-bdd8-4337-bcd8-568f0c546079
@@ -1100,8 +1105,7 @@ Algunos kernels:
 md"""
 ## El truco del kernel
 
-Resulta más sencillo construir nuevos kernels a partir de kernels conocidos 
-usando las siguientes reglas:
+Afortunadamente, resulta más sencillo construir nuevos kernels a partir de kernels conocidos usando las siguientes reglas de construcción:
 
 -  $k(x,x^{\prime}) = ck_1(x,x^{\prime})$
 -  $k(x,x^{\prime}) = f(x)k_1(x,x^{\prime}) f(x^{\prime})$
@@ -1117,7 +1121,7 @@ Vamos a probar un kernel gaussiano:
 """
 
 # ╔═╡ 5def91d4-b9ef-4aa6-b0eb-d2b7c4ef6b86
-maquina_complicada = machine(SVC(kernel=LIBSVM.Kernel.RadialBasis), select(datos_complicados, [:x, :y]), datos_complicados.clase) |> fit!
+maquina_complicada = machine(SVC(kernel = LIBSVM.Kernel.RadialBasis), select(datos_complicados, [:x, :y]), datos_complicados.clase) |> fit!
 
 # ╔═╡ f1ee699d-535a-436a-ba30-6face48018db
 md"""
@@ -1134,7 +1138,7 @@ misclassification_rate(ŷ, datos_complicados.clase)
 
 # ╔═╡ 98f63cb9-2d89-466b-8217-2ad6b982c5b9
 md"""
-Todos los dato se han clasificado bien.
+Todos los datos se han clasificado bien!!!
 """
 
 # ╔═╡ fd82cb57-a7b4-445d-86d5-0d7aaf12f878
@@ -1278,7 +1282,6 @@ function plot_howell_svm(adultos, maquina)
 	vectores_soporte = maquina.fitresult[1].SVs.X
 	coeficientes = maquina.fitresult[1].coefs
 	θ = vectores_soporte * coeficientes
-	# print(θ, "  ", norm(θ))
 	θ0s = sign.(coeficientes) - vectores_soporte' * vectores_soporte * coeficientes
 	θ0 = sum(θ0s) / length(θ0s)
 	plot_datos_soporte_limites(adultos, vectores_soporte, θ, θ0)
@@ -1298,7 +1301,7 @@ Ahora vamos a probar un kernel RBF (Radial Basis Function). Es muy sencillo, só
 """
 
 # ╔═╡ fad4ea0c-39c1-4f75-91b8-2b9a877e93f6
-maquina_howell_rbf = machine(SVC(kernel=LIBSVM.Kernel.RadialBasis), select(adultos, [:x, :y]), adultos.clase)
+maquina_howell_rbf = machine(SVC(kernel = LIBSVM.Kernel.RadialBasis), select(adultos, [:x, :y]), adultos.clase)
 
 # ╔═╡ be4c0c6c-e9c6-4f38-9e5a-41d721b7bdab
 md"""
@@ -1393,6 +1396,7 @@ PlotlyBase = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
 PlotlyKaleido = "f2990250-8cf9-495f-b13a-cce12b45703c"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
 [compat]
 CSV = "~0.10.15"
@@ -1413,7 +1417,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.12.6"
 manifest_format = "2.0"
-project_hash = "024915d36cd9317987011d85afae488e3e557254"
+project_hash = "b74796d0149a25d5b2fb51aabe85d7e18b481569"
 
 [[deps.ARFFFiles]]
 deps = ["CategoricalArrays", "Dates", "Parsers", "Tables"]
@@ -3364,6 +3368,7 @@ version = "1.4.1+2"
 # ╠═87613936-7ddb-452e-8389-09f5f6e2eaee
 # ╠═e83b5f25-3fd0-4b85-8295-f1b4eafa8770
 # ╠═77c442ed-f830-4f26-901a-1ed528a67d0b
+# ╠═f1027402-615a-4641-b443-56334659d13e
 # ╠═a23524a7-b4a4-4bd7-aec8-e15800823dfe
 # ╠═64a828bf-a426-417a-8994-7661b53e22ab
 # ╠═d2159870-7d0e-46a7-bda4-4e259e075906
