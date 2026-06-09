@@ -832,16 +832,21 @@ md"""
 
 # ╔═╡ c00f5e6e-cb0e-44d9-8fe9-41ed8da6eed3
 md"""
-Calculamos la curva ROC:
+La [curva ROC](https://en.wikipedia.org/wiki/Receiver_operating_characteristic) muestra de manera gráfica el poder separador de un clasificador binario.
+
+![](https://upload.wikimedia.org/wikipedia/commons/4/4f/ROC_curves.svg)
+
+Fuente: wikipedia.
+"""
+
+# ╔═╡ 511ea9f7-d54f-46b4-b184-7bec2bfa274f
+md"""
+## Curva ROC
+Calculamos el área bajo la curva:
 """
 
 # ╔═╡ ececc102-a1d5-4669-8bea-6a3deabc540b
 fpr, tpr = roc_curve(MLJ.predict(maquina, select(prueba, [:weight, :height])), prueba.male)
-
-# ╔═╡ 511ea9f7-d54f-46b4-b184-7bec2bfa274f
-md"""
-Calculamos el área bajo la curva:
-"""
 
 # ╔═╡ ce15f735-0e8a-47fe-90f3-d06fbc296b33
 auc = area_under_curve(MLJ.predict(maquina, select(prueba, [:weight, :height])), prueba.male)
@@ -3419,8 +3424,8 @@ version = "1.4.1+2"
 # ╠═5d499006-2928-469f-95a1-776e1a5c6474
 # ╠═335a4475-f46a-4255-af6c-cce27f2cc693
 # ╠═c00f5e6e-cb0e-44d9-8fe9-41ed8da6eed3
-# ╠═ececc102-a1d5-4669-8bea-6a3deabc540b
 # ╠═511ea9f7-d54f-46b4-b184-7bec2bfa274f
+# ╠═ececc102-a1d5-4669-8bea-6a3deabc540b
 # ╠═ce15f735-0e8a-47fe-90f3-d06fbc296b33
 # ╠═3e1e3253-4eee-4284-ac87-3de5d451495a
 # ╠═46bc179b-7c0e-4987-8a64-ecbd28847e80

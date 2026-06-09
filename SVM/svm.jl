@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.21
+# v1.0.1
 
 using Markdown
 using InteractiveUtils
@@ -26,9 +26,9 @@ using PlutoUI
 using LinearAlgebra: norm
 
 # ╔═╡ 50449444-1f95-11f0-3642-89804cc4dc84
-html"""
-<link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
-"""
+# html"""
+# <link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
+# """
 
 # ╔═╡ e83b5f25-3fd0-4b85-8295-f1b4eafa8770
 import PlotlyBase
@@ -1411,9 +1411,9 @@ PlutoUI = "~0.7.61"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.11.7"
+julia_version = "1.12.6"
 manifest_format = "2.0"
-project_hash = "da02909b2a19e5b9c266f714f63a4b17fcb92241"
+project_hash = "024915d36cd9317987011d85afae488e3e557254"
 
 [[deps.ARFFFiles]]
 deps = ["CategoricalArrays", "Dates", "Parsers", "Tables"]
@@ -1645,7 +1645,7 @@ weakdeps = ["Dates", "LinearAlgebra"]
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.1.1+0"
+version = "1.3.0+1"
 
 [[deps.CompositionsBase]]
 git-tree-sha1 = "802bb88cd69dfd1509f6670416bd4434015693ad"
@@ -1782,7 +1782,7 @@ version = "0.9.4"
 [[deps.Downloads]]
 deps = ["ArgTools", "FileWatching", "LibCURL", "NetworkOptions"]
 uuid = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
-version = "1.6.0"
+version = "1.7.0"
 
 [[deps.EarlyStopping]]
 deps = ["Dates", "Statistics"]
@@ -2065,6 +2065,11 @@ git-tree-sha1 = "eac1206917768cb54957c65a615460d87b455fc1"
 uuid = "aacddb02-875f-59d6-b918-886e6ef4fbf8"
 version = "3.1.1+0"
 
+[[deps.JuliaSyntaxHighlighting]]
+deps = ["StyledStrings"]
+uuid = "ac6e5ff7-fb65-4e79-a425-ec3bc9c03011"
+version = "1.12.0"
+
 [[deps.JuliaVariables]]
 deps = ["MLStyle", "NameResolution"]
 git-tree-sha1 = "49fb3cb53362ddadb4415e9b73926d6b40709e70"
@@ -2168,24 +2173,24 @@ uuid = "b27032c2-a3e7-50c8-80cd-2d36dbcbfd21"
 version = "0.6.4"
 
 [[deps.LibCURL_jll]]
-deps = ["Artifacts", "LibSSH2_jll", "Libdl", "MbedTLS_jll", "Zlib_jll", "nghttp2_jll"]
+deps = ["Artifacts", "LibSSH2_jll", "Libdl", "OpenSSL_jll", "Zlib_jll", "nghttp2_jll"]
 uuid = "deac9b47-8bc7-5906-a0fe-35ac56dc84c0"
-version = "8.6.0+0"
+version = "8.15.0+0"
 
 [[deps.LibGit2]]
-deps = ["Base64", "LibGit2_jll", "NetworkOptions", "Printf", "SHA"]
+deps = ["LibGit2_jll", "NetworkOptions", "Printf", "SHA"]
 uuid = "76f85450-5226-5b5a-8eaa-529ad045b433"
 version = "1.11.0"
 
 [[deps.LibGit2_jll]]
-deps = ["Artifacts", "LibSSH2_jll", "Libdl", "MbedTLS_jll"]
+deps = ["Artifacts", "LibSSH2_jll", "Libdl", "OpenSSL_jll"]
 uuid = "e37daf67-58a4-590a-8e99-b0245dd2ffc5"
-version = "1.7.2+0"
+version = "1.9.0+0"
 
 [[deps.LibSSH2_jll]]
-deps = ["Artifacts", "Libdl", "MbedTLS_jll"]
+deps = ["Artifacts", "Libdl", "OpenSSL_jll"]
 uuid = "29816b5a-b9ab-546f-933c-edad1886dfa8"
-version = "1.11.0+1"
+version = "1.11.3+1"
 
 [[deps.Libdl]]
 uuid = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
@@ -2230,7 +2235,7 @@ version = "2.41.0+0"
 [[deps.LinearAlgebra]]
 deps = ["Libdl", "OpenBLAS_jll", "libblastrampoline_jll"]
 uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
-version = "1.11.0"
+version = "1.12.0"
 
 [[deps.LogExpFunctions]]
 deps = ["DocStringExtensions", "IrrationalConstants", "LinearAlgebra"]
@@ -2356,7 +2361,7 @@ uuid = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
 version = "0.5.15"
 
 [[deps.Markdown]]
-deps = ["Base64"]
+deps = ["Base64", "JuliaSyntaxHighlighting", "StyledStrings"]
 uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
 version = "1.11.0"
 
@@ -2367,7 +2372,8 @@ uuid = "739be429-bea8-5141-9913-cc70e7f3736d"
 version = "1.1.9"
 
 [[deps.MbedTLS_jll]]
-deps = ["Artifacts", "Libdl"]
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "926c6af3a037c68d02596a44c22ec3595f5f760b"
 uuid = "c8ffd9c3-330d-5841-b78e-0817d7145fa1"
 version = "2.28.6+0"
 
@@ -2394,7 +2400,7 @@ version = "1.11.0"
 
 [[deps.MozillaCACerts_jll]]
 uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
-version = "2023.12.12"
+version = "2025.11.4"
 
 [[deps.NNlib]]
 deps = ["Adapt", "Atomix", "ChainRulesCore", "GPUArraysCore", "KernelAbstractions", "LinearAlgebra", "Random", "ScopedValues", "Statistics"]
@@ -2434,7 +2440,7 @@ version = "0.1.5"
 
 [[deps.NetworkOptions]]
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
-version = "1.2.0"
+version = "1.3.0"
 
 [[deps.Ogg_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -2445,12 +2451,12 @@ version = "1.3.5+1"
 [[deps.OpenBLAS_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
-version = "0.3.27+1"
+version = "0.3.29+0"
 
 [[deps.OpenLibm_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "05823500-19ac-5b8b-9628-191a04bc5112"
-version = "0.8.5+0"
+version = "0.8.7+0"
 
 [[deps.OpenML]]
 deps = ["ARFFFiles", "HTTP", "JSON", "Markdown", "Pkg", "Scratch"]
@@ -2465,10 +2471,9 @@ uuid = "4d8831e6-92b7-49fb-bdf8-b643e874388c"
 version = "1.4.3"
 
 [[deps.OpenSSL_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "a9697f1d06cc3eb3fb3ad49cc67f2cfabaac31ea"
+deps = ["Artifacts", "Libdl"]
 uuid = "458c3c95-2e84-50aa-8efc-19380b2a3a95"
-version = "3.0.16+0"
+version = "3.5.4+0"
 
 [[deps.OpenSpecFun_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl"]
@@ -2490,7 +2495,7 @@ version = "1.8.0"
 [[deps.PCRE2_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "efcefdf7-47ab-520b-bdef-62a2eaa19f15"
-version = "10.42.0+1"
+version = "10.44.0+1"
 
 [[deps.PDMats]]
 deps = ["LinearAlgebra", "SparseArrays", "SuiteSparse"]
@@ -2525,7 +2530,7 @@ version = "0.44.2+0"
 [[deps.Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "Random", "SHA", "TOML", "Tar", "UUIDs", "p7zip_jll"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
-version = "1.11.0"
+version = "1.12.1"
 weakdeps = ["REPL"]
 
     [deps.Pkg.extensions]
@@ -2668,7 +2673,7 @@ version = "2.11.2"
     Enzyme = "7da242da-08ed-463a-9acd-ee780be4f1d9"
 
 [[deps.REPL]]
-deps = ["InteractiveUtils", "Markdown", "Sockets", "StyledStrings", "Unicode"]
+deps = ["InteractiveUtils", "JuliaSyntaxHighlighting", "Markdown", "Sockets", "StyledStrings", "Unicode"]
 uuid = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
 version = "1.11.0"
 
@@ -2802,7 +2807,7 @@ version = "1.2.1"
 [[deps.SparseArrays]]
 deps = ["Libdl", "LinearAlgebra", "Random", "Serialization", "SuiteSparse_jll"]
 uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
-version = "1.11.0"
+version = "1.12.0"
 
 [[deps.SpecialFunctions]]
 deps = ["IrrationalConstants", "LogExpFunctions", "OpenLibm_jll", "OpenSpecFun_jll"]
@@ -2918,7 +2923,7 @@ uuid = "4607b0f0-06f3-5cda-b6b1-a6196a1729e9"
 [[deps.SuiteSparse_jll]]
 deps = ["Artifacts", "Libdl", "libblastrampoline_jll"]
 uuid = "bea87d4a-7f5b-5778-9afe-8cc45184846c"
-version = "7.7.0+0"
+version = "7.8.3+2"
 
 [[deps.TOML]]
 deps = ["Dates"]
@@ -3225,7 +3230,7 @@ version = "1.6.0+0"
 [[deps.Zlib_jll]]
 deps = ["Libdl"]
 uuid = "83775a58-1f1d-513f-b197-d71354ab007a"
-version = "1.2.13+1"
+version = "1.3.1+2"
 
 [[deps.Zstd_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -3266,7 +3271,7 @@ version = "0.15.2+0"
 [[deps.libblastrampoline_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
-version = "5.11.0+0"
+version = "5.15.0+0"
 
 [[deps.libdecor_jll]]
 deps = ["Artifacts", "Dbus_jll", "JLLWrappers", "Libdl", "Libglvnd_jll", "Pango_jll", "Wayland_jll", "xkbcommon_jll"]
@@ -3325,12 +3330,12 @@ version = "1.1.6+0"
 [[deps.nghttp2_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850ede-7688-5339-a07c-302acd2aaf8d"
-version = "1.59.0+0"
+version = "1.64.0+1"
 
 [[deps.p7zip_jll]]
-deps = ["Artifacts", "Libdl"]
+deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
-version = "17.4.0+2"
+version = "17.7.0+0"
 
 [[deps.x264_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -3352,206 +3357,206 @@ version = "1.4.1+2"
 """
 
 # ╔═╡ Cell order:
-# ╟─50449444-1f95-11f0-3642-89804cc4dc84
-# ╟─b9df5cb5-cc3c-400e-9834-875e23b659ed
-# ╟─57948b1c-2937-475a-977f-cff1f5a45ebe
-# ╟─9420c5df-1b5c-4185-b7c1-f4c1de794b39
-# ╟─87613936-7ddb-452e-8389-09f5f6e2eaee
-# ╟─e83b5f25-3fd0-4b85-8295-f1b4eafa8770
-# ╟─77c442ed-f830-4f26-901a-1ed528a67d0b
-# ╟─a23524a7-b4a4-4bd7-aec8-e15800823dfe
-# ╟─64a828bf-a426-417a-8994-7661b53e22ab
-# ╟─d2159870-7d0e-46a7-bda4-4e259e075906
-# ╟─319a328e-96fa-4852-a766-1de322033450
-# ╟─507dba8d-bb19-4551-9c34-333a729936bf
-# ╟─f996441d-9968-4e5c-b814-25bfb0413d61
-# ╟─17a8e36a-0257-45b0-9ded-a43a85979709
-# ╟─d2d91db2-0213-4329-9d6a-524b5602e987
-# ╟─43475479-3247-4913-b355-30e4ec0240be
-# ╟─7fd1c6ad-a229-4123-bbeb-c4b55d5ffc31
-# ╟─782310a4-9d89-4332-9cad-b6ab46a24a2a
-# ╟─b44ddc15-a3e7-4282-ae23-18a163c3aad2
-# ╟─4b30ab11-03a3-4bde-bd55-1e8f737157b6
-# ╟─1ba4957e-ef24-43ed-915d-e5fe1ef4b2aa
-# ╟─39859999-911e-4a27-8760-e7f6a2d9b030
-# ╟─8064744a-796c-44a7-a2ab-d60909ecbe0d
-# ╟─40151e5b-9c13-4178-9de1-0feeb4bf31ac
-# ╟─c55facf6-29ad-4cce-9f91-e1e053c7aa70
-# ╟─27a66f32-3a6f-4ef3-a739-01b617c73cd8
-# ╟─8d94edc6-042e-4932-a7ed-57d71d6f56a2
-# ╟─74da6ee7-46e9-4150-87e2-581604591ea8
-# ╟─8bb58a9c-d947-4470-9348-f8dc6c4d3e11
-# ╟─953e4a5d-1094-49cf-86df-736a4166ab00
-# ╟─131778f5-3927-4daf-a5f0-1e69e65bc773
-# ╟─bf8856f1-8e20-4288-9db8-906e12088412
-# ╟─85589b93-c3fc-417f-bfda-0d44c9d5d4c7
-# ╟─f43e4aa9-29b0-4e94-8486-17c40fc385a7
-# ╟─6fbac7ed-919b-4696-be02-9c88a7e9a3a2
-# ╟─69d6b42a-a8fb-4590-9c41-1a5885ffe42d
-# ╟─80ab3767-3a6f-4151-8c71-95b2290e40d0
-# ╟─51ae1229-3bbb-46cd-8721-70b8f93e4889
-# ╟─c7531d9b-19b1-4940-af5a-7adec5033039
-# ╟─2815c0a0-c83d-4f97-9877-7e842817d6ce
-# ╟─1aff9435-6ee9-4028-aea3-482a2f46c099
-# ╟─9b1b2fd2-d2cb-44a5-8842-be320c17b3fb
-# ╟─ef1817d9-3e3f-44b8-bb7c-65cce84898ee
-# ╟─b4825656-168a-44c6-952e-5f228ae248c6
-# ╟─8567201c-8811-4809-b3cd-a1d6ff4ae333
-# ╟─4ab666f2-078c-4414-8c77-151e38882b1f
-# ╟─009833dd-3e5d-424c-aec0-c0a353526cc1
-# ╟─d1df1292-66d0-4a60-bbaf-e71c799e7f54
-# ╟─54104ab5-6417-4e32-a89d-2e85852bf243
-# ╟─1d7a822d-80f8-4c19-873d-06259663ff03
-# ╟─86588b2e-d8de-45f7-af7a-27f88a739c2b
-# ╟─5938fc64-d79d-4068-9967-60e695cb7d7b
-# ╟─c4abe55a-dc53-44db-87f8-3894d8657eb2
-# ╟─d37e739b-051c-4566-a96b-d5f480f8b0e3
-# ╟─b76e2333-b854-414e-a293-5a3c0c12d501
-# ╟─6be601d9-8531-4dc3-a144-109eb3404f54
-# ╟─6d1d0839-80c9-4342-8be1-160be3e13bd8
-# ╟─4827551b-e68d-4014-8337-611c9063c8a8
-# ╟─072b2b88-3b59-4c07-a6db-683b167fbbd8
-# ╟─fc88a32b-743a-4871-b230-01a011eb525a
-# ╟─ea6d7c95-821e-4aac-89e3-d31cf49df971
-# ╟─6d5b3e7b-7b66-4b95-9702-cf1979d14c05
-# ╟─bbbe0d1c-acb9-4f69-9e38-8d5b89280c03
-# ╟─1cc522fb-bc85-412f-973c-110704feb331
+# ╠═50449444-1f95-11f0-3642-89804cc4dc84
+# ╠═b9df5cb5-cc3c-400e-9834-875e23b659ed
+# ╠═57948b1c-2937-475a-977f-cff1f5a45ebe
+# ╠═9420c5df-1b5c-4185-b7c1-f4c1de794b39
+# ╠═87613936-7ddb-452e-8389-09f5f6e2eaee
+# ╠═e83b5f25-3fd0-4b85-8295-f1b4eafa8770
+# ╠═77c442ed-f830-4f26-901a-1ed528a67d0b
+# ╠═a23524a7-b4a4-4bd7-aec8-e15800823dfe
+# ╠═64a828bf-a426-417a-8994-7661b53e22ab
+# ╠═d2159870-7d0e-46a7-bda4-4e259e075906
+# ╠═319a328e-96fa-4852-a766-1de322033450
+# ╠═507dba8d-bb19-4551-9c34-333a729936bf
+# ╠═f996441d-9968-4e5c-b814-25bfb0413d61
+# ╠═17a8e36a-0257-45b0-9ded-a43a85979709
+# ╠═d2d91db2-0213-4329-9d6a-524b5602e987
+# ╠═43475479-3247-4913-b355-30e4ec0240be
+# ╠═7fd1c6ad-a229-4123-bbeb-c4b55d5ffc31
+# ╠═782310a4-9d89-4332-9cad-b6ab46a24a2a
+# ╠═b44ddc15-a3e7-4282-ae23-18a163c3aad2
+# ╠═4b30ab11-03a3-4bde-bd55-1e8f737157b6
+# ╠═1ba4957e-ef24-43ed-915d-e5fe1ef4b2aa
+# ╠═39859999-911e-4a27-8760-e7f6a2d9b030
+# ╠═8064744a-796c-44a7-a2ab-d60909ecbe0d
+# ╠═40151e5b-9c13-4178-9de1-0feeb4bf31ac
+# ╠═c55facf6-29ad-4cce-9f91-e1e053c7aa70
+# ╠═27a66f32-3a6f-4ef3-a739-01b617c73cd8
+# ╠═8d94edc6-042e-4932-a7ed-57d71d6f56a2
+# ╠═74da6ee7-46e9-4150-87e2-581604591ea8
+# ╠═8bb58a9c-d947-4470-9348-f8dc6c4d3e11
+# ╠═953e4a5d-1094-49cf-86df-736a4166ab00
+# ╠═131778f5-3927-4daf-a5f0-1e69e65bc773
+# ╠═bf8856f1-8e20-4288-9db8-906e12088412
+# ╠═85589b93-c3fc-417f-bfda-0d44c9d5d4c7
+# ╠═f43e4aa9-29b0-4e94-8486-17c40fc385a7
+# ╠═6fbac7ed-919b-4696-be02-9c88a7e9a3a2
+# ╠═69d6b42a-a8fb-4590-9c41-1a5885ffe42d
+# ╠═80ab3767-3a6f-4151-8c71-95b2290e40d0
+# ╠═51ae1229-3bbb-46cd-8721-70b8f93e4889
+# ╠═c7531d9b-19b1-4940-af5a-7adec5033039
+# ╠═2815c0a0-c83d-4f97-9877-7e842817d6ce
+# ╠═1aff9435-6ee9-4028-aea3-482a2f46c099
+# ╠═9b1b2fd2-d2cb-44a5-8842-be320c17b3fb
+# ╠═ef1817d9-3e3f-44b8-bb7c-65cce84898ee
+# ╠═b4825656-168a-44c6-952e-5f228ae248c6
+# ╠═8567201c-8811-4809-b3cd-a1d6ff4ae333
+# ╠═4ab666f2-078c-4414-8c77-151e38882b1f
+# ╠═009833dd-3e5d-424c-aec0-c0a353526cc1
+# ╠═d1df1292-66d0-4a60-bbaf-e71c799e7f54
+# ╠═54104ab5-6417-4e32-a89d-2e85852bf243
+# ╠═1d7a822d-80f8-4c19-873d-06259663ff03
+# ╠═86588b2e-d8de-45f7-af7a-27f88a739c2b
+# ╠═5938fc64-d79d-4068-9967-60e695cb7d7b
+# ╠═c4abe55a-dc53-44db-87f8-3894d8657eb2
+# ╠═d37e739b-051c-4566-a96b-d5f480f8b0e3
+# ╠═b76e2333-b854-414e-a293-5a3c0c12d501
+# ╠═6be601d9-8531-4dc3-a144-109eb3404f54
+# ╠═6d1d0839-80c9-4342-8be1-160be3e13bd8
+# ╠═4827551b-e68d-4014-8337-611c9063c8a8
+# ╠═072b2b88-3b59-4c07-a6db-683b167fbbd8
+# ╠═fc88a32b-743a-4871-b230-01a011eb525a
+# ╠═ea6d7c95-821e-4aac-89e3-d31cf49df971
+# ╠═6d5b3e7b-7b66-4b95-9702-cf1979d14c05
+# ╠═bbbe0d1c-acb9-4f69-9e38-8d5b89280c03
+# ╠═1cc522fb-bc85-412f-973c-110704feb331
 # ╠═643abb55-37d8-4277-a3e4-3883a85c5ee3
-# ╟─02be1603-d7bb-44bb-a2a6-371e417c046d
+# ╠═02be1603-d7bb-44bb-a2a6-371e417c046d
 # ╠═ca98f95a-f479-43e5-bbfd-f47123ebd27d
-# ╟─2b72cfbe-d119-46db-b5ad-8b23d9685e13
-# ╟─ba0a7a09-df29-4fac-b28f-b6319c88433c
-# ╟─f3a85143-8ca8-4372-8b47-4944f17be226
-# ╟─cbd7ba6e-2ac2-431c-a01c-f4e8017edd33
+# ╠═2b72cfbe-d119-46db-b5ad-8b23d9685e13
+# ╠═ba0a7a09-df29-4fac-b28f-b6319c88433c
+# ╠═f3a85143-8ca8-4372-8b47-4944f17be226
+# ╠═cbd7ba6e-2ac2-431c-a01c-f4e8017edd33
 # ╠═581cf399-766e-42ca-9112-78f99128440e
-# ╟─61ccf1b2-5590-4910-866e-ab08a7e510fb
-# ╟─537d3854-87c8-439e-9f66-643a44a91a3b
+# ╠═61ccf1b2-5590-4910-866e-ab08a7e510fb
+# ╠═537d3854-87c8-439e-9f66-643a44a91a3b
 # ╠═47c61751-73d4-4954-940a-dea937e1e8d6
-# ╟─139b5358-8313-4613-b095-72c6361ebc16
+# ╠═139b5358-8313-4613-b095-72c6361ebc16
 # ╠═6ddba88f-ab66-469f-a5dd-68dfb97b235b
-# ╟─60dad983-fdd9-4771-8301-744a5e6ae370
-# ╟─eff50047-8b7b-4170-8ff5-f6eec94e45fd
+# ╠═60dad983-fdd9-4771-8301-744a5e6ae370
+# ╠═eff50047-8b7b-4170-8ff5-f6eec94e45fd
 # ╠═2f645347-30ad-43e3-9439-b60ea0a33136
-# ╟─edffe592-e174-41a2-b697-279d4b7eda37
-# ╟─e7198063-24cf-4801-b196-02683a5e4e95
-# ╟─594b63ee-a145-4515-b8db-76ca02a68e94
-# ╟─ee2743f1-c6cb-4bec-935c-b70af7c28afe
-# ╟─83c7eeb3-55b5-4f8d-9206-a5ecb6a9fc72
-# ╟─f3bb92ad-27e8-4b58-a6dd-b4eb67c64b05
+# ╠═edffe592-e174-41a2-b697-279d4b7eda37
+# ╠═e7198063-24cf-4801-b196-02683a5e4e95
+# ╠═594b63ee-a145-4515-b8db-76ca02a68e94
+# ╠═ee2743f1-c6cb-4bec-935c-b70af7c28afe
+# ╠═83c7eeb3-55b5-4f8d-9206-a5ecb6a9fc72
+# ╠═f3bb92ad-27e8-4b58-a6dd-b4eb67c64b05
 # ╠═edf85cdc-ff72-4560-8c29-c79184bfeadc
-# ╟─aacb9351-7d2e-4515-9f7d-f107c461676c
+# ╠═aacb9351-7d2e-4515-9f7d-f107c461676c
 # ╠═aa531714-7f84-4766-8bf8-67e3105cc3f3
-# ╟─4ac4c42c-789d-493a-a509-d84e697f546f
-# ╟─1fc57d4e-e3c8-4cb9-b296-a4e719841cac
+# ╠═4ac4c42c-789d-493a-a509-d84e697f546f
+# ╠═1fc57d4e-e3c8-4cb9-b296-a4e719841cac
 # ╠═0aeb4801-9f35-44d2-90f9-5342fbc7af8a
 # ╠═eda3131e-5d03-45de-8530-f757af210450
-# ╟─73c85a86-b290-4c64-a6a0-825160ef6959
-# ╟─3916ea5b-c11e-416e-b95f-760684f0f7ad
-# ╟─d72b00e7-7682-4183-8b8d-49889143616d
-# ╟─9f54f451-63b8-4399-b219-4170c260e50d
-# ╟─e72c0f9c-7233-42da-af5c-0da3348e63fd
-# ╟─e9bb1b66-90b7-4d2a-bd08-eeccd5b89d58
-# ╟─71103b9c-4d79-4f0e-845b-a84e8de1d063
-# ╟─4c8f525a-ca10-4854-a55a-8c620a21f9e8
-# ╟─64859989-d320-44d2-97da-4c08f75e17c2
-# ╟─4fa4e2da-bdd8-4337-bcd8-568f0c546079
-# ╟─74279119-259e-4527-a6eb-bc49d7d656c9
-# ╟─7464258c-81a6-4d74-a0b7-3fc06bcdb0a7
-# ╟─bb126d64-62ba-4227-9189-9eeefaf55d15
-# ╟─18dab33a-0097-45dd-bc64-e279a2f55a9d
-# ╟─4949384c-5eb4-4497-82b7-d5a075613fc4
-# ╟─b5083063-0f9e-4109-9cec-1501dc0098cb
+# ╠═73c85a86-b290-4c64-a6a0-825160ef6959
+# ╠═3916ea5b-c11e-416e-b95f-760684f0f7ad
+# ╠═d72b00e7-7682-4183-8b8d-49889143616d
+# ╠═9f54f451-63b8-4399-b219-4170c260e50d
+# ╠═e72c0f9c-7233-42da-af5c-0da3348e63fd
+# ╠═e9bb1b66-90b7-4d2a-bd08-eeccd5b89d58
+# ╠═71103b9c-4d79-4f0e-845b-a84e8de1d063
+# ╠═4c8f525a-ca10-4854-a55a-8c620a21f9e8
+# ╠═64859989-d320-44d2-97da-4c08f75e17c2
+# ╠═4fa4e2da-bdd8-4337-bcd8-568f0c546079
+# ╠═74279119-259e-4527-a6eb-bc49d7d656c9
+# ╠═7464258c-81a6-4d74-a0b7-3fc06bcdb0a7
+# ╠═bb126d64-62ba-4227-9189-9eeefaf55d15
+# ╠═18dab33a-0097-45dd-bc64-e279a2f55a9d
+# ╠═4949384c-5eb4-4497-82b7-d5a075613fc4
+# ╠═b5083063-0f9e-4109-9cec-1501dc0098cb
 # ╠═afc5cf1a-5bd4-4b68-8b77-0b83fc53f441
 # ╠═0fb4d386-44a8-4092-bf77-a729e857609c
-# ╟─87231bf9-92ad-4730-867e-bcd0a5e093ee
-# ╟─36130a1c-6fb6-4c6f-b280-87a9c2573bda
-# ╟─72c76679-871b-4367-8d08-4abf87c8b0d7
-# ╟─75055e24-2f7c-41eb-a643-b4f8b23cc150
-# ╟─18bfb1ef-db71-455a-ac0c-00fb6db43f59
-# ╟─52934098-0e3e-46e2-bc3d-d927d5c71dae
-# ╟─6aae73b0-9f59-422a-a7b2-9d2c97297229
+# ╠═87231bf9-92ad-4730-867e-bcd0a5e093ee
+# ╠═36130a1c-6fb6-4c6f-b280-87a9c2573bda
+# ╠═72c76679-871b-4367-8d08-4abf87c8b0d7
+# ╠═75055e24-2f7c-41eb-a643-b4f8b23cc150
+# ╠═18bfb1ef-db71-455a-ac0c-00fb6db43f59
+# ╠═52934098-0e3e-46e2-bc3d-d927d5c71dae
+# ╠═6aae73b0-9f59-422a-a7b2-9d2c97297229
 # ╠═79d9dfc6-9f8e-4fe9-953b-b11de1232adc
-# ╟─263ebdd6-8461-4207-8fdd-4bca929edbd1
-# ╟─e1274616-d152-4b2e-9f71-c2cdc4f3cc1f
-# ╟─56c22652-b91c-4f9f-b814-5144ff3c80ec
-# ╟─c28301a5-b989-4448-8c5f-96d4164c35ba
-# ╟─bfa971c4-5352-40a6-92fd-eb0d8a0ac766
-# ╟─9d9a7d17-e611-4405-bfc5-c1d11ef99622
-# ╟─8c21e423-4d94-49d4-befe-060bebd9db13
-# ╟─5ab964d3-fe4a-4caf-9b7b-f0ceb3d1e4f5
-# ╟─7c46edc6-cb4d-48cb-a0fc-bfa932a19b88
-# ╟─d4c709aa-7a89-4250-bd83-4b0601428d5a
-# ╟─c729f381-b810-459c-8b16-ff88852f1e8d
-# ╟─f1c240f7-ef5d-4296-923b-0243735112ba
-# ╟─5ac9e1ca-ddd9-40ef-bbc0-0b70c7bf00ff
-# ╟─d0bfc512-2b99-4654-af36-ff0565aeacb2
-# ╟─73e33858-0c2f-45a5-9063-be5417f860a0
-# ╟─69168a15-aa7a-4951-8d47-bca2fce8b8bd
-# ╟─ac224512-fe67-44fc-bd0d-e0875a1a621e
-# ╟─92004858-7f72-41ee-affa-645f63be89c2
-# ╟─bcb95cdf-05f3-4a17-a525-92d7ab331b07
-# ╟─d67541ec-9f5c-45ae-98a5-a5fb46c74823
-# ╟─68cbe021-7e17-48bb-875c-d938c797ecf4
-# ╟─dc253228-bc9b-4f3b-9e32-e425525d1f2b
-# ╟─51855f1c-4e7b-45a3-8de5-d3a6308f6984
-# ╟─4678c32a-3c64-459d-bebf-d1bfd345137b
-# ╟─0e7bf41b-3935-4f0c-a27e-a8cf17ab51f6
-# ╟─101a42d9-b3cf-48e8-b6a9-a66cdcb25937
-# ╟─3c56b4fa-1953-4487-a9d7-7217296a6aa4
-# ╟─e54f0557-6fb4-47b3-babf-ad26ed84bad4
-# ╟─230bdcb8-11cb-4be8-95d2-db72d46e9b2a
-# ╟─1d54255b-2aa3-40e7-bc54-bcd1ca83e00b
-# ╟─1c0b295f-ebac-4f47-8241-da3abbc17ae7
+# ╠═263ebdd6-8461-4207-8fdd-4bca929edbd1
+# ╠═e1274616-d152-4b2e-9f71-c2cdc4f3cc1f
+# ╠═56c22652-b91c-4f9f-b814-5144ff3c80ec
+# ╠═c28301a5-b989-4448-8c5f-96d4164c35ba
+# ╠═bfa971c4-5352-40a6-92fd-eb0d8a0ac766
+# ╠═9d9a7d17-e611-4405-bfc5-c1d11ef99622
+# ╠═8c21e423-4d94-49d4-befe-060bebd9db13
+# ╠═5ab964d3-fe4a-4caf-9b7b-f0ceb3d1e4f5
+# ╠═7c46edc6-cb4d-48cb-a0fc-bfa932a19b88
+# ╠═d4c709aa-7a89-4250-bd83-4b0601428d5a
+# ╠═c729f381-b810-459c-8b16-ff88852f1e8d
+# ╠═f1c240f7-ef5d-4296-923b-0243735112ba
+# ╠═5ac9e1ca-ddd9-40ef-bbc0-0b70c7bf00ff
+# ╠═d0bfc512-2b99-4654-af36-ff0565aeacb2
+# ╠═73e33858-0c2f-45a5-9063-be5417f860a0
+# ╠═69168a15-aa7a-4951-8d47-bca2fce8b8bd
+# ╠═ac224512-fe67-44fc-bd0d-e0875a1a621e
+# ╠═92004858-7f72-41ee-affa-645f63be89c2
+# ╠═bcb95cdf-05f3-4a17-a525-92d7ab331b07
+# ╠═d67541ec-9f5c-45ae-98a5-a5fb46c74823
+# ╠═68cbe021-7e17-48bb-875c-d938c797ecf4
+# ╠═dc253228-bc9b-4f3b-9e32-e425525d1f2b
+# ╠═51855f1c-4e7b-45a3-8de5-d3a6308f6984
+# ╠═4678c32a-3c64-459d-bebf-d1bfd345137b
+# ╠═0e7bf41b-3935-4f0c-a27e-a8cf17ab51f6
+# ╠═101a42d9-b3cf-48e8-b6a9-a66cdcb25937
+# ╠═3c56b4fa-1953-4487-a9d7-7217296a6aa4
+# ╠═e54f0557-6fb4-47b3-babf-ad26ed84bad4
+# ╠═230bdcb8-11cb-4be8-95d2-db72d46e9b2a
+# ╠═1d54255b-2aa3-40e7-bc54-bcd1ca83e00b
+# ╠═1c0b295f-ebac-4f47-8241-da3abbc17ae7
 # ╠═5def91d4-b9ef-4aa6-b0eb-d2b7c4ef6b86
-# ╟─f1ee699d-535a-436a-ba30-6face48018db
+# ╠═f1ee699d-535a-436a-ba30-6face48018db
 # ╠═53b5d2f7-2cfd-4ec3-b2c9-f9d8af30718e
 # ╠═d918ad69-de3f-4009-8527-e601368e030b
-# ╟─98f63cb9-2d89-466b-8217-2ad6b982c5b9
-# ╟─fd82cb57-a7b4-445d-86d5-0d7aaf12f878
-# ╟─c0ded5f0-d008-416d-95db-9a6b60f24f13
-# ╟─2dceb906-68d8-4334-bc0e-254fa2f87872
-# ╟─5a3c78c9-6cfa-4cde-8815-0260cf468c2e
-# ╟─f92f1c74-5d7f-4c11-b140-5c8be0ae80e2
-# ╟─0b5cd707-9937-44aa-aa9e-d02d806776e9
-# ╟─498ef0a1-b7e1-4829-89b4-21c904a87d2d
-# ╟─3e3792e8-da1c-48ef-a321-0dca7cb7da2e
-# ╟─cd24b8a6-bc56-49e2-a396-bc64fd4ad111
-# ╟─b1747147-a6e3-4060-8e2f-7df50bef2de0
-# ╟─da6e4a4d-4781-4e91-b533-2de1c5070410
-# ╟─b142e855-46c9-47fe-a54b-ffc10eab7419
-# ╟─d07c2b6f-3145-4f2a-a9e9-acaac491621b
-# ╟─34681997-7bb6-4d89-8117-02d189b0daec
+# ╠═98f63cb9-2d89-466b-8217-2ad6b982c5b9
+# ╠═fd82cb57-a7b4-445d-86d5-0d7aaf12f878
+# ╠═c0ded5f0-d008-416d-95db-9a6b60f24f13
+# ╠═2dceb906-68d8-4334-bc0e-254fa2f87872
+# ╠═5a3c78c9-6cfa-4cde-8815-0260cf468c2e
+# ╠═f92f1c74-5d7f-4c11-b140-5c8be0ae80e2
+# ╠═0b5cd707-9937-44aa-aa9e-d02d806776e9
+# ╠═498ef0a1-b7e1-4829-89b4-21c904a87d2d
+# ╠═3e3792e8-da1c-48ef-a321-0dca7cb7da2e
+# ╠═cd24b8a6-bc56-49e2-a396-bc64fd4ad111
+# ╠═b1747147-a6e3-4060-8e2f-7df50bef2de0
+# ╠═da6e4a4d-4781-4e91-b533-2de1c5070410
+# ╠═b142e855-46c9-47fe-a54b-ffc10eab7419
+# ╠═d07c2b6f-3145-4f2a-a9e9-acaac491621b
+# ╠═34681997-7bb6-4d89-8117-02d189b0daec
 # ╠═371e9ae2-ee34-4b76-9f3f-836b837d0e9a
-# ╟─a4e1a29d-8ad5-42e0-9197-021bd20df262
+# ╠═a4e1a29d-8ad5-42e0-9197-021bd20df262
 # ╠═22f06593-18e7-40e1-a638-eb64fb3776da
-# ╟─556ee6ee-f3a7-4122-8189-626f057d4f79
-# ╟─28bdecaf-7954-4329-a3c5-d48c0e42e463
+# ╠═556ee6ee-f3a7-4122-8189-626f057d4f79
+# ╠═28bdecaf-7954-4329-a3c5-d48c0e42e463
 # ╠═b1c6dd76-0e10-4361-9549-5de0d2ad3a7e
 # ╠═a3976136-6172-4283-8343-2ac5d42e71d5
-# ╟─a3014ff8-729c-46d1-aa13-0be2490e22d5
-# ╟─1dc1e60e-d51d-493e-8cf2-a076cb114ca1
-# ╟─a85d5c45-90da-4a27-9a45-e154244078db
-# ╟─f439edae-4570-4498-be4e-49831864f239
-# ╟─9e783f7b-c0fd-4221-a015-45b74c76f220
-# ╟─777908f7-b3bc-430e-b94c-845b52cb3df1
-# ╟─24470b0d-35ce-45bc-9848-40a1cf8641a5
-# ╟─bb88fb85-b2d4-4244-98a5-d132cee37ef7
-# ╟─e8f72d35-67a8-4672-ac17-8d12dce84f49
+# ╠═a3014ff8-729c-46d1-aa13-0be2490e22d5
+# ╠═1dc1e60e-d51d-493e-8cf2-a076cb114ca1
+# ╠═a85d5c45-90da-4a27-9a45-e154244078db
+# ╠═f439edae-4570-4498-be4e-49831864f239
+# ╠═9e783f7b-c0fd-4221-a015-45b74c76f220
+# ╠═777908f7-b3bc-430e-b94c-845b52cb3df1
+# ╠═24470b0d-35ce-45bc-9848-40a1cf8641a5
+# ╠═bb88fb85-b2d4-4244-98a5-d132cee37ef7
+# ╠═e8f72d35-67a8-4672-ac17-8d12dce84f49
 # ╠═fad4ea0c-39c1-4f75-91b8-2b9a877e93f6
-# ╟─be4c0c6c-e9c6-4f38-9e5a-41d721b7bdab
+# ╠═be4c0c6c-e9c6-4f38-9e5a-41d721b7bdab
 # ╠═aa89be4d-ccd1-4086-bb16-1cad7c656b0b
-# ╟─c8fa7c55-1508-434b-97f2-7216b7d683ec
-# ╟─15c5b90e-f19a-4639-92b4-9ec4cdde09ec
+# ╠═c8fa7c55-1508-434b-97f2-7216b7d683ec
+# ╠═15c5b90e-f19a-4639-92b4-9ec4cdde09ec
 # ╠═a70d2ea4-612f-4832-a55d-fe51d894631e
-# ╟─7245d4bf-9ae9-42c4-b217-45ef3ad5daf1
+# ╠═7245d4bf-9ae9-42c4-b217-45ef3ad5daf1
 # ╠═0185a95b-4e1e-432c-9241-3a7cd70e5d05
 # ╠═ff333f42-9a30-4d38-ac92-e95e1e73f72a
-# ╟─7ec54078-3007-4ac3-b213-4c5bcf7b1176
-# ╟─ea0413eb-4c66-41ae-ac66-cdbac6129d7f
-# ╟─08018313-909f-4050-91aa-58af6d5a7245
-# ╟─c89e1126-3b58-4acc-95b9-21105077300a
-# ╟─0c14eae8-a69b-4b25-a226-1cc76204c6d7
-# ╟─1fa8bfbe-a6e4-4c6e-aac0-f7041e7a56a5
-# ╟─1558e7cb-13c2-469e-a0a6-7dd4f7085b0c
+# ╠═7ec54078-3007-4ac3-b213-4c5bcf7b1176
+# ╠═ea0413eb-4c66-41ae-ac66-cdbac6129d7f
+# ╠═08018313-909f-4050-91aa-58af6d5a7245
+# ╠═c89e1126-3b58-4acc-95b9-21105077300a
+# ╠═0c14eae8-a69b-4b25-a226-1cc76204c6d7
+# ╠═1fa8bfbe-a6e4-4c6e-aac0-f7041e7a56a5
+# ╠═1558e7cb-13c2-469e-a0a6-7dd4f7085b0c
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
