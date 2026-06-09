@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.24
+# v1.0.1
 
 using Markdown
 using InteractiveUtils
@@ -715,7 +715,7 @@ rename!(df_escalado, names(df))
 
 # ╔═╡ 010d9c3c-f5fb-4109-9057-82f78e28eb4a
 md"""
-## Tipos de datos científicos
+## Asinación de tipos de datos científicos
 """
 
 # ╔═╡ e18d51dc-df8c-4f71-ab22-691b65eb5c54
@@ -937,7 +937,7 @@ datos_sobre_sigmoide(transformado_hombres, sigma_hombres, transformado_mujeres, 
 
 # ╔═╡ b3c4681f-8136-47b7-9a41-084347ac5a9d
 md"""
-## Todo en uno con MLJ
+## Tuberías (pipelines) con MLJ
 
 Hemos desarrollado paso a paso toda la cadena de operaciones sobre los datos hasta obtener el resultado final. Ahora vamos a ver cómo MLJ nos ayuda a simplificar mucho la creación de la máquina.
 
@@ -952,6 +952,11 @@ flujo = Standardizer() |> FeatureSelector(features = [:weight, :height]) |> Logi
 # ╔═╡ 2a601542-0415-4e59-bafa-1de6660df954
 md"""
 Fíjate en el uso del operado |> que envía la salida de una función como argumento de la siguiente.
+"""
+
+# ╔═╡ 08c966eb-bbf5-4f14-be41-93dbcd559255
+md"""
+## Tuberías (pipelines) con MLJ
 
 Ahora entrenamos todo el flujo:
 """
@@ -968,6 +973,11 @@ predicciones_tuberia = predict_mode(maquina_tuberia, select(prueba, [:weight, :h
 # ╔═╡ 57bbfd86-7ff3-4b5f-aab6-1c79fbcc2d41
 confusion_matrix(predicciones_tuberia, prueba.male)
 
+# ╔═╡ a752befa-c774-4fe9-a1e8-978315dba319
+md"""
+Fíjate que ya no necesitamos rescalar los datos, ni seleccionar características, estas tareas se hacen dentro de la tubería que hemos creado.
+"""
+
 # ╔═╡ 303bace0-02ac-4501-a76d-018adeb5714a
 md"""
 # Resumen
@@ -982,6 +992,14 @@ md"""
 * Para deducir las fórmulas hemos utilizado el teorema de Bayes y el principio de máxima verosimilitud.
 * También hemos deducido la función de pérdidas sobre la que se puede aplicar la técnica de descenso de gradiente.
 * Es importante comprobar que nuestros datos cumplen con las condiciones de normalidad e igualdad de matrices de covarianza.
+"""
+
+# ╔═╡ 3e0b7733-3ef3-4dd8-9f8e-f50096afa183
+md"""
+## Resumen
+
+* En el caso práctico, hemos visto la importancia de escalar/normalizar los datos.
+* Las tubería de MLJ nos ayudan a escribir código más compacto.
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -3426,11 +3444,14 @@ version = "1.4.1+2"
 # ╠═b3c4681f-8136-47b7-9a41-084347ac5a9d
 # ╠═f55c06a4-6c56-40fe-ae90-b5a1619563f7
 # ╠═2a601542-0415-4e59-bafa-1de6660df954
+# ╠═08c966eb-bbf5-4f14-be41-93dbcd559255
 # ╠═5ed92ad1-d3e4-4491-a9c4-79f9d08d0383
 # ╠═299137fe-ac65-494c-8e1e-caba30ca41d3
 # ╠═a283debe-f192-4bcd-8aa7-4112f43e99f9
 # ╠═57bbfd86-7ff3-4b5f-aab6-1c79fbcc2d41
+# ╠═a752befa-c774-4fe9-a1e8-978315dba319
 # ╠═303bace0-02ac-4501-a76d-018adeb5714a
 # ╠═536fe5a2-395f-4cd9-9791-606ea6db96ed
+# ╠═3e0b7733-3ef3-4dd8-9f8e-f50096afa183
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
