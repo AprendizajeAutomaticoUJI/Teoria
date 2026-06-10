@@ -351,14 +351,14 @@ Fuente: https://www.deep-mind.org/2023/03/26/the-universal-approximation-theorem
 
 # ╔═╡ aab30f28-b671-45f8-bea1-b637351ad432
 md"""
-Aunque esta arquitectura es muy sencilla, permite hacer tareas simples de clasificación. Una curiosidad, Rosenblatt entrenaba el perceptron a mano, ajustando los pesos hasta que resolvía un problema particular.
+Aunque esta arquitectura es muy sencilla, permite hacer tareas simples de clasificación. Una curiosidad, Rosenblatt entrenaba el perceptron a mano, ajustando los pesos mediante potenciómetros hasta que resolvía un problema particular.
 """
 
 # ╔═╡ 089c0310-259c-4158-b49f-10b25969beac
 md"""
 ## Estructura de una NN
 
-El siguiente paso fue añadir sucesivas capas para mejorar los resultados de las redes. Esta arquitectura se llama **Multi Layer Perceptron** (MLP). Al apilar varias capas de neuronal con funciones de activación, conseguimos resolver problemas más complejos, como la función XOR.
+El siguiente paso fue añadir sucesivas capas para mejorar los resultados de las redes. Esta arquitectura se llama **Multi Layer Perceptron** (MLP). Al apilar varias capas de neuronas con funciones de activación, conseguimos resolver problemas más complejos, como la función XOR.
 """
 
 # ╔═╡ b6e330c6-8285-4f5b-a933-7c5a35f1fbab
@@ -385,17 +385,17 @@ md"""
 
 El problema con estas redes es:
 
-1. Si se conocen los pesos de la red es muy sencillo calcular la salida.
+1. Si se conocen los pesos de la red es muy sencillo calcular la salida a partir de una entrada dada.
 1. Calcular los pesos para que la red ajuste las salidas a partir de las entradas es muy complicado.
 
-La solución al cálculo de los pesos de la red es el algoritmo de **retro propagación (back propagation)**. El algoritmo llamado **back propagation** fue aplicado en la década de 1980 para entrenar redes neuronales, en particular MLP.
+La solución al cálculo de los pesos de la red es el algoritmo de **retropropagación (back-propagation)**. El algoritmo **back-propagation** fue aplicado en la década de 1980 para entrenar redes neuronales, en particular MLP.
 """
 
 # ╔═╡ 1474cc4c-b3e4-4e14-9af8-11d05f1a8584
 md"""
 ## Entrenamiento de una NN
 
-El algoritmo **back propagation** es una combinación de varios ingredientes, entre ellos:
+El algoritmo de **retropropagación** es una combinación de varios ingredientes, entre ellos:
 
 1. Descenso de gradiente.
 1. Regla de la cadena en derivadas parciales.
@@ -418,7 +418,7 @@ md"""
 ## Entrenamiento de una NN
 
 5. Se propaga hacia atrás la actualización de los pesos utilizando la regla de la cadena hasta que se actualizan los pesos de todas las capas.
-1. Se repite el proceso desde el punto 2, hasta un número determinado de pasos o hasta que la actualización de los pesos no es significativa en dos pasos consecutivos.
+1. Se repite el proceso desde el punto 2, hasta un número determinado de pasos, o hasta que la actualización de los pesos no es significativa en dos pasos consecutivos.
 """
 
 # ╔═╡ 1a52c360-1fb4-49df-a0f2-8a75f0f981d8
@@ -443,8 +443,8 @@ En resumen, poder aplicar el algoritmo **back propagation** para entrenar redes 
 Para realizar el ajuste de los pesos de la red necesitamos, entre otros, los siguientes ingredientes:
 
 1. Elegir unos **buenos** pesos aleatorios iniciales.
-1. Elegir la función de activación.
-1. Elegir un optimizador (estrategia) adecuado para el descenso de gradiente.
+1. Elegir la **función de activación** idonea.
+1. Elegir un **optimizador (estrategia)** adecuado para el descenso de gradiente.
 
 Además de la propia arquitectura de la red y otros hiperparámetros en la etapa de entrenamiento.
 """
