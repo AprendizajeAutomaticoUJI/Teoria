@@ -4,6 +4,18 @@
 using Markdown
 using InteractiveUtils
 
+# This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
+macro bind(def, element)
+    #! format: off
+    return quote
+        local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
+        local el = $(esc(element))
+        global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
+        el
+    end
+    #! format: on
+end
+
 # ╔═╡ c23ebe0f-016e-4a0a-aa7d-b0308bf5d99a
 using CSV
 
@@ -76,7 +88,7 @@ Las redes neuronales son modelos de aprendizaje automático muy potentes, pero c
 
 Su entrenamiento se basa en el algoritmo de retropropagación, que es un una combinación del algoritmo de descenso de gradiente y de la regla de la cadena de las derivadas.
 
-Las redes neuronales pueden resolver tanto problemas supervisados (clasificación o regresión) como no supervisados.
+Las redes neuronales pueden resolver tanto problemas supervisados (clasificación o regresión) como no supervisados (agrupamiento).
 """
 
 # ╔═╡ 5b797826-439b-48ce-a293-03534db1f2a9
@@ -95,6 +107,7 @@ md"""
 ## Objetivos de aprendizaje
 
 1. Esquematizar la estructura de una neurona y un red neuronal.
+1. Resumir en qué consiste la técnica de retropropagación.
 1. Resumir los pasos para crear y entrenar una red neuronal.
 1. Construir una red neuronal sencilla para problemas de regresión.
 1. Construir una red neuronal sencilla para problemas de clasificación.
@@ -135,7 +148,7 @@ Neuronas vista al microscopio y dibujadas por Santiago Ramón y Cajal.
 md"""
 ## Bases biológicas de las NN
 
-La fisiología del cerebro nos muetra que una neurona recibe señales de otras neuronas a través de su dendrita, y, en caso de que la neurona se active, envía una señal a otras neuronas a través su axón. Si la neurona no se activa, la señal no se enviará a otras neuronas.
+La fisiología del cerebro nos muestra que una neurona recibe señales de otras neuronas a través de su dendrita, y, en caso de que la neurona se active, envía una señal a otras neuronas a través su axón. Si la neurona no se activa, la señal no se enviará a otras neuronas.
 """
 
 # ╔═╡ 3e361edb-a6fc-4c26-8c91-f44eec0a6a6c
@@ -156,7 +169,7 @@ Diseñado por Freepik (https://www.freepik.es)
 md"""
 ## Bases biológicas de las NN
 
-Un detalla muy importante es que no exite contacto físico entre las neuronas (este descubrimiento le valió el Nobel de Medicina a Santiago Ramón y Cajal en 1906), la señal «salta» de una neuroa a otra.
+Un detalle muy importante es que no exite contacto físico entre las neuronas (este descubrimiento le valió el Nobel de Medicina a Santiago Ramón y Cajal en 1906), la señal «salta» de una neuroa a otra.
 """
 
 # ╔═╡ b64fa92a-dfc8-4049-a069-9a1c4f61b65c
@@ -199,7 +212,7 @@ La red neuronal en el centro de la imagen recibe señales de las neuronas $x_1, 
 md"""
 ## Estructura de una neurona artificial
 
-¿Qué ocurre dentro de una neurona artificial? Cada seña de entrada se multiplica por un peso se suma al resto de entrada multiplicada y al resultado se le añade un **bias**. Fíjate en que esta operación es lineal (multiplicaciones y sumas, no hay potencias). El resultado del cálculo pasa («salta») a la siguiente neurona.
+¿Qué ocurre dentro de una neurona artificial? Cada señal de entrada se multiplica por un peso, se suman todos los productos, y al resultado se le añade un **bias**. Fíjate en que esta operación es lineal (multiplicaciones y sumas, no hay potencias). El resultado del cálculo pasa («salta») a la siguiente neurona.
 """
 
 # ╔═╡ df53f204-76e8-43f7-858f-48c5f8f78eeb
@@ -236,9 +249,9 @@ Es necesario introducir la **no linearidad** de otro modo.
 md"""
 ## Estructura de una neurona artificial
 
-La función de activación es el ingrediente que introduce la no-linearidad en las redes neuronales. Al resultado de la operación lineal se le aplica una función no lineal.
+La función de activación es el ingrediente que introduce la no-linearidad en las redes neuronales. A la activación (resultado de la operación lineal) se le aplica una función no lineal.
 
-La función de activación más sencilla es la función de Heaviside o función esaclón:
+La función de activación más sencilla es la función de Heaviside o función escalón:
 """
 
 # ╔═╡ 217fcf4e-f83e-4bbe-906c-cc1e1f44d7b9
@@ -251,9 +264,7 @@ function escalon(x, a)
 end;
 
 # ╔═╡ 0197bb9a-1410-4fa4-8750-bae1e71b971a
-Columns(
 plot(x -> escalon(x, 0), title = "Función de Heaviside o escalón", legends = false, size = (500,300))
-)
 
 # ╔═╡ ced47da1-fbf0-4e7e-8695-1f9db7fc0bc2
 md"""
@@ -279,7 +290,7 @@ Resource(
 md"""
 ## Estructura de una neurona artificial
 
-En vez de la función escalon, tomamos como función de activación la función sigmoide.
+Una fución, que se puede ajustar a la función escalón, y es derivable en todos los puntos de su dominio es la función sigmoide.
 
 $\sigma(\omega x) = \frac{1}{1+e^{-\omega x}}$
 """
@@ -287,13 +298,36 @@ $\sigma(\omega x) = \frac{1}{1+e^{-\omega x}}$
 # ╔═╡ c1d85e3c-51e9-45eb-b209-7da56905e6d5
 sigmoide(x, ω) = 1 / (1 + exp(-ω*x));
 
+# ╔═╡ 218b6575-487d-4f64-8ca8-a23f13e0b9c2
+sigmoide(x, ω, b) = 1 / (1 + exp(-ω*x + b));
+
 # ╔═╡ 924c5b93-cc37-40b6-aad5-67cc18421895
-begin 
+function plot_sigmoides()
 	plot(x -> escalon(x, 0), width = 2, label = "Escalón", size = (600, 400))
 	plot!(x -> sigmoide(x, 1), label = "Sigmoide ω=1")
 	plot!(x -> sigmoide(x, 5), label = "Sigmoide ω=5")
 	plot!(x -> sigmoide(x, 10), label = "Sigmoide ω=10")
 end
+
+# ╔═╡ df32a63d-3517-48f7-8a1f-26a5beb24b45
+plot_sigmoides()
+
+# ╔═╡ 28853136-31de-48b5-8c21-153b8208827f
+md"""
+El valor de ω cambia la «pendiente» de la sigmoide.
+
+ω = $(@bind ω Slider(0:0.1:5, default = 1, show_value = true))
+"""
+
+# ╔═╡ d51d8e57-b24a-4a3e-8556-50a81296de47
+md"""
+El valor de b move el «centro» de la sigmoide en horizontal.
+
+b = $(@bind b Slider(-10:0.1:10, default = 0, show_value = true))
+"""
+
+# ╔═╡ 812e1ebc-7400-4b50-beaa-245fcccf1e2b
+plot(x -> sigmoide(x, ω, b), xlims = (-5, 5), ylims = (-0.1, 1.1))
 
 # ╔═╡ 26ffe43c-fcda-4c52-be27-ce945f1084d9
 md"""
@@ -3223,6 +3257,11 @@ version = "1.9.2+0"
 # ╠═359e990e-41bc-43bc-9504-d520476ea035
 # ╠═c1d85e3c-51e9-45eb-b209-7da56905e6d5
 # ╠═924c5b93-cc37-40b6-aad5-67cc18421895
+# ╠═df32a63d-3517-48f7-8a1f-26a5beb24b45
+# ╠═218b6575-487d-4f64-8ca8-a23f13e0b9c2
+# ╟─28853136-31de-48b5-8c21-153b8208827f
+# ╟─d51d8e57-b24a-4a3e-8556-50a81296de47
+# ╠═812e1ebc-7400-4b50-beaa-245fcccf1e2b
 # ╠═26ffe43c-fcda-4c52-be27-ce945f1084d9
 # ╠═aba74d40-c561-4492-a7a0-f49a69f6455e
 # ╠═a46f42c1-64a2-4a07-9ee7-e8517eb56dd8
