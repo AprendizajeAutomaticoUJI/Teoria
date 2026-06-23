@@ -323,11 +323,11 @@ El valor de ω cambia la «pendiente» de la sigmoide.
 md"""
 El valor de b move el «centro» de la sigmoide en horizontal.
 
-b = $(@bind b Slider(-10:0.1:10, default = 0, show_value = true))
+b = $(@bind b Slider(-5:0.1:5, default = 0, show_value = true))
 """
 
 # ╔═╡ 812e1ebc-7400-4b50-beaa-245fcccf1e2b
-plot(x -> sigmoide(x, ω, b), xlims = (-5, 5), ylims = (-0.1, 1.1))
+plot(x -> sigmoide(x, ω, b), xlims = (-10, 10), ylims = (-0.1, 1.1), legend = false)
 
 # ╔═╡ 26ffe43c-fcda-4c52-be27-ce945f1084d9
 md"""
@@ -372,6 +372,13 @@ Resource(
 # ╔═╡ 8e144c0b-8ae4-4865-931f-a52afa55965d
 html"""
 Fuente: https://www.deep-mind.org/2023/03/26/the-universal-approximation-theorem/
+"""
+
+# ╔═╡ 4bab43e4-9b6f-4a41-81a4-6bd4e710a431
+md"""
+## Estructura de una NN
+
+En este [cuaderno](https://github.com/AprendizajeAutomaticoUJI/Teoria/blob/main/RedesNeuronales/retropropagacion.jl) puedes ver como implementar la estructura de una red neuronal en Julia.
 """
 
 # ╔═╡ 53e3d912-fb70-4501-817d-e8568bea9b81
@@ -447,6 +454,8 @@ Para realizar el ajuste de los pesos de la red necesitamos, entre otros, los sig
 1. Elegir un **optimizador (estrategia)** adecuado para el descenso de gradiente.
 
 Además de la propia arquitectura de la red y otros hiperparámetros en la etapa de entrenamiento.
+
+En este [cuaderno](https://github.com/AprendizajeAutomaticoUJI/Teoria/blob/main/RedesNeuronales/entrenamiento.jl) tienes una implementación del algoritmo de retropropagación.
 """
 
 # ╔═╡ e4619111-2f92-4b45-8ab8-9fb9f8157f6f
@@ -458,7 +467,7 @@ md"""
 md"""
 ## Teorema de aproximadores universales
 
-Una red neuronal con un única capa y un número arbitrario de neuronas puede ajustar cualquier función a la salida.
+El teorema de aproximación universal nos dice que **una red neuronal con un única capa y un número arbitrario de neuronas puede ajustar cualquier función a la salida**.
 
 [Esta referencia](https://www.deep-mind.org/2023/03/26/the-universal-approximation-theorem/) es una muy buena presentación del teorema de aproximadores universales.
 """
@@ -552,8 +561,8 @@ La red se define encadenando una serie de capas:
 
 # ╔═╡ 4312e730-bf64-4081-bf37-6062c3c3acbd
 modelo_seno = Chain(
-	Dense(1 => 500, tanh), # 500 neuronas con ax+b (1000 parámetros)
-	Dense(500 => 1) # una neurona con a[1..500]x+b (501 parámetros)
+	Dense(1 => 800, tanh), # 500 neuronas con ax+b (1000 parámetros)
+	Dense(800 => 1) # una neurona con a[1..500]x+b (501 parámetros)
 	#Dense(1 => 1) # La puedo obviar.
 )
 
@@ -561,7 +570,7 @@ modelo_seno = Chain(
 md"""
 La red tiene la siguiente estructura:
 
-1. La capa de entrada con una neurona a la entrada y quinientas salidas hacia la siguiente capa densamente conectada (cada neurona de entradas se conecta con todas las neuronas de la siguiente capa)
+1. La capa de entrada con una neurona a la entrada y ochocientas neuronas a la salidas hacia la siguiente capa densamente conectada (densamente conectada significa que cada neurona de entradas se conecta con todas las neuronas de la siguiente capa)
 1. La función de activación elegida es tanh.
 1. Una capa intermedia con quinientas neuronas a la entrada y una salida hacia la siguente capa densamente conectada.
 1. Una capa de salida con una neurona.
@@ -583,7 +592,7 @@ optimizador = Flux.setup(Adam(0.05), modelo_seno);
 md"""
 El optimizador que usamos en Adam, veremos más adelante cómo funciona este optimizador, con una tasa de aprendizaje $η = 0.05$.
 
-La función de pérdidas que utilizamos es mean squared error.
+La función de pérdidas que utilizamos es mean squared error, que ya está definida en el paquete **Flux**.
 """
 
 # ╔═╡ 5883dec1-c9e2-4b1a-b53d-f87f85f30db2
@@ -655,8 +664,7 @@ La red tiene la siguiente estructura:
 md"""
 ## Entrenar la red
 !!! important "Importante"
-
-En este caso la red sólo tiene 22 parámetros que entrenar, sensiblemente menos parámetros que la red anterior con una única capa.
+	En este caso la red sólo tiene 22 parámetros que entrenar, sensiblemente menos parámetros que la red anterior con una única capa.
 
 Sólo nos queda definir el optimizador (Adam esta vez), y entrenar la red:
 """
@@ -3260,7 +3268,7 @@ version = "1.9.2+0"
 # ╠═df32a63d-3517-48f7-8a1f-26a5beb24b45
 # ╠═218b6575-487d-4f64-8ca8-a23f13e0b9c2
 # ╟─28853136-31de-48b5-8c21-153b8208827f
-# ╟─d51d8e57-b24a-4a3e-8556-50a81296de47
+# ╠═d51d8e57-b24a-4a3e-8556-50a81296de47
 # ╠═812e1ebc-7400-4b50-beaa-245fcccf1e2b
 # ╠═26ffe43c-fcda-4c52-be27-ce945f1084d9
 # ╠═aba74d40-c561-4492-a7a0-f49a69f6455e
@@ -3269,6 +3277,7 @@ version = "1.9.2+0"
 # ╠═089c0310-259c-4158-b49f-10b25969beac
 # ╠═b6e330c6-8285-4f5b-a933-7c5a35f1fbab
 # ╠═8e144c0b-8ae4-4865-931f-a52afa55965d
+# ╠═4bab43e4-9b6f-4a41-81a4-6bd4e710a431
 # ╠═53e3d912-fb70-4501-817d-e8568bea9b81
 # ╠═b4e00721-1b78-4cda-a26e-474d4fa4230a
 # ╠═1474cc4c-b3e4-4e14-9af8-11d05f1a8584
