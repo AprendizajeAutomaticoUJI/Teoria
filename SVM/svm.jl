@@ -1254,9 +1254,13 @@ Estimamos la clase de los datos de prueba:
 # ╔═╡ a3976136-6172-4283-8343-2ac5d42e71d5
 howell_lineal_mal_calsificadas = misclassification_rate(ŷ_howell, adultos[prueba_howell, :clase]);
 
+# ╔═╡ d98e9c3d-1481-4695-b53e-b8d9fa0e9098
+howell_lineal_precision = accuracy(ŷ_howell, adultos[prueba_howell, :clase]);
+
 # ╔═╡ a3014ff8-729c-46d1-aa13-0be2490e22d5
 md"""
-La ratio de muestras mal clasificadas $howell_lineal_mal_calsificadas:
+La precisión del clasificador es $(round(howell_lineal_precision, digits = 3)).
+La ratio de muestras mal clasificadas es $(round(howell_lineal_mal_calsificadas, digits = 3)).
 """
 
 # ╔═╡ 1dc1e60e-d51d-493e-8cf2-a076cb114ca1
@@ -3538,6 +3542,7 @@ version = "1.4.1+2"
 # ╠═28bdecaf-7954-4329-a3c5-d48c0e42e463
 # ╠═b1c6dd76-0e10-4361-9549-5de0d2ad3a7e
 # ╠═a3976136-6172-4283-8343-2ac5d42e71d5
+# ╠═d98e9c3d-1481-4695-b53e-b8d9fa0e9098
 # ╠═a3014ff8-729c-46d1-aa13-0be2490e22d5
 # ╠═1dc1e60e-d51d-493e-8cf2-a076cb114ca1
 # ╠═a85d5c45-90da-4a27-9a45-e154244078db

@@ -847,6 +847,7 @@ let
 	]
 	X_howell_hombres = Float32.(Matrix(entrenamiento_howell[entrenamiento_howell.male.==1, caracteristicas])')
 	X_howell_mujeres = Float32.(Matrix(entrenamiento_howell[entrenamiento_howell.male.==0, caracteristicas])')
+	
 	scatter(entrenamiento_howell[entrenamiento_howell.male.==1, :weight], entrenamiento_howell[entrenamiento_howell.male.==1, :height], label="Hombres", color=:blue, xlabel="Peso", ylabel="Altura")
 	scatter!(entrenamiento_howell[entrenamiento_howell.male.==0, :weight], entrenamiento_howell[entrenamiento_howell.male.==0, :height], label="Mujeres", color=:green)
 	scatter!(entrenamiento_howell[entrenamiento_howell.male.==1, :weight], red_howell(X_howell_hombres)[1,:], label="Hombres ajuste", color=:orange)
@@ -890,7 +891,7 @@ Para que los experimentos sean reproducibles inicializamos la semilla del genera
 """
 
 # ╔═╡ 7a08c1e0-de42-4644-ab97-5bb3e5e07805
-Random.seed!(semilla);
+Random.seed!(69);
 
 # ╔═╡ b5f9fccd-8d35-4406-aaf8-7064ef512c92
 md"""
@@ -900,7 +901,7 @@ Dividimos el conjunto de datos para entrenamiento y prueba:
 """
 
 # ╔═╡ 6e0c2dc5-0037-480f-9b47-0ef951a0af86
-entrenamiento_clasificacion_howell, prueba_clasificacion_howell = partition(adultas, 0.8, rng=semilla);
+entrenamiento_clasificacion_howell, prueba_clasificacion_howell = partition(adultas, 0.75, rng=semilla);
 
 # ╔═╡ 237e0af0-7abd-4d0d-82a5-be590e3a0555
 md"""
@@ -1044,7 +1045,7 @@ precision = MLJ.accuracy(Flux.onecold(red_clasificacion(X_prueba_normalizada), 0
 
 # ╔═╡ eed264a8-1b9f-416f-897c-a26efadb4b75
 md"""
-La precisión de la red es $precision.
+La precisión de la red es $(round(precision, digits = 3)), puedes compararla con la del resto de clasificadores que hemos visto en el curso.
 
 No está nada mal.
 """
@@ -1074,6 +1075,7 @@ Algunas referencias interesantes
 1. [Las redes neuronales son aproximadores universales.](https://www.deep-mind.org/2023/03/26/the-universal-approximation-theorem/)
 1. [¿Qué es una red neuronal?](https://www.youtube.com/watch?v=jKCQsndqEGQ)
 1. [Neural networks.](https://www.youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi)
+1. [Implementación de una red neuronal](https://github.com/AprendizajeAutomaticoUJI/Teoria/blob/main/RedesNeuronales/entrenamiento.jl)
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
