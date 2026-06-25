@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.8
+# v1.0.1
 
 using Markdown
 using InteractiveUtils
@@ -26,9 +26,9 @@ using PlutoUI
 using PlutoTeachingTools
 
 # ╔═╡ df43ffce-2be1-11f0-1bda-8d3f50a5cd86
-html"""
-<link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
-"""
+# html"""
+# <link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
+# """
 
 # ╔═╡ 8f9e676c-76c8-474b-ab0a-60424d8cb889
 plotly();
@@ -124,7 +124,7 @@ Resource(
 # ╔═╡ 7cbbb35f-40c9-498f-b729-fc084fc123b1
 md"""
 La función de pérdidas de una red neuronal, en general, presenta múltiples 
-extremos (mínimos y máximos).
+extremos (mínimos y máximos). En esta página web puedes ver algunos ejemplos de funciones de pérdidas: 
 [The loss landscape](https://losslandscape.com/explorer).
 """
 
@@ -132,20 +132,20 @@ extremos (mínimos y máximos).
 md"""
 ## La importancia de la inicialización
 
-Como ya sabemos, para encontrar un mínimo utilizamos la técnica de descenso de gradiente, que depende del punto desde el que se inicie la búsqueda.
+Como ya sabemos, para encontrar un mínimo utilizamos la técnica de descenso del gradiente, que depende del punto desde el que se inicie la búsqueda.
 
-Además, la técnicas de retropropagación del gradiente es muy sensible a los valores de los pesos.
+Además, la técnicas de retropropagación es muy sensible a los valores de los pesos.
 
 Todo ellos hace que sea complicado entrenar una red neuronal.
 
-Afortunadamente, la investigación en redes neuronales ha permitido ir soslayando muchos de los problemas que presenta el entrenamiento.
+Afortunadamente, la investigación en redes neuronales ha permitido ir soslayando muchos de los problemas que presenta su entrenamiento.
 """
 
 # ╔═╡ d004b013-c9e7-46ee-9401-a71640195c8e
 md"""
 ## Inizialización de Xavier Glorot y Yoshua Bengio
 
-Xavier Glorot y Yoshua Bengio publicaron un [trabajo](https://proceedings.mlr.press/v9/glorot10a/glorot10a.pdf) donde presentaban sus conclusiones sobre la influencia de la inicialización de los pesos de una red neuronal.
+Xavier Glorot y Yoshua Bengio publicaron un [trabajo](https://proceedings.mlr.press/v9/glorot10a/glorot10a.pdf) donde presentaban sus conclusiones sobre la influencia de la inicialización de los pesos de una red neuronal en.
 
 Llegaron a la conclusión de que una buena estrategia es iniciar los pesos de cada capa de tal modo que sigan una distribución normal centrada en el origen y con desviación estándar: 
 
@@ -747,9 +747,9 @@ PlutoUI = "~0.7.61"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.11.7"
+julia_version = "1.12.6"
 manifest_format = "2.0"
-project_hash = "5139db81aba693c3511c5df5f50843e3b4fead41"
+project_hash = "09852c599152bb268453a95b34a5fd44473babf8"
 
 [[deps.AbstractFFTs]]
 deps = ["LinearAlgebra"]
@@ -967,7 +967,7 @@ weakdeps = ["Dates", "LinearAlgebra"]
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.1.1+0"
+version = "1.3.0+1"
 
 [[deps.CompositionsBase]]
 git-tree-sha1 = "802bb88cd69dfd1509f6670416bd4434015693ad"
@@ -1073,7 +1073,7 @@ version = "0.9.4"
 [[deps.Downloads]]
 deps = ["ArgTools", "FileWatching", "LibCURL", "NetworkOptions"]
 uuid = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
-version = "1.6.0"
+version = "1.7.0"
 
 [[deps.EnzymeCore]]
 git-tree-sha1 = "0cdb7af5c39e92d78a0ee8d0a447d32f7593137e"
@@ -1379,6 +1379,11 @@ git-tree-sha1 = "eac1206917768cb54957c65a615460d87b455fc1"
 uuid = "aacddb02-875f-59d6-b918-886e6ef4fbf8"
 version = "3.1.1+0"
 
+[[deps.JuliaSyntaxHighlighting]]
+deps = ["StyledStrings"]
+uuid = "ac6e5ff7-fb65-4e79-a425-ec3bc9c03011"
+version = "1.12.0"
+
 [[deps.JuliaVariables]]
 deps = ["MLStyle", "NameResolution"]
 git-tree-sha1 = "49fb3cb53362ddadb4415e9b73926d6b40709e70"
@@ -1472,24 +1477,24 @@ uuid = "b27032c2-a3e7-50c8-80cd-2d36dbcbfd21"
 version = "0.6.4"
 
 [[deps.LibCURL_jll]]
-deps = ["Artifacts", "LibSSH2_jll", "Libdl", "MbedTLS_jll", "Zlib_jll", "nghttp2_jll"]
+deps = ["Artifacts", "LibSSH2_jll", "Libdl", "OpenSSL_jll", "Zlib_jll", "nghttp2_jll"]
 uuid = "deac9b47-8bc7-5906-a0fe-35ac56dc84c0"
-version = "8.6.0+0"
+version = "8.15.0+0"
 
 [[deps.LibGit2]]
-deps = ["Base64", "LibGit2_jll", "NetworkOptions", "Printf", "SHA"]
+deps = ["LibGit2_jll", "NetworkOptions", "Printf", "SHA"]
 uuid = "76f85450-5226-5b5a-8eaa-529ad045b433"
 version = "1.11.0"
 
 [[deps.LibGit2_jll]]
-deps = ["Artifacts", "LibSSH2_jll", "Libdl", "MbedTLS_jll"]
+deps = ["Artifacts", "LibSSH2_jll", "Libdl", "OpenSSL_jll"]
 uuid = "e37daf67-58a4-590a-8e99-b0245dd2ffc5"
-version = "1.7.2+0"
+version = "1.9.0+0"
 
 [[deps.LibSSH2_jll]]
-deps = ["Artifacts", "Libdl", "MbedTLS_jll"]
+deps = ["Artifacts", "Libdl", "OpenSSL_jll"]
 uuid = "29816b5a-b9ab-546f-933c-edad1886dfa8"
-version = "1.11.0+1"
+version = "1.11.3+1"
 
 [[deps.Libdl]]
 uuid = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
@@ -1534,7 +1539,7 @@ version = "2.41.0+0"
 [[deps.LinearAlgebra]]
 deps = ["Libdl", "OpenBLAS_jll", "libblastrampoline_jll"]
 uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
-version = "1.11.0"
+version = "1.12.0"
 
 [[deps.LogExpFunctions]]
 deps = ["DocStringExtensions", "IrrationalConstants", "LinearAlgebra"]
@@ -1636,7 +1641,7 @@ uuid = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
 version = "0.5.15"
 
 [[deps.Markdown]]
-deps = ["Base64"]
+deps = ["Base64", "JuliaSyntaxHighlighting", "StyledStrings"]
 uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
 version = "1.11.0"
 
@@ -1647,7 +1652,8 @@ uuid = "739be429-bea8-5141-9913-cc70e7f3736d"
 version = "1.1.9"
 
 [[deps.MbedTLS_jll]]
-deps = ["Artifacts", "Libdl"]
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "926c6af3a037c68d02596a44c22ec3595f5f760b"
 uuid = "c8ffd9c3-330d-5841-b78e-0817d7145fa1"
 version = "2.28.6+0"
 
@@ -1674,7 +1680,7 @@ version = "1.11.0"
 
 [[deps.MozillaCACerts_jll]]
 uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
-version = "2023.12.12"
+version = "2025.11.4"
 
 [[deps.NNlib]]
 deps = ["Adapt", "Atomix", "ChainRulesCore", "GPUArraysCore", "KernelAbstractions", "LinearAlgebra", "Random", "ScopedValues", "Statistics"]
@@ -1714,7 +1720,7 @@ version = "0.1.5"
 
 [[deps.NetworkOptions]]
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
-version = "1.2.0"
+version = "1.3.0"
 
 [[deps.Ogg_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -1731,12 +1737,12 @@ version = "0.2.9"
 [[deps.OpenBLAS_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
-version = "0.3.27+1"
+version = "0.3.29+0"
 
 [[deps.OpenLibm_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "05823500-19ac-5b8b-9628-191a04bc5112"
-version = "0.8.5+0"
+version = "0.8.7+0"
 
 [[deps.OpenSSL]]
 deps = ["BitFlags", "Dates", "MozillaCACerts_jll", "OpenSSL_jll", "Sockets"]
@@ -1745,10 +1751,9 @@ uuid = "4d8831e6-92b7-49fb-bdf8-b643e874388c"
 version = "1.4.3"
 
 [[deps.OpenSSL_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "9216a80ff3682833ac4b733caa8c00390620ba5d"
+deps = ["Artifacts", "Libdl"]
 uuid = "458c3c95-2e84-50aa-8efc-19380b2a3a95"
-version = "3.5.0+0"
+version = "3.5.4+0"
 
 [[deps.OpenSpecFun_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl"]
@@ -1786,7 +1791,7 @@ version = "1.8.0"
 [[deps.PCRE2_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "efcefdf7-47ab-520b-bdef-62a2eaa19f15"
-version = "10.42.0+1"
+version = "10.44.0+1"
 
 [[deps.Pango_jll]]
 deps = ["Artifacts", "Cairo_jll", "Fontconfig_jll", "FreeType2_jll", "FriBidi_jll", "Glib_jll", "HarfBuzz_jll", "JLLWrappers", "Libdl"]
@@ -1821,7 +1826,7 @@ version = "0.44.2+0"
 [[deps.Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "Random", "SHA", "TOML", "Tar", "UUIDs", "p7zip_jll"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
-version = "1.11.0"
+version = "1.12.1"
 weakdeps = ["REPL"]
 
     [deps.Pkg.extensions]
@@ -1941,7 +1946,7 @@ uuid = "e99dba38-086e-5de3-a5b1-6e4c66e897c3"
 version = "6.7.1+1"
 
 [[deps.REPL]]
-deps = ["InteractiveUtils", "Markdown", "Sockets", "StyledStrings", "Unicode"]
+deps = ["InteractiveUtils", "JuliaSyntaxHighlighting", "Markdown", "Sockets", "StyledStrings", "Unicode"]
 uuid = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
 version = "1.11.0"
 
@@ -2046,7 +2051,7 @@ version = "1.2.1"
 [[deps.SparseArrays]]
 deps = ["Libdl", "LinearAlgebra", "Random", "Serialization", "SuiteSparse_jll"]
 uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
-version = "1.11.0"
+version = "1.12.0"
 
 [[deps.SparseInverseSubset]]
 deps = ["LinearAlgebra", "SparseArrays", "SuiteSparse"]
@@ -2139,7 +2144,7 @@ uuid = "4607b0f0-06f3-5cda-b6b1-a6196a1729e9"
 [[deps.SuiteSparse_jll]]
 deps = ["Artifacts", "Libdl", "libblastrampoline_jll"]
 uuid = "bea87d4a-7f5b-5778-9afe-8cc45184846c"
-version = "7.7.0+0"
+version = "7.8.3+2"
 
 [[deps.TOML]]
 deps = ["Dates"]
@@ -2435,7 +2440,7 @@ version = "1.6.0+0"
 [[deps.Zlib_jll]]
 deps = ["Libdl"]
 uuid = "83775a58-1f1d-513f-b197-d71354ab007a"
-version = "1.2.13+1"
+version = "1.3.1+2"
 
 [[deps.Zstd_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -2500,7 +2505,7 @@ version = "0.15.2+0"
 [[deps.libblastrampoline_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
-version = "5.11.0+0"
+version = "5.15.0+0"
 
 [[deps.libdecor_jll]]
 deps = ["Artifacts", "Dbus_jll", "JLLWrappers", "Libdl", "Libglvnd_jll", "Pango_jll", "Wayland_jll", "xkbcommon_jll"]
@@ -2547,12 +2552,12 @@ version = "1.1.6+0"
 [[deps.nghttp2_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850ede-7688-5339-a07c-302acd2aaf8d"
-version = "1.59.0+0"
+version = "1.64.0+1"
 
 [[deps.p7zip_jll]]
-deps = ["Artifacts", "Libdl"]
+deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
-version = "17.4.0+2"
+version = "17.7.0+0"
 
 [[deps.x264_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -2574,73 +2579,73 @@ version = "1.4.1+2"
 """
 
 # ╔═╡ Cell order:
-# ╟─df43ffce-2be1-11f0-1bda-8d3f50a5cd86
-# ╟─791aa17b-6568-4482-a873-059bcb5ae495
-# ╟─e2047545-ec0a-4a45-804d-d288ccbb6821
-# ╟─d23ddd1e-462c-4729-b981-1c9a0cd0c51a
-# ╟─ef0e2a6e-61df-449a-86aa-6c87f63012b3
-# ╟─81e2d1e0-6828-4b27-84a5-db17b530af4e
-# ╟─29a782b7-174d-453a-8aa3-81fe5f507dc2
-# ╟─1b20f4e3-cf2a-4cbf-b1d9-ad090acf19be
-# ╟─8f9e676c-76c8-474b-ab0a-60424d8cb889
-# ╟─d696f0f6-e1ea-4b74-b877-0df4cd6b6e80
-# ╟─bb10f84f-3a9c-4e20-a46b-e5bb7eeb1c00
-# ╟─fb1079c3-9b84-4465-ac1a-8d2b5c97a737
-# ╟─81edc5f0-8524-4bc3-81b4-783b5573231f
-# ╟─79f24aba-6558-4c1b-9a49-ec0aac882b7f
-# ╟─5e97581b-9ad9-4fa4-a3da-edd39a12b33c
-# ╟─ac626f1a-9734-4411-b53d-d9fd1e052107
-# ╟─45377114-9651-434f-bdd3-d4e55fa687b0
-# ╟─80dff863-f6fd-4387-8b6a-dc070fded37d
-# ╟─5250cf91-68f1-4798-a021-cc6cee8b77bd
-# ╟─7cbbb35f-40c9-498f-b729-fc084fc123b1
-# ╟─811d9d9f-597e-4124-8f34-39db388ad3ca
-# ╟─d004b013-c9e7-46ee-9401-a71640195c8e
-# ╟─651dd381-f11c-47c7-b570-ecdaaea02736
-# ╟─82ce513b-1e2a-45e0-8d1e-255d9e33d5b9
-# ╟─8f3ffd98-aaf4-4913-b168-a53af6e26fae
-# ╟─fd2f4ccc-651f-4450-b209-5b24bdb0a77c
-# ╟─6f4c4720-fc74-401f-a0f3-8adc75b8864e
-# ╟─5295ef71-d786-4fcd-bb31-17ce45e9ef66
+# ╠═df43ffce-2be1-11f0-1bda-8d3f50a5cd86
+# ╠═791aa17b-6568-4482-a873-059bcb5ae495
+# ╠═e2047545-ec0a-4a45-804d-d288ccbb6821
+# ╠═d23ddd1e-462c-4729-b981-1c9a0cd0c51a
+# ╠═ef0e2a6e-61df-449a-86aa-6c87f63012b3
+# ╠═81e2d1e0-6828-4b27-84a5-db17b530af4e
+# ╠═29a782b7-174d-453a-8aa3-81fe5f507dc2
+# ╠═1b20f4e3-cf2a-4cbf-b1d9-ad090acf19be
+# ╠═8f9e676c-76c8-474b-ab0a-60424d8cb889
+# ╠═d696f0f6-e1ea-4b74-b877-0df4cd6b6e80
+# ╠═bb10f84f-3a9c-4e20-a46b-e5bb7eeb1c00
+# ╠═fb1079c3-9b84-4465-ac1a-8d2b5c97a737
+# ╠═81edc5f0-8524-4bc3-81b4-783b5573231f
+# ╠═79f24aba-6558-4c1b-9a49-ec0aac882b7f
+# ╠═5e97581b-9ad9-4fa4-a3da-edd39a12b33c
+# ╠═ac626f1a-9734-4411-b53d-d9fd1e052107
+# ╠═45377114-9651-434f-bdd3-d4e55fa687b0
+# ╠═80dff863-f6fd-4387-8b6a-dc070fded37d
+# ╠═5250cf91-68f1-4798-a021-cc6cee8b77bd
+# ╠═7cbbb35f-40c9-498f-b729-fc084fc123b1
+# ╠═811d9d9f-597e-4124-8f34-39db388ad3ca
+# ╠═d004b013-c9e7-46ee-9401-a71640195c8e
+# ╠═651dd381-f11c-47c7-b570-ecdaaea02736
+# ╠═82ce513b-1e2a-45e0-8d1e-255d9e33d5b9
+# ╠═8f3ffd98-aaf4-4913-b168-a53af6e26fae
+# ╠═fd2f4ccc-651f-4450-b209-5b24bdb0a77c
+# ╠═6f4c4720-fc74-401f-a0f3-8adc75b8864e
+# ╠═5295ef71-d786-4fcd-bb31-17ce45e9ef66
 # ╠═ab963580-9df7-4b1f-aa51-1b1daf4c0f35
-# ╟─c6828162-a386-41c8-be5b-6e07500f9165
-# ╟─55f16b63-6975-47fd-a302-4b6328ea64b3
-# ╟─ff84dc4f-b7b8-4f88-aae3-560f804b4d53
-# ╟─02be6027-17bd-41b2-bbc4-0fb1ef63a3f2
-# ╟─06248358-ab2e-4d67-a4ca-86581b53163e
-# ╟─029c67cc-4bd8-4219-95db-ea348f2d1c1f
-# ╟─a12cab4d-37b5-442c-8362-58f3aa09e003
-# ╟─85b3566b-4760-430d-9643-950ed7d772c5
-# ╟─5604ad1a-fcc4-4d07-977d-334577badf12
-# ╟─e82394c8-5549-4f0b-8148-aceabcd6e01f
-# ╟─f652d0a5-b914-49e0-a1ab-3ad0a0963e1e
-# ╟─b8909385-43d3-45cb-8ea0-12f51a5fb0be
-# ╟─0cc06ba9-501b-48ef-b216-dca5f67414c0
-# ╟─f48329e3-28e7-436a-b9da-3bdc83ea10e4
-# ╟─1988fba8-e08f-4ac8-977a-d822b22fb899
-# ╟─3044eeb0-5a72-475f-ab53-40113c3d3449
-# ╟─c8c1e960-08a5-47ea-90ee-322c7703f4df
-# ╟─4d4a1c19-a4df-43c6-af65-53dbf21a5bf5
-# ╟─fb2d1666-1100-43c9-9550-2978f150235d
-# ╟─28aafcb6-9294-433c-8bee-e634b0ee58ec
-# ╟─b936e349-2b69-4e86-a7c2-5faa709052ab
-# ╟─eeefc485-e198-4f17-9d4c-7c61e34fe229
-# ╟─5b04ee1f-f136-4c29-a44f-a075bbb1376b
-# ╟─1132a848-a855-4c8b-bf41-1ec22a216012
-# ╟─a3e2f24b-9275-4e18-918e-18fc7d2b23e0
-# ╟─8aef99fc-fe2b-4f3c-81ab-fcf2d62a3d26
-# ╟─c87c39d7-fbc7-43dc-9eaa-55bc37bc3be1
-# ╟─f5bc89bb-68f6-46b2-99ca-2ea045407be5
-# ╟─e04486c9-b22e-496c-8ea2-e737bdfb3a5e
-# ╟─c6b3c409-8aab-4748-9f24-c00719c494de
-# ╟─1fa7817d-dbd1-42ff-af84-d72aa18c981a
-# ╟─16e100d9-145a-4d50-9f95-acb4e8ab8a3f
-# ╟─b424f4c0-3a65-45b2-aa95-326eb00180c8
-# ╟─53eaee3b-d022-4cae-acc6-d982b83c2d2d
-# ╟─d72df279-51b9-4df0-bf36-6c610c91e0a1
-# ╟─8026d340-a5c3-4b7d-954f-d36fe2f5dbd5
-# ╟─06801c1f-e27c-4abd-910f-9055159f3716
-# ╟─23c6e0f5-dd40-42de-8861-5b3627832a71
-# ╟─d534d906-f2b4-45e2-9071-58b693bed2a4
+# ╠═c6828162-a386-41c8-be5b-6e07500f9165
+# ╠═55f16b63-6975-47fd-a302-4b6328ea64b3
+# ╠═ff84dc4f-b7b8-4f88-aae3-560f804b4d53
+# ╠═02be6027-17bd-41b2-bbc4-0fb1ef63a3f2
+# ╠═06248358-ab2e-4d67-a4ca-86581b53163e
+# ╠═029c67cc-4bd8-4219-95db-ea348f2d1c1f
+# ╠═a12cab4d-37b5-442c-8362-58f3aa09e003
+# ╠═85b3566b-4760-430d-9643-950ed7d772c5
+# ╠═5604ad1a-fcc4-4d07-977d-334577badf12
+# ╠═e82394c8-5549-4f0b-8148-aceabcd6e01f
+# ╠═f652d0a5-b914-49e0-a1ab-3ad0a0963e1e
+# ╠═b8909385-43d3-45cb-8ea0-12f51a5fb0be
+# ╠═0cc06ba9-501b-48ef-b216-dca5f67414c0
+# ╠═f48329e3-28e7-436a-b9da-3bdc83ea10e4
+# ╠═1988fba8-e08f-4ac8-977a-d822b22fb899
+# ╠═3044eeb0-5a72-475f-ab53-40113c3d3449
+# ╠═c8c1e960-08a5-47ea-90ee-322c7703f4df
+# ╠═4d4a1c19-a4df-43c6-af65-53dbf21a5bf5
+# ╠═fb2d1666-1100-43c9-9550-2978f150235d
+# ╠═28aafcb6-9294-433c-8bee-e634b0ee58ec
+# ╠═b936e349-2b69-4e86-a7c2-5faa709052ab
+# ╠═eeefc485-e198-4f17-9d4c-7c61e34fe229
+# ╠═5b04ee1f-f136-4c29-a44f-a075bbb1376b
+# ╠═1132a848-a855-4c8b-bf41-1ec22a216012
+# ╠═a3e2f24b-9275-4e18-918e-18fc7d2b23e0
+# ╠═8aef99fc-fe2b-4f3c-81ab-fcf2d62a3d26
+# ╠═c87c39d7-fbc7-43dc-9eaa-55bc37bc3be1
+# ╠═f5bc89bb-68f6-46b2-99ca-2ea045407be5
+# ╠═e04486c9-b22e-496c-8ea2-e737bdfb3a5e
+# ╠═c6b3c409-8aab-4748-9f24-c00719c494de
+# ╠═1fa7817d-dbd1-42ff-af84-d72aa18c981a
+# ╠═16e100d9-145a-4d50-9f95-acb4e8ab8a3f
+# ╠═b424f4c0-3a65-45b2-aa95-326eb00180c8
+# ╠═53eaee3b-d022-4cae-acc6-d982b83c2d2d
+# ╠═d72df279-51b9-4df0-bf36-6c610c91e0a1
+# ╠═8026d340-a5c3-4b7d-954f-d36fe2f5dbd5
+# ╠═06801c1f-e27c-4abd-910f-9055159f3716
+# ╠═23c6e0f5-dd40-42de-8861-5b3627832a71
+# ╠═d534d906-f2b4-45e2-9071-58b693bed2a4
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
