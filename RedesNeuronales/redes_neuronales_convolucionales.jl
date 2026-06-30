@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.24
+# v1.0.1
 
 using Markdown
 using InteractiveUtils
@@ -45,7 +45,7 @@ Resource(
 md"""
 ## Introducción
 
-* Las redes neuronales convolucionales están inspiradas en cómo funciona la visión humana.
+* Las redes neuronales convolucionales están inspiradas en el funcionamiento de la visión humana.
 * Las redes convolucionales trabajan con imágenes, aunque se pueden utilizar en otros ámbitos.
 * Las redes convolucionales son capaces de «reconocer» la relación entre regiones de una imagen, también entre secuencias temporales de imágenes si lo que se analiza es una secuencia de vídeo.
 """
@@ -142,16 +142,16 @@ md"""
 
 Las tareas típicas dentro de la visión por computador son:
 
-* Clasificación de imágenes. Por ejemplo indicar si la imagen es de una persona, un coche o una señal de tráfico.
-* Detección de objetos en una imagen. Enumerar todos los objetos que aparecen en una imagen
-* Ubicación de objetos dentro de una imagen. Encuadrar cada uno de los objetos reconocidos en una imagen.
-* Seguimiento de objetos en secuencias de imágenes. Seguir un determinado objeto (por ejemplo un coche) en un vídeo.
-* Segmentación semántica de los objetos de una imagen. Asignar cada pixel de una imagen a cada uno de los objetos que se han reconocido en la imagen.
+* Clasificar imágenes. Por ejemplo indicar si la imagen es de una persona, un coche o una señal de tráfico.
+* Detectar objetos en una imagen. Enumerar todos los objetos que aparecen en una imagen
+* Ubicar de objetos dentro de una imagen. Encuadrar cada uno de los objetos reconocidos en una imagen.
+* Seguir objetos en secuencias de imágenes. Seguir un determinado objeto (por ejemplo un coche) en un vídeo.
+* Segmentar los objetos de una imagen. Asignar cada pixel de una imagen a cada uno de los objetos que se han reconocido en la imagen.
 """
 
 # ╔═╡ d59746f5-4d77-45cc-b57e-f70c7bf12c2e
 md"""
-## Clasificación
+## Clasificar
 
 Un modelo de clasificación de visión por ordenador está entrenado de tal modo que 
 es capaz de asignar una clase, o etiqueta, a una nueva imagen.
@@ -178,7 +178,7 @@ Columns("Gato", "Perro")
 
 # ╔═╡ 57dad7fb-d2cf-4063-a7df-1d66216ec1c6
 md"""
-## Detección de objetos
+## Detectar objetos
 
 Encontrar todos los objetos dentro de una imagen:
 """
@@ -193,7 +193,8 @@ Resource(
 
 # ╔═╡ 0eaa405e-3a79-4c17-b9ea-52b16c1be54b
 md"""
-## Detección de objetos
+## Detectar objetos
+
 Encontrar todos los objetos dentro de una imagen:
 """
 
@@ -207,7 +208,7 @@ Resource(
 
 # ╔═╡ 60734849-05bb-4c6a-a8e3-9bde5ab210b4
 md"""
-## Seguimiento de objetos
+## Seguir objetos
 """
 
 # ╔═╡ 6d895aff-98da-485a-9a4e-43f9862a5630
@@ -215,7 +216,7 @@ YouTube("cHDLvp_NPOk")
 
 # ╔═╡ 1b8609a0-11b8-4695-9de2-bc87dbc7ec92
 md"""
-## Segmentación semántica
+## Segmentar
 
 Asigna cada pixel a uno de los objetos detectados.
 """
@@ -237,7 +238,7 @@ md"""
 md"""
 ## Convoluciones
 
-Una convolución es una operación sobre los píxeles de una imagen. La operación se aplica a grupos contiguos de píxeles en la imagen, y la operación se va _desplazando_ sobre los píxeles de la imagen.
+Una convolución es una operación sobre los píxeles de una imagen. La operación se aplica a grupos contiguos de píxeles en la imagen, y la operación se va *deslizando* sobre los píxeles de la imagen.
 
 En los dos casos siguientes, el desplazamiento es de 1 pixel sobre la imagen. La figura de la derecha muestra la opción con márgenes añadidos.
 
@@ -392,7 +393,7 @@ Fuente: Wikipedia
 md"""
 ## Convoluciones
 
-Lo que va a _aprender_ la red convolucional es a ajustar los valores de las matrices de convolución para llevar a cabo la tarea para la que sea entrenada: clasificación, segmentación, etc.
+*Aprender* para una red convolucional significa ajustar los valores de las matrices de convolución para llevar a cabo la tarea para la que sea entrenada: clasificación, segmentación, etc.
 
 ```math
 \begin{equation}
@@ -550,7 +551,7 @@ Fuente: Yann LeCunn et al.
 md"""
 ## LeNet5
 
-La implementación de la red utilizando Flux:
+La implementación de la red utilizando Flux es muy sencilla:
 
 ```julia
 lenet5 = Chain(
@@ -673,7 +674,7 @@ Resource(
 md"""
 ## LeNet5
 
-Este es el vídeo donde un joven LeCun y su equipo muestran cómo trabaja la rede neuronal.
+Este es el vídeo donde un joven LeCun y su equipo muestran cómo trabaja la red neuronal que han creado.
 """
 
 # ╔═╡ 528c23a5-3a0a-4fcc-99eb-90d9a01ff3df
@@ -1065,7 +1066,7 @@ ShortCodes = "~0.3.6"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.12.4"
+julia_version = "1.12.6"
 manifest_format = "2.0"
 project_hash = "7a569f1efe044287c9fcf980287e2d7e96f0bb69"
 
