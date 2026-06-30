@@ -76,15 +76,11 @@ dificultaban un entrenamiento eficiente.
 md"""
 ## Introducción
 
-El entrenamiento de las redes neuronales es muy delicado, sobre todo, cuando 
-tienen muchas capas.
+El entrenamiento de las redes neuronales es muy delicado, sobre todo, cuando las redes neuronales tienen muchas capas.
 
-Poco a poco se ha encontrado un serie de técnicas que hacen posible que se 
-puedan entrenar las redes neuronales de un modo cada vez más eficiente y efectivo.
+Poco a poco se ha encontrado un serie de técnicas que hacen posible que se puedan entrenar las redes neuronales de un modo cada vez más eficiente y efectivo.
 
-En esta presentación se muestran algunos de los problemas más comunes 
-durante la fase de entrenamiento de una red neuronal profunda, y algunas de 
-las técnicas más utilizadas para soslayar estos problemas.
+En esta presentación se muestran algunos de los problemas más comunes durante la fase de entrenamiento de una red neuronal profunda, y algunas de las técnicas más utilizadas para soslayar estos problemas.
 """
 
 # ╔═╡ ac626f1a-9734-4411-b53d-d9fd1e052107
@@ -145,7 +141,7 @@ Afortunadamente, la investigación en redes neuronales ha permitido ir soslayand
 md"""
 ## Inizialización de Xavier Glorot y Yoshua Bengio
 
-Xavier Glorot y Yoshua Bengio publicaron un [trabajo](https://proceedings.mlr.press/v9/glorot10a/glorot10a.pdf) donde presentaban sus conclusiones sobre la influencia de la inicialización de los pesos de una red neuronal en.
+Xavier Glorot y Yoshua Bengio publicaron un [trabajo](https://proceedings.mlr.press/v9/glorot10a/glorot10a.pdf) donde presentaban sus conclusiones sobre la influencia de la inicialización de los pesos de una red neuronal.
 
 Llegaron a la conclusión de que una buena estrategia es iniciar los pesos de cada capa de tal modo que sigan una distribución normal centrada en el origen y con desviación estándar: 
 
@@ -174,9 +170,10 @@ Estas estrategias funcionan bien con las funciones de activación:
 md"""
 ## Inizialización de Xavier Glorot y Yoshua Bengio
 
-!!! danger "Atención"
+!!! info "Atención"
+	En el manual de Flux podemos leer:
 
-Flux initialises convolutional layers and recurrent cells with **glorot_uniform** by default. Most layers accept a function as an **init** keyword, which replaces this default.
+	"Flux initialises convolutional layers and recurrent cells with **glorot_uniform** by default. Most layers accept a function as an **init** keyword, which replaces this default."
 """
 
 # ╔═╡ 8f3ffd98-aaf4-4913-b168-a53af6e26fae
@@ -209,7 +206,7 @@ Como ya sabemos, si sólo sumamos las entradas de una red neuronal multiplicadas
 
 Las funciones de activación permiten tener salidas no lineales.
 
-La función sigmoide fue muy utilizada al inicio de la investigación en redes neuronales profundas, pero, paulatinamente ha cedido el puesto a otras funciones de activación que han demostrado mejor comportamiento en la práctica.
+La función sigmoide fue muy utilizada al inicio de la investigación en redes neuronales profundas, pero, paulatinamente ha cedido el puesto a otras funciones de activación que en la práctica han demostrado mejor comportamiento.
 """
 
 # ╔═╡ 5295ef71-d786-4fcd-bb31-17ce45e9ef66
@@ -300,7 +297,7 @@ Mish $= x \cdot tanh(softplus(x))$
 
 Y algunas más.
 
-La función de activación **tanh** suele ser un buen principio. La función **ReLU** funciona muy bien en la mayoría de los casos.
+Las funciones de activación **sigmoide** y **tanh** suelen ser un buen principio, te pueden servir como caso base. La función **ReLU** funciona muy bien en la mayoría de los casos.
 
 Puedes encontrar todas la funciones de activación que hay implementadas en Flux en la [documentación](https://fluxml.ai/Flux.jl/stable/reference/models/activation/)
 """
@@ -344,7 +341,7 @@ Han aparecido variaciones del descenso del gradiente. Una de ellas es la de [Bor
 $m^i = \beta m^{i-1} - \eta \nabla_\theta \mathcal{L}$
 $\theta^{i+1} = \theta^i + m^{i}$
 
-Con esta técnica de entrenamiento, el incremento tiene en cuenta el gradiente el gradiente en el paso anterior.
+Con esta técnica de entrenamiento, el incremento tiene en cuenta el gradiente en el paso anterior $m^{i-1}$ en la actualización del nuevo gradiente $m^i$.
 
 Un valor _típico_ para $\beta = 0.9$.
 """
@@ -353,7 +350,7 @@ Un valor _típico_ para $\beta = 0.9$.
 md"""
 ## Nesterov Accelerated Gradient
 
-La [propuesta de Nesterov](https://hengshuaiyao.github.io/papers/nesterov83.pdf) es calcular el gradiente no en el punto actual sino en un punto avanzado en la dirección del gradiente:
+La [propuesta de Nesterov](https://hengshuaiyao.github.io/papers/nesterov83.pdf) es calcular el gradiente no en el punto actual sino en un punto avanzado en la dirección del gradiente, además de mantener el término de *momentum*:
 
 $m^i = \beta m^{i-1} - \eta \nabla_\theta \mathcal{L(\theta + \beta m^{i-1})}$
 $\theta^{i+1} = \theta^i + m^{i}$
@@ -383,7 +380,7 @@ optimizador ampliamente utilizado por sus buenos resultados.
 
 $m \leftarrow \beta_1 m - (1 - \beta_1)\nabla_\theta \mathcal{L(\theta)}$
 $s \leftarrow \beta_2 s + (1 - \beta_2) \nabla_\theta \mathcal{L(\theta)} \otimes 
-$\nabla_\theta \mathcal{L(\theta)}$
+\nabla_\theta \mathcal{L(\theta)}$
 $\hat{m} \leftarrow \frac{m}{1 - \beta_1^t}$
 $\hat{s} \leftarrow \frac{s}{1 - \beta_2^t}$
 $\theta \leftarrow \theta + \eta \hat{m} \otimes \sqrt{\hat{s} + \epsilon}$
@@ -395,7 +392,7 @@ md"""
 
 Puedes encontrar todos los optimizadores que hay implementados en Flux en la [documentación](https://fluxml.ai/Flux.jl/stable/reference/training/optimisers/).
 
-Una tabla orientativa para selección el optimizador:
+Esta tabla es orientativa y la puedes utilizar para seleccionar el optimizador:
 
 | Optimizador | Velocidad | Calidad convergencia |
 |-------------|:---------:|:--------------------:|
@@ -448,7 +445,7 @@ que se suele utilizar en combinación con un optimizador utilizando un **Optimis
 opt = OptimiserChain(ClipGrad(1e-3), Adam(1e-3))
 ```
 
-En este caso, después de calcular los gradiente de una capa, si alguno de ellos supera el umbral $1e-3$ se le asignará a ese gradiente en particular el valor este umbral.
+En este caso, después de calcular los gradiente de una capa, si alguno de ellos supera el umbral $1e-3$ se le asignará a ese gradiente en particular el valor de este umbral.
 """
 
 # ╔═╡ 4d4a1c19-a4df-43c6-af65-53dbf21a5bf5
@@ -469,7 +466,7 @@ También vimos lo delicado que es la elección de su valor, si la tasa de aprend
 md"""
 ## Introducción
 
-Muchas veces es más interesante definir una estrategia para ir adaptando el valor de la tasa de aprendizaje al avance del aprendizaje de manera que, si se puede avanzar rápidamente porque nos encontramos lejos de la solución, asignamos un valor alto a la tasa de aprendizaje, y conforme nos acercamos al mínimo vamos disminuyendo la tasa de aprendizaje para que el descenso de gradiente converja.
+Muchas veces es más interesante definir una estrategia para ir adaptando el valor de la tasa de aprendizaje al avance del aprendizaje de manera que, si se puede avanzar rápidamente porque nos encontramos lejos de la solución, asignamos un valor alto a la tasa de aprendizaje, y a medida que nos acercamos al mínimo vamos disminuyendo la tasa de aprendizaje.
 
 Y esta estrategia la podemos añadir de modo combinado con el optimizador.
 
@@ -501,7 +498,7 @@ En julia lo utilizamos del siguiente modo:
 optimizador = Scheduler(Descent, Exp(start = 1e-2, decay = 0.8))
 ```
 
-donde estamos utilizando SGD (Descent) como optimizador, y cambiando la tasa de aprendizaje con Exp().
+donde estamos utilizando SGD (Descent) como optimizador, y cambiando la tasa de aprendizaje con la función exponencial Exp().
 """
 
 # ╔═╡ 1132a848-a855-4c8b-bf41-1ec22a216012
@@ -513,7 +510,7 @@ md"""
 md"""
 ## Introducción
 
-Como ya sabemos, durante la fase de entrenamiento el modelo creado puede ajustar excesivamente los datos de entrenamiento (**overftting**), pero puede no trabajar tan bien con nuevos datos.
+Como ya sabemos, durante la fase de entrenamiento el modelo creado puede ajustar excesivamente los datos de entrenamiento, pero puede no trabajar tan bien con nuevos datos (**overftting**).
 
 Para evitarlo, como ya hicimos en el caso de la regresión polinómica, empleamos la regularización.
 """
@@ -549,7 +546,7 @@ md"""
 
 Es [una idea](https://arxiv.org/pdf/1207.0580) muy sencilla que suele mejorar el rendimiento de las redes neuronales y evitar el sobreajuste.
 
-La idea es **desactivar** algunas neuronas, en toda la red. 
+La idea es **desactivar** algunas neuronas, en toda la red, en cada paso de entrenamiento. 
 
 En cada paso del entrenamiento, se selecciona un porcentaje de neuronas de la red y se desactivan, es decir, se actúa como si no existiensen.
 
@@ -650,7 +647,7 @@ Normaliza las entradas antes de la segunda capa densa. El resultado es que se ev
 md"""
 ## Capas de Dropout
 
-**Desactivan** un porcentaje de neuronas durante la fase de entrenamiento:
+Las capas de Dropout desactivan un porcentaje de neuronas durante la fase de entrenamiento:
 
 ```.julia
 Dropout(0.2)
