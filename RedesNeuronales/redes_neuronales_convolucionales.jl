@@ -779,7 +779,7 @@ top_class_idx = argmax(probabilities)
 println("Predicted class: $(labels[top_class_idx]) with probability $(probabilities[top_class_idx])")
 ```
 
-En el [github](https://github.com/AprendizajeAutomaticoUJI/Teoria/blob/main/RedesNeuronales/EjemplosRedesNeuronales/resnet_metalhead.jl) de la asignatura tienes un ejemplo de cómo utiliar ResNet.
+En el [github](https://github.com/AprendizajeAutomaticoUJI/Teoria/blob/main/RedesNeuronales/Ejemplos/resnet_metalhead.jl) de la asignatura tienes un ejemplo de cómo utiliar ResNet.
 """
 
 # ╔═╡ 9bbd7f5a-7279-42c4-977f-753cee52be32
@@ -914,7 +914,7 @@ Entrenar una red neuronal desde cero es una tarea muy costosa. Estos son algunos
 * Se necesita un conjunto de datos etiquetado muy grande (cientos de miles de imágenes).
 * Se necesitan recursos hardware que no son comunes.
 * Se necesita tiempo de entrenamiento.
-* Se necesita energía para alimentar el hardware.
+* Se necesita energía para hacer funcionar el hardware, y agua para refrigerarlo.
 
 Sin embargo, existe un _atajo_ para poder (re)entrenar redes convolucionales, ya existentes, sobre nuevos conjuntos de datos, para tareas  específicas.
 
@@ -1027,6 +1027,8 @@ Flux.unfreeze!(finetune_model.layers[1][end]) # Descongelamos la última capa.
 ```
 
 6. Entrenar de nuevo con una tasa de aprendizaje pequeña $η = 10^{-4}$ ó $η = 10^{-5}$.
+
+En este [cuaderno]() tienes una implementación completa del uso de YOLO en Julia.
 """
 
 # ╔═╡ 6f25ccbb-039e-421a-88a0-0a5396b7987a
