@@ -682,7 +682,7 @@ YouTube("FwFduRA_L6Q")
 
 # ╔═╡ f265ac2e-2014-4827-be72-3422ef6a2f11
 md"""
-En este enlace tienes una [implementación de LeNet5](https://github.com/AprendizajeAutomaticoUJI/Teoria/blob/main/RedesNeuronales/EjemplosRedesNeuronales/lenet5.jl).
+En este enlace tienes una [implementación de LeNet5](https://github.com/AprendizajeAutomaticoUJI/Teoria/blob/main/RedesNeuronales/Ejemplos/lenet5.jl).
 """
 
 # ╔═╡ e35e23ec-fb8a-480b-9904-c0fd95e5fe73
