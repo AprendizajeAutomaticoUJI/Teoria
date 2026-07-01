@@ -378,7 +378,7 @@ Fuente: https://www.deep-mind.org/2023/03/26/the-universal-approximation-theorem
 md"""
 ## Estructura de una NN
 
-En este [cuaderno](https://github.com/AprendizajeAutomaticoUJI/Teoria/blob/main/RedesNeuronales/retropropagacion.jl) puedes ver como implementar la estructura de una red neuronal en Julia.
+En este [cuaderno](https://github.com/AprendizajeAutomaticoUJI/Teoria/blob/main/RedesNeuronales/Ejemplos/retropropagacion.jl) puedes ver como implementar la estructura de una red neuronal en Julia.
 """
 
 # ╔═╡ 53e3d912-fb70-4501-817d-e8568bea9b81
