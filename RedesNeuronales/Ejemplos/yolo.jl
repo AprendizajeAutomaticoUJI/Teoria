@@ -53,7 +53,6 @@ Le pedimos a YOLO que prepare la imagen para procesarla.
 
 # ╔═╡ 65d97cba-24f3-4d7d-b2b5-adee4e35140b
 function prepara_imagen(path, yolomod, batch)
-    # img = load(path)
     img = load(download(path))
     batch[:,:,:,1], padding = prepare_image(img, yolomod) # Coloca imagen escalada en lote
 
