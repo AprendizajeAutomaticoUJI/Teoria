@@ -1080,7 +1080,7 @@ Resource(
 md"""
 ## Modelos ocultos de Markov
 
-Dentro de cada estado podemos tener un proceso aleatorio que genera el dato que se va a emitir. El proceso aleatorio es una hipótesis, por ejemplo, suponemos que el proceso aleatoria sigue una distribución de Gauss.
+Dentro de cada estado podemos tener un proceso aleatorio que genera el dato que se va a emitir. El proceso aleatorio es una hipótesis, por ejemplo, suponemos que el proceso aleatorio sigue una distribución de Gauss.
 
 Fíjate en que si no existe proceso aleatorio, es decir, si en cada estado se emite siempre el mismo valor, lo que tenemos es una cadena de Markov.
 """
