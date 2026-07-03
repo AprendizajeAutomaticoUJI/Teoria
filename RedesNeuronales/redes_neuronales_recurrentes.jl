@@ -113,7 +113,7 @@ plot_co2 = plot(co2.CO2,
 md"""
 ## Introducción
 
-Algunos otros ejemplos son los siguientes:
+Algunos otros ejemplos de series temporales son los siguientes:
 
 * La temperatura ambiente en un determinado punto depende de la temperatura en el mismo punto en un instante anterior.
 * La cotización de un valor en bolsa en un día depende de su valor en el día anterior.
@@ -133,7 +133,7 @@ Otros ejemplos donde no existe (explícitamente) componente temporal son:
 * Para traducir una palabra entre dos lenguas necesitamos todas las letras de la palabra.
 * La traducción de un texto entre dos lenguas se hace frase a frase.
 
-Si embargo, en los anteriores ejemplos sí que existe una componente posicional.
+En los ejemplos anteriores lo que existe es una componente posicional que relaciona los elementos de la secuencia.
 """
 
 # ╔═╡ ca9add85-9ecf-45c7-bb4d-b10de4a7e8ba
@@ -145,7 +145,7 @@ md"""
 md"""
 ## Series temporales
 
-Veamos, por tanto, qué es una serie temporal y qué características de interés podemos encontrar en las series de datos temporales.
+Veamos como primer caso, qué es una serie temporal y qué características de interés podemos encontrar en las series de datos temporales.
 
 Una **serie temporal** de datos es una secuencia de datos con un orden temporal.
 """
@@ -157,9 +157,9 @@ first(co2, 5)
 md"""
 ## Autocorrelación
 
-Muchas veces ocurre que los datos en una serie temporal están auto-correlacionados, existe una correlación entre una serie de datos y la misma serie desplazada en el tiempo.
+Muchas veces ocurre que los datos en una serie temporal están auto-correlacionados, existe una correlación entre la serie de datos y esa misma serie de datos desplazada en el tiempo.
 
-Dicho de otro modo, la autocorrelación es la correlación de los datos con ellos mismos cuando se les aplica un cierto desplazamiento temporal, y se pude calcular con la siguiente expresión:
+Dicho de otro modo, la autocorrelación es la correlación de los datos con ellos mismos cuando se les aplica un cierto desplazamiento temporal, y se calcula con la siguiente expresión:
 
 ```math
 R(l) = \frac{E[(x_i - \mu)(x_{i+l} - \mu)]}{\sigma^2}
@@ -175,7 +175,7 @@ md"""
 En Julia podemos calcular la autocorrelación en una serie de datos con:
 
 ```julia
-using StatsBase
+using StatsBase # Funciones estadísticas básicas
 
 autocor(serie_temporal, [retraso1, retraso2,...])
 
@@ -315,7 +315,7 @@ md"""
 
 Vamos a definir una secuencia como un conjunto ordenado con un número de elementos no determinado, podemos tener secuencias de un único elemento o de muchos elementos. Por ejemplo una secuencia temporal de datos puede tener cualquier tamaño, una frase puede tener cualquier número de letras.
 
-Por otro lado, los vectores los vamos a definir como un conjunto ordenado con un número de elementos fijo. Por ejemplo cuando clasificamos imágenes con una red convolucional, todas ellas tienen el mismo tamaño.
+Por otro lado, los vectores los vamos a definir como un conjunto ordenado con un número de elementos fijo. Por ejemplo cuando clasificamos imágenes con una red convolucional, todas las imágenes tienen el mismo tamaño.
 """
 
 # ╔═╡ 61bdb024-5186-4188-9af0-0a8b3bb09b86
@@ -486,7 +486,6 @@ La primera tarea es decidir qué tipo de red recurrente vamos a implementar:
 
 * One to many.
 * Many to one.
-* One to many.
 * Many to Many.
 
 En nuestro caso, a partir de una serie temporal de datos, queremos predecir cuál es el siguiente dato. Por lo tanto, tenemos una estructura **many to one**.
