@@ -1727,6 +1727,16 @@ regularizaciones. Si $r=1$ sólo tenemos contribución de la regularización
 Ridge, y si $r=0$ sólo tenemos contribución de la regularización Lasso.
 """
 
+# ╔═╡ 25613775-3a1a-4524-b4be-a498d40d8b33
+md"""
+# Ejemplos
+
+Aquí tienes un par de cuadernos Julia con ejemplos de cómo usar la regresión logística.
+
+1. https://github.com/AprendizajeAutomaticoUJI/Teoria/blob/main/RegresionLineal/henrietta_swan_leavitt.jl[Cálculo de distancias] a objetos celestes mediante la ley de Henrietta Swan Leavitt.
+1. 
+"""
+
 # ╔═╡ 5c0b5a16-fd1d-4b8c-aa70-d746332b4d28
 md"""
 # Resumen
@@ -4292,6 +4302,7 @@ version = "1.4.1+2"
 # ╠═f8a956a7-6520-45e4-85e3-487cd433a315
 # ╠═2da31501-83ae-4eb9-a4b2-35277bb5a399
 # ╠═61e188a0-8080-4e76-8531-cca90d56cc14
+# ╠═25613775-3a1a-4524-b4be-a498d40d8b33
 # ╠═5c0b5a16-fd1d-4b8c-aa70-d746332b4d28
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
