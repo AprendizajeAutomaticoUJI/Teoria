@@ -1733,8 +1733,16 @@ md"""
 
 Aquí tienes un par de cuadernos Julia con ejemplos de cómo usar la regresión logística.
 
-1. https://github.com/AprendizajeAutomaticoUJI/Teoria/blob/main/RegresionLineal/henrietta_swan_leavitt.jl[Cálculo de distancias] a objetos celestes mediante la ley de Henrietta Swan Leavitt.
-1. 
+1. [Cálculo de distancias a objetos celestes](https://github.com/AprendizajeAutomaticoUJI/Teoria/blob/main/RegresionLineal/henrietta_swan_leavitt.jl) mediante la ley de Henrietta Swan Leavitt.
+1. [Cálculo de la edad del universo](https://github.com/AprendizajeAutomaticoUJI/Teoria/blob/main/RegresionLineal/ley_de_Hubble.jl) mediante la ley de Hubble-Lemaître.
+
+Se te interesa la astronmía, astrofísica y cosmología y quieres saber más sobre estos temas te recomiendo los siguientes libros:
+
+!!! info "Aclaración"
+	La casa del libro no esponsoriza este espacio ;)
+
+1. [Antes de Hubble Mss. Leavitt](https://www.casadellibro.com/libro-antes-de-hubble-miss-leavitt/9788495348319/1483818)
+1. [Cosmología moderna desde sus orígenes](https://www.casadellibro.com/libro-cosmologia-moderna-desde-sus-origenes/9788413521251/12033402)
 """
 
 # ╔═╡ 5c0b5a16-fd1d-4b8c-aa70-d746332b4d28
