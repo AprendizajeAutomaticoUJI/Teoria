@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.21
+# v1.0.1
 
 using Markdown
 using InteractiveUtils
@@ -14,9 +14,9 @@ using PlutoTeachingTools
 using ShortCodes
 
 # ╔═╡ f722bfd0-66eb-11f0-01ea-7b434238558a
-html"""
-<link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
-"""
+# html"""
+# <link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
+# """
 
 # ╔═╡ 913974f6-4c99-4f2e-be95-9a66c8fce004
 TableOfContents(title="Contenidos", depth=1)
@@ -45,26 +45,26 @@ Resource(
 md"""
 ## Objetivos de aprendizaje
 
-- Interpretar cuales son las características del aprendizaje por refuerzo.
-- Resumir los conceptos de entorno, agente, estado, acción y recompensa.
-- Conectar cada uno de los conceptos anteriores con el proceso de aprendizaje.
-- Construir una solución utilizando el algoritmo Q-learning.
+* Interpretar cuales son las características del aprendizaje por refuerzo.
+* Resumir los conceptos de entorno, agente, estado, acción y recompensa.
+* Conectar cada uno de los conceptos anteriores con el proceso de aprendizaje.
+* Construir una solución utilizando el algoritmo Q-learning.
 """
 
 # ╔═╡ 9bb76759-af68-4f85-8276-b99cabae0857
 md"""
 ## Objetivos de aprendizaje
 
-- Argumentar la utilidad del descuento.
-- Interpretar el dilema explotación frente a exploración.
-- Argumentar la utilidad del parámetro $\epsilon$.
+* Argumentar la utilidad del descuento.
+* Interpretar el dilema explotación frente a exploración.
+* Argumentar la utilidad del parámetro $\epsilon$.
 """
 
 # ╔═╡ 19069594-b31c-47fa-9e58-ba183fae3409
 md"""
 ## Bibliografía
 
-1. [Reinforcement learning: An introduction](http://incompleteideas.net/book/the-book.html). Disponible on-line.
+1. [Reinforcement learning: An introduction](http://incompleteideas.net/book/the-book.html). Richard S. Sutton, y Andrew G. Barto. Disponible on-line.
 1. [Grokking Deep Reinforcement Learning](https://cataleg.uji.es/permalink/34CVA_UJI/1nbr95r/alma991004764852306336). Antonio Morales. Maning Publications. 2020.
 """
 
@@ -88,9 +88,9 @@ Son necesarios nuevos algoritmos para encontrar las soluciones dentro de este nu
 md"""
 ## Introducción
 
-En el **aprendizaje supervisado** construimos un modelo con datos y valores de salida. Una vez entrenado, nuestro modelo nos dará un nueva salida para cada nuevo dato.
+En el **aprendizaje supervisado** construimos un modelo con un conjunto de entradas y sus correspondientes valores de salida. Una vez entrenado, el modelo nos dará un nueva salida para cada nuevo dato.
 
-En **aprendizaje no supervisado** construimos un modelo sin valores de salida, y el modelo aprende a identificar las similitudes entre los datos.
+En **aprendizaje no supervisado** construimos un modelo sólo con el conjunto de entrada, sin valores de salida, y el modelo aprende a identificar las similitudes entre los datos.
 """
 
 # ╔═╡ bc67e92a-4c09-4104-882f-632db5972747
@@ -116,6 +116,8 @@ Fuente: Reinforcement learning: An introduction
 # ╔═╡ 3d047e1f-d2ee-464a-bb30-9ff08acaf3f4
 md"""
 ## Introducción
+
+El aprendizaje por refuerzo se puede aplicar en muchos casos, como por ejemplo:
 """
 
 # ╔═╡ b0e55979-4466-47d6-8a75-39a6ca1a7192
@@ -276,7 +278,7 @@ Resource(
 
 # ╔═╡ 57e7e52c-5cef-463d-87ac-b0bb606ddfe9
 md"""
-Un detalle importante: observa que el entorno puede cambiar, si el agente es un jugador virtual de ajedrez, a cada movimiento del agente le sigue un movimientodel contrario.
+Un detalle importante: observa que el entorno puede cambiar, si el agente es un jugador virtual de ajedrez, a cada movimiento del agente le sigue un movimiento del contrario.
 """
 
 # ╔═╡ d17c48c8-259a-4ca9-97e7-c844370c52fe
@@ -291,7 +293,7 @@ del siguiente estado y la recompensa obtenida.
 p(s',r|s,a) = p(S_t=s', R_t=r | S_{t-1} = s, A_{t-1} = a)
 ```
 
-Con la condición: ``\sum\limits_{s' \in S} \sum\limits_{r \in R}^{} p(s',r|s,a) = 1``
+Con la condición: ``\sum\limits_{s' \in S} \sum\limits_{r \in R}^{} p(s',r|s,a) = 1``; la suma de todas las probabilidades es 1.
 
 Fíjate en que la igualdad anterior es simplemente una definición.
 """
@@ -403,7 +405,7 @@ El elfo tiene que llegar desde la casilla de salida hasta la casilla del regalo 
 md"""
 ## Episodios y Ganancia
 
-En casos como los de un coche autónomo, o un jugador virtual existe uno, o varios, estados finales. Un coche lleva a los pasajeros del punto de recogida al punto de entrega; un jugador virtual gana o pierde una partida, a este concepto lo llamaremos **episodio**.
+En casos como los de un coche autónomo, o un jugador virtual, existe uno o varios estados finales. Un coche lleva a los pasajeros del punto de recogida al punto de entrega; un jugador virtual gana o pierde una partida, a este concepto lo llamaremos **episodio**.
 
 En esta caso resulta sencillo definir el concepto de **Ganancia** a futuro como la suma de las recompensas que obtiene el agente durante el episodio a partir de un cierto instante y hacia adelante:
 
@@ -418,7 +420,7 @@ md"""
 
 Hay otros casos, como el de un robot en un ambiente industrial, donde no podemos identificar episodios, el agente está realizando de modo continuo acciones y la secuencia de acciones nunca acaba.
 
-En este caso, para acotar la ganancia para que no crezca hacia el infinito, se introduce el concepto de **factor de descuento**, que es una especie de decaimiento exponencial de la recompensa a futuro. 
+En este caso, para acotar la ganancia y que no crezca hacia el infinito, se introduce el concepto de **factor de descuento**, que es una especie de decaimiento exponencial de la recompensa a futuro. 
 
 $G_t = R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + ... = 
 \sum_{k=0}^{\infty} \gamma^k R_{t+k+1}$
@@ -470,7 +472,7 @@ md"""
 
 La **Función valor del estado** mide la recompensa total esperada que se obtiene desde el estado ``s`` hasta el final del juego (o episodio), siguiendo una política concreta ``\pi``.
 
-Un ejemplo para entender el objetivo de la función valor es el juego del ajedrez. En el ajedrez es importante controlar las posiciones del centro del tablero porque son estas las más importantes, ya que si realizo movimientos desde ellas la probabilidad de ganar la partida aumenta.
+Un ejemplo para entender el objetivo de la función valor es el juego del ajedrez. En el ajedrez es importante controlar las posiciones del centro del tablero porque estas son las más importantes, ya que si se realizan movimientos desde ellas la probabilidad de ganar la partida aumenta.
 """
 
 # ╔═╡ f74ada35-1e6e-46ad-8723-43f8674b7fd4
@@ -499,7 +501,7 @@ v_\pi(s) &= E_\pi[G_t | S_t = s] \\
 &= \sum_a \pi(a|s) \sum_{s',r'} p(s',r | r,a) \left[r + \gamma v_\pi(s')]\right]
 \end{align}$$
 
-A esta expresión se la conoce como **Ecuación de Bellman**, y es la ecuación fundamental para encontrar la mejor política para maximizar la ganancia.
+A esta expresión se la conoce como **Ecuación de Bellman**, y es la ecuación fundamental para encontrar la mejor política que maximiza la ganancia.
 """
 
 # ╔═╡ fc948717-9f3b-403c-8f65-d05d7bb92b85
@@ -528,11 +530,11 @@ q_\pi(s,a) &= E_\pi[G_t | S_t = s, A_t = a] \\
 md"""
 ## Función valor de la acción/estado
 
-Fíjate en que políticas diferentes van a dar lugar a funciones de valor estado y valor acción estado distintas; en ajedrez la política «apropiarse del centro» da diferentes valores para los estados y las acciones estado que la política «proteger al rey».
+Fíjate en que políticas diferentes van a dar lugar a funciones de valor del estado y valor de la acción/estado distintas; en ajedrez la política «apropiarse del centro» da diferentes valores para los estados y las acciones estado/que la política «proteger al rey».
 
 Podemos establecer un orden entre dos políticas del siguiente modo: una política ``\pi`` es mejor que otra política ``\pi'`` si ``v_\pi(s) \ge v_{\pi'}(s)`` para todos los posibles estados.
 
-Con esta relación de orden, podemos encontrar al menos una política ``\pi^*``, quizás más de una, para la que sus valores de ``v_{\pi^*}(s)`` sean mayores que para cualquier otra política. O dicho de otro modo, buscamos, la política cuyas acciones para cada estado maximizan la ganancia.
+Con esta relación de orden, podemos encontrar al menos una política ``\pi^*`` (quizás más de una), para la que sus valores de ``v_{\pi^*}(s)`` sean mayores que para cualquier otra política. O dicho de otro modo, buscamos la política cuyas acciones para cada estado maximizan la ganancia.
 """
 
 # ╔═╡ 1e7a508a-0745-46ad-bd0e-a53fe94d4ec7
@@ -545,7 +547,7 @@ Lo que buscamos es encontrar una política que maximice la ganancia esperada a f
 v_{\pi^*}(s) = \max_a \sum_{s',r'} p(s',r | r,a) \left[r + \gamma v_{\pi^*}(s')]\right]
 ```
 
-sea la máxima para cada estado, y también lo sea la función acción estado:
+sea la máxima para cada estado, y también lo sea la función acción/estado:
 
 ```math
 q_{\pi^*}(s,a) = \sum_{s',r'} p(s',r | r,a) \left[r + \gamma \max_a' q_{\pi^*}(s',a')]\right]
@@ -561,7 +563,7 @@ El modo de operar es el siguiente:
 
 1. Inicializamos todos los valores de la función valor a cero.
 1. Utilizamos la ecuación ``v_{\pi^*}(s)`` para actualizar los valores en un iteración.
-1. Volvemos a actualizar los valores hasta que alcanzamos un número máximo de iteraciones, o la cuando la actualización de la ganancia está por debajo de cierto umbral (actualización pequeña de la ganancia).
+1. Volvemos a actualizar los valores hasta que alcanzamos un número máximo de iteraciones, o hasta que la actualización de la ganancia esté por debajo de cierto umbral (actualización pequeña de la ganancia).
 
 A esta manera de operar se le llama **algoritmo iteración valor**, y nos garantiza que podemos acercarnos a la política óptima (la de mayor ganancia) tanto como queremos, simplemente iterando el algoritmo.
 """
@@ -577,7 +579,7 @@ md"""
 
 El problema al utilizar las ecuaciones de Bellman para calcular directamente la función valor y la función de acción/valor es que necesitaremos un número muy alto de iteraciones.
 
-Una aproximación al óptimo de la **función acción-valor** es el algoritmo **Q-learning**:
+Una aproximación al óptimo de la **función acción/valor** es el algoritmo **Q-learning**:
 
 ```math
 Q(S_t,A_t) \leftarrow Q(S_t,A_t) + \alpha[ R_{t+1} + \gamma \max_{a \in A} Q(S_{t+1},a) - Q(S_t,A_t) ]
@@ -662,7 +664,7 @@ Las posibles **acciones** son moverse a la izquierda, abajo, derecha, o arriba
 desde la posición actual. Fíjate en que el juego es probabilista ya que, como el suelo está helado, cuando el elfo esté en una casilla concreta puede decidir realizar una acción, resbalar, y como consecuencia llegar a otra casilla.
 
 El juego acaba si se cae en un agujero, o si el número de acciones antes de 
-alcanzar el regalo alcanza un límite, la recompensa es 0.
+alcanzar el regalo alcanza un límite, en estos casos la recompensa es 0.
 """
 
 # ╔═╡ d4dd8e39-baa8-4077-8f21-69d9de1c1b33
@@ -732,7 +734,7 @@ El problema en la función de actualización:
 Q(S_t,A_t) \leftarrow Q(S_t,A_t) + \alpha[ R_{t+1} + \gamma \max_{a \in A} Q(S_{t+1},a) - Q(S_t,A_t) ]
 ```
 
-Está en esta parte:
+está en esta parte:
 
 ```math
 Q(S_t,A_t) \leftarrow  ... \max_{a \in A} Q(S_{t+1},a) ...
@@ -749,7 +751,7 @@ Este problema se conoce con el nombre de *Dilema de exploración frente a explot
 
 Si siempre queremos explotar (maximizar) el resultado, puede que nunca exploremos nuevas soluciones que nos pueden acercar al óptimo.
 
-¿Cómo lo solucionamos? Introduciendo un factor de exploración en el algoritmo. Al elegir la siguiente acción no seleccionamos lo que tengo un valor máximo (explotación), sino que seleccionamos, con alguna probabilidad, otra acción (exploración). Además, a medida que la solución evoluciona, vamos reduciendo la probabilidad de selección aleatoria, es decir, al principio permitimos cierta exploración en la búsqueda de la solución, pero a medida que iteramos, vamos reduciendo la probabilidad de elección aleatoria del siguiente estado, y explotamos los resultados.
+¿Cómo lo solucionamos? Introduciendo un factor de exploración en el algoritmo. Al elegir la siguiente acción no seleccionamos la que tenga un valor máximo (explotación), sino que seleccionamos, con alguna probabilidad, otra acción (exploración). Además, a medida que la solución evoluciona, vamos reduciendo la probabilidad de selección aleatoria, es decir, al principio permitimos cierta exploración en la búsqueda de la solución, pero a medida que iteramos, vamos reduciendo la probabilidad de elección aleatoria del siguiente estado, y explotamos los resultados.
 """
 
 # ╔═╡ 5ffc2df3-9fc7-4e54-aca3-1145f5f09b72
@@ -801,7 +803,7 @@ Columns(
 
 # ╔═╡ 1ea8f988-ef7b-485c-a901-d172f0f88471
 md"""
-Veamos ahora cómo podemos tratar el caso de entornos con espacios de estados continuo.
+Veamos ahora cómo podemos tratar el caso de entornos con espacios de estados continuos.
 """
 
 # ╔═╡ a5afa66c-7447-454d-b0a8-03dba7fb1bbd
@@ -922,7 +924,7 @@ ShortCodes = "~0.3.6"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.12.2"
+julia_version = "1.12.6"
 manifest_format = "2.0"
 project_hash = "70629a17fedc4b6b66c91c2e3f7dce41300725cb"
 
@@ -1142,7 +1144,7 @@ version = "1.11.0"
 
 [[deps.MozillaCACerts_jll]]
 uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
-version = "2025.5.20"
+version = "2025.11.4"
 
 [[deps.NetworkOptions]]
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
@@ -1172,7 +1174,7 @@ version = "2.8.3"
 [[deps.Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "Random", "SHA", "TOML", "Tar", "UUIDs", "p7zip_jll"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
-version = "1.12.0"
+version = "1.12.1"
 
     [deps.Pkg.extensions]
     REPLExt = "REPL"
@@ -1322,99 +1324,99 @@ version = "17.7.0+0"
 """
 
 # ╔═╡ Cell order:
-# ╟─f722bfd0-66eb-11f0-01ea-7b434238558a
-# ╟─646115db-9b69-482e-b0bf-fb287ed023c4
-# ╟─80589f75-0e75-4171-9f8e-d08ecc8cdf67
-# ╟─963761bd-4b3c-40cb-96fd-d004e9e1e94d
-# ╟─913974f6-4c99-4f2e-be95-9a66c8fce004
-# ╟─25e87a36-ca03-4497-9571-165f9f9ce5e0
-# ╟─270a45a5-bfb3-47a4-b5fb-981cb9343af1
-# ╟─49dde659-7259-44f8-9352-7b9a09a8a324
-# ╟─9344959d-aab8-4c21-96bd-7b0a16d6f068
-# ╟─9bb76759-af68-4f85-8276-b99cabae0857
-# ╟─19069594-b31c-47fa-9e58-ba183fae3409
-# ╟─e65a18ad-9f34-4afc-a3c7-3f9f1bd346a1
-# ╟─f62853c5-1bb6-4ec4-b256-695121d29029
-# ╟─322740c2-ad9e-4335-bb12-bf71006de7a1
-# ╟─bc67e92a-4c09-4104-882f-632db5972747
-# ╟─0d30181c-687b-472a-92a1-4d60016596c6
-# ╟─a24c2f05-b7e1-4a27-b770-a66022306bdb
-# ╟─3d047e1f-d2ee-464a-bb30-9ff08acaf3f4
-# ╟─b0e55979-4466-47d6-8a75-39a6ca1a7192
-# ╟─539dcba5-102d-4c11-a400-94a6ca077b5b
-# ╟─46d7f494-efff-40d2-a1bc-bca8ffd0cd9f
-# ╟─86277025-8b60-46b5-a5f3-1b0bccd72844
-# ╟─38115240-6cf5-47ab-bb91-94f8c5f37b4a
-# ╟─0d625f98-49c6-4cf3-baff-9c973145e484
-# ╟─d4438817-61d6-47b4-8536-adba3d784e18
-# ╟─dfba5a6e-826f-49d4-ae8f-fa1b9b86158f
-# ╟─b3ec2529-5127-4f4c-a221-07b1f665081b
-# ╟─8e6ee3ac-82ed-43c5-a80d-81e67f676ce0
-# ╟─39adf584-77e4-4109-9cf7-303615c2e638
-# ╟─3551e3f8-8e24-413c-9947-0babb6910cfb
-# ╟─e785e43e-c7c4-4603-b3f2-241efabc4697
-# ╟─447bb4af-4da1-40f0-98a3-d68e2b34b5b1
-# ╟─4b07e8e5-524d-4e68-8a0d-f5cd7c47a894
-# ╟─3a92bd3f-4d2a-41a9-9f77-70edf3fbf10c
-# ╟─b29b0b8c-ed15-49ea-95f5-6634a6d74178
-# ╟─7464261c-999c-4397-b411-bd07025a3beb
-# ╟─10d98301-fc2d-4125-94a2-2ea7f3b42307
-# ╟─3d832db2-de0c-41e1-bf1e-cc0c152f4f98
-# ╟─0e3c3c29-76a2-4404-8fdb-8b442ce1eb9f
-# ╟─8cbb1134-49b5-472c-aadb-1754230742ea
-# ╟─57e7e52c-5cef-463d-87ac-b0bb606ddfe9
-# ╟─d17c48c8-259a-4ca9-97e7-c844370c52fe
-# ╟─1e0cad5b-10b0-4839-b112-25f5b15f7798
-# ╟─7ef876f4-b64d-4a20-9e69-95c08075275c
-# ╟─2ead2629-7a7e-4ad4-86bf-50698e12f13d
-# ╟─13c68676-b38b-4fe2-91e8-f9a808ebef96
-# ╟─5d78edeb-d092-459c-ad88-6345fb838350
-# ╟─7a1582ac-c323-48de-ba53-fad1ce12ea26
-# ╟─43e5877d-1cb7-4a6f-9331-e1ec7bf4ef8b
-# ╟─35a29c40-2b5d-49f0-9485-fdd2b06a3492
-# ╟─8fdcd8e0-ff6c-4b83-8e47-2d3d22a459d6
-# ╟─c1abe3ab-c796-48b7-bbdb-860ec93f8394
-# ╟─79784c4f-b1c8-4ad7-ac1e-e9b2331f3663
-# ╟─4e5ad759-e840-43c0-a342-ebf413a5fb2b
-# ╟─77ab5a72-0022-42cb-bd72-24f6ea51c201
-# ╟─cf4d406f-9570-4bf8-a266-9f6d7cac24ed
-# ╟─3d815877-88a7-44b6-b9df-8d329d1a7e3b
-# ╟─2e8856b0-a21a-46dc-9601-f928b31245c1
-# ╟─f74ada35-1e6e-46ad-8723-43f8674b7fd4
-# ╟─26c0db62-9f96-43cc-a18b-f64290293576
-# ╟─fc948717-9f3b-403c-8f65-d05d7bb92b85
-# ╟─68fb378b-e910-4344-b0aa-832ebe930ba1
-# ╟─1e7a508a-0745-46ad-bd0e-a53fe94d4ec7
-# ╟─a48fea43-f6d8-44f9-a862-21f29486e669
-# ╟─c45243d4-456d-494b-b27b-1ea79d2e0b48
-# ╟─63e07476-a0bb-4dc4-9f3d-5f315e9880de
-# ╟─f9c33887-db0e-4757-90b9-d6f91ccabf86
-# ╟─7c118104-3aec-478c-a6f7-5bdee9defe76
-# ╟─fb18dbd7-5223-45c7-bd20-d6c648c01c2b
-# ╟─dbd20ea5-091a-4f08-84e4-7639cf9339b5
-# ╟─a18f901f-9be6-49f0-aed5-5f0089fdf165
-# ╟─72465d6d-ad82-4798-b7db-f2c6a3a5a9ba
-# ╟─d4dd8e39-baa8-4077-8f21-69d9de1c1b33
-# ╟─fb43650f-53e1-4af6-8f30-09389bd024dd
-# ╟─17f2e0c5-f4b3-4ec0-9103-c538bbab8fba
-# ╟─f5c12b63-2d42-4979-a3b9-6497b5e297a2
-# ╟─0fed9fc3-8914-4570-971b-f53397e98070
-# ╟─46198f73-8966-43ff-9878-13de4cca96d9
-# ╟─5ffc2df3-9fc7-4e54-aca3-1145f5f09b72
-# ╟─3d9947ca-a126-4366-a801-21a79c369493
-# ╟─34a29918-675d-4d18-bf2c-728166acc9aa
-# ╟─fb24292b-4737-4f9f-a5b6-0c4a0d85bf53
-# ╟─1ea8f988-ef7b-485c-a901-d172f0f88471
-# ╟─a5afa66c-7447-454d-b0a8-03dba7fb1bbd
-# ╟─9ba9044e-3f77-4a48-a9ac-df196bd77f96
-# ╟─6c6dbb72-61be-4e6f-93b1-73a15eae1646
-# ╟─29d0e749-6072-4888-8fc8-eae42a6b7f06
-# ╟─a235da3d-a99f-41c4-a9f6-47a8e975fbb5
-# ╟─0cffafb0-a1d3-453f-a366-5cbf5b5f12da
-# ╟─fc6453cd-0a0e-4e4a-9601-962dc62b58cb
-# ╟─78d32a32-1ab1-43e3-a657-8b0f80a0ac95
-# ╟─43bb1241-f83c-4566-8a26-cd990807471f
-# ╟─3831b6c1-d605-4d6b-b3ab-4dc8def26432
-# ╟─fffa4aac-a902-4f8b-9e92-1cc52e49b017
+# ╠═f722bfd0-66eb-11f0-01ea-7b434238558a
+# ╠═646115db-9b69-482e-b0bf-fb287ed023c4
+# ╠═80589f75-0e75-4171-9f8e-d08ecc8cdf67
+# ╠═963761bd-4b3c-40cb-96fd-d004e9e1e94d
+# ╠═913974f6-4c99-4f2e-be95-9a66c8fce004
+# ╠═25e87a36-ca03-4497-9571-165f9f9ce5e0
+# ╠═270a45a5-bfb3-47a4-b5fb-981cb9343af1
+# ╠═49dde659-7259-44f8-9352-7b9a09a8a324
+# ╠═9344959d-aab8-4c21-96bd-7b0a16d6f068
+# ╠═9bb76759-af68-4f85-8276-b99cabae0857
+# ╠═19069594-b31c-47fa-9e58-ba183fae3409
+# ╠═e65a18ad-9f34-4afc-a3c7-3f9f1bd346a1
+# ╠═f62853c5-1bb6-4ec4-b256-695121d29029
+# ╠═322740c2-ad9e-4335-bb12-bf71006de7a1
+# ╠═bc67e92a-4c09-4104-882f-632db5972747
+# ╠═0d30181c-687b-472a-92a1-4d60016596c6
+# ╠═a24c2f05-b7e1-4a27-b770-a66022306bdb
+# ╠═3d047e1f-d2ee-464a-bb30-9ff08acaf3f4
+# ╠═b0e55979-4466-47d6-8a75-39a6ca1a7192
+# ╠═539dcba5-102d-4c11-a400-94a6ca077b5b
+# ╠═46d7f494-efff-40d2-a1bc-bca8ffd0cd9f
+# ╠═86277025-8b60-46b5-a5f3-1b0bccd72844
+# ╠═38115240-6cf5-47ab-bb91-94f8c5f37b4a
+# ╠═0d625f98-49c6-4cf3-baff-9c973145e484
+# ╠═d4438817-61d6-47b4-8536-adba3d784e18
+# ╠═dfba5a6e-826f-49d4-ae8f-fa1b9b86158f
+# ╠═b3ec2529-5127-4f4c-a221-07b1f665081b
+# ╠═8e6ee3ac-82ed-43c5-a80d-81e67f676ce0
+# ╠═39adf584-77e4-4109-9cf7-303615c2e638
+# ╠═3551e3f8-8e24-413c-9947-0babb6910cfb
+# ╠═e785e43e-c7c4-4603-b3f2-241efabc4697
+# ╠═447bb4af-4da1-40f0-98a3-d68e2b34b5b1
+# ╠═4b07e8e5-524d-4e68-8a0d-f5cd7c47a894
+# ╠═3a92bd3f-4d2a-41a9-9f77-70edf3fbf10c
+# ╠═b29b0b8c-ed15-49ea-95f5-6634a6d74178
+# ╠═7464261c-999c-4397-b411-bd07025a3beb
+# ╠═10d98301-fc2d-4125-94a2-2ea7f3b42307
+# ╠═3d832db2-de0c-41e1-bf1e-cc0c152f4f98
+# ╠═0e3c3c29-76a2-4404-8fdb-8b442ce1eb9f
+# ╠═8cbb1134-49b5-472c-aadb-1754230742ea
+# ╠═57e7e52c-5cef-463d-87ac-b0bb606ddfe9
+# ╠═d17c48c8-259a-4ca9-97e7-c844370c52fe
+# ╠═1e0cad5b-10b0-4839-b112-25f5b15f7798
+# ╠═7ef876f4-b64d-4a20-9e69-95c08075275c
+# ╠═2ead2629-7a7e-4ad4-86bf-50698e12f13d
+# ╠═13c68676-b38b-4fe2-91e8-f9a808ebef96
+# ╠═5d78edeb-d092-459c-ad88-6345fb838350
+# ╠═7a1582ac-c323-48de-ba53-fad1ce12ea26
+# ╠═43e5877d-1cb7-4a6f-9331-e1ec7bf4ef8b
+# ╠═35a29c40-2b5d-49f0-9485-fdd2b06a3492
+# ╠═8fdcd8e0-ff6c-4b83-8e47-2d3d22a459d6
+# ╠═c1abe3ab-c796-48b7-bbdb-860ec93f8394
+# ╠═79784c4f-b1c8-4ad7-ac1e-e9b2331f3663
+# ╠═4e5ad759-e840-43c0-a342-ebf413a5fb2b
+# ╠═77ab5a72-0022-42cb-bd72-24f6ea51c201
+# ╠═cf4d406f-9570-4bf8-a266-9f6d7cac24ed
+# ╠═3d815877-88a7-44b6-b9df-8d329d1a7e3b
+# ╠═2e8856b0-a21a-46dc-9601-f928b31245c1
+# ╠═f74ada35-1e6e-46ad-8723-43f8674b7fd4
+# ╠═26c0db62-9f96-43cc-a18b-f64290293576
+# ╠═fc948717-9f3b-403c-8f65-d05d7bb92b85
+# ╠═68fb378b-e910-4344-b0aa-832ebe930ba1
+# ╠═1e7a508a-0745-46ad-bd0e-a53fe94d4ec7
+# ╠═a48fea43-f6d8-44f9-a862-21f29486e669
+# ╠═c45243d4-456d-494b-b27b-1ea79d2e0b48
+# ╠═63e07476-a0bb-4dc4-9f3d-5f315e9880de
+# ╠═f9c33887-db0e-4757-90b9-d6f91ccabf86
+# ╠═7c118104-3aec-478c-a6f7-5bdee9defe76
+# ╠═fb18dbd7-5223-45c7-bd20-d6c648c01c2b
+# ╠═dbd20ea5-091a-4f08-84e4-7639cf9339b5
+# ╠═a18f901f-9be6-49f0-aed5-5f0089fdf165
+# ╠═72465d6d-ad82-4798-b7db-f2c6a3a5a9ba
+# ╠═d4dd8e39-baa8-4077-8f21-69d9de1c1b33
+# ╠═fb43650f-53e1-4af6-8f30-09389bd024dd
+# ╠═17f2e0c5-f4b3-4ec0-9103-c538bbab8fba
+# ╠═f5c12b63-2d42-4979-a3b9-6497b5e297a2
+# ╠═0fed9fc3-8914-4570-971b-f53397e98070
+# ╠═46198f73-8966-43ff-9878-13de4cca96d9
+# ╠═5ffc2df3-9fc7-4e54-aca3-1145f5f09b72
+# ╠═3d9947ca-a126-4366-a801-21a79c369493
+# ╠═34a29918-675d-4d18-bf2c-728166acc9aa
+# ╠═fb24292b-4737-4f9f-a5b6-0c4a0d85bf53
+# ╠═1ea8f988-ef7b-485c-a901-d172f0f88471
+# ╠═a5afa66c-7447-454d-b0a8-03dba7fb1bbd
+# ╠═9ba9044e-3f77-4a48-a9ac-df196bd77f96
+# ╠═6c6dbb72-61be-4e6f-93b1-73a15eae1646
+# ╠═29d0e749-6072-4888-8fc8-eae42a6b7f06
+# ╠═a235da3d-a99f-41c4-a9f6-47a8e975fbb5
+# ╠═0cffafb0-a1d3-453f-a366-5cbf5b5f12da
+# ╠═fc6453cd-0a0e-4e4a-9601-962dc62b58cb
+# ╠═78d32a32-1ab1-43e3-a657-8b0f80a0ac95
+# ╠═43bb1241-f83c-4566-8a26-cd990807471f
+# ╠═3831b6c1-d605-4d6b-b3ab-4dc8def26432
+# ╠═fffa4aac-a902-4f8b-9e92-1cc52e49b017
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
