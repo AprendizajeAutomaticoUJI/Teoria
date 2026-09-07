@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.24
+# v1.0.1
 
 #> [frontmatter]
 #> title = "Introducción al aprendizaje automático"
@@ -229,6 +229,78 @@ La resolución de un problema se realiza mediante ensayo y error.
 Cada ensayo tiene una recompensa, que puede ser positiva o negativa. La combinación de ensayo y recompensa condiciona el siguiente ensayo a tomar.
 """
 
+# ╔═╡ 4328b915-c9ae-4efe-a94c-16dda0832e5d
+md"""
+## Ejemplos
+
+Tienes que desarrollar una aplicación de reconocimiento de vehículos para una aplicación de tarificación automática en autovías. Cada tipo de vehículo tiene una tarifa diferente y el tipo del vehículo se detecta a través de una imagen:
+
+¿Es un problema de regresión, clasificación, agrupamiento o aprendizaje por refuerzo?
+
+¿Es aprendizaje supervisado o no supervisado?
+
+¿A grades rasgos, cuál sería el procedimiento que utilizarías para resolverlo?
+"""
+
+# ╔═╡ 90460677-0a38-4faf-b4a2-e40be4a98d99
+md"""
+## Ejemplos
+
+Tienes que desarrollar una aplicación que estime el número de personas que van a llegar a un hospital en un día determinado:
+
+¿Es un problema de regresión, clasificación, agrupamiento o aprendizaje por refuerzo?
+
+¿Es aprendizaje supervisado o no supervisado?
+
+¿A grades rasgos, cuál sería el procedimiento que utilizarías para resolverlo?
+"""
+
+# ╔═╡ 958e0175-a57a-4298-9fd7-125ded17bc0d
+md"""
+## Ejemplos
+
+Has creado una asociación sin ánimo de lucro para la divulgación de la robótica. Tienes un número bastante interesante de personas socias y has ido registrando la actividad de cada uno de ellos. Las actividades que has registrado son:
+
+- Número de reuniones a las que ha asistido.
+- Número de intervenciones en las reuniones.
+- Número de ideas aportadas.
+- Número de actividades de divulgación en las que se ha implicado.
+- Número de post en redes sociales.
+- Número de replicas en redes sociales.
+- Y todo lo que se te pueda ocurrir.
+
+Quieres conocer aquellas personas que más se involucran, las que menos, y las de perfil intermedio, para poder hacer propuestas de actividades más enfocadas.
+
+¿Es un problema de regresión, clasificación, agrupamiento o aprendizaje por refuerzo?
+
+¿Es aprendizaje supervisado o no supervisado?
+
+¿A grades rasgos, cuál sería el procedimiento que utilizarías para resolverlo?
+"""
+
+# ╔═╡ 57d18b0e-f02f-4e7d-a4e8-6ca38bcf1bd3
+md"""
+## Ejemplos
+
+Acabas el grado y te contrata la Agencia Europea del Espacio para desarrollar el futuro rover marciano europeo. El rover se ha de mover de manera autónma sobre la superficie de Marte y elegir el mejor lugar y momento para realizar los experimentos científicos programados:
+
+¿Es un problema de regresión, clasificación, agrupamiento o aprendizaje por refuerzo?
+
+¿Es aprendizaje supervisado o no supervisado?
+
+¿A grades rasgos, cuál sería el procedimiento que utilizarías para resolverlo?
+"""
+
+# ╔═╡ 2ecd75d3-fcd8-4c8d-9959-69dcf570c99a
+md"""
+## Ejemplos
+
+1. Plantea un ejemplo de tarea que sea de regresión, supervisada.
+1. Plantea un ejemplo de tarea que sea de clasificación supervisada.
+1. Plantea un ejemplo de tarea que sea de agrupamiento.
+1. Plantea un ejemplo de tarea que sea de aprendizaje por refuerzo.
+"""
+
 # ╔═╡ 6121337e-ebb8-4e82-82cd-361b6e6d28d2
 md"""
 # Revisión de conceptos
@@ -302,6 +374,52 @@ Resource(
 	:width => 600
 )
 
+# ╔═╡ 6e094ffe-d2b7-4430-ba30-7e17133dd7f0
+md"""
+## Ejemplo
+
+Para calcular el peso de una persona utilizas sólamente su estatura.
+
+Es esperable que el modelo así creado:
+
+1. Subajuste.
+1. Sobreajuste.
+1. Sea muy bueno.
+"""
+
+# ╔═╡ e3dda33b-0ed6-4f7b-a397-1a46b6a4bf17
+md"""
+## Ejemplo
+
+Para calcular el peso de una persona utilizas los siguientes datos:
+
+1. Estatura.
+1. Sexo.
+1. Edad.
+
+Es esperable que el modelo así creado:
+
+1. Subajuste.
+1. Sobreajuste.
+1. Sea muy bueno.
+"""
+
+# ╔═╡ 8827ac8e-53bb-452a-bd9b-536ae95a4c41
+md"""
+## Ejemplo
+
+Para calcular el peso de una pesona utilizas todos los datos anteriores más:
+
+1. Dieta.
+1. País de procedencia.
+1. Nivel educativo.
+1. Nivel de ingresos.
+
+¿Mejorará o empeorará el algoritmo?
+
+¿Puedo seguir añadiendo variables y mejorando el algoritmo?
+"""
+
 # ╔═╡ d18ea8da-3fe4-49b0-bbad-d2b3ccb1ab0a
 md"""
 ## Métricas
@@ -356,6 +474,17 @@ $Especifidad = \frac{TN}{N}$
 $F1 = 2\frac{sentividad \cdot especifidad}{sensitividad + especifidad}$
 """
 
+# ╔═╡ aa5a2885-161c-4ded-ab68-935b954fb614
+md"""
+## Ejemplo
+
+De un modo muy general, podemos ajustar nuestro modelo para aumentar su sensitividad (en general disminurirá su especificidad), o aumentar su especificidad (en general disminuirá su sensitividad).
+
+¿Qué crees que es más intersante, mejorar la sensitividad o la especificidad?
+
+Comenta algún ejemplo.
+"""
+
 # ╔═╡ dcd17617-6aa4-4ed0-aff7-5a9184990aee
 md"""
 ## Métricas
@@ -369,6 +498,18 @@ Resource(
 	:alt => "Curva ROC",
 	:width => 600
 )
+
+# ╔═╡ 9500a8ef-5f6e-4080-938b-6d28c40868f2
+md"""
+¿[Cómo se construye la curva](https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc?hl=es-419)?
+"""
+
+# ╔═╡ 5c713faf-33f0-4097-a236-d069247548b9
+md"""
+## Ejemplo
+
+¿Qué tal lo hacen los modelos cuyas curva ROC te muestro en la pizarra?
+"""
 
 # ╔═╡ 7fcae622-7d09-4cae-bb54-197e4ecb5d6d
 md"""
@@ -408,7 +549,7 @@ PlutoUI = "~0.7.60"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.12.6"
+julia_version = "1.12.7"
 manifest_format = "2.0"
 project_hash = "09d2be86a5bd9d4050d8d711c169d5c465073d9a"
 
@@ -496,7 +637,7 @@ weakdeps = ["Dates", "LinearAlgebra"]
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.3.0+1"
+version = "1.3.1+2"
 
 [[deps.ConcurrentUtilities]]
 deps = ["Serialization", "Sockets"]
@@ -956,7 +1097,7 @@ version = "1.4.3"
 [[deps.OpenSSL_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "458c3c95-2e84-50aa-8efc-19380b2a3a95"
-version = "3.5.4+0"
+version = "3.5.6+0"
 
 [[deps.OpenSpecFun_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl", "Pkg"]
@@ -1623,9 +1764,14 @@ version = "1.4.1+1"
 # ╟─112c940c-fe03-4a8d-bebe-024ceb30170c
 # ╟─0ea9bd55-9cb1-4e04-89a8-f8102ad6e20b
 # ╟─33265b15-5a1f-445c-8184-519e88028f8e
-# ╠═94b8def4-d692-4c3a-bddd-9bae82ea1182
+# ╟─94b8def4-d692-4c3a-bddd-9bae82ea1182
 # ╟─c3478d98-4b58-4af4-99b5-796e7acc6578
 # ╟─c3cbda96-1ddb-407b-be11-b668c77a1148
+# ╟─4328b915-c9ae-4efe-a94c-16dda0832e5d
+# ╟─90460677-0a38-4faf-b4a2-e40be4a98d99
+# ╟─958e0175-a57a-4298-9fd7-125ded17bc0d
+# ╟─57d18b0e-f02f-4e7d-a4e8-6ca38bcf1bd3
+# ╟─2ecd75d3-fcd8-4c8d-9959-69dcf570c99a
 # ╟─6121337e-ebb8-4e82-82cd-361b6e6d28d2
 # ╟─162c6f5b-5fa0-4975-b507-8f62c49f2afb
 # ╟─b89e7a17-2963-4b39-b060-efcf0666fc26
@@ -1634,14 +1780,20 @@ version = "1.4.1+1"
 # ╟─38a34350-09d9-4006-8664-b296e71698c1
 # ╟─175bd281-7b28-4f7b-ab72-a2b4136fc5b5
 # ╟─0818638d-6cc0-4024-8e9c-23374af5424d
+# ╟─6e094ffe-d2b7-4430-ba30-7e17133dd7f0
+# ╟─e3dda33b-0ed6-4f7b-a397-1a46b6a4bf17
+# ╟─8827ac8e-53bb-452a-bd9b-536ae95a4c41
 # ╟─d18ea8da-3fe4-49b0-bbad-d2b3ccb1ab0a
 # ╟─1d659e8e-33f5-451f-9aff-e07ec9ee33c8
 # ╟─6c0600e0-ebc5-4c10-920e-2a4c68c48721
 # ╟─14c83470-1c2f-4d07-aed4-122568d4edbb
 # ╟─22f12815-acad-454c-98ee-b8f931f44802
 # ╟─891c83de-9dd6-4c35-a427-8734fd57a2eb
+# ╟─aa5a2885-161c-4ded-ab68-935b954fb614
 # ╟─dcd17617-6aa4-4ed0-aff7-5a9184990aee
 # ╟─a352c007-cb3c-4e9a-8cc9-e5deea7d7123
+# ╟─9500a8ef-5f6e-4080-938b-6d28c40868f2
+# ╟─5c713faf-33f0-4097-a236-d069247548b9
 # ╟─7fcae622-7d09-4cae-bb54-197e4ecb5d6d
 # ╟─a48c3da3-8a99-406a-a2e2-8246da87618e
 # ╟─59c273bb-8cb0-43ed-90d1-7bc9086a1233
