@@ -45,7 +45,7 @@ Resource(
 md"""
 ## Introducción
 
-En este tema vamos a centrar el objeto de nuestro estudio, dar una definición de en qué consiste el Aprendizaje Automático, y revisar los principales conceptos que vamos a manejar a lo largo del curso.
+En este tema vamos a centrar el objeto de nuestro estudio, en dar una definición de en qué consiste el Aprendizaje Automático, y revisar los principales conceptos que vamos a manejar a lo largo del curso.
 """
 
 # ╔═╡ 362123c4-eca1-4a98-a881-c1f327d934af
@@ -246,7 +246,7 @@ Tienes que desarrollar una aplicación de reconocimiento de vehículos para una 
 md"""
 ## Ejemplos
 
-Tienes que desarrollar una aplicación que estime el número de personas que van a llegar a un hospital en un día determinado:
+Tienes que desarrollar una aplicación que estime el número de personas que van a llegar a un hospital en un día determinado, para ello cuentas con los datos que te propociona el hospital durante el último año (llegas por día):
 
 ¿Es un problema de regresión, clasificación, agrupamiento o aprendizaje por refuerzo?
 
@@ -259,7 +259,7 @@ Tienes que desarrollar una aplicación que estime el número de personas que van
 md"""
 ## Ejemplos
 
-Has creado una asociación sin ánimo de lucro para la divulgación de la robótica. Tienes un número bastante interesante de personas socias y has ido registrando la actividad de cada uno de ellos. Las actividades que has registrado son:
+Has creado una asociación sin ánimo de lucro para la divulgación de la robótica. Tienes un número bastante interesante de personas socias y has ido registrando la actividad de cada una de ellas. Las actividades que has registrado son:
 
 - Número de reuniones a las que ha asistido.
 - Número de intervenciones en las reuniones.
@@ -508,7 +508,7 @@ md"""
 md"""
 ## Ejemplo
 
-¿Qué tal lo hacen los modelos cuyas curva ROC te muestro en la pizarra?
+¿Qué tal lo hacen los modelos cuyas curva ROC que te muestro en la pizarra?
 """
 
 # ╔═╡ 7fcae622-7d09-4cae-bb54-197e4ecb5d6d
@@ -524,12 +524,6 @@ md"""
 - El objetivo de AA es crear modelos que pueden aprender de la experiencia entendida como datos.
 - Los principales tipos de problemas dentro del AA son regresión y la clasificación.
 - Los principales tipos de aproximaciones son el aprendizaje supervisado, el no-supervisado, semi-supervisado y por refuerzo.
-"""
-
-# ╔═╡ 59c273bb-8cb0-43ed-90d1-7bc9086a1233
-md"""
-## Resumen
-
 - Es conveniente establecer alguna(s) métrica que dé cuenta de la calidad del modelo.
 - Es importante que el modelo tenga un buen desempeño no sólo sobre los datos sobres los que se ha entrenada si no también sobre nuevos datos.
 """
@@ -1796,6 +1790,5 @@ version = "1.4.1+1"
 # ╟─5c713faf-33f0-4097-a236-d069247548b9
 # ╟─7fcae622-7d09-4cae-bb54-197e4ecb5d6d
 # ╟─a48c3da3-8a99-406a-a2e2-8246da87618e
-# ╟─59c273bb-8cb0-43ed-90d1-7bc9086a1233
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
