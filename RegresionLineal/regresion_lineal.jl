@@ -705,7 +705,7 @@ md"""
 
 # ╔═╡ 8cab10cf-e7d4-42a9-b9b9-c6243ea80ec4
 md"""
-## Paquetes Julia
+## Paquetes en Julia
 Después de entrenar el modelo, podemos ver el valor de los parámetros:
 """
 
@@ -737,7 +737,7 @@ end
 
 # ╔═╡ 4c52220e-3b6e-46fe-b7d7-87bfc5facf99
 md"""
-## Paquetes de Julia
+## Paquetes en Julia
 
 En el caso anterior, estamos utilizando el mismo conjunto de datos para 
 entrenar el modelo, que para calcular el error del modelo sobre los datos.
