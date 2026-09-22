@@ -1287,11 +1287,6 @@ El gráfico quantil-quantil corrobora la bondad del ajuste.
 # ╔═╡ 5cd0a735-6ab1-4467-aed0-591f876658a7
 qqnorm(residuals(regresion_grado3_glm))
 
-# ╔═╡ 90cef0bf-fc2f-4e0d-acd5-750456dd9bf9
-md"""
-## Encontrar el mejor grado de un polinomio
-"""
-
 # ╔═╡ 8b6c1f57-a7a6-45e1-81f3-a3b06cbd25cc
 md"""
 # Descenso de gradiente
@@ -1755,11 +1750,11 @@ Aquí tienes un par de cuadernos Julia con ejemplos de cómo usar la regresión 
 
 Se te interesa la astronmía, astrofísica y cosmología y quieres saber más sobre estos temas te recomiendo los siguientes libros:
 
-!!! info "Aclaración"
-	La casa del libro no esponsoriza este espacio ;)
-
 1. [Antes de Hubble Mss. Leavitt](https://www.casadellibro.com/libro-antes-de-hubble-miss-leavitt/9788495348319/1483818)
 1. [Cosmología moderna desde sus orígenes](https://www.casadellibro.com/libro-cosmologia-moderna-desde-sus-origenes/9788413521251/12033402)
+
+!!! info "Aclaración"
+	La casa del libro no esponsoriza este espacio ;)
 """
 
 # ╔═╡ 5c0b5a16-fd1d-4b8c-aa70-d746332b4d28
@@ -4221,7 +4216,7 @@ version = "1.4.1+2"
 # ╟─c3976756-cf99-4092-86d2-994b34894bb7
 # ╠═70802a0d-d500-457c-9823-0bf99f23509e
 # ╟─354706f0-c7a2-49b6-be7d-5fe9d333aa30
-# ╟─b4ffd1ca-dc72-45fe-a6a4-b0f9569cec64
+# ╠═b4ffd1ca-dc72-45fe-a6a4-b0f9569cec64
 # ╠═1e051daa-f2db-447b-93b3-19c594fc0d66
 # ╠═4b2dfb5f-9319-4cd9-9e6c-69efab579681
 # ╟─0f85c1b1-ce14-4870-8943-efb72e9ec7d9
@@ -4268,7 +4263,6 @@ version = "1.4.1+2"
 # ╟─38d88e06-764f-439f-a7e3-5253170a249f
 # ╟─dbbca94b-d3eb-40f2-b303-f40f537dbbd9
 # ╟─5cd0a735-6ab1-4467-aed0-591f876658a7
-# ╟─90cef0bf-fc2f-4e0d-acd5-750456dd9bf9
 # ╟─8b6c1f57-a7a6-45e1-81f3-a3b06cbd25cc
 # ╟─7237b145-9c6d-40e0-bc56-601d552fcd33
 # ╟─d86aafd0-4e64-4c95-8279-a0a0a7f6ff1e
