@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v1.0.3
+# v1.0.1
 
 using Markdown
 using InteractiveUtils
@@ -714,7 +714,7 @@ MLJ.fitted_params(modelo)
 
 # ╔═╡ 3566a81e-5a17-4c34-87b4-3b7dfbe2fc1d
 md"""
-Puedes comprobar que estos parámetros coinciden con los proporcionados al utilizar el paquete GLM, de hecho el paquete JML **recubre** algoritmos proporcionados por otros paquetes.
+Puedes comprobar que estos parámetros coinciden con los proporcionados al utilizar el paquete GLM, de hecho el paquete MLJ **recubre** algoritmos proporcionados por otros paquetes.
 
 Recuerda que el objetivo de MLJ es ofrecer una interfaz uniforme al programador.
 """
@@ -1403,6 +1403,8 @@ md"""
 La elección de $\eta$ se debe realizar con cuidado. Un valor grande de $\eta$ puede dar lugar a un comportamiento errático cuando el descenso del gradiente se acerca al mínimo de la función de pérdidas.
 
 Un valor demasiado pequeño de $\eta$ puede dar lugar a una aproximación muy lenta al valor mínimo de la función de pérdidas.
+
+[Aquí](https://github.com/AprendizajeAutomaticoUJI/Teoria/blob/main/RegresionLineal/descenso_gradiente.jl) tienes un cuaderno Julia que implementa el descenso de gradiente y muestra algunos ejemplos.
 """
 
 # ╔═╡ ac02eb56-d90c-4922-809a-6eff0e5abe0d
@@ -1430,6 +1432,8 @@ md"""
 Si el conjunto de datos es muy numeroso y utilizamos muchos pasos en el 
 descenso de gradiente, puede que el algoritmo tarde mucho en alcanzar el 
 mínimo.
+
+Para aumentar acelarar el proceso, en cada paso del ajuste tomamos sólo un subcojunto aleatorio del total, en vez de todos los datos.
 """
 
 # ╔═╡ 0dfae67d-60ff-4ba9-898f-96d461c150e9
@@ -4289,9 +4293,9 @@ version = "1.4.1+2"
 # ╟─054687a8-d948-447d-8e4a-3b5f94a05ee5
 # ╟─909d3eaf-f6b8-4bfd-8bb3-2178c2acecc4
 # ╟─e767de20-5188-46f5-add8-97f0fafc1407
-# ╟─363847f2-3cc6-4849-8c99-1a358a3227f6
+# ╠═363847f2-3cc6-4849-8c99-1a358a3227f6
 # ╟─178e6c6e-e469-4a83-80e9-919cf58a2699
-# ╟─99acc500-db17-47cb-b1fe-46221270662d
+# ╠═99acc500-db17-47cb-b1fe-46221270662d
 # ╟─4cfb2906-1717-4783-b653-4a3c5400842c
 # ╟─32d2acdc-e835-47d1-8979-3336d5312b78
 # ╟─b495bcdb-9204-4c07-a736-19c18622f244
@@ -4312,7 +4316,7 @@ version = "1.4.1+2"
 # ╟─ee6aeafb-84b2-460f-8c78-df4e2652098c
 # ╟─905d9950-c14e-44ce-8b06-40fb6ff6f287
 # ╟─c159d40a-d474-4199-824d-68975c673b5a
-# ╟─02f9248e-b467-41a1-964a-97713f882736
+# ╠═02f9248e-b467-41a1-964a-97713f882736
 # ╟─074845dc-c55d-464a-a0be-24986f7e470b
 # ╟─c38dd6e8-0b2a-4926-a21f-b2fb8369d682
 # ╟─5607f8ed-33f1-4c9d-b98a-66e32ecbdf71

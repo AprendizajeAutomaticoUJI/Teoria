@@ -109,7 +109,6 @@ RegresorLineal = @load LinearRegressor pkg = MLJLinearModels verbosity = 0
 hubble_coercion = coerce(hubble, :m_mean => Continuous, :velocity => Continuous)
 
 # ╔═╡ 8de61f61-7c6c-4917-aafb-da84c3f9a4b9
-# X = distancia.(select(hubble_coercion, :mean_m))
 X = distancia_corregida.(select(hubble_coercion, :mean_m))
 
 # ╔═╡ 16abe033-6289-4d72-a259-762747e5befb
@@ -165,6 +164,11 @@ t = $(3.2616 * 300_000 / H0) millones de años.
 # ╔═╡ 9c4b68b3-4874-4388-b8bc-68cb0ce47a07
 t = 3.2616 * 300_000 / H0
 
+# ╔═╡ 949e98e8-36ce-4063-9a05-e5f10420030a
+md"""
+Una [estimación de la edad del universo](https://es.wikipedia.org/wiki/Edad_del_universo) calculada a partir de los datos proporcionados por instrumentos modernos es de 13.700 millones de años, con un error de 200 millones de años.
+"""
+
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
@@ -188,7 +192,7 @@ Plots = "~1.41.4"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.12.6"
+julia_version = "1.12.7"
 manifest_format = "2.0"
 project_hash = "adb65f6e4d011cdbcd452fcc2b85ac0d05522ea3"
 
@@ -485,7 +489,7 @@ weakdeps = ["Dates", "LinearAlgebra"]
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.3.0+1"
+version = "1.3.1+2"
 
 [[deps.CompositionsBase]]
 git-tree-sha1 = "802bb88cd69dfd1509f6670416bd4434015693ad"
@@ -1420,7 +1424,7 @@ version = "1.6.1"
 [[deps.OpenSSL_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "458c3c95-2e84-50aa-8efc-19380b2a3a95"
-version = "3.5.4+0"
+version = "3.5.6+0"
 
 [[deps.OpenSpecFun_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl"]
@@ -2274,26 +2278,26 @@ version = "1.13.0+0"
 """
 
 # ╔═╡ Cell order:
-# ╠═ef73ce8e-fa9d-11f0-a76b-8908f915af7a
+# ╟─ef73ce8e-fa9d-11f0-a76b-8908f915af7a
 # ╠═bf05ba0a-bc46-487e-8d89-ba56c1e79ebb
 # ╠═7b66ff1e-b7fc-4aca-841f-6ec3d2790de5
 # ╠═386ca9ae-75ae-425d-bb27-76893ae3aec7
 # ╠═42002711-dbf6-41fa-be27-373dfb6360a1
 # ╠═aa25b0b2-d526-4373-8ea8-656f47780b0b
 # ╠═6c920187-3a6c-4873-9b4f-579b7005eafb
-# ╠═bf917b21-b679-4709-ae24-7f6c9d0fa884
+# ╟─bf917b21-b679-4709-ae24-7f6c9d0fa884
 # ╠═1af0ce91-f9b8-4021-a599-542bfc5e6a17
 # ╠═c9195f98-ad36-4264-80e8-4c2f7078213a
-# ╠═ac05537e-80da-4d04-b5a3-557e88ad59a8
+# ╟─ac05537e-80da-4d04-b5a3-557e88ad59a8
 # ╠═2743f296-c1b5-4688-8923-7372912a1d66
-# ╠═ecc620df-5640-4fcc-86c4-a18cd8fab25e
+# ╟─ecc620df-5640-4fcc-86c4-a18cd8fab25e
 # ╠═fdb31fef-9990-47aa-90d9-73093cbca53e
-# ╠═b91a3089-6669-4f12-8b95-b763435f29fb
+# ╟─b91a3089-6669-4f12-8b95-b763435f29fb
 # ╠═28c9bf35-0593-45a6-b819-a889a22e2ac8
 # ╠═f38b7c83-1a50-4525-af72-d7c8625eb0c9
-# ╠═65b5ed4a-cbbb-4659-b373-62a76acd2370
+# ╟─65b5ed4a-cbbb-4659-b373-62a76acd2370
 # ╠═a2ba84e6-bb49-4720-b84b-12796df7b37e
-# ╠═091fb07a-c52b-4c45-a1a0-9220bf5ff3bb
+# ╟─091fb07a-c52b-4c45-a1a0-9220bf5ff3bb
 # ╠═d5c59a23-2d04-43ee-9b7e-9d976449fe96
 # ╠═2c970a81-b1e8-43d0-b4cb-e50c611cf842
 # ╠═8de61f61-7c6c-4917-aafb-da84c3f9a4b9
@@ -2301,10 +2305,11 @@ version = "1.13.0+0"
 # ╠═92dabed3-eb23-451e-aab8-78e1e4276fd1
 # ╠═be4ada1e-e39c-4471-8b09-3fb955dfbabe
 # ╠═ab9f0f20-f8e1-4a73-af73-7f7edd4d419b
-# ╠═ac41aec4-1695-4afc-ae47-f15e4ab65c73
+# ╟─ac41aec4-1695-4afc-ae47-f15e4ab65c73
 # ╠═9f7d761a-687c-44e1-b2b1-1da8ea3942ef
 # ╠═eda588a2-68bb-4c7f-9f42-4150ab12fbcb
-# ╠═9f1cc520-8a43-4de9-989d-ca99c49b80f1
+# ╟─9f1cc520-8a43-4de9-989d-ca99c49b80f1
 # ╠═9c4b68b3-4874-4388-b8bc-68cb0ce47a07
+# ╟─949e98e8-36ce-4063-9a05-e5f10420030a
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

@@ -144,14 +144,6 @@ resultado = descenso_con_umbral(opcion.funcion, opcion.x₀, η, ϵ);
 # ╔═╡ e945121c-886f-4d0b-bd13-94967b5aee7c
 dibuja_resultado(resultado)
 
-# ╔═╡ c6c15287-badd-4319-871a-65ab9bda1078
-md"""
-Número de pasos totales: $(length(resultado))
-"""
-
-# ╔═╡ b3380fee-9b8a-4273-8833-fdbfc3b72f71
-
-
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
@@ -1535,14 +1527,12 @@ version = "1.9.2+0"
 # ╠═643be454-62a1-4fac-bb76-a8dbcf97d0b0
 # ╠═2e1c7807-e953-4d99-979e-f4071783c51d
 # ╠═83b0924a-30aa-4dc4-ac85-93ea45e21728
-# ╠═ea5a0399-d830-4763-81e6-9dfe2316dc57
-# ╠═32a40aac-f873-4dc8-9ca8-7cd0c2de6c50
+# ╟─ea5a0399-d830-4763-81e6-9dfe2316dc57
+# ╟─32a40aac-f873-4dc8-9ca8-7cd0c2de6c50
 # ╠═9891262e-6dbe-4f57-8800-ffca61698353
 # ╠═bf7b0729-4240-446b-8b5b-f4b0f6c50ac6
 # ╠═7d3eafd8-e3c1-4aec-a3a6-680d39f198c3
 # ╠═fd1a54a2-98b8-4872-b665-8dd78d40968a
 # ╠═e945121c-886f-4d0b-bd13-94967b5aee7c
-# ╠═c6c15287-badd-4319-871a-65ab9bda1078
-# ╠═b3380fee-9b8a-4273-8833-fdbfc3b72f71
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
