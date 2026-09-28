@@ -233,14 +233,15 @@ let
 		xlabel = "ln(Periodo (días))",
 		ylabel = "Magnitud aparente"
 	)
-	plot!(
-		log10.(datos.Period), datos.Max,
-		yflip = true,
-		label = false
-	)
+	# plot!(
+	# 	log10.(datos.Period), datos.Max,
+	# 	yflip = true,
+	# 	label = false
+	# )
 	plot!(
 		log10.(datos.Period), fitted(ajuste_logaritmico_max),
 		label = "Ajuste magnitud máxima",
+		width = 2,
 	)
 	scatter!(
 		log10.(datos.Period), datos.Min,
@@ -248,14 +249,15 @@ let
 		legend = :bottomright,
 		label = "Magnitud máxima",
 	)
-	plot!(
-		log10.(datos.Period), datos.Min,
-		yflip = true,
-		label = false,
-	)
+	# plot!(
+	# 	log10.(datos.Period), datos.Min,
+	# 	yflip = true,
+	# 	label = false,
+	# )
 	plot!(
 		log10.(datos.Period), fitted(ajuste_logaritmico_min),
 		label = "Ajuste magnitud mínima",
+		width = 2,
 	)
 end
 
@@ -282,13 +284,9 @@ let
 		ylabel = "Magnitud aparente",
 	)
 	plot!(
-		datos.Period, datos.Max,
-		yflip = true,
-		label = false,
-	)
-	plot!(
 		range(0, 130, step = 1), ajuste(ajuste_logaritmico_max, range(0, 130, step = 1)),
 		label = "Ajuste magnitud máxima",
+		width = 2,
 	)
 	scatter!(
 		datos.Period, datos.Min,
@@ -297,13 +295,9 @@ let
 		label = "Magnitud mínima",
 	)
 	plot!(
-		datos.Period, datos.Min,
-		yflip = true,
-		label = false,
-	)
-	plot!(
 		range(0, 130, step = 1), ajuste(ajuste_logaritmico_min, range(0, 130, step = 1)),
 		label = "Ajuste magnitud mínima",
+		width = 2,
 	)
 end
 
@@ -387,10 +381,7 @@ begin
 	plot!(
 		log10.(datos.Period), [y for (x,y) in magnitud_leavitt.(datos.Period)],
 		label = "Ajuste magnitud absoluta máxima",
-	)
-	plot!(
-		log10.(datos.Period), datos_absoluta.magnitud_maxima,
-		label = false,
+		width = 2,
 	)
 	scatter!(
 		log10.(datos.Period), datos_absoluta.magnitud_minima,
@@ -399,10 +390,7 @@ begin
 	plot!(
 		log10.(datos.Period), [x for (x,y) in magnitud_leavitt.(datos.Period)],
 		label = "Ajuste magnitud absoluta mínima",
-	)
-	plot!(
-		log10.(datos.Period), datos_absoluta.magnitud_minima,
-		label = false,
+		width = 2,
 	)
 end
 
@@ -2192,38 +2180,38 @@ version = "1.13.0+0"
 # ╠═8b393dc5-daf6-4bf5-946b-0db8af3bb1a4
 # ╠═def37579-563f-42f5-ae99-8076228c4a27
 # ╠═baaaa803-a890-4432-9855-48dcd7f2b722
-# ╠═19f40e34-ae51-4769-bf1b-7f7cd33eca9d
-# ╠═7b8a7ab8-d4be-49db-a7a8-ddc8def3958b
+# ╟─19f40e34-ae51-4769-bf1b-7f7cd33eca9d
+# ╟─7b8a7ab8-d4be-49db-a7a8-ddc8def3958b
 # ╠═fd790e5c-8e8b-40b3-b83f-407eea5a05a4
 # ╠═fed6dd0f-1d3a-433d-bfe0-1d79e9ce8c36
-# ╠═0bd2a558-c3ac-4490-a0b7-ea4a5f8fc15a
-# ╠═fe40be46-3e80-4275-81de-2d90f7b0f9b6
-# ╠═0230945b-27b4-43a0-9e65-87e737855327
-# ╠═f8ebf0ab-34d1-4506-a6a0-e0b5072e7a55
+# ╟─0bd2a558-c3ac-4490-a0b7-ea4a5f8fc15a
+# ╟─fe40be46-3e80-4275-81de-2d90f7b0f9b6
+# ╟─0230945b-27b4-43a0-9e65-87e737855327
+# ╟─f8ebf0ab-34d1-4506-a6a0-e0b5072e7a55
 # ╠═3f1a729e-2666-4817-b36d-02bbc5d9742f
-# ╠═f20fdcfb-32a4-40bb-a94f-4b007a298f6d
+# ╟─f20fdcfb-32a4-40bb-a94f-4b007a298f6d
 # ╠═9d3b3bc1-9ccf-4aba-8e2f-283c8c5c71ba
-# ╠═aa0139fe-d9d0-4ca8-86f3-3796240a611b
+# ╟─aa0139fe-d9d0-4ca8-86f3-3796240a611b
 # ╠═a0582c1b-3c36-4ae0-9279-f660797e92af
-# ╠═06e32463-28e6-4dbe-be1a-b1ebf02a93c4
+# ╟─06e32463-28e6-4dbe-be1a-b1ebf02a93c4
 # ╠═a5971e36-8558-4962-8f88-fa3f63b17be6
-# ╠═97d22c1f-33bc-499a-8042-1705bff860a0
+# ╟─97d22c1f-33bc-499a-8042-1705bff860a0
 # ╠═2d6f06a1-794e-4fc7-813c-966f12c1537c
-# ╠═b73951bb-36ba-4202-927e-e25723cdd5f0
+# ╟─b73951bb-36ba-4202-927e-e25723cdd5f0
 # ╠═ae62343b-95b9-4dad-9c07-69a74da69314
-# ╠═7d2188cb-f09a-4294-b7e4-8107f17f0eb9
+# ╟─7d2188cb-f09a-4294-b7e4-8107f17f0eb9
 # ╠═05b04d11-af54-4a64-991b-5ab23fd1e84d
-# ╠═ea107d05-f157-4b6c-9c9a-a48bda03c915
+# ╟─ea107d05-f157-4b6c-9c9a-a48bda03c915
 # ╠═4c23708f-c9a5-4816-b374-8a274de8d3ef
-# ╠═226f30b7-41b6-4baa-9265-5eb08830e2a4
+# ╟─226f30b7-41b6-4baa-9265-5eb08830e2a4
 # ╠═5ad7e512-8cad-437e-90c6-b9f0951b28c7
-# ╠═1f384c7d-eb7b-4fd7-8875-d598f3cbbb71
+# ╟─1f384c7d-eb7b-4fd7-8875-d598f3cbbb71
 # ╠═81192886-b647-4f36-ab24-6facad865de8
 # ╠═7d076c34-651f-426a-a816-6bc1f657201b
-# ╠═8d2fe9e1-bf1c-4ef6-8804-05e645a31f03
-# ╠═34c2b0dc-8f98-4574-8040-c29202e03e24
-# ╠═f22f7390-1f0d-4d29-848c-6b9fd819def5
-# ╠═25aae645-4cf7-46e3-9878-fb1390d0eb21
+# ╟─8d2fe9e1-bf1c-4ef6-8804-05e645a31f03
+# ╟─34c2b0dc-8f98-4574-8040-c29202e03e24
+# ╟─f22f7390-1f0d-4d29-848c-6b9fd819def5
+# ╟─25aae645-4cf7-46e3-9878-fb1390d0eb21
 # ╠═b0c48453-9237-47f0-959c-0698f098c19c
 # ╠═46a23721-1202-4551-b675-be62402f664b
 # ╠═bb473b1b-78c8-4182-9b05-2e2d23075cdd
@@ -2236,20 +2224,20 @@ version = "1.13.0+0"
 # ╠═9aca9300-611a-4ffe-84ca-2b00993b221a
 # ╠═7af8be8a-8d02-4441-b3f1-2a9c64f09a21
 # ╠═259169ee-d0ad-4ef9-af6d-ef2ccc91ea08
-# ╠═4f7cce46-07ca-4599-9ff9-302daa9b8004
+# ╟─4f7cce46-07ca-4599-9ff9-302daa9b8004
 # ╠═be4e08c3-2f33-44bb-a41c-87e6dbe1b686
 # ╠═7eb7883a-d4e5-4176-a919-72dcc10eca3c
 # ╠═9f847379-f8a8-4953-863c-2a56dd633eba
 # ╠═114aba12-37ec-4cf8-bede-10d030fb9a9c
 # ╠═628cee3c-3df5-4255-ba5c-c1a36b6b3fe4
-# ╠═a35dab11-27c2-48ca-ac64-74ec15ee0ac8
+# ╟─a35dab11-27c2-48ca-ac64-74ec15ee0ac8
 # ╠═c79b8617-a598-49a1-9633-a403b4004d22
-# ╠═6515d4f8-fe82-444d-ab1e-fbd3d48b2cbb
+# ╟─6515d4f8-fe82-444d-ab1e-fbd3d48b2cbb
 # ╠═47a5a50c-8f72-4717-a72b-9da166306d50
-# ╠═dc102962-ceaa-43c9-b9db-7585f3ae0d72
+# ╟─dc102962-ceaa-43c9-b9db-7585f3ae0d72
 # ╠═8e5fcf80-e9f9-4464-81c9-364033b1237d
-# ╠═2f706687-19dc-4435-a771-988c46009e18
+# ╟─2f706687-19dc-4435-a771-988c46009e18
 # ╠═44d2ff68-36ad-4343-b898-6b9df752216a
-# ╠═d711980e-1b9b-4916-8cc1-08f4786b8f54
+# ╟─d711980e-1b9b-4916-8cc1-08f4786b8f54
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

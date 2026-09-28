@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v1.0.3
+# v1.0.1
 
 using Markdown
 using InteractiveUtils
@@ -705,7 +705,7 @@ md"""
 
 # ╔═╡ 8cab10cf-e7d4-42a9-b9b9-c6243ea80ec4
 md"""
-## Paquetes Julia
+## Paquetes en Julia
 Después de entrenar el modelo, podemos ver el valor de los parámetros:
 """
 
@@ -714,7 +714,7 @@ MLJ.fitted_params(modelo)
 
 # ╔═╡ 3566a81e-5a17-4c34-87b4-3b7dfbe2fc1d
 md"""
-Puedes comprobar que estos parámetros coinciden con los proporcionados al utilizar el paquete GLM, de hecho el paquete JML **recubre** algoritmos proporcionados por otros paquetes.
+Puedes comprobar que estos parámetros coinciden con los proporcionados al utilizar el paquete GLM, de hecho el paquete MLJ **recubre** algoritmos proporcionados por otros paquetes.
 
 Recuerda que el objetivo de MLJ es ofrecer una interfaz uniforme al programador.
 """
@@ -737,7 +737,7 @@ end
 
 # ╔═╡ 4c52220e-3b6e-46fe-b7d7-87bfc5facf99
 md"""
-## Paquetes de Julia
+## Paquetes en Julia
 
 En el caso anterior, estamos utilizando el mismo conjunto de datos para 
 entrenar el modelo, que para calcular el error del modelo sobre los datos.
@@ -1287,11 +1287,6 @@ El gráfico quantil-quantil corrobora la bondad del ajuste.
 # ╔═╡ 5cd0a735-6ab1-4467-aed0-591f876658a7
 qqnorm(residuals(regresion_grado3_glm))
 
-# ╔═╡ 90cef0bf-fc2f-4e0d-acd5-750456dd9bf9
-md"""
-## Encontrar el mejor grado de un polinomio
-"""
-
 # ╔═╡ 8b6c1f57-a7a6-45e1-81f3-a3b06cbd25cc
 md"""
 # Descenso de gradiente
@@ -1403,6 +1398,8 @@ md"""
 La elección de $\eta$ se debe realizar con cuidado. Un valor grande de $\eta$ puede dar lugar a un comportamiento errático cuando el descenso del gradiente se acerca al mínimo de la función de pérdidas.
 
 Un valor demasiado pequeño de $\eta$ puede dar lugar a una aproximación muy lenta al valor mínimo de la función de pérdidas.
+
+[Aquí](https://github.com/AprendizajeAutomaticoUJI/Teoria/blob/main/RegresionLineal/descenso_gradiente.jl) tienes un cuaderno Julia que implementa el descenso de gradiente y muestra algunos ejemplos.
 """
 
 # ╔═╡ ac02eb56-d90c-4922-809a-6eff0e5abe0d
@@ -1430,6 +1427,8 @@ md"""
 Si el conjunto de datos es muy numeroso y utilizamos muchos pasos en el 
 descenso de gradiente, puede que el algoritmo tarde mucho en alcanzar el 
 mínimo.
+
+Para aumentar acelarar el proceso, en cada paso del ajuste tomamos sólo un subcojunto aleatorio del total, en vez de todos los datos.
 """
 
 # ╔═╡ 0dfae67d-60ff-4ba9-898f-96d461c150e9
@@ -1751,11 +1750,11 @@ Aquí tienes un par de cuadernos Julia con ejemplos de cómo usar la regresión 
 
 Se te interesa la astronmía, astrofísica y cosmología y quieres saber más sobre estos temas te recomiendo los siguientes libros:
 
-!!! info "Aclaración"
-	La casa del libro no esponsoriza este espacio ;)
-
 1. [Antes de Hubble Mss. Leavitt](https://www.casadellibro.com/libro-antes-de-hubble-miss-leavitt/9788495348319/1483818)
 1. [Cosmología moderna desde sus orígenes](https://www.casadellibro.com/libro-cosmologia-moderna-desde-sus-origenes/9788413521251/12033402)
+
+!!! info "Aclaración"
+	La casa del libro no esponsoriza este espacio ;)
 """
 
 # ╔═╡ 5c0b5a16-fd1d-4b8c-aa70-d746332b4d28
@@ -4217,7 +4216,7 @@ version = "1.4.1+2"
 # ╟─c3976756-cf99-4092-86d2-994b34894bb7
 # ╠═70802a0d-d500-457c-9823-0bf99f23509e
 # ╟─354706f0-c7a2-49b6-be7d-5fe9d333aa30
-# ╟─b4ffd1ca-dc72-45fe-a6a4-b0f9569cec64
+# ╠═b4ffd1ca-dc72-45fe-a6a4-b0f9569cec64
 # ╠═1e051daa-f2db-447b-93b3-19c594fc0d66
 # ╠═4b2dfb5f-9319-4cd9-9e6c-69efab579681
 # ╟─0f85c1b1-ce14-4870-8943-efb72e9ec7d9
@@ -4264,7 +4263,6 @@ version = "1.4.1+2"
 # ╟─38d88e06-764f-439f-a7e3-5253170a249f
 # ╟─dbbca94b-d3eb-40f2-b303-f40f537dbbd9
 # ╟─5cd0a735-6ab1-4467-aed0-591f876658a7
-# ╟─90cef0bf-fc2f-4e0d-acd5-750456dd9bf9
 # ╟─8b6c1f57-a7a6-45e1-81f3-a3b06cbd25cc
 # ╟─7237b145-9c6d-40e0-bc56-601d552fcd33
 # ╟─d86aafd0-4e64-4c95-8279-a0a0a7f6ff1e
@@ -4289,9 +4287,9 @@ version = "1.4.1+2"
 # ╟─054687a8-d948-447d-8e4a-3b5f94a05ee5
 # ╟─909d3eaf-f6b8-4bfd-8bb3-2178c2acecc4
 # ╟─e767de20-5188-46f5-add8-97f0fafc1407
-# ╟─363847f2-3cc6-4849-8c99-1a358a3227f6
+# ╠═363847f2-3cc6-4849-8c99-1a358a3227f6
 # ╟─178e6c6e-e469-4a83-80e9-919cf58a2699
-# ╟─99acc500-db17-47cb-b1fe-46221270662d
+# ╠═99acc500-db17-47cb-b1fe-46221270662d
 # ╟─4cfb2906-1717-4783-b653-4a3c5400842c
 # ╟─32d2acdc-e835-47d1-8979-3336d5312b78
 # ╟─b495bcdb-9204-4c07-a736-19c18622f244
@@ -4312,7 +4310,7 @@ version = "1.4.1+2"
 # ╟─ee6aeafb-84b2-460f-8c78-df4e2652098c
 # ╟─905d9950-c14e-44ce-8b06-40fb6ff6f287
 # ╟─c159d40a-d474-4199-824d-68975c673b5a
-# ╟─02f9248e-b467-41a1-964a-97713f882736
+# ╠═02f9248e-b467-41a1-964a-97713f882736
 # ╟─074845dc-c55d-464a-a0be-24986f7e470b
 # ╟─c38dd6e8-0b2a-4926-a21f-b2fb8369d682
 # ╟─5607f8ed-33f1-4c9d-b98a-66e32ecbdf71
