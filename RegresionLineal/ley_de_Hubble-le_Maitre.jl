@@ -26,7 +26,7 @@ using MLJLinearModels
 md"""
 # Ley de Hubble
 
-En este libro de notas voy a reconstruir la ley de Hubble con los datos que él mismo utilizó.
+En este libro de notas voy a reconstruir la ley de Hubble_Le-Maitre con los datos que él mismo utilizó.
 """
 
 # ╔═╡ bf917b21-b679-4709-ae24-7f6c9d0fa884
