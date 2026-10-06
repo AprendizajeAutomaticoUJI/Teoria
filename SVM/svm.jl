@@ -226,12 +226,11 @@ Dónde $x$ es cualquier punto que pertenezca a la recta.
 # ╔═╡ 2815c0a0-c83d-4f97-9877-7e842817d6ce
 md"""
 !!! info "Importante"
-Si multiplicamos el vector $\theta$ y el escalar $\theta_0$ por la misma 
-constante:
-
-- La dirección del vector director no cambia.
-- La distancia de la recta al origen tampoco cambia.
-
+	Si multiplicamos el vector $\theta$ y el escalar $\theta_0$ por la misma 
+	constante:
+	
+	- La dirección del vector director no cambia.
+	- La distancia de la recta al origen tampoco cambia.
 """
 
 # ╔═╡ 1aff9435-6ee9-4028-aea3-482a2f46c099
@@ -570,7 +569,7 @@ modelo = SVC(kernel=LIBSVM.Kernel.Linear)
 
 # ╔═╡ 2b72cfbe-d119-46db-b5ad-8b23d9685e13
 md"""
-¿Qué es eso del kernerl?
+¿Qué es eso del kernerl? Lo vemos en un momento.
 """
 
 # ╔═╡ ba0a7a09-df29-4fac-b28f-b6319c88433c
@@ -998,11 +997,9 @@ md"""
 
 Por otro lado, esta es la lagrangiana que hemos minimizado:
 
-$L(\alpha_n) = -\frac{1}{2} \sum_{n=1}^N \sum_{m=1}^N \alpha_n \alpha_m t_n t_m 
-\boxed{x_n^T x_m} + \sum_{n=1}^N \alpha_n$
+$L(\alpha_n) = -\frac{1}{2} \sum_{n=1}^N \sum_{m=1}^N \alpha_n \alpha_m t_n t_m \boxed{x_n^T x_m} + \sum_{n=1}^N \alpha_n$
 
-El punto importante es que aparecen términos del producto escalar de dos 
-puntos del conjunto de entrenamiento $x_n^T, x_m$, con:
+El punto importante es que aparecen términos del producto escalar de dos puntos del conjunto de entrenamiento $x_n^T, x_m$, con:
 
 $x_n, x_m \in \mathbb{R^D}$
 
@@ -1419,7 +1416,7 @@ PlutoUI = "~0.7.61"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.12.6"
+julia_version = "1.12.7"
 manifest_format = "2.0"
 project_hash = "b74796d0149a25d5b2fb51aabe85d7e18b481569"
 
@@ -1653,7 +1650,7 @@ weakdeps = ["Dates", "LinearAlgebra"]
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.3.0+1"
+version = "1.3.1+2"
 
 [[deps.CompositionsBase]]
 git-tree-sha1 = "802bb88cd69dfd1509f6670416bd4434015693ad"
@@ -2481,7 +2478,7 @@ version = "1.4.3"
 [[deps.OpenSSL_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "458c3c95-2e84-50aa-8efc-19380b2a3a95"
-version = "3.5.4+0"
+version = "3.5.6+0"
 
 [[deps.OpenSpecFun_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl"]
