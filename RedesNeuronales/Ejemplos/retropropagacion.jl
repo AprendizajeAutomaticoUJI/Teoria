@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v1.0.1
+# v1.0.3
 
 using Markdown
 using InteractiveUtils
@@ -29,6 +29,11 @@ md"""
 ## Definición de una neurona
 """
 
+# ╔═╡ 07ccc143-43cb-45e7-b15f-53ab0680bca6
+md"""
+Esta es la estructura básica de una neurona:
+"""
+
 # ╔═╡ f8bd2fdc-e06b-45d7-b3be-b33e0b9a590b
 mutable struct Neurona
     n_entradas::Int64
@@ -46,7 +51,7 @@ end
 
 # ╔═╡ 344d19d0-7e61-4b9b-9c6c-1b34ab646ee6
 md"""
-Función de activación de una neurona. Calcula la salida de la neurona en función de la entrada y los parámetros de la neurona:
+Esta es la función de activación de una neurona. Calcula la salida de la neurona en función de la entrada y los parámetros de la neurona:
 """
 
 # ╔═╡ 665a49fb-f380-4466-8f1d-e3dd3c4f4231
@@ -57,7 +62,7 @@ end
 
 # ╔═╡ 4535d3ba-d4cf-4cb7-8d95-df5b8c03f3d6
 md"""
-Actualización de los pesos de una neurona con el algoritmo de retropropagación:
+Esta es la función de actualización de los pesos de una neurona con el algoritmo de retropropagación:
 """
 
 # ╔═╡ e2e36c31-f4bc-45ba-b576-f0e93ce71d36
@@ -65,14 +70,19 @@ md"""
 ## Definición de una capa
 """
 
+# ╔═╡ c0fe87ad-883e-4e50-905c-9999291145b2
+md"""
+Una capa está formada por un cojunto de neuronas:
+"""
+
 # ╔═╡ d5248517-76c4-49c4-8639-ab6250e49c3c
 md"""
-Paso hacia delante (forward) de la capa:
+La función que propaga hacia adelante (forward) la señal desde la entrada para una capa:
 """
 
 # ╔═╡ 53a33085-e68b-424b-b346-27f8c37f0d72
 md"""
-Algoritmo de retropropagación para una capa:
+Función de retropropagación para una capa:
 """
 
 # ╔═╡ b419d374-dcb4-491d-b935-fd4b6baa17ac
@@ -80,24 +90,39 @@ md"""
 ## Definición de la red
 """
 
+# ╔═╡ c93a0312-b9d4-452a-a49c-732807a74539
+md"""
+Una red neuronal es una *apilamiento* de capas:
+"""
+
 # ╔═╡ 9ab2ab60-dc40-47ff-8002-a67e4cceee51
 md"""
-Paso hacia delante de la red:
+Función de propagación hacia adelante de la red, fíjate en que símplemente hace uso de la función de propagación hacia adelante de cada una de sus capas:
 """
 
 # ╔═╡ c60cdf8c-9a51-4e53-8468-376c1834e565
 md"""
-Error a la salida de la red:
+Función que calcula el error a la salida de la red:
 """
 
 # ╔═╡ e0e7db5b-d167-4f69-a605-81c0e2ade739
 md"""
-Algoritmo de retropropagación para la red:
+Función de retropropagación de la red para un único vector de entradas y su salida, de nuevo, fíjate en que hace uso de las funciones de retropropagación de cada una de las capas:
+"""
+
+# ╔═╡ 7f491a98-8e6d-4788-8239-9f0699c8265f
+md"""
+Función de retropropagación para un conjunto (matriz) de vectores de entradas, y la correspondiente matriz de salidas:
 """
 
 # ╔═╡ 0386d4cb-1aef-4b78-a6b4-477d8d6f680e
 md"""
-Entrenamiento de la red:
+Finalmente, el algoritmo de entrenamiento de la red:
+"""
+
+# ╔═╡ 288588f5-0ae0-4280-a7a0-24320b1af001
+md"""
+Con todo lo anterior hemos creado nuestra propia biblioteca de creación y entrenamiento de redes neuronales. Vamo a implementar algunos ejemplos.
 """
 
 # ╔═╡ b50767de-ae96-4c58-88cc-72cd0d9a3223
@@ -426,7 +451,7 @@ PlutoUI = "~0.7.83"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.12.6"
+julia_version = "1.12.7"
 manifest_format = "2.0"
 project_hash = "8199d2c1416769e85fb6af963622bda613a69727"
 
@@ -523,7 +548,7 @@ weakdeps = ["Dates", "LinearAlgebra"]
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.3.0+1"
+version = "1.3.1+2"
 
 [[deps.ConcurrentUtilities]]
 deps = ["Serialization", "Sockets"]
@@ -1027,7 +1052,7 @@ version = "1.6.1"
 [[deps.OpenSSL_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "458c3c95-2e84-50aa-8efc-19380b2a3a95"
-version = "3.5.4+0"
+version = "3.5.6+0"
 
 [[deps.Opus_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -1685,18 +1710,21 @@ version = "1.13.0+0"
 # ╠═93743910-6958-42c8-8964-40086d4e4e07
 # ╠═e29126d2-40be-4f77-86d1-2b6734f89db6
 # ╠═b37b2452-3167-4ef6-8bdf-aa0b65b60c1c
+# ╠═07ccc143-43cb-45e7-b15f-53ab0680bca6
 # ╠═f8bd2fdc-e06b-45d7-b3be-b33e0b9a590b
 # ╠═344d19d0-7e61-4b9b-9c6c-1b34ab646ee6
 # ╠═665a49fb-f380-4466-8f1d-e3dd3c4f4231
 # ╠═4535d3ba-d4cf-4cb7-8d95-df5b8c03f3d6
 # ╠═8123cb1f-fb96-43ae-bde2-cb2c13f854f2
 # ╠═e2e36c31-f4bc-45ba-b576-f0e93ce71d36
+# ╠═c0fe87ad-883e-4e50-905c-9999291145b2
 # ╠═6808224a-f1eb-4c2e-b63a-11e57216ed99
 # ╠═d5248517-76c4-49c4-8639-ab6250e49c3c
 # ╠═425c3013-01ce-410f-b184-bfdf7f357dfc
 # ╠═53a33085-e68b-424b-b346-27f8c37f0d72
 # ╠═1e628794-1204-4b8d-8819-ff6c2ca40a41
 # ╠═b419d374-dcb4-491d-b935-fd4b6baa17ac
+# ╠═c93a0312-b9d4-452a-a49c-732807a74539
 # ╠═b70b2a65-7b3c-4d24-b6b8-2320648fd878
 # ╠═9ab2ab60-dc40-47ff-8002-a67e4cceee51
 # ╠═d9dc4641-68f2-4837-9356-58b960d58113
@@ -1704,9 +1732,11 @@ version = "1.13.0+0"
 # ╠═e0232c9f-f607-4e00-91fe-3b74422137d0
 # ╠═e0e7db5b-d167-4f69-a605-81c0e2ade739
 # ╠═f0c3c4d9-f37c-4278-87a7-8594a6afccf6
+# ╠═7f491a98-8e6d-4788-8239-9f0699c8265f
 # ╠═b3018751-bcfb-4f07-859c-ca983d468fa5
 # ╠═0386d4cb-1aef-4b78-a6b4-477d8d6f680e
 # ╠═942be539-b529-4d19-a4df-da9f45f9e9e0
+# ╠═288588f5-0ae0-4280-a7a0-24320b1af001
 # ╠═b50767de-ae96-4c58-88cc-72cd0d9a3223
 # ╠═c0a7c804-a97f-4158-beb5-e0e679a6e633
 # ╠═85621953-54ba-4850-8a69-97525217ca5a
