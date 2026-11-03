@@ -146,7 +146,7 @@ md"""
 md"""
 ## Series temporales
 
-Veamos como primer caso, qué es una serie temporal y qué características de interés podemos encontrar en las series de datos temporales.
+Veamos, como primer caso, qué es una serie temporal y qué características de interés podemos encontrar en las series de datos temporales.
 
 Una **serie temporal** de datos es una secuencia de datos con un orden temporal.
 """
@@ -306,7 +306,7 @@ md"""
 
 El objetivo de las redes neuronales recurrentes es dar una salida a partir de una entrada, pero, al contrario que en el caso de las redes convolucionales, el tamaño de la entrada puede ser cualquiera, no es fijo.
 
-Recuerda que al trabajar con redes convolucionales todas las imágenes deben tener el mismo tamaño (ancho x alto).
+Recuerda que al trabajar con redes convolucionales todas las imágenes deben tener el mismo tamaño (ancho x alto), pero en el caso de una serie datos, aunque se procese en tramos de una cantidad fija, el número de tramos que se procesa puede ser variable.
 """
 
 # ╔═╡ 977f84a3-4186-454b-bdf2-0bf7ceac826a
@@ -320,7 +320,7 @@ md"""
 
 Vamos a definir una secuencia como un conjunto ordenado con un número de elementos no determinado, podemos tener secuencias de un único elemento o de muchos elementos. Por ejemplo una secuencia temporal de datos puede tener cualquier tamaño, una frase puede tener cualquier número de letras.
 
-Por otro lado, los vectores los vamos a definir como un conjunto ordenado con un número de elementos fijo. Por ejemplo cuando clasificamos imágenes con una red convolucional, todas las imágenes tienen el mismo tamaño.
+Por otro lado, los vectores los vamos a definir como un conjunto ordenado con un número de elementos fijo.
 """
 
 # ╔═╡ 61bdb024-5186-4188-9af0-0a8b3bb09b86
@@ -377,7 +377,9 @@ Resource(
 
 # ╔═╡ 6a6a866b-35e0-46c3-942e-eb8fdb098c7d
 md"""
-En este caso se le pasa una secuencia a la red y esta debe proporcionar un único valor a la salida. Por ejemplo, pasamos un texto a la red, y la red nos debe indicar si el texto contiene sesgos sexistas. Otro ejemplo es pasar a la red una descripción y que la red genere una imagen a partir de esa descripcion.
+En este caso se le pasa una secuencia a la red y esta debe proporcionar un único valor a la salida. Por ejemplo, pasamos un texto a la red (la longitud del texto es variable), y la red nos debe indicar si el texto contiene sesgos sexistas (un único valor a la salida).
+
+Otro ejemplo es pasar a la red una descripción (de nuevo, la longitud del texto es variable) y que la red genere una imagen a partir de esa descripcion.
 """
 
 # ╔═╡ f761cc35-2b19-4c87-b492-e3b9cf88aec2
@@ -395,7 +397,7 @@ Resource(
 
 # ╔═╡ b64a78c7-e1e4-4e9d-ac78-c8639e150e73
 md"""
-Este caso es una transformación de secuencia a secuencia. Por ejemplo, proporcionamos un texto en una lengua a la red y la red debe traducir el texto a otra lengua.
+Este caso es una transformación de secuencia a secuencia. Por ejemplo, proporcionamos un texto en una lengua a la red (la longitud del texto en la lengua de origen es variable), y la red debe traducir el texto a otra lengua (la longitud del texto en la lengua de destino también es variable).
 """
 
 # ╔═╡ a200a753-9cad-439f-b243-a2640528d4d1
@@ -413,7 +415,7 @@ Resource(
 
 # ╔═╡ 82d64394-b3d5-4c48-a3bc-5f368ebabea4
 md"""
-Este caso es una extensión del caso de vector a secuencia. Por ejemplo, presentamos una secuencia de imágenes a la red, y esta debe generar un texto para cada una de ellas. Imagina, por ejemplo, la interpretación de una película para personas sordas.
+Este caso es una extensión del caso de vector a secuencia. Por ejemplo, presentamos una secuencia de imágenes (cada imagen tiene un tamaño fijo) a la red, y esta debe generar un texto para cada una de ellas (texto de longitud variables). Imagina, por ejemplo, la interpretación de una película para personas sordas.
 """
 
 # ╔═╡ ea3bd38c-b7be-49da-a7dc-27aabcf9c713
@@ -469,23 +471,23 @@ La salida en $y_t$ se calcula en función  del estado oculto $h_{t}$:
 
 $y_t = f(W_{yh} h_t + b_y)$
 
-El estado oculto es la **memoria** de la neurona.
+El estado oculto se puede interpretar como la **memoria** de la neurona.
 """
 
 # ╔═╡ ede5cec8-4238-4953-9323-a2094dcb0058
 md"""
 ## Arquitectura de las RNN
 
-En el proceso de entrenamiento de una red recurrente, se ajustan tanto los pesos de la matriz que calcula la salid $y_t$ como los pesos de las matrices que calculan el estado oculto $h_t$.
+En el proceso de entrenamiento de una red recurrente se ajustan tanto los pesos de la matriz que calcula la salid $y_t$, como los pesos de las matrices con las que se calcula el estado oculto $h_t$.
 
-Veamos como definir y entrenar redes recurrentes en Julia con la biblioteca Flux.
+Igual que en el caso de redes convolucionales, vamos a definir y entrenar redes recurrentes en Julia con la biblioteca Flux.
 """
 
 # ╔═╡ 3838c8de-686c-4da9-9698-fbe36b1dd69b
 md"""
 ## Show me the code
 
-Como ejemplo, vamos a trabajar con la serie de datos temporales de concentración de CO2 que vimos al inicio de la presentación para intentar predecir su evolución a un periodo de meses en el futuro.
+Como ejemplo, vamos a trabajar con la serie de datos temporales de concentración de CO2 que vimos al inicio de la presentación, para intentar predecir su evolución a un periodo de meses en el futuro.
 
 La primera tarea es decidir qué tipo de red recurrente vamos a implementar:
 
@@ -962,17 +964,20 @@ html"""
 Joxemai4, CC BY-SA 3.0 <https://creativecommons.org/licenses/by-sa/3.0>, via Wikimedia Commons
 """
 
-# ╔═╡ 8bcc469e-d96c-4bab-a8de-fa5977d768f6
+# ╔═╡ 2dd20bd6-1b13-457f-a70f-14effd4e0284
 md"""
 ## Cadenas de Markov
 
 Las transiciones se pueden representar como una matriz:
 
-$\begin{matrix}
+$\begin{array}{|c|cc|}
+\hline
  & A & E \\
+\hline
 A & 0.6 & 0.7 \\
 E & 0.4 & 0.3 \\
-\end{matrix}$
+\hline
+\end{array}$
 """
 
 # ╔═╡ 8e78cb8a-0d5d-4a91-b426-4e1058796a41
@@ -1004,7 +1009,7 @@ Es decir, si partimos del estado **A**, el siguiente estado será **A** con un 6
 md"""
 ## Cadenas de Markov
 
-Si queremos calcular la probabilidad en el segundo instante, hacemos dos multiplicaciones, en la primera pasamos del estado inicial a las probabilidades en $t+1$ y con la segunda multiplicación de las probabilidades de $t+1$ a $t+2$:
+Si queremos calcular la probabilidad en el segundo instante, hacemos dos multiplicaciones, en la primera pasamos del estado inicial $t$ a las probabilidades en $t+1$ y con la segunda multiplicación de las probabilidades de $t+1$ a $t+2$:
 
 $\begin{bmatrix}
 0.6 & 0.7 \\
@@ -1070,7 +1075,7 @@ Entrenar un modelo de cadena de Markov implica estimar la matriz de transición 
 md"""
 ## Modelos ocultos de Markov
 
-En los modelo ocultos de Markov, no se conoce el estado en el que se encuentra el sistema, de ahí lo de ocultos, sólo se _ven_ las observaciones que se emiten en cada uno de los estados. Además, las observaciones tienen una cierta distribución de probabilidad, no son constantes, porque si lo fueran tendríamos, de nuevo, una cadana de Markov.
+En los modelo ocultos de Markov, no se conoce el estado en el que se encuentra el sistema, de ahí lo de ocultos, sólo se _ven_ las observaciones que se emiten en cada uno de los estados. Además, las observaciones tienen una cierta distribución de probabilidad, no son constantes, porque si lo fueran tendríamos, de nuevo, una cadena de Markov.
 """
 
 # ╔═╡ ba09c453-fcea-406f-bc1b-a6b5b2decfe3
@@ -2791,7 +2796,7 @@ uuid = "23338594-aafe-5451-b93e-139f81909106"
 # ╠═d262a18f-1482-44a1-821b-d5a7b5370f44
 # ╠═222754d0-2196-4b8f-a3f2-f261aee492e6
 # ╠═8997a275-1f23-4f3d-9285-3889aa2f1897
-# ╠═8bcc469e-d96c-4bab-a8de-fa5977d768f6
+# ╠═2dd20bd6-1b13-457f-a70f-14effd4e0284
 # ╠═8e78cb8a-0d5d-4a91-b426-4e1058796a41
 # ╠═7a3bdcef-c0c7-4892-ab49-3c363945f08d
 # ╠═4a1845cd-e71a-4dbb-a5fc-c9b8d6df289a

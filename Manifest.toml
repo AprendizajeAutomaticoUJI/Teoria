@@ -16,6 +16,15 @@ version = "1.11.0"
 uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
 version = "1.11.0"
 
+<<<<<<< HEAD
+=======
+[[deps.BitFlags]]
+git-tree-sha1 = "bbe1079eecf9c9fbb52765193ad2bae27ae09bc8"
+registries = "General"
+uuid = "d1d4a3ce-64b1-5f1a-9ba4-7e7e69966f35"
+version = "0.1.10"
+
+>>>>>>> 760a18deff1e6a9fe4f85007c0c04e5b9d41d065
 [[deps.CodecZlib]]
 deps = ["TranscodingStreams", "Zlib_jll"]
 git-tree-sha1 = "970758a3d591a2a5c2a907c53f2e2f8c1b1d3537"
@@ -41,6 +50,16 @@ version = "4.18.1"
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
 version = "1.5.5+2"
+<<<<<<< HEAD
+=======
+
+[[deps.ConcurrentUtilities]]
+deps = ["Serialization", "Sockets"]
+git-tree-sha1 = "d5e5fa1f0d6ca517edbbcd734efa93c6639405b0"
+registries = "General"
+uuid = "f0e56b4a-5159-44fe-b623-3e5288b988bb"
+version = "2.7.1"
+>>>>>>> 760a18deff1e6a9fe4f85007c0c04e5b9d41d065
 
 [[deps.Configurations]]
 deps = ["ExproniconLite", "OrderedCollections", "TOML"]
@@ -76,11 +95,20 @@ deps = ["ArgTools", "FileWatching", "LibCURL", "NetworkOptions"]
 uuid = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
 version = "1.7.0"
 
+<<<<<<< HEAD
 [[deps.EnumX]]
 git-tree-sha1 = "c49898e8438c828577f04b92fc9368c388ac783c"
 registries = "General"
 uuid = "4e289a0a-7415-4d19-859d-a7e5c4648b56"
 version = "1.0.7"
+=======
+[[deps.ExceptionUnwrapping]]
+deps = ["Test"]
+git-tree-sha1 = "4e468f521e1f9f86891cb07186de5df90360a666"
+registries = "General"
+uuid = "460bff9d-24e4-43bc-9d9f-a8973cb893f4"
+version = "0.1.12"
+>>>>>>> 760a18deff1e6a9fe4f85007c0c04e5b9d41d065
 
 [[deps.ExpressionExplorer]]
 git-tree-sha1 = "fdcc9d4a253e0041d37c95487f9ae027c3ec002d"
@@ -106,11 +134,19 @@ uuid = "828d9ff0-206c-6161-646e-6576656f7244"
 version = "2.4.3"
 
 [[deps.HTTP]]
+<<<<<<< HEAD
 deps = ["Base64", "CodecZlib", "Dates", "EnumX", "Logging", "PrecompileTools", "Random", "Reseau", "SHA", "TranscodingStreams", "URIs", "UUIDs", "Zlib_jll"]
 git-tree-sha1 = "779aaa01f905311a6a2c21b04517da84efb0be3c"
 registries = "General"
 uuid = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 version = "2.14.2"
+=======
+deps = ["Base64", "CodecZlib", "ConcurrentUtilities", "Dates", "ExceptionUnwrapping", "Logging", "LoggingExtras", "MbedTLS", "NetworkOptions", "OpenSSL", "PrecompileTools", "Random", "SimpleBufferStream", "Sockets", "URIs", "UUIDs"]
+git-tree-sha1 = "49a7885f0e1c0ecabd51b25f2fd14f26357777e0"
+registries = "General"
+uuid = "cd3eb016-35fb-5094-929b-558a96fad6f3"
+version = "1.11.1"
+>>>>>>> 760a18deff1e6a9fe4f85007c0c04e5b9d41d065
 
 [[deps.HypertextLiteral]]
 deps = ["Tricks"]
@@ -130,6 +166,16 @@ registries = "General"
 uuid = "82899510-4779-5014-852e-03e436cf321d"
 version = "1.0.0"
 
+<<<<<<< HEAD
+=======
+[[deps.JLLWrappers]]
+deps = ["Artifacts", "Preferences"]
+git-tree-sha1 = "7204148362dafe5fe6a273f855b8ccbe4df8173e"
+registries = "General"
+uuid = "692b3bcd-3c85-4b1f-b108-f13ce0eb3210"
+version = "1.8.0"
+
+>>>>>>> 760a18deff1e6a9fe4f85007c0c04e5b9d41d065
 [[deps.JuliaSyntaxHighlighting]]
 deps = ["StyledStrings"]
 uuid = "ac6e5ff7-fb65-4e79-a425-ec3bc9c03011"
@@ -209,6 +255,23 @@ deps = ["Base64", "JuliaSyntaxHighlighting", "StyledStrings"]
 uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
 version = "1.11.0"
 
+<<<<<<< HEAD
+=======
+[[deps.MbedTLS]]
+deps = ["Dates", "MbedTLS_jll", "MozillaCACerts_jll", "NetworkOptions", "Random", "Sockets"]
+git-tree-sha1 = "0e4b139a1f0f0b8c054fcdfd3be5f610cfb8c787"
+registries = "General"
+uuid = "739be429-bea8-5141-9913-cc70e7f3736d"
+version = "1.2.0"
+
+[[deps.MbedTLS_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "ff69a2b1330bcb730b9ac1ab7dd680176f5896b8"
+registries = "General"
+uuid = "c8ffd9c3-330d-5841-b78e-0817d7145fa1"
+version = "2.28.1010+0"
+
+>>>>>>> 760a18deff1e6a9fe4f85007c0c04e5b9d41d065
 [[deps.MozillaCACerts_jll]]
 uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
 version = "2026.10.20"
@@ -224,6 +287,16 @@ version = "1.2.1"
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
 version = "1.3.0"
 
+<<<<<<< HEAD
+=======
+[[deps.OpenSSL]]
+deps = ["BitFlags", "Dates", "MozillaCACerts_jll", "NetworkOptions", "OpenSSL_jll", "Sockets"]
+git-tree-sha1 = "f1cffefcdc73bbf17875e7c1cb062ecb000c1552"
+registries = "General"
+uuid = "4d8831e6-92b7-49fb-bdf8-b643e874388c"
+version = "1.7.1"
+
+>>>>>>> 760a18deff1e6a9fe4f85007c0c04e5b9d41d065
 [[deps.OpenSSL_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "458c3c95-2e84-50aa-8efc-19380b2a3a95"
@@ -251,10 +324,17 @@ weakdeps = ["REPL"]
 
 [[deps.Pluto]]
 deps = ["Base64", "Configurations", "Dates", "Downloads", "ExpressionExplorer", "FileWatching", "GracefulPkg", "HTTP", "HypertextLiteral", "InteractiveUtils", "LRUCache", "Logging", "LoggingExtras", "MIMEs", "Malt", "Markdown", "MsgPack", "Pkg", "PlutoDependencyExplorer", "PrecompileSignatures", "PrecompileTools", "REPL", "Random", "RegistryInstances", "RelocatableFolders", "SHA", "Scratch", "Sockets", "TOML", "Tables", "URIs", "UUIDs"]
+<<<<<<< HEAD
 git-tree-sha1 = "3bb3d6a96633c20dfb6366217bf592ecda71659c"
 registries = "General"
 uuid = "c3e4b0f8-55cb-11ea-2926-15256bba5781"
 version = "1.1.0"
+=======
+git-tree-sha1 = "ecb99a3714b5b1b3dd7498b87be2f9468f35ab7b"
+registries = "General"
+uuid = "c3e4b0f8-55cb-11ea-2926-15256bba5781"
+version = "1.0.4"
+>>>>>>> 760a18deff1e6a9fe4f85007c0c04e5b9d41d065
 
 [[deps.PlutoDependencyExplorer]]
 deps = ["ExpressionExplorer", "InteractiveUtils", "Markdown"]
@@ -334,6 +414,15 @@ version = "1.3.0"
 uuid = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
 version = "1.11.0"
 
+<<<<<<< HEAD
+=======
+[[deps.SimpleBufferStream]]
+git-tree-sha1 = "f305871d2f381d21527c770d4788c06c097c9bc1"
+registries = "General"
+uuid = "777ac1f9-54b0-4bf8-805c-2214025038e7"
+version = "1.2.0"
+
+>>>>>>> 760a18deff1e6a9fe4f85007c0c04e5b9d41d065
 [[deps.Sockets]]
 uuid = "6462fe0b-24de-5631-8697-dd941f90decc"
 version = "1.11.0"
@@ -380,10 +469,17 @@ version = "0.1.13"
 
 [[deps.URIs]]
 deps = ["Serialization"]
+<<<<<<< HEAD
 git-tree-sha1 = "eb3b85ca904a1d1647b15acc091b113b8874b648"
 registries = "General"
 uuid = "5c2747f8-b7ea-4ff2-ba2e-563bfd36b1d4"
 version = "1.7.3"
+=======
+git-tree-sha1 = "50eda8011f098869a76da69a524ff59e0298711a"
+registries = "General"
+uuid = "5c2747f8-b7ea-4ff2-ba2e-563bfd36b1d4"
+version = "1.7.2"
+>>>>>>> 760a18deff1e6a9fe4f85007c0c04e5b9d41d065
 
 [[deps.UUIDs]]
 deps = ["Random", "SHA"]
