@@ -580,8 +580,8 @@ La red se define encadenando una serie de capas:
 
 # ╔═╡ 4312e730-bf64-4081-bf37-6062c3c3acbd
 modelo_seno = Chain(
-	Dense(1 => 800, tanh), # 500 neuronas con ax+b (1000 parámetros)
-	Dense(800 => 1) # una neurona con a[1..500]x+b (501 parámetros)
+	Dense(1 => 500, tanh), # 500 neuronas con ax+b (1000 parámetros)
+	Dense(500 => 1) # una neurona con a[1..500]x+b (501 parámetros)
 	#Dense(1 => 1) # La puedo obviar.
 )
 
@@ -589,7 +589,7 @@ modelo_seno = Chain(
 md"""
 La red tiene la siguiente estructura:
 
-1. La capa de entrada con una neurona a la entrada y ochocientas neuronas a la salidas hacia la siguiente capa densamente conectada (densamente conectada significa que cada neurona de entradas se conecta con todas las neuronas de la siguiente capa)
+1. La capa de entrada con una neurona a la entrada y quinientas neuronas a la salidas hacia la siguiente capa densamente conectada (densamente conectada significa que cada neurona de entradas se conecta con todas las neuronas de la siguiente capa)
 1. La función de activación elegida es tanh.
 1. Una capa intermedia con quinientas neuronas a la entrada y una salida hacia la siguente capa densamente conectada.
 1. Una capa de salida con una neurona.
@@ -3317,9 +3317,9 @@ version = "1.9.2+0"
 # ╟─a8c7d8c1-f9e1-448d-8832-82f4e6df33b7
 # ╟─7827ecab-178e-4286-9482-b787b95e949f
 # ╟─57174712-848c-4868-89f3-5f6b67953312
-# ╠═9143e7f3-ddbd-4757-a202-7c7b7f4c7468
-# ╠═cce25fb8-c343-4866-80fa-d2d9714d9731
-# ╠═aa6459b3-3e45-4951-8279-54a4c72bf99c
+# ╟─9143e7f3-ddbd-4757-a202-7c7b7f4c7468
+# ╟─cce25fb8-c343-4866-80fa-d2d9714d9731
+# ╟─aa6459b3-3e45-4951-8279-54a4c72bf99c
 # ╟─d0a3a855-bc5f-4c84-b735-80a8ac71d94c
 # ╠═4312e730-bf64-4081-bf37-6062c3c3acbd
 # ╟─8498d094-5069-4fb6-8d12-9f1721f9b4ac
@@ -3331,8 +3331,8 @@ version = "1.9.2+0"
 # ╠═5da5c8fa-a0e8-4f0d-8eaf-4fd0b2c00ed4
 # ╟─0f9f1ef8-a591-45ce-8c97-507144441660
 # ╠═5b9f4efc-8917-4a9b-bba7-5c5477bf4cbf
-# ╠═07bb71de-f226-40fb-b735-73863bf0688e
-# ╠═209d3b9a-67db-4b28-804a-393aaa2e64e9
+# ╟─07bb71de-f226-40fb-b735-73863bf0688e
+# ╟─209d3b9a-67db-4b28-804a-393aaa2e64e9
 # ╟─a05f8886-30fe-4a08-861a-b730709032d9
 # ╟─7f9436bf-06ab-41fb-a435-61f815b6787e
 # ╠═2b7ee756-8187-4176-b731-7bdfbcf2ec05

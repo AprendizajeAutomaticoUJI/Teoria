@@ -877,7 +877,7 @@ Finalmente, hacemos la detección:
 res = yolomod(batch, detect_thresh=0.5, overlap_thresh=0.8) 
 ```
 
-La estructura **res** tiene toda la información de la información detectada.
+La estructura **res** tiene toda la información de la imagen.
 """
 
 # ╔═╡ 0c1fb2c7-987f-4a2f-8b63-488e6c177de6
@@ -1068,7 +1068,7 @@ ShortCodes = "~0.3.6"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.12.6"
+julia_version = "1.12.7"
 manifest_format = "2.0"
 project_hash = "7a569f1efe044287c9fcf980287e2d7e96f0bb69"
 
@@ -1105,7 +1105,7 @@ version = "0.11.5"
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.3.0+1"
+version = "1.3.1+2"
 
 [[deps.Dates]]
 deps = ["Printf"]
@@ -1298,7 +1298,7 @@ version = "0.3.29+0"
 [[deps.OpenSSL_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "458c3c95-2e84-50aa-8efc-19380b2a3a95"
-version = "3.5.4+0"
+version = "3.5.6+0"
 
 [[deps.OrderedCollections]]
 git-tree-sha1 = "05868e21324cede2207c6f0f466b4bfef6d5e7ee"
