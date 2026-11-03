@@ -753,7 +753,7 @@ lstm = Chain(
 
 Hemos sustituido la capa recurrente por la LSTM.
 
-El código de entrenamiento vuelve a ser el mismo que ante, y el resultados que obtenemos es:
+El código de entrenamiento vuelve a ser el mismo que antes, y el resultados que obtenemos es:
 """
 
 # ╔═╡ ce8adf49-25ce-4644-9420-921bdb8e9c28
@@ -904,7 +904,7 @@ md"""
 md"""
 ## ARMA y sus derivadas
 
-Aunque hemos visto que las redes neuronales recurerentes funcionan muy bien para la predicción en series temporales, no son la única posibilidad que existe, de hecho, existen muchos modelos estadísticos que no hacen uso de redes neuronales.
+Aunque hemos visto que las redes neuronales recurrentes funcionan muy bien para la predicción en series temporales, no son la única posibilidad que existe, de hecho, existen muchos modelos estadísticos que no hacen uso de redes neuronales.
 
 Por ejemplo, el modelo *Autoregresive Moving Average (ARMA)* predice el próximo valor en una serie temporal a partir de los valores actuales y las diferencias entre los valores reales y los predichos anteriormente:
 
@@ -980,6 +980,14 @@ E & 0.4 & 0.3 \\
 \end{array}$
 """
 
+# ╔═╡ 7f14d8a8-ec6a-4ab2-a886-ec68441830ba
+Resource(
+	imagenes * "cadena_markov.png",
+	:alt => "Cadena de Markov",
+	:width => 250,
+	:style => "display: block; margin: auto;",
+)
+
 # ╔═╡ 8e78cb8a-0d5d-4a91-b426-4e1058796a41
 md"""
 ## Cadenas de Markov
@@ -1004,6 +1012,14 @@ Es decir, si partimos del estado **A**, el siguiente estado será **A** con un 6
 
 
 """
+
+# ╔═╡ 1c69f1cf-62f8-42aa-8aca-db2f99e3a7e5
+Resource(
+	imagenes * "cadena_markov.png",
+	:alt => "Cadena de Markov",
+	:width => 250,
+	:style => "display: block; margin: auto;",
+)
 
 # ╔═╡ 7a3bdcef-c0c7-4892-ab49-3c363945f08d
 md"""
@@ -2797,7 +2813,9 @@ uuid = "23338594-aafe-5451-b93e-139f81909106"
 # ╟─222754d0-2196-4b8f-a3f2-f261aee492e6
 # ╟─8997a275-1f23-4f3d-9285-3889aa2f1897
 # ╟─2dd20bd6-1b13-457f-a70f-14effd4e0284
+# ╟─7f14d8a8-ec6a-4ab2-a886-ec68441830ba
 # ╟─8e78cb8a-0d5d-4a91-b426-4e1058796a41
+# ╟─1c69f1cf-62f8-42aa-8aca-db2f99e3a7e5
 # ╟─7a3bdcef-c0c7-4892-ab49-3c363945f08d
 # ╟─4a1845cd-e71a-4dbb-a5fc-c9b8d6df289a
 # ╟─d18d17da-ad30-45fd-8ea8-e2c965609e48
