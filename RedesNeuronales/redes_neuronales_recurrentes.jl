@@ -258,8 +258,10 @@ function plot_tendencia_esatacionalidad()
 
 	plot(
 		co2.CO2[12:end,:],
-		 title = "Tendencia",
-		 label = "Medida real",
+		title = "Tendencia",
+		label = "Medida real",
+		xticks = (1:12:size(co2,1),string.(co2.Año[1:12:size(co2,1)])),
+		xrotation = 45,
 	)
 	p1 = plot!(
 		media_deslizante(co2.CO2, 12),
@@ -269,6 +271,8 @@ function plot_tendencia_esatacionalidad()
 	p2 = plot(
 		co2.CO2[13:end] - media_deslizante(co2.CO2, 12),
 		title = "Estacionalidad",
+		xticks = (1:12:size(co2,1),string.(co2.Año[1:12:size(co2,1)])),
+		xrotation = 45,
 		legend = false
 	)
 	plot(
