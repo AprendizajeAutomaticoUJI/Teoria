@@ -1,5 +1,8 @@
 ### A Pluto.jl notebook ###
-# v1.0.4
+# v1.1.0
+
+#> [frontmatter]
+#> language = "es"
 
 using Markdown
 using InteractiveUtils
@@ -106,6 +109,8 @@ md"""
 md"""
 ## Introducción
 
+Una primera tarea a resolver cuando se trabaja con lenguaje es el de la representación de palabras (tokens) para que se puedan tratar por parte de un ordenador. Los autoencoders son un modelo que permite crear representaciones de palabras (tokens) con las que poder trabajar.
+
 El objetivo de un autoencoder es replicar la entrada en la salida pasando por un espacio de menor dimensión que el espacio de partida:
 """
 
@@ -152,7 +157,9 @@ El trabajo de un autoencoder parece una tarea sencilla, pero tienen muchas aplic
 md"""
 ## Detectar anomalías
 
-Entrenamos el autoencoder con un conjunto de muestras sin anomalías. Si al autoencoder llega un dato anómalo la codificación intermedia será incapaz de reconstruir el dato a la salida (gran diferencia entre entrada y salida), y ese dato lo podemos considerar anómalo. También podemos entrenar el autoencoder con un cojunto de datos que incluya muestras con anamalías siempre que el porcentaje de muestras con anomalías con respecto del total de muestras sea bajo.
+Entrenamos el autoencoder con un conjunto de muestras sin anomalías. Si al autoencoder llega un dato anómalo la codificación intermedia será incapaz de reconstruir el dato a la salida (gran diferencia entre entrada y salida), y ese dato lo podemos considerar anómalo.
+
+También podemos entrenar el autoencoder con un cojunto de datos que incluya muestras con anomalías siempre que el porcentaje de muestras con anomalías con respecto del total de muestras sea bajo.
 """
 
 # ╔═╡ bfbe0854-0fc8-4f8f-9286-977e734cab12
@@ -226,6 +233,8 @@ _Puso cara de pasmo al oír la noticia_
 si la palabra **pasmo** no figura en el vocabulario que manejamos se sustituye por **UNKNOWN**.
 
 _Puso cara de **UNKNOWN** al oír la noticia_
+
+Además, se añaden al vocabulario otros tokens como **SOS** (Start Of Sentece) para significar que se inicia una frase, **EOS** (End Of Sentence) para significar que hemos llegado al final de una frase; o **EOF** (End Of File) para significar que hemos llegado al final del fragmento de texto producido.
 """
 
 # ╔═╡ c31ee640-cdba-4469-b755-a6406e101015
@@ -266,7 +275,7 @@ capitales .== permutedims(capitales)
 md"""
 ## Embeddings
 
-Los embeddings son el cojunto de técnicas que se utilizan en NLP para representar texto (palabras, frases, parte de un texto en general) como vectores de números que los algoritmos de aprendizaje automático pueden manejar.
+Los embeddings son el conjunto de técnicas que se utilizan en NLP para representar texto (palabras, frases, parte de un texto en general) como vectores de números que los algoritmos de aprendizaje automático pueden manejar.
 
 Para conseguir representaciones de texto (embeddings) lo más compactas posibles, se intentar reducir la dimensionalidad del espacio de partida (número de palabras en el vocabulario), a un espacio que mantenga la información y sea más fácil de manejar.
 
@@ -335,7 +344,7 @@ md"""
 
 # ╔═╡ 732ca76c-97ee-4762-9cd5-cd76752391f5
 md"""
-Continuous Bag of Words 
+**Continuous Bag of Words**: la paralabra que queremos codificar se intenta reproducir a a partir de las palabras que la rodean:
 
 Pineapples are **spikey** and yellow
 """
@@ -362,7 +371,7 @@ md"""
 
 # ╔═╡ be14b504-bf76-4053-8098-71c791108151
 md"""
-Skip-gram
+**Skip-gram**: A partir de la palabra que queremos codificar, se intenta reproducir las palabras que la rodean. Lo puedes interpretar como el proceso inverso o complementario de **Continuous Bag of Words**.
 
 Pineapples are **spikey** and yellow
 """
@@ -384,7 +393,7 @@ Fuente: https://community.alteryx.com/t5/Data-Science/Word2vec-for-the-Alteryx-C
 md"""
 ## Word2vec
 
-Una primera característica impresionante de este embedding es que, si lo proyectamos a un espacio de 3 dimensiones veremos que conceptos similares se encuentran cerca unos de otros.
+Una primera característica impresionante de este embedding es que si lo proyectamos a un espacio de 3 dimensiones, veremos que conceptos similares se encuentran cerca unos de otros.
 
 [Visualización de embeddings.](https://projector.tensorflow.org/)
 """
@@ -458,7 +467,7 @@ end
 # ╔═╡ ea93bd5e-d8ca-4d75-807e-bc4b315464ce
 md"""
 ## Show me the code
-Vamos a calcular el concepto de reina a partir de los conceptos mujer, rey, hombre, y calcular la distancia coseno entre el vector del embedding para reina y el calculado:
+Vamos a calcular el concepto de reina a partir de los conceptos mujer, rey, y hombre; y calcular la distancia coseno entre el vector del embedding para reina y el calculado:
 
 ```julia
 rey = obten_embedding("rey")
@@ -555,7 +564,7 @@ En este caso podemos utilizar una variación de las RNN, las Gated Recurrent Uni
 md"""
 ## Generación de texto
 
-Las celdas (neuronas) GRU (Gated Recurrent Unit) son una mejora de las neuronas LSTM con un rendimiento parecido, pero utilizan menos parámetros, y menos funciones internas para recordar fragmentos de texto.
+Como ya sabemos, las celdas (neuronas) GRU (Gated Recurrent Unit) son una mejora de las neuronas LSTM con un rendimiento parecido, pero utilizan menos parámetros, y menos funciones internas para recordar fragmentos de texto.
 """
 
 # ╔═╡ 547eda5f-ba82-41d7-b9d6-0160813fb3f8
@@ -843,6 +852,8 @@ Los transformers son una vuelta de tuerca al concepto de mantener la informació
 En las redes recurrentes bidireccionales, las posibles relaciones fluyen tanto hacia adelante en la frase como hacia atrás, en el proceso de entrenamiento.
 
 Los transformers utilizan el concepto de atención, que enmascara las partes de la frase que son de interés para la palabra que se está traduciendo en cada  momento.
+
+La atención sustituye completamente a la recurrencia.
 """
 
 # ╔═╡ 6c7acc38-6290-4cb5-893d-133404ac3c86
@@ -882,7 +893,7 @@ Resource(
 
 # ╔═╡ 4f4e0350-1e9e-4d30-b428-4336f6cb4f7a
 md"""
-La parte novedosa es utilizar máscaras, la parte de la red correspondiente a los Positional Encoders, para que la red encuentre relación entre las partes del texto aunque estas se encuentren alejadas entre sí dentro de la misma frase.
+La parte novedosa es utilizar máscaras, la parte de la red correspondiente a los Positional Encoders, para que la red encuentre relación entre las partes del texto, aunque estas se encuentren alejadas entre sí dentro de la misma frase.
 """
 
 # ╔═╡ f87bdb9f-43c0-4a14-84f2-71f03a050d46
@@ -921,7 +932,7 @@ using Transformers
 md"""
 ## Hugging Face
 
-Este es un ejemmplo extraído del repositorio de Transformers.jl
+Este es un ejemplo extraído del repositorio de Transformers.jl
 
 ```julia
 using Flux
@@ -1009,6 +1020,7 @@ Hay otras muchas tareas dentro del campo de NLP:
 * Resumidores de texto.
 * Texto a voz y voz a texto.
 * Etiquetado de partes del discurso.
+* Generación de código en algún lenguaje de programación.
 
 Sólo por mencionar algunas.
 """
