@@ -1,5 +1,7 @@
 ### A Pluto.jl notebook ###
 # v1.1.0
+#> [frontmatter]
+#> language = "es"
 
 using Markdown
 using InteractiveUtils
@@ -14,9 +16,9 @@ using PlutoUI
 using ShortCodes
 
 # ╔═╡ c2fd34b8-66db-11f0-3efd-21960f239f79
-# html"""
-# <link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
-# """
+html"""
+<link rel="stylesheet" type="text/css" href="https://belmonte.uji.es/Docencia/IR2130/Teoria/mi_estilo.css" media="screen" />
+"""
 
 # ╔═╡ 2a803c80-dece-4f52-9898-1cc3ba15ebbc
 TableOfContents(title="Contenidos", depth=1)
@@ -26,7 +28,7 @@ imagenes = "https://belmonte.uji.es/Docencia/IR2130/Teoria/RedesNeuronales/Image
 
 # ╔═╡ 9e00079f-b241-4c7a-9c24-b229e08428df
 md"""
-# Procesamiento del lenguaje natural
+                # Procesamiento del lenguaje natural
 
 Óscar Belmonte Fernández - IR2130 Aprendizaje Automático
 
@@ -106,6 +108,8 @@ md"""
 md"""
 ## Introducción
 
+Una primera tarea a resolver cuando se trabaja con lenguaje es el de la representación de palabras (tokens) para que se puedan tratar por parte de un ordenador. Los autoencoders son un modelo que permite crear representaciones de palabras (tokens) con las que poder trabajar.
+
 El objetivo de un autoencoder es replicar la entrada en la salida pasando por un espacio de menor dimensión que el espacio de partida:
 """
 
@@ -152,7 +156,9 @@ El trabajo de un autoencoder parece una tarea sencilla, pero tienen muchas aplic
 md"""
 ## Detectar anomalías
 
-Entrenamos el autoencoder con un conjunto de muestras sin anomalías. Si al autoencoder llega un dato anómalo la codificación intermedia será incapaz de reconstruir el dato a la salida (gran diferencia entre entrada y salida), y ese dato lo podemos considerar anómalo. También podemos entrenar el autoencoder con un cojunto de datos que incluya muestras con anamalías siempre que el porcentaje de muestras con anomalías con respecto del total de muestras sea bajo.
+Entrenamos el autoencoder con un conjunto de muestras sin anomalías. Si al autoencoder llega un dato anómalo la codificación intermedia será incapaz de reconstruir el dato a la salida (gran diferencia entre entrada y salida), y ese dato lo podemos considerar anómalo.
+
+También podemos entrenar el autoencoder con un cojunto de datos que incluya muestras con anomalías siempre que el porcentaje de muestras con anomalías con respecto del total de muestras sea bajo.
 """
 
 # ╔═╡ bfbe0854-0fc8-4f8f-9286-977e734cab12
@@ -226,6 +232,8 @@ _Puso cara de pasmo al oír la noticia_
 si la palabra **pasmo** no figura en el vocabulario que manejamos se sustituye por **UNKNOWN**.
 
 _Puso cara de **UNKNOWN** al oír la noticia_
+
+Además, se añaden al vocabulario otros tokens como **SOS** (Start Of Sentece) para significar que se inicia una frase, **EOS** (End Of Sentence) para significar que hemos llegado al final de una frase; o **EOF** (End Of File) para significar que hemos llegado al final del fragmento de texto producido.
 """
 
 # ╔═╡ c31ee640-cdba-4469-b755-a6406e101015
@@ -266,7 +274,7 @@ capitales .== permutedims(capitales)
 md"""
 ## Embeddings
 
-Los embeddings son el cojunto de técnicas que se utilizan en NLP para representar texto (palabras, frases, parte de un texto en general) como vectores de números que los algoritmos de aprendizaje automático pueden manejar.
+Los embeddings son el conjunto de técnicas que se utilizan en NLP para representar texto (palabras, frases, parte de un texto en general) como vectores de números que los algoritmos de aprendizaje automático pueden manejar.
 
 Para conseguir representaciones de texto (embeddings) lo más compactas posibles, se intentar reducir la dimensionalidad del espacio de partida (número de palabras en el vocabulario), a un espacio que mantenga la información y sea más fácil de manejar.
 
@@ -335,7 +343,7 @@ md"""
 
 # ╔═╡ 732ca76c-97ee-4762-9cd5-cd76752391f5
 md"""
-Continuous Bag of Words 
+**Continuous Bag of Words**: la paralabra que queremos codificar se intenta reproducir a a partir de las palabras que la rodean:
 
 Pineapples are **spikey** and yellow
 """
@@ -362,7 +370,7 @@ md"""
 
 # ╔═╡ be14b504-bf76-4053-8098-71c791108151
 md"""
-Skip-gram
+**Skip-gram**: A partir de la palabra que queremos codificar, se intenta reproducir las palabras que la rodean. Lo puedes interpretar como el proceso inverso o complementario de **Continuous Bag of Words**.
 
 Pineapples are **spikey** and yellow
 """
@@ -384,7 +392,7 @@ Fuente: https://community.alteryx.com/t5/Data-Science/Word2vec-for-the-Alteryx-C
 md"""
 ## Word2vec
 
-Una primera característica impresionante de este embedding es que, si lo proyectamos a un espacio de 3 dimensiones veremos que conceptos similares se encuentran cerca unos de otros.
+Una primera característica impresionante de este embedding es que si lo proyectamos a un espacio de 3 dimensiones, veremos que conceptos similares se encuentran cerca unos de otros.
 
 [Visualización de embeddings.](https://projector.tensorflow.org/)
 """
@@ -458,7 +466,7 @@ end
 # ╔═╡ ea93bd5e-d8ca-4d75-807e-bc4b315464ce
 md"""
 ## Show me the code
-Vamos a calcular el concepto de reina a partir de los conceptos mujer, rey, hombre, y calcular la distancia coseno entre el vector del embedding para reina y el calculado:
+Vamos a calcular el concepto de reina a partir de los conceptos mujer, rey, y hombre; y calcular la distancia coseno entre el vector del embedding para reina y el calculado:
 
 ```julia
 rey = obten_embedding("rey")
@@ -555,7 +563,7 @@ En este caso podemos utilizar una variación de las RNN, las Gated Recurrent Uni
 md"""
 ## Generación de texto
 
-Las celdas (neuronas) GRU (Gated Recurrent Unit) son una mejora de las neuronas LSTM con un rendimiento parecido, pero utilizan menos parámetros, y menos funciones internas para recordar fragmentos de texto.
+Como ya sabemos, las celdas (neuronas) GRU (Gated Recurrent Unit) son una mejora de las neuronas LSTM con un rendimiento parecido, pero utilizan menos parámetros, y menos funciones internas para recordar fragmentos de texto.
 """
 
 # ╔═╡ 547eda5f-ba82-41d7-b9d6-0160813fb3f8
@@ -843,6 +851,8 @@ Los transformers son una vuelta de tuerca al concepto de mantener la informació
 En las redes recurrentes bidireccionales, las posibles relaciones fluyen tanto hacia adelante en la frase como hacia atrás, en el proceso de entrenamiento.
 
 Los transformers utilizan el concepto de atención, que enmascara las partes de la frase que son de interés para la palabra que se está traduciendo en cada  momento.
+
+La atención sustituye completamente a la recurrencia.
 """
 
 # ╔═╡ 6c7acc38-6290-4cb5-893d-133404ac3c86
@@ -882,7 +892,7 @@ Resource(
 
 # ╔═╡ 4f4e0350-1e9e-4d30-b428-4336f6cb4f7a
 md"""
-La parte novedosa es utilizar máscaras, la parte de la red correspondiente a los Positional Encoders, para que la red encuentre relación entre las partes del texto aunque estas se encuentren alejadas entre sí dentro de la misma frase.
+La parte novedosa es utilizar máscaras, la parte de la red correspondiente a los Positional Encoders, para que la red encuentre relación entre las partes del texto, aunque estas se encuentren alejadas entre sí dentro de la misma frase.
 """
 
 # ╔═╡ f87bdb9f-43c0-4a14-84f2-71f03a050d46
@@ -921,7 +931,7 @@ using Transformers
 md"""
 ## Hugging Face
 
-Este es un ejemmplo extraído del repositorio de Transformers.jl
+Este es un ejemplo extraído del repositorio de Transformers.jl
 
 ```julia
 using Flux
@@ -1009,6 +1019,7 @@ Hay otras muchas tareas dentro del campo de NLP:
 * Resumidores de texto.
 * Texto a voz y voz a texto.
 * Etiquetado de partes del discurso.
+* Generación de código en algún lenguaje de programación.
 
 Sólo por mencionar algunas.
 """
@@ -1719,113 +1730,113 @@ uuid = "23338594-aafe-5451-b93e-139f81909106"
 """
 
 # ╔═╡ Cell order:
-# ╠═c2fd34b8-66db-11f0-3efd-21960f239f79
-# ╠═8da42b7b-7bc8-4bdc-9707-539209d79d1b
-# ╠═efc09298-51f8-4013-9677-497b6de474be
-# ╠═367d5f39-3928-4709-8de9-2f4b1f046acd
-# ╠═2a803c80-dece-4f52-9898-1cc3ba15ebbc
-# ╠═e05614d4-5762-4839-b657-1c98b2054de4
-# ╠═9e00079f-b241-4c7a-9c24-b229e08428df
-# ╠═80774b7b-15eb-45a4-b220-c73bdb2da29b
-# ╠═b72590de-c5d6-422d-8a7d-572cc3b1c3c3
-# ╠═7128e86b-bdb9-4e7a-84ba-ee8682f8ae4f
-# ╠═1be76676-2de5-4df0-9e51-e95ce80c4ece
-# ╠═9476c68a-19fb-4855-9c6e-3d2cf1e9e403
-# ╠═7aa6b29c-3e43-4b2a-9323-655f90835e66
-# ╠═0679cc8f-5779-41ad-ac5d-13f1a303b0dc
-# ╠═70676122-eb80-4b6d-9c78-e489292c3f5c
-# ╠═2ea8cba5-3286-4d26-8bbe-76b7e1ba868f
-# ╠═813ecbd6-74b8-4d26-a92d-c6098044e64c
-# ╠═116bf570-3a18-4789-b37c-18755c401f5d
-# ╠═15e631ed-dcbd-4a09-a020-474671543c26
-# ╠═c0a6ed84-c2e1-4778-9698-3c1a346cc6bf
-# ╠═e2c82807-91c9-422f-8c68-e9550d25f239
-# ╠═bfbe0854-0fc8-4f8f-9286-977e734cab12
-# ╠═1c8635e9-5f6e-4005-95d3-a3811498a179
-# ╠═9c9997ea-e050-4960-b656-3048091b0035
-# ╠═ac9ef535-5f67-4d49-a56d-fe2bd44993f6
-# ╠═4d9883fe-1ead-4d07-ad35-5c8d935412b5
-# ╠═5c217c15-be06-464e-a1fc-577d6059205c
-# ╠═bc49d4cb-ab79-4fa0-809f-fb3ba82e5adc
-# ╠═d2c96070-c07f-49c4-84f5-bebf7498b314
-# ╠═a1ff9ae5-a131-40c2-833a-4f17fb765d1b
-# ╠═22ec98af-c189-46ab-99a1-5cd8d51a77a2
-# ╠═c31ee640-cdba-4469-b755-a6406e101015
-# ╠═8c5cd066-9fa7-4c62-beed-e858d0f3a311
-# ╠═87d0f2f2-eaea-4a7c-bca9-ceabab0da099
-# ╠═6744bcec-8e4a-420f-aeb9-34de80d0404c
-# ╠═767aaf9a-1984-404a-ae79-a74fc919861d
-# ╠═cc042ada-03d1-4189-abf0-9337546e6bec
-# ╠═1ebf121c-e8c1-45f8-954f-a7ad10157228
-# ╠═f4db6144-ef66-414c-9854-c05d0dad8ef3
-# ╠═ac928fe1-5926-44d7-912e-be19f5128b84
-# ╠═bafdc086-0b06-4f33-8fbe-a8933c82ee47
-# ╠═7bd2726c-6c8a-48d9-b1ae-eed8bcc88156
-# ╠═4c9944c1-60bf-4e57-a0c9-6219baeb2313
-# ╠═92c5efbe-6148-4813-8e28-ddd73808b6e1
-# ╠═1c7fc9ef-5259-498b-80ea-b8a21d4b2fc5
-# ╠═7f1ebe1e-7e9c-480a-aad5-23e6d70607cc
-# ╠═732ca76c-97ee-4762-9cd5-cd76752391f5
-# ╠═f7129b01-7d93-41f9-a5f2-526ed80311af
-# ╠═d42efb6e-7e58-40d7-9372-7e8a26fb6bf6
-# ╠═9c9247a8-fb07-4924-8fa3-445d3f4ade54
-# ╠═be14b504-bf76-4053-8098-71c791108151
-# ╠═7f09d56e-77b3-45e5-ac5a-61f80ad82b39
-# ╠═c277b9cc-2754-461c-a5f5-6e0df2927d0d
-# ╠═e31a02d0-d16a-4f11-a767-050139079635
-# ╠═bee075f8-65e2-4991-ae10-e749d1119bb2
-# ╠═7a6bf294-4694-43d9-b4b6-5f085dddf29f
-# ╠═4ca5b39c-e180-4956-bbbc-3ff3b51aa1a4
-# ╠═ea93bd5e-d8ca-4d75-807e-bc4b315464ce
-# ╠═bd0096b0-7059-4444-81c6-ee6daffa0392
-# ╠═a94e7a01-d5d1-4b95-8e6c-bf1ad2b0b4e5
-# ╠═84f87d3f-d60e-4a95-a48c-e77a25874d0f
-# ╠═e0917f33-9a77-439a-badf-66a3d04b248a
-# ╠═02bce938-3cf8-41fd-b8b5-da36d2bf3782
-# ╠═a601d1f6-50e8-460c-8b00-33c67ea535b6
-# ╠═547eda5f-ba82-41d7-b9d6-0160813fb3f8
-# ╠═dd9f6edc-911f-4efa-b913-cc21ac77d962
-# ╠═92307ff3-745e-41ef-8491-cf6306fc9a64
-# ╠═2c260879-39ef-4d74-bc19-d1175a43cbad
-# ╠═99437b1f-f38d-40ce-bd43-d071669cef2f
-# ╠═d58c35e7-cb7a-4cd9-b2fa-25001f756179
-# ╠═cea9f916-704f-445d-b1e3-1762b1e8cc25
-# ╠═7ddde7cb-517a-427b-9818-f040c45b7204
-# ╠═b167c50a-38dd-4485-aabb-9a5e97ded2b4
-# ╠═8ef6df12-63ca-4544-8df9-14bb4c944319
-# ╠═f6bf7355-4d41-4d5b-8034-492871b67b7c
-# ╠═4e5b4466-587a-44f5-85c4-561c454e2100
-# ╠═dc52bfd9-2bfd-4882-88cd-f869a135945c
-# ╠═0d8671db-4e8f-4a9b-84af-91664d3d220e
-# ╠═0b8d86b8-ab46-466f-91a4-70b689eb6b21
-# ╠═96221fff-1ac1-497c-97da-62c71571100c
-# ╠═7c25120d-4043-4d81-8961-06b5192cf526
-# ╠═81b23354-0862-4226-a2e9-26a9ceb700e2
-# ╠═55b122db-fe73-4ccf-ad85-2ecb282de7e3
-# ╠═4c98dcf0-2a02-474e-a4c6-7f9605ecc208
-# ╠═cb4da7e6-eb30-4369-9c6d-60e21bf7256c
-# ╠═e44c1ec9-4d42-4dc7-9d4c-368d886686aa
-# ╠═e217765a-ad91-43d0-ac80-e4d7f1e5f38a
-# ╠═140b7a93-4bd6-44a3-baaf-562d364b916d
-# ╠═d943e918-6d72-45d9-b118-b88dcaacea65
-# ╠═bb095489-b75b-47c1-b785-e59c317691f6
-# ╠═fbf000ab-aca2-4fb7-8b3f-ef6791ad7cc1
-# ╠═674ccb52-10f9-43b5-b773-99a814c76d60
-# ╠═9f58a7f5-ced0-4788-b5b3-4a57a0063b31
-# ╠═6c7acc38-6290-4cb5-893d-133404ac3c86
-# ╠═0ae76bbd-5c4c-4ff5-8ec1-14eb89453076
-# ╠═b5add997-923c-4827-b1a6-0e513d981480
-# ╠═d13bc23b-bf3a-4385-add2-4c2c268fc4f1
-# ╠═53e70c90-c0a5-4c9c-ae0a-3437f21adeb7
-# ╠═4f4e0350-1e9e-4d30-b428-4336f6cb4f7a
-# ╠═f87bdb9f-43c0-4a14-84f2-71f03a050d46
-# ╠═e9c837ad-f0a7-41f8-a932-e4699d58c277
-# ╠═0050209d-57cd-4dcf-aac0-b753172a552c
-# ╠═bc946ef2-e59d-44c3-a9ce-1ed17a096acc
-# ╠═31a709f7-6c97-443a-936a-b6daad33bca0
-# ╠═ed846ca6-1272-47af-b186-0f066c898aaf
-# ╠═11b6f7ff-f6d5-4f0d-8a9f-aa1eb2604b55
-# ╠═61de2811-9a8d-40d3-9248-22c147dc2aee
-# ╠═9d9bd2f8-71d8-4d52-8437-805e6de7c391
+# ╟─c2fd34b8-66db-11f0-3efd-21960f239f79
+# ╟─8da42b7b-7bc8-4bdc-9707-539209d79d1b
+# ╟─efc09298-51f8-4013-9677-497b6de474be
+# ╟─367d5f39-3928-4709-8de9-2f4b1f046acd
+# ╟─2a803c80-dece-4f52-9898-1cc3ba15ebbc
+# ╟─e05614d4-5762-4839-b657-1c98b2054de4
+# ╟─9e00079f-b241-4c7a-9c24-b229e08428df
+# ╟─80774b7b-15eb-45a4-b220-c73bdb2da29b
+# ╟─b72590de-c5d6-422d-8a7d-572cc3b1c3c3
+# ╟─7128e86b-bdb9-4e7a-84ba-ee8682f8ae4f
+# ╟─1be76676-2de5-4df0-9e51-e95ce80c4ece
+# ╟─9476c68a-19fb-4855-9c6e-3d2cf1e9e403
+# ╟─7aa6b29c-3e43-4b2a-9323-655f90835e66
+# ╟─0679cc8f-5779-41ad-ac5d-13f1a303b0dc
+# ╟─70676122-eb80-4b6d-9c78-e489292c3f5c
+# ╟─2ea8cba5-3286-4d26-8bbe-76b7e1ba868f
+# ╟─813ecbd6-74b8-4d26-a92d-c6098044e64c
+# ╟─116bf570-3a18-4789-b37c-18755c401f5d
+# ╟─15e631ed-dcbd-4a09-a020-474671543c26
+# ╟─c0a6ed84-c2e1-4778-9698-3c1a346cc6bf
+# ╟─e2c82807-91c9-422f-8c68-e9550d25f239
+# ╟─bfbe0854-0fc8-4f8f-9286-977e734cab12
+# ╟─1c8635e9-5f6e-4005-95d3-a3811498a179
+# ╟─9c9997ea-e050-4960-b656-3048091b0035
+# ╟─ac9ef535-5f67-4d49-a56d-fe2bd44993f6
+# ╟─4d9883fe-1ead-4d07-ad35-5c8d935412b5
+# ╟─5c217c15-be06-464e-a1fc-577d6059205c
+# ╟─bc49d4cb-ab79-4fa0-809f-fb3ba82e5adc
+# ╟─d2c96070-c07f-49c4-84f5-bebf7498b314
+# ╟─a1ff9ae5-a131-40c2-833a-4f17fb765d1b
+# ╟─22ec98af-c189-46ab-99a1-5cd8d51a77a2
+# ╟─c31ee640-cdba-4469-b755-a6406e101015
+# ╟─8c5cd066-9fa7-4c62-beed-e858d0f3a311
+# ╟─87d0f2f2-eaea-4a7c-bca9-ceabab0da099
+# ╟─6744bcec-8e4a-420f-aeb9-34de80d0404c
+# ╟─767aaf9a-1984-404a-ae79-a74fc919861d
+# ╟─cc042ada-03d1-4189-abf0-9337546e6bec
+# ╟─1ebf121c-e8c1-45f8-954f-a7ad10157228
+# ╟─f4db6144-ef66-414c-9854-c05d0dad8ef3
+# ╟─ac928fe1-5926-44d7-912e-be19f5128b84
+# ╟─bafdc086-0b06-4f33-8fbe-a8933c82ee47
+# ╟─7bd2726c-6c8a-48d9-b1ae-eed8bcc88156
+# ╟─4c9944c1-60bf-4e57-a0c9-6219baeb2313
+# ╟─92c5efbe-6148-4813-8e28-ddd73808b6e1
+# ╟─1c7fc9ef-5259-498b-80ea-b8a21d4b2fc5
+# ╟─7f1ebe1e-7e9c-480a-aad5-23e6d70607cc
+# ╟─732ca76c-97ee-4762-9cd5-cd76752391f5
+# ╟─f7129b01-7d93-41f9-a5f2-526ed80311af
+# ╟─d42efb6e-7e58-40d7-9372-7e8a26fb6bf6
+# ╟─9c9247a8-fb07-4924-8fa3-445d3f4ade54
+# ╟─be14b504-bf76-4053-8098-71c791108151
+# ╟─7f09d56e-77b3-45e5-ac5a-61f80ad82b39
+# ╟─c277b9cc-2754-461c-a5f5-6e0df2927d0d
+# ╟─e31a02d0-d16a-4f11-a767-050139079635
+# ╟─bee075f8-65e2-4991-ae10-e749d1119bb2
+# ╟─7a6bf294-4694-43d9-b4b6-5f085dddf29f
+# ╟─4ca5b39c-e180-4956-bbbc-3ff3b51aa1a4
+# ╟─ea93bd5e-d8ca-4d75-807e-bc4b315464ce
+# ╟─bd0096b0-7059-4444-81c6-ee6daffa0392
+# ╟─a94e7a01-d5d1-4b95-8e6c-bf1ad2b0b4e5
+# ╟─84f87d3f-d60e-4a95-a48c-e77a25874d0f
+# ╟─e0917f33-9a77-439a-badf-66a3d04b248a
+# ╟─02bce938-3cf8-41fd-b8b5-da36d2bf3782
+# ╟─a601d1f6-50e8-460c-8b00-33c67ea535b6
+# ╟─547eda5f-ba82-41d7-b9d6-0160813fb3f8
+# ╟─dd9f6edc-911f-4efa-b913-cc21ac77d962
+# ╟─92307ff3-745e-41ef-8491-cf6306fc9a64
+# ╟─2c260879-39ef-4d74-bc19-d1175a43cbad
+# ╟─99437b1f-f38d-40ce-bd43-d071669cef2f
+# ╟─d58c35e7-cb7a-4cd9-b2fa-25001f756179
+# ╟─cea9f916-704f-445d-b1e3-1762b1e8cc25
+# ╟─7ddde7cb-517a-427b-9818-f040c45b7204
+# ╟─b167c50a-38dd-4485-aabb-9a5e97ded2b4
+# ╟─8ef6df12-63ca-4544-8df9-14bb4c944319
+# ╟─f6bf7355-4d41-4d5b-8034-492871b67b7c
+# ╟─4e5b4466-587a-44f5-85c4-561c454e2100
+# ╟─dc52bfd9-2bfd-4882-88cd-f869a135945c
+# ╟─0d8671db-4e8f-4a9b-84af-91664d3d220e
+# ╟─0b8d86b8-ab46-466f-91a4-70b689eb6b21
+# ╟─96221fff-1ac1-497c-97da-62c71571100c
+# ╟─7c25120d-4043-4d81-8961-06b5192cf526
+# ╟─81b23354-0862-4226-a2e9-26a9ceb700e2
+# ╟─55b122db-fe73-4ccf-ad85-2ecb282de7e3
+# ╟─4c98dcf0-2a02-474e-a4c6-7f9605ecc208
+# ╟─cb4da7e6-eb30-4369-9c6d-60e21bf7256c
+# ╟─e44c1ec9-4d42-4dc7-9d4c-368d886686aa
+# ╟─e217765a-ad91-43d0-ac80-e4d7f1e5f38a
+# ╟─140b7a93-4bd6-44a3-baaf-562d364b916d
+# ╟─d943e918-6d72-45d9-b118-b88dcaacea65
+# ╟─bb095489-b75b-47c1-b785-e59c317691f6
+# ╟─fbf000ab-aca2-4fb7-8b3f-ef6791ad7cc1
+# ╟─674ccb52-10f9-43b5-b773-99a814c76d60
+# ╟─9f58a7f5-ced0-4788-b5b3-4a57a0063b31
+# ╟─6c7acc38-6290-4cb5-893d-133404ac3c86
+# ╟─0ae76bbd-5c4c-4ff5-8ec1-14eb89453076
+# ╟─b5add997-923c-4827-b1a6-0e513d981480
+# ╟─d13bc23b-bf3a-4385-add2-4c2c268fc4f1
+# ╟─53e70c90-c0a5-4c9c-ae0a-3437f21adeb7
+# ╟─4f4e0350-1e9e-4d30-b428-4336f6cb4f7a
+# ╟─f87bdb9f-43c0-4a14-84f2-71f03a050d46
+# ╟─e9c837ad-f0a7-41f8-a932-e4699d58c277
+# ╟─0050209d-57cd-4dcf-aac0-b753172a552c
+# ╟─bc946ef2-e59d-44c3-a9ce-1ed17a096acc
+# ╟─31a709f7-6c97-443a-936a-b6daad33bca0
+# ╟─ed846ca6-1272-47af-b186-0f066c898aaf
+# ╟─11b6f7ff-f6d5-4f0d-8a9f-aa1eb2604b55
+# ╟─61de2811-9a8d-40d3-9248-22c147dc2aee
+# ╟─9d9bd2f8-71d8-4d52-8437-805e6de7c391
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
