@@ -88,7 +88,7 @@ Son necesarios nuevos algoritmos para encontrar las soluciones dentro de este nu
 md"""
 ## Introducción
 
-En el **aprendizaje supervisado** construimos un modelo con un conjunto de datos de entradas y sus correspondientes valores de salida. Una vez entrenado, el modelo nos dará un nueva salida para cada nuevo dato.
+En **aprendizaje supervisado** construimos un modelo con un conjunto de datos de entradas y sus correspondientes valores de salida. Una vez entrenado, el modelo nos dará un nueva salida para cada nuevo dato.
 
 En **aprendizaje no supervisado** construimos un modelo sólo con el conjunto de entrada, sin valores de salida, y el modelo aprende a identificar las similitudes entre los datos.
 """
@@ -97,7 +97,7 @@ En **aprendizaje no supervisado** construimos un modelo sólo con el conjunto de
 md"""
 ## Introducción
 
-En **aprendizaje por refuerzo** tenemos **estados** (dentro de un **entorno**), **acciones** (ejecutadas por un **agente**) y **recompensas** (las proporciona el **entorno**), y el objetivo es maximizar la recompensa global tomando las mejores acciones en cada uno de los estados por los que vamos pasando.
+En **aprendizaje por refuerzo** tenemos **estados** (dentro de un **entorno**), **acciones** (ejecutadas por un **agente**) y **recompensas** (las proporciona el **entorno**), y el objetivo es maximizar la ganancia (suma de las recompensas) tomando las mejores acciones en cada uno de los estados por los que vamos pasando.
 """
 
 # ╔═╡ 0d30181c-687b-472a-92a1-4d60016596c6
@@ -225,7 +225,7 @@ Columns(
 		:style => "display: block; margin: auto;",
 	),
 	md"""
-	El **agente** debe escoger la siguiente **acción** a llevar a cabo dependiendodel **estado** actual del **entorno** con el objetivo de maximizar la **recompensa**.
+	El **agente** debe escoger la siguiente **acción** a llevar a cabo, dependiendo del **estado** actual del **entorno** y con el objetivo de maximizar la **ganacia** (suma de las recompensas).
 	"""
 )
 
@@ -233,7 +233,7 @@ Columns(
 md"""
 $A = \{a_1, a_2,...,a_n\}$
 
-Representa el conjunto de posibles acciones.
+El conjunto anterior representa el conjunto de todas las posibles acciones que el agente puede llevar a cabo.
 """
 
 # ╔═╡ 7464261c-999c-4397-b411-bd07025a3beb
@@ -258,9 +258,14 @@ Columns(
 	"""
 )
 
+# ╔═╡ 32e1b052-ea49-4759-a1ec-806b506075c8
+md"""
+La secuencia completa de estados, acciones y recompensas es la siguiente. $T$ es el tiempo en el que se alcanza el objetivo, que puede ser infinito. A esta secuencia se le llama episodio.
+"""
+
 # ╔═╡ 3d832db2-de0c-41e1-bf1e-cc0c152f4f98
 md"""
-$\{S_1, A_1, R_1, S_2, A_2, R_2,...,S_t,A_t,R_t\}$
+$\{S_1, A_1, R_1, S_2, A_2, R_2,...,S_T,A_T,R_T\}$
 """
 
 # ╔═╡ 0e3c3c29-76a2-4404-8fdb-8b442ce1eb9f
@@ -278,9 +283,9 @@ Resource(
 
 # ╔═╡ 57e7e52c-5cef-463d-87ac-b0bb606ddfe9
 md"""
-Un detalle importante: observa que el entorno puede cambiar, si el agente es un jugador virtual de ajedrez, a cada movimiento del agente le sigue un movimiento del contrario.
+Un detalle importante: observa que el entorno puede cambiar, si el agente es un jugador virtual de ajedrez, a cada movimiento del agente le sigue un movimiento del contrario. En el caso de conducción automática, en el entorno hay otros coches con los que debo evitar colisionar.
 
-Otro detalle importante, el agente puede optener la recompensa sólo al final.
+Otro detalle importante, el agente puede obtener recompensa sólo al final.
 """
 
 # ╔═╡ d17c48c8-259a-4ca9-97e7-c844370c52fe
@@ -288,8 +293,8 @@ md"""
 ## Entorno, Agente, Acción, Estado y Recompensa
 
 Si el conjunto de estados, acciones y recompensas es finito, se conoce el 
-estado actual y la acción elegida, entonces, se puede calcular la probabilidad
-del siguiente estado y la recompensa obtenida.
+estado actual y la acción elegida, entonces, se puede expresar la probabilidad
+del siguiente estado y la recompensa obtenida del siguiente modo.
 
 ```math
 p(s',r|s,a) = p(S_t=s', R_t=r | S_{t-1} = s, A_{t-1} = a)
@@ -297,40 +302,40 @@ p(s',r|s,a) = p(S_t=s', R_t=r | S_{t-1} = s, A_{t-1} = a)
 
 Con la condición: ``\sum\limits_{s' \in S} \sum\limits_{r \in R}^{} p(s',r|s,a) = 1``; la suma de todas las probabilidades es 1.
 
-Fíjate en que la igualdad anterior es simplemente una definición, no es una ecuación que podamos resolver. De hecho, somos nosotros quienes debemos definir las cantidades $p(s',r|s,a)$.
+Fíjate en que la igualdad anterior es simplemente una definición, no es una ecuación que podamos resolver. De hecho, somos nosotros quienes debemos definir las cantidades $p(s',r|s,a)$ para cada problema particular.
 """
 
 # ╔═╡ 1e0cad5b-10b0-4839-b112-25f5b15f7798
 md"""
 ## Entorno, Agente, Acción, Estado y Recompensa
 
-Si sumamos sobre todas las recompensas que el agente puede obtener después de realizar la acción ``a``, obtenemos las probabilidades de transición a los siguientes estados:
+Si sumamos sobre todas las recompensas que el agente puede obtener después de realizar la acción ``a``, obtenemos una nueva expresión para las probabilidades de transición a los siguientes estados:
 
 ```math
 p(s'|s, a) = p(S_t = s' | S_{t-1} = s, A_{t-1} = a) = \sum\limits_{r \in R}^{} p(s',r|s,a)
 ```
 
-Fíjate en que, de nuevo, esta nueva expresión es simplemente una manipulación de la definición de probabilidad condicionada.
+Fíjate en que, de nuevo, esta nueva expresión es simplemente una reescritura de la definición de probabilidad condicionada.
 """
 
 # ╔═╡ 7ef876f4-b64d-4a20-9e69-95c08075275c
 md"""
 ## Entorno, Agente, Acción, Estado y Recompensa
 
-Por otro lado, si calculamos el valor esperado de las recompensas que el agente puede obtener después de realizar la acción ``a`` desde el estado ``s``, obtenemos la recompensa esperada al realizar la acción ``a`` en el estado ``s``:
+Por otro lado, si calculamos el valor esperado de las recompensas que el agente puede obtener después de realizar la acción ``a`` desde el estado ``s``, obtenemos una expresión para la recompensa esperada al realizar la acción ``a`` en el estado ``s``:
 
 ```math
 r(s, a) = E[R_t | S_{t-1} = s, A_{t-1} = a] = \sum\limits_{r \in R}^{} r \sum\limits_{s' \in S} p(s',r|s,a)
 ```
 
-Que vuelve a ser una manipulación de las expresiones de probabilidad anteriores, y la definición de valor esperado.
+Que vuelve a ser una reescritura de las expresiones de probabilidad anteriores, y la definición de valor esperado.
 """
 
 # ╔═╡ 2ead2629-7a7e-4ad4-86bf-50698e12f13d
 md"""
 ## Entorno, Agente, Acción, Estado y Recompensa
 
-Finalmente, también podemos calcular el valor esperado de la recompensa al llegar al estado ``s'`` desde el estado ``s`` al realizar la acción ``a``:
+Finalmente, también podemos expresar el valor esperado de la recompensa al llegar al estado ``s'`` desde el estado ``s`` al realizar la acción ``a``:
 
 ```math
 r(s, a, s') = E[R_t | S_{t-1} = s, A_{t-1} = a, S_t = s') = \sum\limits_{r \in R}^{} r \frac{p(s',r|s,a)}{p(s'|s,a)}
@@ -348,6 +353,8 @@ md"""
 ## Entorno, Agente, Acción, Estado y Recompensa
 
 Tal y como lo hemos definido, este marco de trabajo se conoce con el nombre de Proceso de Decisión de Markov (*Markov Decision Process, MDP*).
+
+Un proceso de decisión se llama proceso de decisión de Markov cuando el agente elige la siguiente acción a ejecutar dependiendo únicamente del estado actual; el la elección no se tienen en cuenta ninguno de los estados por los que ya se ha pasado.
 """
 
 # ╔═╡ 5d78edeb-d092-459c-ad88-6345fb838350
@@ -358,9 +365,9 @@ Ejemplos de agente pueden ser:
 
 * Un coche autónomo.
 * Un robot en un entorno industrial.
-* Un dron.
+* Un dron sobrevolando una zona arbolada.
 * Un jugador virtual de go o ajedrez.
-* Un personaje en un videojuego.
+* Un personaje de un videojuego.
 """
 
 # ╔═╡ 7a1582ac-c323-48de-ba53-fad1ce12ea26
@@ -402,7 +409,7 @@ Resource(
 md"""
 **Objetivo**:El elfo tiene que llegar desde la casilla de salida hasta la casilla del regalo sin caer en los agujeros.
 
-**Importante**: como el lago está helado, no siempre se ejecuta la acción que el elfo decide hacer, hay veces en las que resbala y la acción seleccionada es otra. Este es el ejemplo que vamos a resolver con una implementación en Julia.
+**Importante**: como el lago está helado, no siempre se ejecuta la acción que el elfo decide llevar a cabo, hay veces en las que el elfo resbala y la acción resultante no es la acción que el elfo había seleccionado. Este es el ejemplo que vamos a resolver con una implementación en Julia.
 """
 
 # ╔═╡ 79784c4f-b1c8-4ad7-ac1e-e9b2331f3663
@@ -424,13 +431,26 @@ md"""
 
 Hay otros casos, como el de un robot en un ambiente industrial, donde no podemos identificar episodios, el agente está realizando de modo continuo acciones y la secuencia de acciones nunca acaba.
 
-En este caso, para acotar la ganancia y que no crezca hacia el infinito, se introduce el concepto de **factor de descuento**, que es una especie de decaimiento exponencial de la recompensa a futuro. 
+En este caso, para acotar la ganancia y que no crezca hacia el infinito, se introduce el concepto de **factor de descuento**, que es un decaimiento exponencial de la recompensa a futuro. 
 
 $G_t = R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + ... = 
 \sum_{k=0}^{\infty} \gamma^k R_{t+k+1}$
 
 Una analogía monetaria, 100 euros de hoy no tendrán el mismo valor dentro de 
 10 años, se habrán devaluado.
+"""
+
+# ╔═╡ 0bfcbe5d-0564-41d9-8cd2-fe53f664d975
+md"""
+## Episodios y Ganancia
+
+Aún cuando los episodios están acotados en el tiempo, por ejemplo una partida de ajedrez, es interesante introducir el factor de descuento para que el agente intente llegar al final del episodio en el menor número de pasos posible:
+
+$G_t = R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + ... + \gamma^T R_T= 
+\sum_{k=0}^{T} \gamma^k R_{t+k+1}$
+
+El dominio de $\gamma$ suele ser $0 \leq \gamma \leq 1$, siendo un valor típico $\gamma =
+0.99$.
 """
 
 # ╔═╡ 77ab5a72-0022-42cb-bd72-24f6ea51c201
@@ -446,28 +466,38 @@ G_t = R_{t+1} + \gamma G_{t+1}
 Expresión recursiva en la que se relaciona la ganancia en un instante con la ganancia en el siguiente instante posterior.
 """
 
-# ╔═╡ cf4d406f-9570-4bf8-a266-9f6d7cac24ed
-md"""
-## Episodios y Ganancia
-
-El **factor de descuento** $\gamma$ también se utiliza cuando el espacio de estados es finito.
-
-El dominio suele ser $0 \leq \gamma \leq 1$, siendo un valor típico $\gamma =
-0.99$.
-"""
-
 # ╔═╡ 3d815877-88a7-44b6-b9df-8d329d1a7e3b
 md"""
 ## Política
 
-La acción a realizar por el agente se escoge siguiendo cierta política $\pi$:
+La **política** es la estrategia que utiliza el agente cuando debe seleccionar la acción a realizar. O dicho al revés, la acción a realizar por el agente se escoge siguiendo cierta política $\pi$:
 
 $\pi: S \rightarrow A$
 
 La política $\pi$ puede ser:
 
-* **Determinista**, $a = \pi(s)$ la acción a escoger depende del estado actual.
-* **No determinista** $a = p(a|s)$, se escoge la acción según cierta probabilidad asignada a cada una de las acciones.
+* **Determinista**, $a = \pi(s)$ la acción a escoger depende únicamente del estado actual.
+* **No determinista** $a = p(a|s)$, la acción se escoge según cierta probabilidad asignada a cada una de las acciones.
+"""
+
+# ╔═╡ 962aa847-fdd4-45cd-b21c-f6f2d4373de4
+md"""
+## Determinismo y no determinismo
+
+Fíjate en que, tanto el entorno como la política que utiliza en agente pueden ser deterministas o no deterministas.
+
+Si el entorno es determinista, una vez que el agente selecciona una acción esta siempre se lleva a cabo. En el caso de entornos no deterministas, el agente puede seleccionar una acción pero esta puede que no sea la que finalmente se lleva a cabo.
+
+Un ejemplo de entorno determinista es salir de un laberinto; un ejemplo de entorno no determinista es el del lago helado, el elfo puede resbalar y acabar en una casilla que no era la de su elección.
+"""
+
+# ╔═╡ a424f27a-31ea-4bca-a92b-ad70ed4c297a
+md"""
+## Determinismo y no determinismo
+
+Un ejemplo de política determinista, en el caso de salir de un laberinto, sería, en una bifurcación, seleccionar siempre el camino de la derecha.
+
+Una política no determinista en este mismo ejemplo sería elegir al azar y con igual probabilidad el camino de la derecha o el de la izquierda.
 """
 
 # ╔═╡ 2e8856b0-a21a-46dc-9601-f928b31245c1
@@ -898,7 +928,7 @@ md"""
 
 1. El aprendizaje por refuerzo no parte de un conjunto de datos de entrenamiento.
 1. Los conceptos clave son el entorno, el agente, los estados, las acciones y las recompensas.
-1. El objetivo de los algoritmos de aprendizaje automático es maximizar la recompensa a futuro.
+1. El objetivo de los algoritmos de aprendizaje automático es maximizar la ganancia (suma de las recompensas).
 1. Un algoritmo que se aproxima al óptimo del máximo de recompensa a futuro es el algoritmo **Q-learning**.
 1. **Q-learning** tiene una aplicación directa en el caso de entornos discretos, pero si los queremos aplicar a entornos continuos, debemos discretizar los espacios de estados.
 """
@@ -1411,6 +1441,7 @@ uuid = "23338594-aafe-5451-b93e-139f81909106"
 # ╠═b29b0b8c-ed15-49ea-95f5-6634a6d74178
 # ╠═7464261c-999c-4397-b411-bd07025a3beb
 # ╠═10d98301-fc2d-4125-94a2-2ea7f3b42307
+# ╠═32e1b052-ea49-4759-a1ec-806b506075c8
 # ╠═3d832db2-de0c-41e1-bf1e-cc0c152f4f98
 # ╠═0e3c3c29-76a2-4404-8fdb-8b442ce1eb9f
 # ╠═8cbb1134-49b5-472c-aadb-1754230742ea
@@ -1428,9 +1459,11 @@ uuid = "23338594-aafe-5451-b93e-139f81909106"
 # ╠═c1abe3ab-c796-48b7-bbdb-860ec93f8394
 # ╠═79784c4f-b1c8-4ad7-ac1e-e9b2331f3663
 # ╠═4e5ad759-e840-43c0-a342-ebf413a5fb2b
+# ╠═0bfcbe5d-0564-41d9-8cd2-fe53f664d975
 # ╠═77ab5a72-0022-42cb-bd72-24f6ea51c201
-# ╠═cf4d406f-9570-4bf8-a266-9f6d7cac24ed
 # ╠═3d815877-88a7-44b6-b9df-8d329d1a7e3b
+# ╠═962aa847-fdd4-45cd-b21c-f6f2d4373de4
+# ╠═a424f27a-31ea-4bca-a92b-ad70ed4c297a
 # ╠═2e8856b0-a21a-46dc-9601-f928b31245c1
 # ╠═f74ada35-1e6e-46ad-8723-43f8674b7fd4
 # ╠═26c0db62-9f96-43cc-a18b-f64290293576
