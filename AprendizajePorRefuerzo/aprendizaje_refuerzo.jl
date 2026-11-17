@@ -504,7 +504,7 @@ Una política no determinista en este mismo ejemplo sería elegir al azar y con 
 md"""
 ## Función valor del estado
 
-La **Función valor del estado** mide la recompensa total esperada que se obtiene desde el estado ``s`` hasta el final del juego (o episodio), siguiendo una política concreta ``\pi``.
+La **Función valor del estado** mide la recompensa total esperada que se obtiene desde el estado ``s`` hasta el final del episodio, siguiendo una política concreta ``\pi``.
 
 Un ejemplo para entender el objetivo de la función valor del estado es el juego del ajedrez. En el ajedrez es importante controlar las posiciones del centro del tablero porque estas son las más importantes, ya que si se realizan movimientos desde ellas la probabilidad de ganar la partida aumenta.
 """
@@ -584,7 +584,7 @@ v_{\pi^*}(s) = \max_a \sum_{s',r'} p(s',r | r,a) \left[r + \gamma v_{\pi^*}(s')]
 sea la máxima para cada estado, y también lo sea la función acción/estado:
 
 ```math
-q_{\pi^*}(s,a) = \sum_{s',r'} p(s',r | r,a) \left[r + \gamma \max_a' q_{\pi^*}(s',a')]\right]
+q_{\pi^*}(s,a) = \sum_{s',r'} p(s',r | r,a) \left[r + \gamma \max_{a'} q_{\pi^*}(s',a')]\right]
 ```
 
 """
