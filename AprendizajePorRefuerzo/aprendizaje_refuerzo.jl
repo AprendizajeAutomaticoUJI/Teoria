@@ -354,7 +354,7 @@ md"""
 
 Tal y como lo hemos definido, este marco de trabajo se conoce con el nombre de Proceso de Decisión de Markov (*Markov Decision Process, MDP*).
 
-Un proceso de decisión se llama proceso de decisión de Markov cuando el agente elige la siguiente acción a ejecutar dependiendo únicamente del estado actual; el la elección no se tienen en cuenta ninguno de los estados por los que ya se ha pasado.
+Un proceso de decisión se llama proceso de decisión de Markov cuando el agente elige la siguiente acción a ejecutar dependiendo únicamente del estado actual; en la elección no se tienen en cuenta ninguno de los estados por los que ya se ha pasado.
 """
 
 # ╔═╡ 5d78edeb-d092-459c-ad88-6345fb838350
