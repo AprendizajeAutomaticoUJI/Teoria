@@ -1,6 +1,5 @@
 ### A Pluto.jl notebook ###
 # v1.1.0
-
 #> [frontmatter]
 #> language = "es"
 
@@ -29,7 +28,7 @@ imagenes = "https://belmonte.uji.es/Docencia/IR2130/Teoria/RedesNeuronales/Image
 
 # ╔═╡ 9e00079f-b241-4c7a-9c24-b229e08428df
 md"""
-# Procesamiento del lenguaje natural
+                # Procesamiento del lenguaje natural
 
 Óscar Belmonte Fernández - IR2130 Aprendizaje Automático
 
